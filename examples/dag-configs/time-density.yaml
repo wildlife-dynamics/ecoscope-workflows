@@ -1,0 +1,8 @@
+dag:
+  name: "time_density"  # todo globally unique
+  
+tasks:
+  get_data:
+    image: "ubuntu:latest"
+    pod_name: "my_pod"
+    import: "ecoscope_workflows.tasks.stdlib.get_subjectgroup_observations"
