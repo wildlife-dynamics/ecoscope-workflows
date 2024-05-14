@@ -2,7 +2,6 @@ from typing import Annotated, TypeVar
 
 import pandera as pa
 from pydantic_core import core_schema as cs
-from pandera.typing import DataFrame as PanderaDataFrame
 from pydantic import GetJsonSchemaHandler
 from pydantic.json_schema import JsonSchemaValue, WithJsonSchema
 
@@ -18,9 +17,9 @@ class JsonSerializableDataFrameModel(pa.DataFrameModel):
 DataframeSchema = TypeVar("DataframeSchema", bound=JsonSerializableDataFrameModel)
 
 DataFrame = Annotated[
-    PanderaDataFrame[DataframeSchema],
-    # PanderaDataFrame is very hard to meaningfully serialize to JSON. Pandera itself does
-    # not yet support this, see: https://github.com/unionai-oss/pandera/issues/421.
+    pa.typing.DataFrame[DataframeSchema],
+    # pa.typing.DataFrame is very hard to meaningfully serialize to JSON. Pandera itself
+    # does not yet support this, see: https://github.com/unionai-oss/pandera/issues/421.
     # The "ideal" workaround I think involves overriding `__get_pydantic_json_schema__`,
     # as worked for `JsonSerializableDataFrameModel` above, however the meaningful data
     # we would want to access within that classmethod is the subscripted `DataframeSchema`

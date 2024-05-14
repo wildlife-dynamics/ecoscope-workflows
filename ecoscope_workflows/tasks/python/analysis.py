@@ -2,7 +2,6 @@ import tempfile
 from typing import Annotated, Any
 
 import pandera as pa
-from pandera.typing import Series as PanderaSeries
 from pydantic import Field
 
 from ecoscope_workflows.decorators import distributed
@@ -11,9 +10,9 @@ from ecoscope_workflows.types import JsonSerializableDataFrameModel, DataFrame
 
 
 class TimeDensityReturnGDFSchema(JsonSerializableDataFrameModel):
-    percentile: PanderaSeries[float] = pa.Field()
-    geometry: PanderaSeries[Any] = pa.Field()   # see note above re: geometry typing
-    area_sqkm: PanderaSeries[float] = pa.Field()
+    percentile: pa.typing.Series[float] = pa.Field()
+    geometry: pa.typing.Series[Any] = pa.Field()   # see note above re: geometry typing
+    area_sqkm: pa.typing.Series[float] = pa.Field()
 
 
 @distributed

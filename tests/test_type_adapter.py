@@ -4,7 +4,6 @@ from typing import Annotated, get_args
 import numpy as np
 import pandera as pa
 import pytest
-from pandera.typing import Series as PanderaSeries
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 from pydantic.fields import FieldInfo
 from pydantic.json_schema import GenerateJsonSchema
@@ -71,7 +70,7 @@ class SurfacesDescriptionSchema(MatchingSchema):
 def test_DataFrameModel_generate_schema():
 
     class Schema(JsonSerializableDataFrameModel):
-        col1: PanderaSeries[int] = pa.Field(unique=True)
+        col1: pa.typing.Series[int] = pa.Field(unique=True)
 
     schema = TypeAdapter(Schema).json_schema()
     assert schema == Schema.to_json_schema()
@@ -80,7 +79,7 @@ def test_DataFrameModel_generate_schema():
 def test_InputDataframe_generate_schema():
 
     class Schema(JsonSerializableDataFrameModel):
-        col1: PanderaSeries[int] = pa.Field(unique=True)
+        col1: pa.typing.Series[int] = pa.Field(unique=True)
 
     Foo = DataFrame[Schema]
     schema = TypeAdapter(Foo).json_schema()
@@ -91,7 +90,7 @@ def test_jsonschema_from_signature_nontrivial():
     config_dict = ConfigDict(arbitrary_types_allowed=True)
 
     class Schema(JsonSerializableDataFrameModel):
-        col1: PanderaSeries[int] = pa.Field(unique=True)
+        col1: pa.typing.Series[int] = pa.Field(unique=True)
 
     class TimeDensityConfig(BaseModel):
         model_config = config_dict
