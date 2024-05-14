@@ -1,11 +1,12 @@
-from typing import Annotated
+from typing import Any, Annotated
 
+import pandas as pd
+import pandera as pa
 from pydantic import Field
 
 from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.tasks.python.io import SubjectGroupObservationsGDFSchema
-from ecoscope_workflows.tasks.python.analysis import TrajectoryGDFSchema
-from ecoscope_workflows.types import DataFrame
+from ecoscope_workflows.types import JsonSerializableDataFrameModel, DataFrame
 
 
 class RelocationsGDFSchema(SubjectGroupObservationsGDFSchema):
@@ -37,6 +38,22 @@ def _process_relocations(
     relocs.columns = [i.replace("extra__", "") for i in relocs.columns]
     relocs.columns = [i.replace("subject__", "") for i in relocs.columns]
     return relocs
+
+
+class TrajectoryGDFSchema(JsonSerializableDataFrameModel):
+    id: pa.typing.Index[str] = pa.Field()
+    groupby_col: pa.typing.Series[str] = pa.Field()
+    segment_start: pa.typing.Series[pd.DatetimeTZDtype] = pa.Field(dtype_kwargs={"unit": "ns", "tz": "UTC"})
+    segment_end: pa.typing.Series[pd.DatetimeTZDtype] = pa.Field(dtype_kwargs={"unit": "ns", "tz": "UTC"})
+    timespan_seconds: pa.typing.Series[float] = pa.Field()
+    dist_meters: pa.typing.Series[float] = pa.Field()
+    speed_kmhr: pa.typing.Series[float] = pa.Field()
+    heading: pa.typing.Series[float] = pa.Field()
+    junk_status: pa.typing.Series[bool] = pa.Field()
+    # pandera does support geopandas types (https://pandera.readthedocs.io/en/stable/geopandas.html)
+    # but this would require this module depending on geopandas, which we are trying to avoid. so
+    # unless we come up with another solution, for now we are letting `geometry` contain anything.
+    geometry: pa.typing.Series[Any] = pa.Field()
 
 
 def _relocations_to_trajectory(

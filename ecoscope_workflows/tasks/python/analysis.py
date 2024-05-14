@@ -2,28 +2,12 @@ import tempfile
 from typing import Annotated, Any
 
 import pandera as pa
-import pandas as pd
 from pandera.typing import Series as PanderaSeries
 from pydantic import Field
 
 from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.tasks.python.preprocessing import TrajectoryGDFSchema
 from ecoscope_workflows.types import JsonSerializableDataFrameModel, DataFrame
-
-
-class TrajectoryGDFSchema(JsonSerializableDataFrameModel):
-    id: pa.typing.Index[str] = pa.Field()
-    groupby_col: PanderaSeries[str] = pa.Field()
-    segment_start: PanderaSeries[pd.DatetimeTZDtype] = pa.Field(dtype_kwargs={"unit": "ns", "tz": "UTC"})
-    segment_end: PanderaSeries[pd.DatetimeTZDtype] = pa.Field(dtype_kwargs={"unit": "ns", "tz": "UTC"})
-    timespan_seconds: PanderaSeries[float] = pa.Field()
-    dist_meters: PanderaSeries[float] = pa.Field()
-    speed_kmhr: PanderaSeries[float] = pa.Field()
-    heading: PanderaSeries[float] = pa.Field()
-    junk_status: PanderaSeries[bool] = pa.Field()
-    # pandera does support geopandas types (https://pandera.readthedocs.io/en/stable/geopandas.html)
-    # but this would require this module depending on geopandas, which we are trying to avoid. so
-    # unless we come up with another solution, for now we are letting `geometry` contain anything.
-    geometry: PanderaSeries[Any] = pa.Field()
 
 
 class TimeDensityReturnGDFSchema(JsonSerializableDataFrameModel):

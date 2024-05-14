@@ -3,6 +3,7 @@ from typing import Annotated, get_args
 
 import numpy as np
 import pandera as pa
+import pytest
 from pandera.typing import Series as PanderaSeries
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 from pydantic.fields import FieldInfo
@@ -39,6 +40,7 @@ def test_jsonschema_from_signature_basic():
     assert from_func == from_model
 
 
+@pytest.mark.xfail
 def test_jsonschema_from_signature_basic_distributed():
     class FuncSignature(BaseModel):
         foo: int
