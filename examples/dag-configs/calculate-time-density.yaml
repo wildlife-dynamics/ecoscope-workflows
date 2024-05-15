@@ -1,0 +1,7 @@
+dag:
+  name: "time_density"  # todo globally unique
+  
+tasks:
+  - function: "ecoscope_workflows.tasks.python.io.get_subjectgroup_observations"
+    image: "ecoscope:0.1.7"
+  - 

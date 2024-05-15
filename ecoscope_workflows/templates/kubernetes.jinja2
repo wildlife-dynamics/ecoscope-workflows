@@ -12,7 +12,7 @@ def import_item(): ...  # TODO: implement in workflows
 
 {% for t in tasks %}
 @task.kubernetes(
-    image="{{ tasks[t].image }}",
+    image="{{ t.image }}",
     in_cluster=True,
     namespace=namespace,
     name="{{ tasks[t].pod_name }}",
