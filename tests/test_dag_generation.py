@@ -3,6 +3,9 @@ from ecoscope_workflows.configuration import DagBuilder, TaskInstance
 time_density_tasks = [
     TaskInstance(
         known_task_name="get_earthranger_subjectgroup_observations",
+    ),
+    TaskInstance(
+        known_task_name="process_relocations"
     )
 ]
 

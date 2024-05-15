@@ -18,7 +18,7 @@ def import_item(): ...  # TODO: implement in workflows
     in_cluster=True,
     namespace=namespace,
     name="pod",
-    container_resources={'request_memory': '128Mi', 'request_cpu': '500m', 'limit_memory': '500Mi', 'limit_cpu': 1}
+    container_resources={'request_memory': '128Mi', 'request_cpu': '500m', 'limit_memory': '500Mi', 'limit_cpu': 1},
     get_logs=True,
     log_events_on_failure=True,
     do_xcom_push=True,
@@ -34,6 +34,30 @@ def get_earthranger_subjectgroup_observations(params: dict | None = None):
         validate=True
     )(**task_kwargs)
     return outpath
+
+
+@task.kubernetes(
+    image="ecoscope:0.1.7",
+    in_cluster=True,
+    namespace=namespace,
+    name="pod",
+    container_resources={'request_memory': '128Mi', 'request_cpu': '500m', 'limit_memory': '500Mi', 'limit_cpu': 1},
+    get_logs=True,
+    log_events_on_failure=True,
+    do_xcom_push=True,
+)
+def process_relocations(params: dict | None = None):
+    task: DistributedTask = import_item("ecoscope_workflows.tasks.python.preprocessing.process_relocations")
+    task_kwargs = params["process_relocations"]
+    # something about loading registered deserializers by arg type
+    # something about return_postvalidator closures
+    outpath = task.replace(
+        arg_prevalidators=...,  # this is a loop in itself
+        return_postvalidator=...,  # set this from a storage config
+        validate=True
+    )(**task_kwargs)
+    return outpath
+
 
 
     # TODO: task dependencies
