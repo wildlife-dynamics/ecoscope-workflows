@@ -4,7 +4,7 @@ from datetime import datetime
 from airflow.configuration import conf 
 from airflow.decorators import dag, task
 
-from ecoscope_workflows.decorators import distributed as DistributedTask
+from ecoscope_workflows.decorators import distributed
 
 namespace = conf.get("kubernetes", "NAMESPACE")  # does this work?
 
@@ -27,18 +27,20 @@ def import_item(): ...  # TODO: implement in workflows
 def get_earthranger_subjectgroup_observations(
     params: dict | None = None,  # Airflow DAG Params passed with `--conf` on trigger
 ):
-    task: DistributedTask = import_item("ecoscope_workflows.tasks.python.io.get_subjectgroup_observations")
+    # the task itself, wrapping it as `distributed`, and fetching its kwargs
+    plain_task = import_item("ecoscope_workflows.tasks.python.io.get_subjectgroup_observations")
+    distributed_task = distributed(plain_task)
     task_kwargs = params["get_earthranger_subjectgroup_observations"]
-    # something about loading registered deserializers by arg type
+    
     # something about return_postvalidator closures
-    outpath = task.replace(
-        arg_prevalidators=...,  # this is a loop in itself
+    serliazed_result_uri = distributed_task.replace(
+        # this task has no arg_dependencies, therefore it does not require arg_prevalidators
         return_postvalidator=...,  # set this from a storage config
         validate=True
     )(
         **task_kwargs,
     )
-    return outpath
+    return serliazed_result_uri
 
 
 @task.kubernetes(
@@ -55,19 +57,26 @@ def process_relocations(
     observations,
     params: dict | None = None,  # Airflow DAG Params passed with `--conf` on trigger
 ):
-    task: DistributedTask = import_item("ecoscope_workflows.tasks.python.preprocessing.process_relocations")
+    # deserializers
+    from ecoscope_workflows.serde import gpd_from_parquet_uri
+    
+    # the task itself, wrapping it as `distributed`, and fetching its kwargs
+    plain_task = import_item("ecoscope_workflows.tasks.python.preprocessing.process_relocations")
+    distributed_task = distributed(plain_task)
     task_kwargs = params["process_relocations"]
-    # something about loading registered deserializers by arg type
+    
     # something about return_postvalidator closures
-    outpath = task.replace(
-        arg_prevalidators=...,  # this is a loop in itself
+    serliazed_result_uri = distributed_task.replace(
+        arg_prevalidators={
+            "observations": gpd_from_parquet_uri,
+        },
         return_postvalidator=...,  # set this from a storage config
         validate=True
     )(
         observations=observations,
         **task_kwargs,
     )
-    return outpath
+    return serliazed_result_uri
 
 
 
@@ -81,3 +90,4 @@ def calculate_time_density():
     process_relocations_return = process_relocations(
         observations=get_earthranger_subjectgroup_observations_return,
     )
+    

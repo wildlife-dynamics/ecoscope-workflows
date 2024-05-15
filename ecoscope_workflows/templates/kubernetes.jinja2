@@ -4,7 +4,7 @@ from datetime import datetime
 from airflow.configuration import conf 
 from airflow.decorators import dag, task
 
-from ecoscope_workflows.decorators import distributed as DistributedTask
+from ecoscope_workflows.decorators import distributed
 
 namespace = conf.get("kubernetes", "NAMESPACE")  # does this work?
 
@@ -30,12 +30,28 @@ def {{ t.known_task_name }}(
     {% endif %}
     params: dict | None = None,  # Airflow DAG Params passed with `--conf` on trigger
 ):
-    task: DistributedTask = import_item("{{ t.known_task.importable_reference }}")
+    {%- if t.arg_dependencies %}
+    # deserializers
+    {%- for arg in t.arg_dependencies %}
+    from ecoscope_workflows.serde import {{ t.arg_prevalidators[arg] }}
+    {% endfor %}
+    {% else %}
+    {% endif -%}
+
+    # the task itself, wrapping it as `distributed`, and fetching its kwargs
+    plain_task = import_item("{{ t.known_task.importable_reference }}")
+    distributed_task = distributed(plain_task)
     task_kwargs = params["{{ t.known_task_name }}"]
-    # something about loading registered deserializers by arg type
+    
     # something about return_postvalidator closures
-    outpath = task.replace(
-        arg_prevalidators=...,  # this is a loop in itself
+    serliazed_result_uri = distributed_task.replace(
+        {%- if t.arg_dependencies %}
+        arg_prevalidators={
+            {% for arg in t.arg_dependencies %}"{{ arg }}": {{ t.arg_prevalidators[arg] }},{% endfor %}
+        },
+        {% else %}
+        # this task has no arg_dependencies, therefore it does not require arg_prevalidators
+        {% endif -%}
         return_postvalidator=...,  # set this from a storage config
         validate=True
     )(
@@ -44,7 +60,7 @@ def {{ t.known_task_name }}(
         {% endif %}
         **task_kwargs,
     )
-    return outpath
+    return serliazed_result_uri
 
 {% endfor %}
 

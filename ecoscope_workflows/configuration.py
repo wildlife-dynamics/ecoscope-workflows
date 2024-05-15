@@ -12,6 +12,8 @@ TEMPLATES = pathlib.Path(__file__).parent / "templates"
 class TaskInstance(BaseModel):
     known_task_name: str  # TODO: validate is valid key in known_tasks
     arg_dependencies: dict = Field(default_factory=dict)
+    # TODO: something about defaulting to registered deserializers
+    # by arg type (via introspection); just manual for now
     arg_prevalidators: dict = Field(default_factory=dict)
     return_postvalidator: Callable | None = None
 

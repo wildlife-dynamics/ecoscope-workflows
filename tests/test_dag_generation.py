@@ -8,7 +8,8 @@ time_density_tasks = [
         known_task_name="process_relocations",
         arg_dependencies={
             "observations": "get_earthranger_subjectgroup_observations_return",
-        }
+        },
+        arg_prevalidators={"observations": "gpd_from_parquet_uri"}
     )
 ]
 
