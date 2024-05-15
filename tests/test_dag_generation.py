@@ -7,7 +7,7 @@ time_density_tasks = [
     TaskInstance(
         known_task_name="process_relocations",
         arg_dependencies={
-            "observations": "get_earthranger_subjectgroup_observations",
+            "observations": "get_earthranger_subjectgroup_observations_return",
         }
     )
 ]
