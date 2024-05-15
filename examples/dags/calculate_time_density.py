@@ -12,19 +12,19 @@ def import_item(): ...  # TODO: implement in workflows
 # TODO: possibly need some global de/serialization fsspec filesystem
 # defined here, inheriting system credentials?
 
-{% for t in tasks %}
+
 @task.kubernetes(
-    image="{{ t.known_task.image }}",
+    image="ecoscope:0.1.7",
     in_cluster=True,
     namespace=namespace,
-    {# name="{{ tasks[t].pod_name }}", #}
+    
     get_logs=True,
     log_events_on_failure=True,
     do_xcom_push=True,
 )
-def {{ t.known_task_name }}(params: dict | None = None):
-    task: DistributedTask = import_item("{{ t.known_task.importable_reference }}")
-    task_kwargs = params["{{ t.known_task_name }}"]
+def get_earthranger_subjectgroup_observations(params: dict | None = None):
+    task: DistributedTask = import_item("ecoscope_workflows.tasks.python.io.get_subjectgroup_observations")
+    task_kwargs = params["get_earthranger_subjectgroup_observations"]
     # something about loading registered deserializers by arg type
     # something about return_postvalidator closures
     outpath = task.replace(
@@ -33,10 +33,10 @@ def {{ t.known_task_name }}(params: dict | None = None):
         validate=True
     )(**task_kwargs)
     return outpath
-{% endfor %}
+
 
     # TODO: task dependencies
 
 @dag(schedule="@daily", start_date=datetime(2021, 12, 1), catchup=False)
-def {{ name }}():
+def calculate_time_density():
     ...

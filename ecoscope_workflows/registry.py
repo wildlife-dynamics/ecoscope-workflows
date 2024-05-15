@@ -5,15 +5,15 @@ from pydantic import BaseModel
 
 
 class KnownTask(BaseModel):
-    image: str
     # pod_name: str
-    task_import: str
+    importable_reference: str
     # tags: list[str]
+    image: str
 
 
 known_tasks = {
     "get_earthranger_subjectgroup_observations": KnownTask(
+        importable_reference="ecoscope_workflows.tasks.python.io.get_subjectgroup_observations",
         image="ecoscope:0.1.7",
-        task_import="ecoscope_workflows.tasks.python.io.get_subjectgroup_observations",
     ),
 }

@@ -2,7 +2,7 @@ import pathlib
 from typing import Annotated, Callable
 
 from jinja2 import Environment, FileSystemLoader
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, computed_field
 from pydantic.functional_validators import BeforeValidator
 
 from ecoscope_workflows.registry import KnownTask, known_tasks
@@ -11,17 +11,21 @@ TEMPLATES = pathlib.Path(__file__).parent / "templates"
 
 
 class TaskInstance(BaseModel):
-    known_task: Annotated[KnownTask, BeforeValidator(lambda name: known_tasks[name])]
+    known_task_name: str  # TODO: validate is valid key in known_tasks
     dependencies: list[str] = Field(default_factory=list)
     arg_prevalidators: dict = Field(default_factory=dict)
     return_postvalidator: Callable | None = None
+
+    @computed_field
+    def known_task(self) -> KnownTask:
+        return known_tasks[self.known_task_name]
 
     def validate_argprevalidators(self):
         ...
 
 
 class DagBuilder(BaseModel):
-    name: str
+    name: str  # TODO: does this need to be a valid python identifier?
     tasks: list[TaskInstance]
     template: str = "kubernetes.jinja2"
     template_dir: str = TEMPLATES
