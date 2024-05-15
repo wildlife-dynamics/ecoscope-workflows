@@ -11,7 +11,7 @@ TEMPLATES = pathlib.Path(__file__).parent / "templates"
 
 class TaskInstance(BaseModel):
     known_task_name: str  # TODO: validate is valid key in known_tasks
-    dependencies: list[str] = Field(default_factory=list)
+    arg_dependencies: dict = Field(default_factory=dict)
     arg_prevalidators: dict = Field(default_factory=dict)
     return_postvalidator: Callable | None = None
 
