@@ -1,4 +1,14 @@
-from ecoscope_workflows.configuration import DagBuilder
+from ecoscope_workflows.configuration import DagBuilder, TaskInstance
+
+def test_dag_builder_generate_dag():
+    kws = dict(
+        image="ubuntu:latest",  # FIXME: this should be inferred from registerd task
+        name="test_dag",
+        tasks=[TaskInstance()]
+    )
+    db = DagBuilder(**kws)
+    dag_str = db._generate_dag()
+
 
 def test_dag_builder():
     # if ecoscope_server either runs (or has access to over HTTP)
@@ -49,8 +59,7 @@ def test_dag_builder():
     db = DagBuilder()
     # `dag` here is string, needs to be dumped to airflow dags folder
     # somewhere (locally, gcs, etc.) to be discoverable + runnable
-    dag = db.generate_dag()
-    # see note above in dependencies about re: what to include here
+    # see note above in dependencies about re: what to include in `params`
     #   (this would be a call to TypeAdapter internally)
     # this is a jsonschema dict, also needs to be dumped somewhere useful
-    params = db.get_params()
+    dag, params = db.generate()

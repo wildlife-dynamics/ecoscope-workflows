@@ -1,23 +1,20 @@
 import pathlib
-from typing import Callable
+from typing import Annotated, Callable
 
 from jinja2 import Environment, FileSystemLoader
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from pydantic.functional_validators import BeforeValidator
 
+from ecoscope_workflows.registry import KnownTask, known_tasks
 
 TEMPLATES = pathlib.Path(__file__).parent / "templates"
 
 
-class TaskRegistration(BaseModel):
-    image: str
-    pod_name: str
-    task_import: str
-
-
-class TaskInstance(TaskRegistration):
-    dependencies: list[str]
-    arg_prevalidators: dict
-    return_postvalidator: Callable
+class TaskInstance(BaseModel):
+    known_task: Annotated[KnownTask, BeforeValidator(lambda name: known_tasks[name])]
+    dependencies: list[str] = Field(default_factory=list)
+    arg_prevalidators: dict = Field(default_factory=dict)
+    return_postvalidator: Callable | None = None
 
     def validate_argprevalidators(self):
         ...
@@ -32,16 +29,16 @@ class DagBuilder(BaseModel):
     # TODO: on __init__ (or in cached_property), sort tasks
     # topologically so we know what order to invoke them in dag
 
-    def generate(self):
+    def _get_params_schema(self):
+        ...
+
+    def _generate_dag(self) -> str:
         env = Environment(loader=FileSystemLoader(self.template_dir))
         template = env.get_template(self.template)
 
-        # with open("dag.yaml") as f:
-        #     config = yaml.safe_load(f)
+        config = self.model_dump(exclude={"template", "template_dir"})
+        return template.render(config)
 
-        config = self.to
-
-        rendered_template = template.render(config)
-
-        with open("_dag.py", "w") as f:
-            f.write(rendered_template)
+    def generate(self):
+        params = self._get_params_schema()
+        dag = self._generate_dag()
