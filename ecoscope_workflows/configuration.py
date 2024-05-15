@@ -29,6 +29,9 @@ class DagBuilder(BaseModel):
     template: str = "kubernetes.jinja2"
     template_dir: str = TEMPLATES
 
+    # TODO: on __init__ (or in cached_property), sort tasks
+    # topologically so we know what order to invoke them in dag
+
     def generate(self):
         env = Environment(loader=FileSystemLoader(self.template_dir))
         template = env.get_template(self.template)

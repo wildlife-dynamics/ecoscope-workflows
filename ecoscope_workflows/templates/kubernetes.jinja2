@@ -9,6 +9,8 @@ namespace = conf.get("kubernetes", "NAMESPACE")  # does this work?
 
 def import_item(): ...  # TODO: implement in workflows
 
+# TODO: possibly need some global de/serialization fsspec filesystem
+# defined here, inheriting system credentials?
 
 {% for t in tasks %}
 @task.kubernetes(
