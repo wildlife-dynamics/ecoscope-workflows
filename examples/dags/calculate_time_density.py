@@ -32,15 +32,30 @@ def get_earthranger_subjectgroup_observations(
     distributed_task = distributed(plain_task)
     task_kwargs = params["get_earthranger_subjectgroup_observations"]
     
-    # something about return_postvalidator closures
-    serialized_result_uri = distributed_task.replace(
+    # TODO: support various serialization types based on the return type of `plain_task`
+    # for just right now we are going to assume it's always a geopandas dataframe
+    def return_postvalidator(dataframe) -> str:
+        """Serializes return value of `plain_task`."""
+        # NOTE: This needs to be defined as a closure here in the task scope, because
+        # we want to use some task-instance specific information from the enclosing scope
+        # to set the `url` defined in the body of this function below, and it would seem
+        # that cannot be passed as a kwarg, because our `return_postvalidator`s need to be
+        # only single-argument callables for compatibility with Pydantic's AfterValidator,
+        # which we use for the internal implementation of this serialization feature.
+        # FIXME: compose `url` from configured `base_path` + task-instance-specific identifier
+        url = "somewhere.parquet"
+        # FIXME: support authentication here, set from configurable storage model
+        dataframe.to_parquet(url)
+        return url
+
+    serialized_result_url = distributed_task.replace(
         # this task has no arg_dependencies, therefore it does not require arg_prevalidators
-        return_postvalidator=...,  # set this from a storage config
+        return_postvalidator=return_postvalidator,  
         validate=True
     )(
         **task_kwargs,
     )
-    return serialized_result_uri
+    return serialized_result_url
 
 
 @task.kubernetes(
@@ -65,21 +80,33 @@ def process_relocations(
     distributed_task = distributed(plain_task)
     task_kwargs = params["process_relocations"]
     
-    # something about return_postvalidator closures
-    serialized_result_uri = distributed_task.replace(
+    # TODO: support various serialization types based on the return type of `plain_task`
+    # for just right now we are going to assume it's always a geopandas dataframe
+    def return_postvalidator(dataframe) -> str:
+        """Serializes return value of `plain_task`."""
+        # NOTE: This needs to be defined as a closure here in the task scope, because
+        # we want to use some task-instance specific information from the enclosing scope
+        # to set the `url` defined in the body of this function below, and it would seem
+        # that cannot be passed as a kwarg, because our `return_postvalidator`s need to be
+        # only single-argument callables for compatibility with Pydantic's AfterValidator,
+        # which we use for the internal implementation of this serialization feature.
+        # FIXME: compose `url` from configured `base_path` + task-instance-specific identifier
+        url = "somewhere.parquet"
+        # FIXME: support authentication here, set from configurable storage model
+        dataframe.to_parquet(url)
+        return url
+
+    serialized_result_url = distributed_task.replace(
         arg_prevalidators={
             "observations": gpd_from_parquet_uri,
         },
-        return_postvalidator=...,  # set this from a storage config
+        return_postvalidator=return_postvalidator,  
         validate=True
     )(
         observations=observations,
         **task_kwargs,
     )
-    return serialized_result_uri
-
-
-
+    return serialized_result_url
 
 @dag(schedule="@daily", start_date=datetime(2021, 12, 1), catchup=False)
 def calculate_time_density():
