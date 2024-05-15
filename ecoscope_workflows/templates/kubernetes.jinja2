@@ -44,7 +44,7 @@ def {{ t.known_task_name }}(
     task_kwargs = params["{{ t.known_task_name }}"]
     
     # something about return_postvalidator closures
-    serliazed_result_uri = distributed_task.replace(
+    serialized_result_uri = distributed_task.replace(
         {%- if t.arg_dependencies %}
         arg_prevalidators={
             {% for arg in t.arg_dependencies %}"{{ arg }}": {{ t.arg_prevalidators[arg] }},{% endfor %}
@@ -60,7 +60,7 @@ def {{ t.known_task_name }}(
         {% endif %}
         **task_kwargs,
     )
-    return serliazed_result_uri
+    return serialized_result_uri
 
 {% endfor %}
 

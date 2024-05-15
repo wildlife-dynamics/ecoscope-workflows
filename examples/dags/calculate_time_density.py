@@ -33,14 +33,14 @@ def get_earthranger_subjectgroup_observations(
     task_kwargs = params["get_earthranger_subjectgroup_observations"]
     
     # something about return_postvalidator closures
-    serliazed_result_uri = distributed_task.replace(
+    serialized_result_uri = distributed_task.replace(
         # this task has no arg_dependencies, therefore it does not require arg_prevalidators
         return_postvalidator=...,  # set this from a storage config
         validate=True
     )(
         **task_kwargs,
     )
-    return serliazed_result_uri
+    return serialized_result_uri
 
 
 @task.kubernetes(
@@ -66,7 +66,7 @@ def process_relocations(
     task_kwargs = params["process_relocations"]
     
     # something about return_postvalidator closures
-    serliazed_result_uri = distributed_task.replace(
+    serialized_result_uri = distributed_task.replace(
         arg_prevalidators={
             "observations": gpd_from_parquet_uri,
         },
@@ -76,7 +76,7 @@ def process_relocations(
         observations=observations,
         **task_kwargs,
     )
-    return serliazed_result_uri
+    return serialized_result_uri
 
 
 
