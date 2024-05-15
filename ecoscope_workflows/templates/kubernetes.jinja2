@@ -18,6 +18,7 @@ def import_item(): ...  # TODO: implement in workflows
     in_cluster=True,
     namespace=namespace,
     name="{{ t.known_task.operator.name }}",
+    container_resources={{ t.known_task.operator.container_resources }}
     get_logs=True,
     log_events_on_failure=True,
     do_xcom_push=True,

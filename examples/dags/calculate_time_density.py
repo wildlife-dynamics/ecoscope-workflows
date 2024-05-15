@@ -18,6 +18,7 @@ def import_item(): ...  # TODO: implement in workflows
     in_cluster=True,
     namespace=namespace,
     name="pod",
+    container_resources={'request_memory': '128Mi', 'request_cpu': '500m', 'limit_memory': '500Mi', 'limit_cpu': 1}
     get_logs=True,
     log_events_on_failure=True,
     do_xcom_push=True,

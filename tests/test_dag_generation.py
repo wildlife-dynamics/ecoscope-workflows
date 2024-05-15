@@ -1,12 +1,14 @@
 from ecoscope_workflows.configuration import DagBuilder, TaskInstance
 
+time_density_tasks = [
+    TaskInstance(
+        known_task_name="get_earthranger_subjectgroup_observations",
+    )
+]
+
+
 def test_dag_builder_generate_dag():
-    tasks = [
-        TaskInstance(
-            known_task_name="get_earthranger_subjectgroup_observations",
-        )
-    ]
-    db = DagBuilder(name="calculate_time_density", tasks=tasks)
+    db = DagBuilder(name="calculate_time_density", tasks=time_density_tasks)
     dag_str = db._generate_dag()
     
     # TODO: remove after this looks right
