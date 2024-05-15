@@ -60,8 +60,19 @@ def process_relocations(params: dict | None = None):
 
 
 
-    # TODO: task dependencies
 
 @dag(schedule="@daily", start_date=datetime(2021, 12, 1), catchup=False)
 def calculate_time_density():
-    ...
+    # FIXME: first pass assumes tasks are already in topological order
+    
+    get_earthranger_subjectgroup_observations_return = get_earthranger_subjectgroup_observations(
+        # TODO: if t.arg_dependencies, pass them here with
+        # k=v_return
+    )
+    
+    process_relocations_return = process_relocations(
+        # TODO: if t.arg_dependencies, pass them here with
+        # k=v_return
+    )
+    
+

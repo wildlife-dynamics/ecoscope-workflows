@@ -37,8 +37,15 @@ def {{ t.known_task_name }}(params: dict | None = None):
 
 {% endfor %}
 
-    # TODO: task dependencies
 
 @dag(schedule="@daily", start_date=datetime(2021, 12, 1), catchup=False)
 def {{ name }}():
-    ...
+    # FIXME: first pass assumes tasks are already in topological order
+    {% for t in tasks %}
+    {{ t.known_task_name }}_return = {{ t.known_task_name }}(
+        # TODO: if t.arg_dependencies, pass them here with
+        # k=v_return
+    )
+    {% endfor %}
+
+
