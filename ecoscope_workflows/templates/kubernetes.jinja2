@@ -14,10 +14,10 @@ def import_item(): ...  # TODO: implement in workflows
 
 {% for t in tasks %}
 @task.kubernetes(
-    image="{{ t.known_task.image }}",
+    image="{{ t.known_task.operator.image }}",
     in_cluster=True,
     namespace=namespace,
-    {# name="{{ tasks[t].pod_name }}", #}
+    name="{{ t.known_task.operator.name }}",
     get_logs=True,
     log_events_on_failure=True,
     do_xcom_push=True,

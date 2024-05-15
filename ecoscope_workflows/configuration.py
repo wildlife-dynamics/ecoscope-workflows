@@ -1,9 +1,8 @@
 import pathlib
-from typing import Annotated, Callable
+from typing import Callable
 
 from jinja2 import Environment, FileSystemLoader
 from pydantic import BaseModel, Field, computed_field
-from pydantic.functional_validators import BeforeValidator
 
 from ecoscope_workflows.registry import KnownTask, known_tasks
 

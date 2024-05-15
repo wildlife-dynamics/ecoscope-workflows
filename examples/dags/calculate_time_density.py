@@ -17,7 +17,7 @@ def import_item(): ...  # TODO: implement in workflows
     image="ecoscope:0.1.7",
     in_cluster=True,
     namespace=namespace,
-    
+    name="pod",
     get_logs=True,
     log_events_on_failure=True,
     do_xcom_push=True,
