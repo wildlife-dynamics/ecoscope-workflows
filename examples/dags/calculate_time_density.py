@@ -117,7 +117,11 @@ def process_relocations(
     )
     return serialized_result_url
 
-@dag(schedule="@daily", start_date=datetime(2021, 12, 1), catchup=False)
+@dag(
+    schedule=None,
+    start_date=datetime(2021, 12, 1),
+    catchup=False,
+)
 def calculate_time_density():
     # FIXME: first pass assumes tasks are already in topological order
     

@@ -28,6 +28,10 @@ class TaskInstance(BaseModel):
 class DagBuilder(BaseModel):
     name: str  # TODO: does this need to be a valid python identifier?
     tasks: list[TaskInstance]
+    schedule: str | None = None  # TODO: Literal of valid strings
+    start_date: str = "datetime(2021, 12, 1)"
+    catchup: bool = False
+
     template: str = "kubernetes.jinja2"
     template_dir: str = TEMPLATES
 

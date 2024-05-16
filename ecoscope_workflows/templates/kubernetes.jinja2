@@ -87,7 +87,11 @@ def {{ t.known_task_name }}(
 
 {% endfor -%}
 
-@dag(schedule="@daily", start_date=datetime(2021, 12, 1), catchup=False)
+@dag(
+    schedule={%- if schedule %}"{{ schedule }}"{% else %}None{% endif %},
+    start_date={{ start_date }},
+    catchup={{ catchup }},
+)
 def {{ name }}():
     # FIXME: first pass assumes tasks are already in topological order
     {% for t in tasks %}
