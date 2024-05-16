@@ -14,10 +14,10 @@ class JsonSerializableDataFrameModel(pa.DataFrameModel):
         return cls.to_json_schema()
 
 
-DataframeSchema = TypeVar("DataframeSchema", bound=JsonSerializableDataFrameModel)
+DataFrameSchema = TypeVar("DataFrameSchema", bound=JsonSerializableDataFrameModel)
 
 DataFrame = Annotated[
-    pa.typing.DataFrame[DataframeSchema],
+    pa.typing.DataFrame[DataFrameSchema],
     # pa.typing.DataFrame is very hard to meaningfully serialize to JSON. Pandera itself
     # does not yet support this, see: https://github.com/unionai-oss/pandera/issues/421.
     # The "ideal" workaround I think involves overriding `__get_pydantic_json_schema__`,
@@ -30,5 +30,5 @@ DataFrame = Annotated[
     # to make it work. So in the interim, we will just always use the generic schema declared
     # below, which will not contain any schema-specific information. This *will not* affect
     # validation behavior, only JSON Schema generation.
-    WithJsonSchema({"type": "ecoscope.distributed.types.InputDataframe"})
+    WithJsonSchema({"type": "ecoscope.distributed.types.DataFrame"})
 ]

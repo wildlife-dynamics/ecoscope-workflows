@@ -14,7 +14,8 @@ class RelocationsGDFSchema(SubjectGroupObservationsGDFSchema):
     pass
 
 
-def _process_relocations(
+@distributed
+def process_relocations(
     observations: DataFrame[SubjectGroupObservationsGDFSchema],
     /,
     filter_point_coords: Annotated[list[list[float]], Field()],   
@@ -56,7 +57,8 @@ class TrajectoryGDFSchema(JsonSerializableDataFrameModel):
     geometry: pa.typing.Series[Any] = pa.Field()
 
 
-def _relocations_to_trajectory(
+@distributed
+def relocations_to_trajectory(
     relocations: DataFrame[RelocationsGDFSchema],
     /,
     min_length_meters: Annotated[float, Field()],
@@ -87,6 +89,3 @@ def _relocations_to_trajectory(
 
     return traj
 
-
-process_relocations = distributed(_process_relocations)
-relocations_to_trajectory = distributed(_relocations_to_trajectory)

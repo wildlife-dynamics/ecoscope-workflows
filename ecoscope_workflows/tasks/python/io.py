@@ -1,3 +1,4 @@
+import os
 from typing import Annotated, Any
 
 import pandas as pd
@@ -16,18 +17,19 @@ class SubjectGroupObservationsGDFSchema(JsonSerializableDataFrameModel):
     # TODO: can we be any more specific about the `extra__` field expectations?
 
 
-def _get_subjectgroup_observations(
+@distributed
+def get_subjectgroup_observations(
     # client
-    server = Annotated[str, Field()],
-    username = Annotated[str, Field()],
-    password = Annotated[str, Field()],
-    tcp_limit = Annotated[int, Field()],
-    sub_page_size = Annotated[int, Field()],
+    server: Annotated[str, Field(description="URL for EarthRanger API")],
+    username: Annotated[str, Field(description="EarthRanger username")],
+    password: Annotated[str, Field(description="EarthRanger password")],
+    tcp_limit: Annotated[int, Field(description="TCP limit for EarthRanger API requests")],
+    sub_page_size: Annotated[int, Field(description="Sub page size for EarthRanger API requests")],
     # get_subjectgroup_observations
-    subject_group_name = Annotated[str, Field()],
-    include_inactive = Annotated[bool, Field()],
-    since = Annotated[str, Field()],
-    until = Annotated[str, Field()],
+    subject_group_name: Annotated[str, Field(description="Name of EarthRanger Subject")],
+    include_inactive: Annotated[bool, Field(description="Whether or not to include inactive subjects")],
+    since: Annotated[str, Field(description="Start date")],
+    until: Annotated[str, Field(description="End date")],
 ) -> DataFrame[SubjectGroupObservationsGDFSchema]:
     from ecoscope.io import EarthRangerIO
 
@@ -45,6 +47,3 @@ def _get_subjectgroup_observations(
         since=since,
         until=until,
     )
-
-
-get_subjectgroup_observations = distributed(_get_subjectgroup_observations)
