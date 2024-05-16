@@ -4,6 +4,7 @@ from typing import Protocol
 
 from airflow.configuration import conf 
 from airflow.decorators import dag, task
+from airflow.models.taskinstance import TaskInstance
 
 from ecoscope_workflows.decorators import distributed
 
@@ -35,7 +36,11 @@ def {{ t.known_task_name }}(
     {%- if t.arg_dependencies %}
     {% for arg in t.arg_dependencies %}{{ arg }},{% endfor -%}
     {% endif %}
+    # Context variables are passed as kwargs in TaskFlow:
+    # https://airflow.apache.org/docs/apache-airflow/stable/tutorial/taskflow.html#accessing-context-variables-in-decorated-tasks
+    # NOTE: Airflow >= 2.8 doesn't require None as a default, but Cloud Composer is on 2.7.*
     params: dict | None = None,  # Airflow DAG Params passed with `--conf` on trigger
+    ti: TaskInstance | None = None,
 ):
     {%- if t.arg_dependencies %}
     # deserializers
@@ -61,7 +66,7 @@ def {{ t.known_task_name }}(
         # only single-argument callables for compatibility with Pydantic's AfterValidator,
         # which we use for the internal implementation of this serialization feature.
         # FIXME: compose `url` from configured `base_path` + task-instance-specific identifier
-        url = "somewhere.parquet"
+        url = f"{{ cache_root }}/{{ "{ti.task_id}"}}.parquet"
         # FIXME: support authentication here, set from configurable storage model
         # (this might be more easily managed with dask-geopandas?)
         dataframe.to_parquet(url)

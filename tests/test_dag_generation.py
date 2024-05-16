@@ -15,7 +15,11 @@ time_density_tasks = [
 
 
 def test_dag_builder_generate_dag():
-    db = DagBuilder(name="calculate_time_density", tasks=time_density_tasks)
+    db = DagBuilder(
+        name="calculate_time_density", 
+        tasks=time_density_tasks,
+        cache_root="gcs://my-bucket/ecoscope/cache/dag-runs"
+    )
     dag_str = db._generate_dag()
     
     # TODO: remove after this looks right

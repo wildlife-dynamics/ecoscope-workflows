@@ -28,10 +28,14 @@ class TaskInstance(BaseModel):
 class DagBuilder(BaseModel):
     name: str  # TODO: does this need to be a valid python identifier?
     tasks: list[TaskInstance]
+    cache_root: str  # e.g. "gcs://my-bucket/dag-runs/cache/" 
+
+    # @dag kwargs; TODO: nest in separate model 
     schedule: str | None = None  # TODO: Literal of valid strings
     start_date: str = "datetime(2021, 12, 1)"
     catchup: bool = False
 
+    # jinja kwargs; TODO: nest in separate model
     template: str = "kubernetes.jinja2"
     template_dir: str = TEMPLATES
 

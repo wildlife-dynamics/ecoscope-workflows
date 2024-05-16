@@ -4,6 +4,7 @@ from typing import Protocol
 
 from airflow.configuration import conf 
 from airflow.decorators import dag, task
+from airflow.models.taskinstance import TaskInstance
 
 from ecoscope_workflows.decorators import distributed
 
@@ -32,7 +33,11 @@ class SupportsToParquet(Protocol):
     do_xcom_push=True,
 )
 def get_earthranger_subjectgroup_observations(
+    # Context variables are passed as kwargs in TaskFlow:
+    # https://airflow.apache.org/docs/apache-airflow/stable/tutorial/taskflow.html#accessing-context-variables-in-decorated-tasks
+    # NOTE: Airflow >= 2.8 doesn't require None as a default, but Cloud Composer is on 2.7.*
     params: dict | None = None,  # Airflow DAG Params passed with `--conf` on trigger
+    ti: TaskInstance | None = None,
 ):
     # the task itself, wrapping it as `distributed`, and fetching its kwargs
     plain_task = import_item("ecoscope_workflows.tasks.python.io.get_subjectgroup_observations")
@@ -50,7 +55,7 @@ def get_earthranger_subjectgroup_observations(
         # only single-argument callables for compatibility with Pydantic's AfterValidator,
         # which we use for the internal implementation of this serialization feature.
         # FIXME: compose `url` from configured `base_path` + task-instance-specific identifier
-        url = "somewhere.parquet"
+        url = f"gcs://my-bucket/ecoscope/cache/dag-runs/{ti.task_id}.parquet"
         # FIXME: support authentication here, set from configurable storage model
         # (this might be more easily managed with dask-geopandas?)
         dataframe.to_parquet(url)
@@ -78,7 +83,11 @@ def get_earthranger_subjectgroup_observations(
 )
 def process_relocations(
     observations,
+    # Context variables are passed as kwargs in TaskFlow:
+    # https://airflow.apache.org/docs/apache-airflow/stable/tutorial/taskflow.html#accessing-context-variables-in-decorated-tasks
+    # NOTE: Airflow >= 2.8 doesn't require None as a default, but Cloud Composer is on 2.7.*
     params: dict | None = None,  # Airflow DAG Params passed with `--conf` on trigger
+    ti: TaskInstance | None = None,
 ):
     # deserializers
     from ecoscope_workflows.serde import gpd_from_parquet_uri
@@ -99,7 +108,7 @@ def process_relocations(
         # only single-argument callables for compatibility with Pydantic's AfterValidator,
         # which we use for the internal implementation of this serialization feature.
         # FIXME: compose `url` from configured `base_path` + task-instance-specific identifier
-        url = "somewhere.parquet"
+        url = f"gcs://my-bucket/ecoscope/cache/dag-runs/{ti.task_id}.parquet"
         # FIXME: support authentication here, set from configurable storage model
         # (this might be more easily managed with dask-geopandas?)
         dataframe.to_parquet(url)
