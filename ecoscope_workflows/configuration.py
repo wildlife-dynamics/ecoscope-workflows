@@ -47,10 +47,8 @@ class DagBuilder(BaseModel):
     def dag_config(self) -> dict:
         return self.model_dump(exclude={"template", "template_dir"})
     
-    @computed_field
-    @property
     def dag_params_schema(self) -> dict[str, dict]:
-        return {t.known_task_name: t.known_task.parameters_jsonschema for t in self.tasks}
+        return {t.known_task_name: t.known_task.parameters_jsonschema() for t in self.tasks}
 
     def _generate_dag(self) -> str:
         env = Environment(loader=FileSystemLoader(self.template_dir))

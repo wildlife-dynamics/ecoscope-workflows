@@ -7,7 +7,7 @@ def test_known_task_parameters_jsonschema():
         importable_reference=importable_reference,
         operator=KubernetesPodOperator(image="", name="", container_resources={})
     )
-    assert kt.parameters_jsonschema == {
+    assert kt.parameters_jsonschema() == {
         'additionalProperties': False,
         'properties': {
             'server': {'title': 'Server',

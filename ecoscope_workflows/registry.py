@@ -37,8 +37,6 @@ class KnownTask(BaseModel):
     def function(self) -> str:
         return self._importable_reference_parts[1]
 
-    @computed_field
-    @property
     def parameters_jsonschema(self) -> dict:
         # imports the distributed function. we will need to be clear in docs about what imports are
         # allowed at top level (ecoscope_workflows, pydantic, pandera, pandas) and which imports
