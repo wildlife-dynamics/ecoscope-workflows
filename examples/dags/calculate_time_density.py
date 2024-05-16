@@ -6,7 +6,7 @@ from airflow.configuration import conf
 from airflow.decorators import dag, task
 from airflow.models.taskinstance import TaskInstance
 
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import distributed as DistributedTask
 
 namespace = conf.get("kubernetes", "NAMESPACE")  # does this work?
 
@@ -39,9 +39,11 @@ def get_earthranger_subjectgroup_observations(
     params: dict | None = None,  # Airflow DAG Params passed with `--conf` on trigger
     ti: TaskInstance | None = None,
 ):
-    # the task itself, wrapping it as `distributed`, and fetching its kwargs
-    plain_task = import_item("ecoscope_workflows.tasks.python.io.get_subjectgroup_observations")
-    distributed_task = distributed(plain_task)
+    # the task itself
+    from ecoscope_workflows.tasks.python.io import get_subjectgroup_observations
+    assert isinstance(get_subjectgroup_observations, DistributedTask)
+
+    # user-passed kwargs for the task (via airflow dag params)
     task_kwargs = params["get_earthranger_subjectgroup_observations"]
     
     # TODO: support various serialization types based on the return type of `plain_task`
@@ -61,7 +63,7 @@ def get_earthranger_subjectgroup_observations(
         dataframe.to_parquet(url)
         return url
 
-    serialized_result_url = distributed_task.replace(
+    serialized_result_url = get_subjectgroup_observations.replace(
         # this task has no arg_dependencies, therefore it does not require arg_prevalidators
         return_postvalidator=return_postvalidator,  
         validate=True
@@ -92,9 +94,11 @@ def process_relocations(
     # deserializers
     from ecoscope_workflows.serde import gpd_from_parquet_uri
     
-    # the task itself, wrapping it as `distributed`, and fetching its kwargs
-    plain_task = import_item("ecoscope_workflows.tasks.python.preprocessing.process_relocations")
-    distributed_task = distributed(plain_task)
+    # the task itself
+    from ecoscope_workflows.tasks.python.preprocessing import process_relocations
+    assert isinstance(process_relocations, DistributedTask)
+
+    # user-passed kwargs for the task (via airflow dag params)
     task_kwargs = params["process_relocations"]
     
     # TODO: support various serialization types based on the return type of `plain_task`
@@ -114,7 +118,7 @@ def process_relocations(
         dataframe.to_parquet(url)
         return url
 
-    serialized_result_url = distributed_task.replace(
+    serialized_result_url = process_relocations.replace(
         arg_prevalidators={
             "observations": gpd_from_parquet_uri,
         },

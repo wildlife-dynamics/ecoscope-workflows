@@ -1,7 +1,7 @@
 """Task and de/serialization function registry.
 Can be mutated with entry points.
 """
-from pydantic import BaseModel
+from pydantic import BaseModel, computed_field
 
 
 class KubernetesPodOperator(BaseModel):
@@ -17,6 +17,19 @@ class KnownTask(BaseModel):
     importable_reference: str
     # tags: list[str]
     operator: KubernetesPodOperator
+
+    @property
+    def _importable_reference_parts(self):
+        # TODO: assert rsplit len = 2 on __init__
+        return self.importable_reference.rsplit(".", 1)
+
+    @computed_field
+    def module(self) -> str:
+        return self._importable_reference_parts[0]
+    
+    @computed_field
+    def function(self) -> str:
+        return self._importable_reference_parts[1]
 
 
 known_tasks = {

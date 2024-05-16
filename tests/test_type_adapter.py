@@ -39,7 +39,6 @@ def test_jsonschema_from_signature_basic():
     assert from_func == from_model
 
 
-@pytest.mark.xfail
 def test_jsonschema_from_signature_basic_distributed():
     class FuncSignature(BaseModel):
         foo: int
@@ -48,7 +47,7 @@ def test_jsonschema_from_signature_basic_distributed():
     @distributed
     def func(foo: int, bar: str): ...
 
-    from_func = TypeAdapter(func).json_schema(schema_generator=MatchingSchema)
+    from_func = TypeAdapter(func.func).json_schema(schema_generator=MatchingSchema)
     from_model = FuncSignature.model_json_schema(schema_generator=MatchingSchema)
     assert from_func == from_model
 

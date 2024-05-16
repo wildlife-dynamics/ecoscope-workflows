@@ -6,7 +6,7 @@ from airflow.configuration import conf
 from airflow.decorators import dag, task
 from airflow.models.taskinstance import TaskInstance
 
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import distributed as DistributedTask
 
 namespace = conf.get("kubernetes", "NAMESPACE")  # does this work?
 
@@ -50,9 +50,11 @@ def {{ t.known_task_name }}(
     {% else %}
     {% endif -%}
 
-    # the task itself, wrapping it as `distributed`, and fetching its kwargs
-    plain_task = import_item("{{ t.known_task.importable_reference }}")
-    distributed_task = distributed(plain_task)
+    # the task itself
+    from {{ t.known_task.module }} import {{ t.known_task.function }}
+    assert isinstance({{ t.known_task.function }}, DistributedTask)
+
+    # user-passed kwargs for the task (via airflow dag params)
     task_kwargs = params["{{ t.known_task_name }}"]
     
     # TODO: support various serialization types based on the return type of `plain_task`
@@ -72,7 +74,7 @@ def {{ t.known_task_name }}(
         dataframe.to_parquet(url)
         return url
 
-    serialized_result_url = distributed_task.replace(
+    serialized_result_url = {{ t.known_task.function }}.replace(
         {%- if t.arg_dependencies %}
         arg_prevalidators={
             {% for arg in t.arg_dependencies %}"{{ arg }}": {{ t.arg_prevalidators[arg] }},{% endfor %}
