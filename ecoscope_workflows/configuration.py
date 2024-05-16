@@ -36,7 +36,7 @@ class DagBuilder(BaseModel):
     catchup: bool = False
 
     # jinja kwargs; TODO: nest in separate model
-    template: str = "kubernetes.jinja2"
+    template: str = "airflow-kubernetes.jinja2"
     template_dir: str = TEMPLATES
 
     # TODO: on __init__ (or in cached_property), sort tasks
