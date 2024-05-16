@@ -1,3 +1,4 @@
+import json
 import pathlib
 
 import pytest
@@ -43,8 +44,24 @@ def test_dag_builder_generate_dag(dag_builder: DagBuilder):
     dag_str = dag_builder._generate_dag()
     
     # TODO: remove after this looks right
-    with open("examples/dags/calculate_time_density.py", "w") as f:
-        f.write(dag_str)
+    # with open("examples/dags/calculate_time_density.py", "w") as f:
+    #     f.write(dag_str)
+    with open(EXAMPLES_DIR / "dags" / "calculate_time_density.py") as f:
+        assert dag_str == f.read()
+
+
+def test_dag_builder_dag_params_schema(dag_builder: DagBuilder):
+    params = dag_builder.dag_params_schema()
+
+    # TODO: remove after this looks right
+    # with open("examples/dags/calculate_time_density.json", "w") as f:
+    #     json.dump(params, f, indent=4)
+    assert "get_earthranger_subjectgroup_observations" in params
+    assert "process_relocations" in params
+
+    with open(EXAMPLES_DIR / "dags" / "calculate_time_density.json") as f:
+        assert params == json.load(f)    
+    # TODO: assert valid json schema
 
 
 # def test_dag_builder(dag_builder: DagBuilder):
