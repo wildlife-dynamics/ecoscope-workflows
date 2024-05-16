@@ -42,15 +42,17 @@ class DagBuilder(BaseModel):
     # TODO: on __init__ (or in cached_property), sort tasks
     # topologically so we know what order to invoke them in dag
 
+    @property
+    def dag_config(self):
+        return self.model_dump(exclude={"template", "template_dir"})
+    
     def _get_params_schema(self):
         ...
 
     def _generate_dag(self) -> str:
         env = Environment(loader=FileSystemLoader(self.template_dir))
         template = env.get_template(self.template)
-
-        config = self.model_dump(exclude={"template", "template_dir"})
-        return template.render(config)
+        return template.render(self.dag_config)
 
     def generate(self):
         params = self._get_params_schema()

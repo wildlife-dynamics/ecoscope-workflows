@@ -1,33 +1,53 @@
+import pathlib
+
+import pytest
+import yaml
+
 from ecoscope_workflows.configuration import DagBuilder, TaskInstance
 
-time_density_tasks = [
-    TaskInstance(
-        known_task_name="get_earthranger_subjectgroup_observations",
-    ),
-    TaskInstance(
-        known_task_name="process_relocations",
-        arg_dependencies={
-            "observations": "get_earthranger_subjectgroup_observations_return",
-        },
-        arg_prevalidators={"observations": "gpd_from_parquet_uri"}
-    )
-]
+EXAMPLES_DIR = pathlib.Path(__file__).parent.parent / "examples"
 
 
-def test_dag_builder_generate_dag():
-    db = DagBuilder(
+@pytest.fixture
+def time_density_tasks():
+    return [
+        TaskInstance(
+            known_task_name="get_earthranger_subjectgroup_observations",
+        ),
+        TaskInstance(
+            known_task_name="process_relocations",
+            arg_dependencies={
+                "observations": "get_earthranger_subjectgroup_observations_return",
+            },
+            arg_prevalidators={"observations": "gpd_from_parquet_uri"}
+        )
+    ]
+
+
+@pytest.fixture
+def dag_builder(time_density_tasks):
+    return DagBuilder(
         name="calculate_time_density", 
         tasks=time_density_tasks,
         cache_root="gcs://my-bucket/ecoscope/cache/dag-runs"
     )
-    dag_str = db._generate_dag()
+
+
+def test_yaml_config(dag_builder: DagBuilder):
+    with open(EXAMPLES_DIR / "dag-configs" / "calculate-time-density.yaml") as f:
+        from_yaml = DagBuilder(**yaml.safe_load(f))
+    assert from_yaml.dag_config == dag_builder.dag_config
+
+
+def test_dag_builder_generate_dag(dag_builder: DagBuilder):
+    dag_str = dag_builder._generate_dag()
     
     # TODO: remove after this looks right
     with open("examples/dags/calculate_time_density.py", "w") as f:
         f.write(dag_str)
 
 
-def test_dag_builder():
+def test_dag_builder(dag_builder: DagBuilder):
     # if ecoscope_server either runs (or has access to over HTTP)
     # a service that has ecoscope_workflows installed, along with
     # (for a given deployment), all user-defined tasks registered
@@ -41,23 +61,7 @@ def test_dag_builder():
     # and then a POST call can be made to generate and register the dag
     # with the airflow instance. even our "default" dags can be built this
     # way.
-    config = {
-        "dag": {...},  # @dag-level kwargs
-        "tasks": [
-            dict(
-                name="importable.path.to.function",
-                dependencies={
-                    "arg_name_on_this_task": "another.task.in_this_dag",
-                }
-                # we assume anything *not* listed as a dependency will
-                # be passed as a DAG Param at invocation time, and therefore
-                # must be included in the return of DagBuilder.get_params().
-            ),
-            dict(
-                name="another.task.in_this_dag",
-            )
-        ]
-    }
+
     # TODO: on __init__, validate the following:
     #   - the dag is indeed acyclic (with graphlib.TopologicalSorter probably)
     #   - all top-level tasks are registered in `known_tasks` (type signatures
@@ -73,10 +77,9 @@ def test_dag_builder():
     #          in the dag
     #       3. the type of the arg on the task matches the return type of
     #           the arg on the task specified as a dependency
-    db = DagBuilder()
     # `dag` here is string, needs to be dumped to airflow dags folder
     # somewhere (locally, gcs, etc.) to be discoverable + runnable
     # see note above in dependencies about re: what to include in `params`
     #   (this would be a call to TypeAdapter internally)
     # this is a jsonschema dict, also needs to be dumped somewhere useful
-    dag, params = db.generate()
+    dag, params = dag_builder.generate()
