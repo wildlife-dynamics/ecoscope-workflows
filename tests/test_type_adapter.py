@@ -1,69 +1,43 @@
-from inspect import signature
-from typing import Annotated, get_args
+from typing import Annotated
 
 import numpy as np
 import pandera as pa
-import pytest
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
-from pydantic.fields import FieldInfo
-from pydantic.json_schema import GenerateJsonSchema
 
 from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
 from ecoscope_workflows.types import DataFrame, JsonSerializableDataFrameModel
-
-
-class MatchingSchema(GenerateJsonSchema):
-    def generate(self, schema, mode='validation'):
-        json_schema = super().generate(schema, mode=mode)
-        if "title" in json_schema:
-            # TypeAdapter(func).json_schema() has no "title"
-            del json_schema["title"]
-        # By default, this is False for TypeAdapter(func).json_schema(),
-        # and omitted for BaseModel.model_json_schema(). Another way to
-        # get this to match is to use ConfigDict(extra=False) as config
-        # for the BaseModel, since we're subclassing GenerateJsonSchema
-        # anyway, this works too...
-        json_schema["additionalProperties"] = False
-        return json_schema
 
 
 def test_jsonschema_from_signature_basic():
     class FuncSignature(BaseModel):
+        model_config = ConfigDict(extra="forbid")
+
         foo: int
         bar: str
 
     def func(foo: int, bar: str): ...
 
-    from_func = TypeAdapter(func).json_schema(schema_generator=MatchingSchema)
-    from_model = FuncSignature.model_json_schema(schema_generator=MatchingSchema)
+    from_func = TypeAdapter(func).json_schema()
+    from_model = FuncSignature.model_json_schema()
+    del from_model["title"]  # TypeAdapter(func).json_schema() has no "title"
     assert from_func == from_model
 
 
 def test_jsonschema_from_signature_basic_distributed():
     class FuncSignature(BaseModel):
+        model_config = ConfigDict(extra="forbid")
+
         foo: int
         bar: str
 
     @distributed
     def func(foo: int, bar: str): ...
 
-    from_func = TypeAdapter(func.func).json_schema(schema_generator=MatchingSchema)
-    from_model = FuncSignature.model_json_schema(schema_generator=MatchingSchema)
+    from_func = TypeAdapter(func.func).json_schema()
+    from_model = FuncSignature.model_json_schema()
+    del from_model["title"]  # TypeAdapter(func).json_schema() has no "title"
     assert from_func == from_model
-
-
-# Workaround for https://github.com/pydantic/pydantic/issues/9404
-class SurfacesDescriptionSchema(MatchingSchema):
-    def generate(self, schema, mode='validation'):
-        json_schema = super().generate(schema, mode=mode)
-        if "function" in schema and "properties" in json_schema:
-            for p in json_schema["properties"]:
-                annotation_args = get_args(signature(schema["function"]).parameters[p].annotation)
-                if any([isinstance(arg, FieldInfo) for arg in annotation_args]):
-                    Field: FieldInfo = [arg for arg in annotation_args if isinstance(arg, FieldInfo)][0]
-                    if Field.description:
-                        json_schema["properties"][p]["description"] = Field.description
-        return json_schema
 
 
 def test_DataFrameModel_generate_schema():
@@ -86,7 +60,7 @@ def test_InputDataframe_generate_schema():
 
 
 def test_jsonschema_from_signature_nontrivial():
-    config_dict = ConfigDict(arbitrary_types_allowed=True)
+    config_dict = ConfigDict(arbitrary_types_allowed=True, extra="forbid")
 
     class Schema(JsonSerializableDataFrameModel):
         col1: pa.typing.Series[int] = pa.Field(unique=True)
@@ -126,5 +100,6 @@ def test_jsonschema_from_signature_nontrivial():
         config=config_dict,
     ).json_schema(**schema_kws)
     from_model = TimeDensityConfig.model_json_schema(**schema_kws)
+    del from_model["title"]  # TypeAdapter(func).json_schema() has no "title"
     # `nodata_value` defaults to `nan`; numpy evals `nan == nan` as true
     np.testing.assert_equal(from_func, from_model)
