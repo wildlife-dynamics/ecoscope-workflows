@@ -18,6 +18,7 @@ class TaskInstance(BaseModel):
     return_postvalidator: Callable | None = None
 
     @computed_field
+    @property
     def known_task(self) -> KnownTask:
         return known_tasks[self.known_task_name]
 
@@ -43,11 +44,13 @@ class DagBuilder(BaseModel):
     # topologically so we know what order to invoke them in dag
 
     @property
-    def dag_config(self):
+    def dag_config(self) -> dict:
         return self.model_dump(exclude={"template", "template_dir"})
     
-    def _get_params_schema(self):
-        ...
+    @computed_field
+    @property
+    def dag_params_schema(self) -> dict[str, dict]:
+        return {t.known_task_name: t.known_task.parameters_jsonschema for t in self.tasks}
 
     def _generate_dag(self) -> str:
         env = Environment(loader=FileSystemLoader(self.template_dir))

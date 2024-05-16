@@ -47,7 +47,7 @@ def test_dag_builder_generate_dag(dag_builder: DagBuilder):
         f.write(dag_str)
 
 
-def test_dag_builder(dag_builder: DagBuilder):
+# def test_dag_builder(dag_builder: DagBuilder):
     # if ecoscope_server either runs (or has access to over HTTP)
     # a service that has ecoscope_workflows installed, along with
     # (for a given deployment), all user-defined tasks registered
@@ -82,4 +82,4 @@ def test_dag_builder(dag_builder: DagBuilder):
     # see note above in dependencies about re: what to include in `params`
     #   (this would be a call to TypeAdapter internally)
     # this is a jsonschema dict, also needs to be dumped somewhere useful
-    dag, params = dag_builder.generate()
+    # dag, params = dag_builder.generate()

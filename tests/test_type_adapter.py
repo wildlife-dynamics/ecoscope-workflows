@@ -49,14 +49,14 @@ def test_DataFrameModel_generate_schema():
     assert schema == Schema.to_json_schema()
 
 
-def test_InputDataframe_generate_schema():
+def test_DataFrame_generate_schema():
 
     class Schema(JsonSerializableDataFrameModel):
         col1: pa.typing.Series[int] = pa.Field(unique=True)
 
     Foo = DataFrame[Schema]
     schema = TypeAdapter(Foo).json_schema()
-    assert schema == {'type': 'ecoscope.distributed.types.InputDataframe'}
+    assert schema == {'type': 'ecoscope.distributed.types.DataFrame'}
 
 
 def test_jsonschema_from_signature_nontrivial():
