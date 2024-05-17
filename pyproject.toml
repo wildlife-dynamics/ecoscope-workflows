@@ -32,8 +32,8 @@ test = [
     "pytest",
 ]
 
-# [project.scripts]
-# ...
+[project.scripts]
+ecoscope-workflows = "ecoscope_workflows.__main__:main"
 
 [project.urls]
 Homepage = "https://github.com/wildlife-dynamics/ecoscope-workflows"
