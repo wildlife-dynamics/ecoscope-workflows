@@ -20,7 +20,9 @@ class TaskInstance(BaseModel):
     @computed_field
     @property
     def known_task(self) -> KnownTask:
-        return known_tasks[self.known_task_name]
+        kt = known_tasks[self.known_task_name]
+        assert self.known_task_name == kt.function
+        return kt
 
     def validate_argprevalidators(self):
         ...
@@ -49,6 +51,12 @@ class DagBuilder(BaseModel):
     
     def dag_params_schema(self) -> dict[str, dict]:
         return {t.known_task_name: t.known_task.parameters_jsonschema() for t in self.tasks}
+    
+    def dag_params_yaml(self) -> str:
+        yaml_str = ""
+        for t in self.tasks:
+            yaml_str += t.known_task.parameters_annotation_yaml_str()
+        return yaml_str
 
     def _generate_dag(self) -> str:
         env = Environment(loader=FileSystemLoader(self.template_dir))

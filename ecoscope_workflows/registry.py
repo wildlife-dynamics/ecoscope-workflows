@@ -2,7 +2,9 @@
 Can be mutated with entry points.
 """
 import importlib
+from typing import Callable, get_args
 
+import ruamel.yaml
 from pydantic import BaseModel, TypeAdapter, computed_field
 
 from ecoscope_workflows.decorators import distributed
@@ -38,7 +40,7 @@ class KnownTask(BaseModel):
     def function(self) -> str:
         return self._importable_reference_parts[1]
 
-    def parameters_jsonschema(self) -> dict:
+    def _import_func(self) -> Callable:
         # imports the distributed function. we will need to be clear in docs about what imports are
         # allowed at top level (ecoscope_workflows, pydantic, pandera, pandas) and which imports
         # must be deferred to function body (geopandas, ecoscope itself, etc.).
@@ -46,8 +48,26 @@ class KnownTask(BaseModel):
         mod = importlib.import_module(self.module)
         func = getattr(mod, self.function)
         assert isinstance(func, distributed), f"{self.importable_reference} is not `@distributed`"
-        return TypeAdapter(func.func).json_schema(schema_generator=SurfacesDescriptionSchema)
+        return func.func
 
+    def parameters_jsonschema(self) -> dict:
+        func = self._import_func()
+        return TypeAdapter(func).json_schema(schema_generator=SurfacesDescriptionSchema)
+
+    @property
+    def parameters_annotation(self) -> dict[str, list]:
+        func = self._import_func()
+        return {
+            arg: get_args(annotation) for arg, annotation in func.__annotations__.items()
+        }
+
+    def parameters_annotation_yaml_str(self) -> str:
+        yaml = ruamel.yaml.YAML(typ="rt")
+        yaml_str = f"{self.function}:\n"
+        for arg, param in self.parameters_annotation.items():
+            yaml_str += f"  {arg}:   # {param}\n"
+        _ = yaml.load(yaml_str)
+        return yaml_str
 
 known_tasks = {
     "get_subjectgroup_observations": KnownTask(

@@ -2,7 +2,7 @@ import json
 import pathlib
 
 import pytest
-import yaml
+import ruamel.yaml
 
 from ecoscope_workflows.configuration import DagBuilder, TaskInstance
 
@@ -35,8 +35,9 @@ def dag_builder(time_density_tasks):
 
 
 def test_yaml_config(dag_builder: DagBuilder):
+    yaml = ruamel.yaml.YAML(typ='safe')
     with open(EXAMPLES_DIR / "dag-configs" / "calculate-time-density.yaml") as f:
-        from_yaml = DagBuilder(**yaml.safe_load(f))
+        from_yaml = DagBuilder(**yaml.load(f))
     assert from_yaml.dag_config == dag_builder.dag_config
 
 
@@ -74,6 +75,14 @@ def test_dag_builder_dag_params_schema(dag_builder: DagBuilder):
     # with open(EXAMPLES_DIR / "dags" / "calculate_time_density.json") as f:
     #     assert params == json.load(f)    
     # TODO: assert valid json schema
+
+
+def test_dag_builder_dag_params_yaml_template(dag_builder: DagBuilder):
+    yaml_str = dag_builder.dag_params_yaml()
+    yaml = ruamel.yaml.YAML(typ='rt')
+    # TODO: remove after this looks right
+    with open(EXAMPLES_DIR / "dags" / "time_density.yaml", "w") as f:
+        yaml.dump(yaml.load(yaml_str), f)
 
 
 # def test_dag_builder(dag_builder: DagBuilder):
