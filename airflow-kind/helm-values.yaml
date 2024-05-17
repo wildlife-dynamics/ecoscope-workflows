@@ -1,0 +1,21 @@
+dags: 
+  mountPath: /opt/dags  # tells airflow where to find the dags
+
+volumeMounts:  # maps the "dag" volume onto the containers (with the same path name)
+- mountPath: /opt/dags
+  name: dags
+
+volumes:
+- name: dags
+  hostPath:  # this "host" is docker, since we're running K8s *in* docker
+    path: /opt/dags  # matches `extraMounts.containerPath` in kind-cluster.yaml
+    type: Directory
+
+config:
+  api:
+    auth_backends: airflow.api.auth.backend.basic_auth
+  webserver:
+    expose_config: 'True'
+  scheduler:
+    min_file_process_interval: 0
+    dag_dir_list_interval: 1
