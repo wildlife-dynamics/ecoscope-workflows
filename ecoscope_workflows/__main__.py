@@ -2,6 +2,7 @@ import argparse
 import yaml
 
 from ecoscope_workflows.compiler import DagCompiler
+from ecoscope_workflows.registry import known_tasks
 
 
 def compile_command(args):
@@ -18,8 +19,12 @@ def compile_command(args):
 
 
 def tasks_command(args):
-    # Implementation for tasks command
-    print("Tasks command executed with args:", args)
+    print()
+    for t, kt in known_tasks.items():
+        print(f"{t}:")
+        for field, val in kt.model_dump().items():
+            print(f"    {field}: {val}")
+        print("\n")
 
 
 def main():
