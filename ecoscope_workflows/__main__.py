@@ -1,4 +1,6 @@
 import argparse
+# import json
+
 import yaml
 
 from ecoscope_workflows.compiler import DagCompiler
@@ -25,6 +27,21 @@ def tasks_command(args):
         for field, val in kt.model_dump().items():
             print(f"    {field}: {val}")
         print("\n")
+
+
+def get_params_command(args):
+    compilation_spec = yaml.safe_load(args.spec)
+    dc = DagCompiler(**compilation_spec)
+    if args.format == "json":
+        params = dc.dag_params_schema()
+    elif args.format == "yaml":
+        params = dc.dag_params_yaml()
+    # if args.outpath:
+    #     with open(args.outpath, "w") as f:
+    #         if
+    #         f.write(params)
+    # else:
+    print(params)
 
 
 def main():
@@ -54,6 +71,27 @@ def main():
     tasks_parser = subparsers.add_parser('tasks', help='Manage tasks')
     tasks_parser.set_defaults(func=tasks_command)
 
+    # Subcommand 'tasks'
+    get_params_parser = subparsers.add_parser('get-params', help='Get params')
+    get_params_parser.set_defaults(func=get_params_command)
+    # FIXME: duplicative with `compile`
+    get_params_parser.add_argument(
+        '--spec',
+        dest='spec',
+        required=True,
+        type=argparse.FileType(mode='r'),
+    )
+    # get_params_parser.add_argument(
+    #     '--outpath',
+    #     dest='outpath',
+    # )
+    get_params_parser.add_argument(
+        '--format',
+        dest='format',
+        default='json',
+    )
+
+    # Parse args
     args = parser.parse_args()
 
     if hasattr(args, 'func'):
