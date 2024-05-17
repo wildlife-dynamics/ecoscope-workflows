@@ -2,6 +2,7 @@
 Can be mutated with entry points.
 """
 import importlib
+# from importlib.metadata import entry_points
 from typing import Callable, get_args
 
 import ruamel.yaml
@@ -9,6 +10,18 @@ from pydantic import BaseModel, TypeAdapter, computed_field
 
 from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
+
+# def process_entries():
+#     if entry_points is not None:
+#         eps = entry_points()
+#         if hasattr(eps, "select"):  # Python 3.10+ / importlib_metadata >= 3.9.0
+#             specs = eps.select(group="fsspec.specs")
+#         else:
+#             specs = eps.get("ecoscope-workflows.tasks", [])
+#             for spec in specs:
+#                 known_tasks[spec.name] = spec
+
+# process_entries()
 
 
 class KubernetesPodOperator(BaseModel):
