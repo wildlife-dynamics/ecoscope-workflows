@@ -22,3 +22,4 @@ if __name__ == "__main__":
     process_relocations_return = process_relocations.replace(validate=True)(
         observations=get_subjectgroup_observations_return,
         **params["process_relocations"])
+    

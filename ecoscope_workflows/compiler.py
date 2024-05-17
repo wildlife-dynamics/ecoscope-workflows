@@ -28,7 +28,7 @@ class TaskInstance(BaseModel):
         ...
 
 
-class DagBuilder(BaseModel):
+class DagCompiler(BaseModel):
     name: str  # TODO: does this need to be a valid python identifier?
     tasks: list[TaskInstance]
     cache_root: str  # e.g. "gcs://my-bucket/dag-runs/cache/" 

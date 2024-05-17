@@ -1,4 +1,4 @@
-from ecoscope_workflows.configuration import KnownTask, TaskInstance
+from ecoscope_workflows.compiler import KnownTask, TaskInstance
 from ecoscope_workflows.registry import known_tasks
 
 

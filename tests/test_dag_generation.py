@@ -4,7 +4,7 @@ import pathlib
 import pytest
 import ruamel.yaml
 
-from ecoscope_workflows.configuration import DagBuilder, TaskInstance
+from ecoscope_workflows.compiler import DagCompiler, TaskInstance
 
 EXAMPLES_DIR = pathlib.Path(__file__).parent.parent / "examples"
 
@@ -26,23 +26,23 @@ def time_density_tasks():
 
 
 @pytest.fixture
-def dag_builder(time_density_tasks):
-    return DagBuilder(
+def dag_compiler(time_density_tasks):
+    return DagCompiler(
         name="calculate_time_density", 
         tasks=time_density_tasks,
         cache_root="gcs://my-bucket/ecoscope/cache/dag-runs"
     )
 
 
-def test_yaml_config(dag_builder: DagBuilder):
+def test_yaml_config(dag_compiler: DagCompiler):
     yaml = ruamel.yaml.YAML(typ='safe')
     with open(EXAMPLES_DIR / "dag-configs" / "calculate-time-density.yaml") as f:
-        from_yaml = DagBuilder(**yaml.load(f))
-    assert from_yaml.dag_config == dag_builder.dag_config
+        from_yaml = DagCompiler(**yaml.load(f))
+    assert from_yaml.dag_config == dag_compiler.dag_config
 
 
-def test_dag_builder_generate_dag_k8s(dag_builder: DagBuilder):
-    dag_str = dag_builder._generate_dag()
+def test_dag_builder_generate_dag_k8s(dag_compiler: DagCompiler):
+    dag_str = dag_compiler._generate_dag()
     
     # TODO: remove after this looks right
     with open("examples/dags/time_density_k8s.py", "w") as f:
@@ -51,9 +51,9 @@ def test_dag_builder_generate_dag_k8s(dag_builder: DagBuilder):
     #     assert dag_str == f.read()
 
 
-def test_dag_builder_generate_dag_script_sequential(dag_builder: DagBuilder):
-    dag_builder.template = "script-sequential.jinja2"
-    dag_str = dag_builder._generate_dag()
+def test_dag_builder_generate_dag_script_sequential(dag_compiler: DagCompiler):
+    dag_compiler.template = "script-sequential.jinja2"
+    dag_str = dag_compiler._generate_dag()
 
     # TODO: remove after this looks right
     with open("examples/dags/time_density_script_sequential.py", "w") as f:
@@ -63,8 +63,8 @@ def test_dag_builder_generate_dag_script_sequential(dag_builder: DagBuilder):
 
 
 
-def test_dag_builder_dag_params_schema(dag_builder: DagBuilder):
-    params = dag_builder.dag_params_schema()
+def test_dag_builder_dag_params_schema(dag_compiler: DagCompiler):
+    params = dag_compiler.dag_params_schema()
 
     # TODO: remove after this looks right
     with open(EXAMPLES_DIR / "dags" / "time_density.json", "w") as f:
@@ -77,8 +77,8 @@ def test_dag_builder_dag_params_schema(dag_builder: DagBuilder):
     # TODO: assert valid json schema
 
 
-def test_dag_builder_dag_params_yaml_template(dag_builder: DagBuilder):
-    yaml_str = dag_builder.dag_params_yaml()
+def test_dag_builder_dag_params_yaml_template(dag_compiler: DagCompiler):
+    yaml_str = dag_compiler.dag_params_yaml()
     yaml = ruamel.yaml.YAML(typ='rt')
     # TODO: remove after this looks right
     with open(EXAMPLES_DIR / "dags" / "time_density.yaml", "w") as f:
