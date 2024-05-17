@@ -1,14 +1,28 @@
-{%- for t in tasks -%}
+import argparse
+import yaml
+{% for t in tasks -%}
 from {{ t.known_task.module }} import {{ t.known_task.function }}
+{% if loop.last %}
+{% endif -%}
 {% endfor -%}
 if __name__ == "__main__":
-    # argparse arguments from jsonschema
+    parser = argparse.ArgumentParser()
+    g = parser.add_argument_group('{{ name }}')
+    g.add_argument(
+        '--config-file',
+        dest='config_file',
+        required=True,
+        type=argparse.FileType(mode='r'),
+    )
+    args = parser.parse_args()
+    # TODO: omit fields which are listed in arg_dependencies at the TaskInstance level
+    params = yaml.safe_load(args.config_file)
     # FIXME: first pass assumes tasks are already in topological order
     {% for t in tasks %}
     {{ t.known_task.function }}_return = {{ t.known_task.function }}.replace(validate=True)(
     {%- if t.arg_dependencies %}
         {% for arg in t.arg_dependencies %}{{ arg }}={{ t.arg_dependencies[arg] }},{% endfor %}
-    )
-    {% else %})
+        **params["{{ t.known_task_name }}"])
+    {% else %}params["{{ t.known_task_name }}"])
     {% endif -%}
     {% endfor -%}
