@@ -1,5 +1,5 @@
 import argparse
-# import json
+import json
 
 import yaml
 
@@ -36,12 +36,14 @@ def get_params_command(args):
         params = dc.dag_params_schema()
     elif args.format == "yaml":
         params = dc.dag_params_yaml()
-    # if args.outpath:
-    #     with open(args.outpath, "w") as f:
-    #         if
-    #         f.write(params)
-    # else:
-    print(params)
+    if args.outpath:
+        with open(args.outpath, "w") as f:
+            if args.format == "json":
+                json.dump(params, f, indent=4)
+            elif args.format == "yaml":
+                f.write(params)
+    else:
+        print(params)
 
 
 def main():
@@ -81,10 +83,10 @@ def main():
         required=True,
         type=argparse.FileType(mode='r'),
     )
-    # get_params_parser.add_argument(
-    #     '--outpath',
-    #     dest='outpath',
-    # )
+    get_params_parser.add_argument(
+        '--outpath',
+        dest='outpath',
+    )
     get_params_parser.add_argument(
         '--format',
         dest='format',
