@@ -1,11 +1,12 @@
 """Task and de/serialization function registry.
 Can be mutated with entry points.
 """
+import importlib
+
 from pydantic import BaseModel, TypeAdapter, computed_field
 
 from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
-from ecoscope_workflows.importstring import import_item
 
 
 class KubernetesPodOperator(BaseModel):
@@ -42,7 +43,8 @@ class KnownTask(BaseModel):
         # allowed at top level (ecoscope_workflows, pydantic, pandera, pandas) and which imports
         # must be deferred to function body (geopandas, ecoscope itself, etc.).
         # maybe we can also enforce this programmatically.
-        func = import_item(self.importable_reference)
+        mod = importlib.import_module(self.module)
+        func = getattr(mod, self.function)
         assert isinstance(func, distributed), f"{self.importable_reference} is not `@distributed`"
         return TypeAdapter(func.func).json_schema(schema_generator=SurfacesDescriptionSchema)
 

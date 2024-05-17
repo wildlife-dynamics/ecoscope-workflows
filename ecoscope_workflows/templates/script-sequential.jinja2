@@ -1,3 +1,12 @@
 if __name__ == "__main__":
     ...
     # argparse arguments from jsonschema
+    # FIXME: first pass assumes tasks are already in topological order
+    {% for t in tasks %}
+    {{ t.known_task_name }}_return = {{ t.known_task_name }}(
+    {%- if t.arg_dependencies %}
+        {% for arg in t.arg_dependencies %}{{ arg }}={{ t.arg_dependencies[arg] }},{% endfor %}
+    )
+    {% else %})
+    {% endif -%}
+    {% endfor -%}
