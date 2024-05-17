@@ -16,7 +16,7 @@ class SupportsToParquet(Protocol):
 
 
 @task.kubernetes(
-    image="ecoscope:0.1.7",
+    image="ecoscope-workflows:latest",
     in_cluster=True,
     namespace=namespace,
     name="pod",
@@ -66,7 +66,7 @@ def get_subjectgroup_observations_task(
 
 
 @task.kubernetes(
-    image="ecoscope:0.1.7",
+    image="ecoscope-workflows:latest",
     in_cluster=True,
     namespace=namespace,
     name="pod",
@@ -134,5 +134,5 @@ def calculate_time_density():
     process_relocations_return = process_relocations_task(
         observations=get_subjectgroup_observations_return,
     )
-    
+
 calculate_time_density()

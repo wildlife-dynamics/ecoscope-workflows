@@ -73,7 +73,7 @@ known_tasks = {
     "get_subjectgroup_observations": KnownTask(
         importable_reference="ecoscope_workflows.tasks.python.io.get_subjectgroup_observations",
         operator=KubernetesPodOperator(
-            image="ecoscope:0.1.7",
+            image="ecoscope-workflows:latest",
             name="pod",  # TODO: defer assignment of this?
             container_resources={
                 "request_memory": "128Mi",
@@ -86,7 +86,7 @@ known_tasks = {
     "process_relocations": KnownTask(
         importable_reference="ecoscope_workflows.tasks.python.preprocessing.process_relocations",
         operator=KubernetesPodOperator(
-            image="ecoscope:0.1.7",
+            image="ecoscope-workflows:latest",
             name="pod",  # TODO: defer assignment of this?
             container_resources={
                 "request_memory": "128Mi",
