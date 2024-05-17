@@ -36,7 +36,7 @@ def dag_compiler(time_density_tasks):
 
 def test_yaml_config(dag_compiler: DagCompiler):
     yaml = ruamel.yaml.YAML(typ='safe')
-    with open(EXAMPLES_DIR / "dag-configs" / "calculate-time-density.yaml") as f:
+    with open(EXAMPLES_DIR / "compilation-specs" / "calculate-time-density.yaml") as f:
         from_yaml = DagCompiler(**yaml.load(f))
     assert from_yaml.dag_config == dag_compiler.dag_config
 
