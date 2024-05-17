@@ -3,24 +3,58 @@ import yaml
 
 from ecoscope_workflows.compiler import DagCompiler
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    g = parser.add_argument_group('Ecoscope Workflows')
-    g.add_argument(
-        '--compilation-spec-file',
-        dest='compilation_spec_file',
-        required=True,
-        type=argparse.FileType(mode='r'),
-    )
-    return parser.parse_args()
+
+def compile_command(args):
+    compilation_spec = yaml.safe_load(args.spec)
+    dc = DagCompiler(**compilation_spec)
+    if args.template:
+        dc.template = args.template
+    dag_str = dc._generate_dag()
+    if args.outpath:
+        with open(args.outpath, "w") as f:
+            f.write(dag_str)
+    else:
+        print(dag_str)
+
+
+def tasks_command(args):
+    # Implementation for tasks command
+    print("Tasks command executed with args:", args)
 
 
 def main():
-    args = parse_args()
-    compilation_spec = yaml.safe_load(args.compilation_spec_file)
-    dc = DagCompiler(**compilation_spec)
-    dag_str = dc._generate_dag()
-    print(dag_str)
+    parser = argparse.ArgumentParser(prog='ecoscope-workflows')
+    subparsers = parser.add_subparsers(title='subcommands', dest='command')
+    
+    # Subcommand 'compile'
+    compile_parser = subparsers.add_parser('compile', help='Compile workflows')
+    compile_parser.set_defaults(func=compile_command)
+    compile_parser.add_argument(
+        '--spec',
+        dest='spec',
+        required=True,
+        type=argparse.FileType(mode='r'),
+    )
+    compile_parser.add_argument(
+        '--template',
+        dest='template',
+        default='airflow-kubernetes.jinja2',
+    )
+    compile_parser.add_argument(
+        '--outpath',
+        dest='outpath',
+    )
+
+    # Subcommand 'tasks'
+    tasks_parser = subparsers.add_parser('tasks', help='Manage tasks')
+    tasks_parser.set_defaults(func=tasks_command)
+
+    args = parser.parse_args()
+
+    if hasattr(args, 'func'):
+        args.func(args)
+    else:
+        parser.print_help()
 
 if __name__ == "__main__":
     main()
