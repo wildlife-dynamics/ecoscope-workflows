@@ -19,3 +19,8 @@ config:
   scheduler:
     min_file_process_interval: 0
     dag_dir_list_interval: 1
+
+images:
+  airflow:
+    repository: apache/airflow
+    tag: 2.7.3-python3.11  # matches latest version on cloud composer

@@ -3,7 +3,7 @@ apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
 - role: control-plane
   extraMounts:
-  - hostPath: ../ecoscope-workflows/examples/dags/airflow/
+  - hostPath: ../examples/dags/airflow
     containerPath: /opt/dags
   # TODO: results mount
   # - hostPath: ../results

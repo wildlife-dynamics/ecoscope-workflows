@@ -24,6 +24,22 @@ You should now be able to navigate to http://localhost:8080 and find the airflow
 
 **The username and password are both "admin"!**
 
+## Getting a shell
+
+```
+kubectl get pods -n $NAMESPACE
+```
+
+```
+kubectl get pod $POD -n $NAMESPACE
+```
+
+```
+kubectl exec --stdin --tty $POD -n $NAMESPACE -- /bin/bash
+```
+
+## Teardown
+
 To bring down the service, run:
 
 ```console
