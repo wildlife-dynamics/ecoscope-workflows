@@ -37,18 +37,13 @@ def test_arg_prevalidators():
     def a_prevalidator(x):
         return x + 1
 
-    # FIXME: __annotations__ is a shared reference between `f` and `f_new`, even though
-    # f_new is a different object. this `.replace` call _should_ give us a totally different
-    # `.func` attribute, but it doesn't, because of that shared reference.
     f_new = f.replace(arg_prevalidators={"a": a_prevalidator})
-    # FIXME: this assert should pass, but it does not:
-    # assert f_new.func.__annotations__ != f.func.__annotations__
-    f_func_meta: list[BeforeValidator] = f_new.func.__annotations__["a"].__metadata__
+    # the prevalidator's behavior
     assert a_prevalidator(1) == 2
-    assert f_func_meta[0].func(1) == 2  # calling prevalidator directly, we see its behavior
-    assert f(1) == 1   # but without `validate=True` we still get normal behavior
+    # without `validate=True` we still get normal behavior from the function itself
+    assert f_new(1) == 1  
     # only when we set validate=True do we finally see the prevalidator is invoked
-    assert f.replace(validate=True)(1) == 2
+    assert f_new.replace(validate=True)(1) == 2
 
 
 def test_return_postvalidator():

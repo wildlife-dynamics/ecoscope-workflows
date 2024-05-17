@@ -10,6 +10,7 @@ from ecoscope_workflows.tasks.python.io import get_subjectgroup_observations
 
 
 @pytest.mark.io
+@pytest.mark.skipif("not os.environ.get('ER_SERVER')")
 def test_subjectgroup_observations(tmp_path):
     kws = dict(
         server=os.environ["ER_SERVER"],
