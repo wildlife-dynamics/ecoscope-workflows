@@ -1,5 +1,5 @@
 {
-    "get_earthranger_subjectgroup_observations": {
+    "get_subjectgroup_observations": {
         "additionalProperties": false,
         "properties": {
             "server": {
@@ -62,14 +62,13 @@
         "type": "object"
     },
     "process_relocations": {
-        "maxItems": 3,
-        "minItems": 3,
-        "prefixItems": [
-            {
+        "additionalProperties": false,
+        "properties": {
+            "observations": {
                 "title": "Observations",
                 "type": "ecoscope.distributed.types.DataFrame"
             },
-            {
+            "filter_point_coords": {
                 "items": {
                     "items": {
                         "type": "number"
@@ -79,14 +78,19 @@
                 "title": "Filter Point Coords",
                 "type": "array"
             },
-            {
+            "relocs_columns": {
                 "items": {
                     "type": "string"
                 },
                 "title": "Relocs Columns",
                 "type": "array"
             }
+        },
+        "required": [
+            "observations",
+            "filter_point_coords",
+            "relocs_columns"
         ],
-        "type": "array"
+        "type": "object"
     }
 }

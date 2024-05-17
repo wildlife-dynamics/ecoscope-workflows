@@ -17,7 +17,6 @@ class RelocationsGDFSchema(SubjectGroupObservationsGDFSchema):
 @distributed
 def process_relocations(
     observations: DataFrame[SubjectGroupObservationsGDFSchema],
-    /,
     filter_point_coords: Annotated[list[list[float]], Field()],   
     relocs_columns: Annotated[list[str], Field()],
 ) -> DataFrame[RelocationsGDFSchema]:

@@ -32,7 +32,7 @@ class SupportsToParquet(Protocol):
     log_events_on_failure=True,
     do_xcom_push=True,
 )
-def {{ t.known_task_name }}(
+def {{ t.known_task_name }}_task(
     {%- if t.arg_dependencies %}
     {% for arg in t.arg_dependencies %}{{ arg }},{% endfor -%}
     {% endif %}
@@ -102,7 +102,7 @@ def {{ t.known_task_name }}(
 def {{ name }}():
     # FIXME: first pass assumes tasks are already in topological order
     {% for t in tasks %}
-    {{ t.known_task_name }}_return = {{ t.known_task_name }}(
+    {{ t.known_task_name }}_return = {{ t.known_task_name }}_task(
     {%- if t.arg_dependencies %}
         {% for arg in t.arg_dependencies %}{{ arg }}={{ t.arg_dependencies[arg] }},{% endfor %}
     )

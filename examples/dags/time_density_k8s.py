@@ -32,7 +32,7 @@ class SupportsToParquet(Protocol):
     log_events_on_failure=True,
     do_xcom_push=True,
 )
-def get_earthranger_subjectgroup_observations(
+def get_subjectgroup_observations_task(
     # Context variables are passed as kwargs in TaskFlow:
     # https://airflow.apache.org/docs/apache-airflow/stable/tutorial/taskflow.html#accessing-context-variables-in-decorated-tasks
     # NOTE: Airflow >= 2.8 doesn't require None as a default, but Cloud Composer is on 2.7.*
@@ -44,7 +44,7 @@ def get_earthranger_subjectgroup_observations(
     assert isinstance(get_subjectgroup_observations, DistributedTask)
 
     # user-passed kwargs for the task (via airflow dag params)
-    task_kwargs = params["get_earthranger_subjectgroup_observations"]
+    task_kwargs = params["get_subjectgroup_observations"]
     
     # TODO: support various serialization types based on the return type of `plain_task`
     # for just right now we are going to assume it's always a geopandas dataframe
@@ -83,7 +83,7 @@ def get_earthranger_subjectgroup_observations(
     log_events_on_failure=True,
     do_xcom_push=True,
 )
-def process_relocations(
+def process_relocations_task(
     observations,
     # Context variables are passed as kwargs in TaskFlow:
     # https://airflow.apache.org/docs/apache-airflow/stable/tutorial/taskflow.html#accessing-context-variables-in-decorated-tasks
@@ -138,9 +138,9 @@ def process_relocations(
 def calculate_time_density():
     # FIXME: first pass assumes tasks are already in topological order
     
-    get_earthranger_subjectgroup_observations_return = get_earthranger_subjectgroup_observations()
+    get_subjectgroup_observations_return = get_subjectgroup_observations_task()
     
-    process_relocations_return = process_relocations(
-        observations=get_earthranger_subjectgroup_observations_return,
+    process_relocations_return = process_relocations_task(
+        observations=get_subjectgroup_observations_return,
     )
     

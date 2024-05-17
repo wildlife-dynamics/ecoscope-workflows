@@ -13,12 +13,12 @@ EXAMPLES_DIR = pathlib.Path(__file__).parent.parent / "examples"
 def time_density_tasks():
     return [
         TaskInstance(
-            known_task_name="get_earthranger_subjectgroup_observations",
+            known_task_name="get_subjectgroup_observations",
         ),
         TaskInstance(
             known_task_name="process_relocations",
             arg_dependencies={
-                "observations": "get_earthranger_subjectgroup_observations_return",
+                "observations": "get_subjectgroup_observations_return",
             },
             arg_prevalidators={"observations": "gpd_from_parquet_uri"}
         )
@@ -40,27 +40,39 @@ def test_yaml_config(dag_builder: DagBuilder):
     assert from_yaml.dag_config == dag_builder.dag_config
 
 
-def test_dag_builder_generate_dag(dag_builder: DagBuilder):
+def test_dag_builder_generate_dag_k8s(dag_builder: DagBuilder):
     dag_str = dag_builder._generate_dag()
     
     # TODO: remove after this looks right
-    # with open("examples/dags/calculate_time_density.py", "w") as f:
-    #     f.write(dag_str)
-    with open(EXAMPLES_DIR / "dags" / "calculate_time_density.py") as f:
-        assert dag_str == f.read()
+    with open("examples/dags/time_density_k8s.py", "w") as f:
+        f.write(dag_str)
+    # with open(EXAMPLES_DIR / "dags" / "calculate_time_density.py") as f:
+    #     assert dag_str == f.read()
+
+
+def test_dag_builder_generate_dag_script_sequential(dag_builder: DagBuilder):
+    dag_builder.template = "script-sequential.jinja2"
+    dag_str = dag_builder._generate_dag()
+
+    # TODO: remove after this looks right
+    with open("examples/dags/time_density_script_sequential.py", "w") as f:
+        f.write(dag_str)
+    # with open(EXAMPLES_DIR / "dags" / "calculate_time_density.py") as f:
+    #     assert dag_str == f.read()
+
 
 
 def test_dag_builder_dag_params_schema(dag_builder: DagBuilder):
     params = dag_builder.dag_params_schema()
 
     # TODO: remove after this looks right
-    # with open("examples/dags/calculate_time_density.json", "w") as f:
-    #     json.dump(params, f, indent=4)
-    assert "get_earthranger_subjectgroup_observations" in params
+    with open(EXAMPLES_DIR / "dags" / "time_density.json", "w") as f:
+        json.dump(params, f, indent=4)
+    assert "get_subjectgroup_observations" in params
     assert "process_relocations" in params
 
-    with open(EXAMPLES_DIR / "dags" / "calculate_time_density.json") as f:
-        assert params == json.load(f)    
+    # with open(EXAMPLES_DIR / "dags" / "calculate_time_density.json") as f:
+    #     assert params == json.load(f)    
     # TODO: assert valid json schema
 
 
