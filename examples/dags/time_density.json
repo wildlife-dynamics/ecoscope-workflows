@@ -92,5 +92,96 @@
             "relocs_columns"
         ],
         "type": "object"
+    },
+    "relocations_to_trajectory": {
+        "maxItems": 7,
+        "minItems": 7,
+        "prefixItems": [
+            {
+                "title": "Relocations",
+                "type": "ecoscope.distributed.types.DataFrame"
+            },
+            {
+                "title": "Min Length Meters",
+                "type": "number"
+            },
+            {
+                "title": "Max Length Meters",
+                "type": "number"
+            },
+            {
+                "title": "Max Time Secs",
+                "type": "number"
+            },
+            {
+                "title": "Min Time Secs",
+                "type": "number"
+            },
+            {
+                "title": "Max Speed Kmhr",
+                "type": "number"
+            },
+            {
+                "title": "Min Speed Kmhr",
+                "type": "number"
+            }
+        ],
+        "type": "array"
+    },
+    "calculate_time_density": {
+        "maxItems": 8,
+        "minItems": 1,
+        "prefixItems": [
+            {
+                "title": "Trajectory Gdf",
+                "type": "ecoscope.distributed.types.DataFrame"
+            },
+            {
+                "default": 250.0,
+                "title": "Pixel Size",
+                "type": "number"
+            },
+            {
+                "default": "ESRI:102022",
+                "title": "Crs",
+                "type": "string"
+            },
+            {
+                "default": NaN,
+                "title": "Nodata Value",
+                "type": "number"
+            },
+            {
+                "default": 1,
+                "title": "Band Count",
+                "type": "integer"
+            },
+            {
+                "default": 1.05,
+                "title": "Max Speed Factor",
+                "type": "number"
+            },
+            {
+                "default": 1.3,
+                "title": "Expansion Factor",
+                "type": "number"
+            },
+            {
+                "default": [
+                    50.0,
+                    60.0,
+                    70.0,
+                    80.0,
+                    90.0,
+                    95.0
+                ],
+                "items": {
+                    "type": "number"
+                },
+                "title": "Percentiles",
+                "type": "array"
+            }
+        ],
+        "type": "array"
     }
 }

@@ -6,10 +6,12 @@ import importlib
 from typing import Callable, get_args
 
 import ruamel.yaml
+import pandera as pa
 from pydantic import BaseModel, TypeAdapter, computed_field
 
 from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
+from ecoscope_workflows.serde import gpd_from_parquet_uri
 
 # def process_entries():
 #     if entry_points is not None:
@@ -135,4 +137,8 @@ known_tasks = {
             }
         ),
     ),
+}
+
+known_deserializers = {
+    pa.typing.DataFrame: gpd_from_parquet_uri.__name__,
 }

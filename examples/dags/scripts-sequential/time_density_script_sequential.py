@@ -2,6 +2,8 @@ import argparse
 import yaml
 from ecoscope_workflows.tasks.python.io import get_subjectgroup_observations
 from ecoscope_workflows.tasks.python.preprocessing import process_relocations
+from ecoscope_workflows.tasks.python.preprocessing import relocations_to_trajectory
+from ecoscope_workflows.tasks.python.analysis import calculate_time_density
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -22,4 +24,12 @@ if __name__ == "__main__":
     process_relocations_return = process_relocations.replace(validate=True)(
         observations=get_subjectgroup_observations_return,
         **params["process_relocations"])
+    
+    relocations_to_trajectory_return = relocations_to_trajectory.replace(validate=True)(
+        relocations=process_relocations_return,
+        **params["relocations_to_trajectory"])
+    
+    calculate_time_density_return = calculate_time_density.replace(validate=True)(
+        trajectory_gdf=relocations_to_trajectory_return,
+        **params["calculate_time_density"])
     

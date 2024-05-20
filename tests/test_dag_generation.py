@@ -21,7 +21,21 @@ def time_density_tasks():
                 "observations": "get_subjectgroup_observations_return",
             },
             arg_prevalidators={"observations": "gpd_from_parquet_uri"}
-        )
+        ),
+        TaskInstance(
+            known_task_name="relocations_to_trajectory",
+            arg_dependencies={
+                "relocations": "process_relocations_return",
+            },
+            arg_prevalidators={"relocations": "gpd_from_parquet_uri"}
+        ),
+        TaskInstance(
+            known_task_name="calculate_time_density",
+            arg_dependencies={
+                "trajectory_gdf": "relocations_to_trajectory_return",
+            },
+            arg_prevalidators={"trajectory_gdf": "gpd_from_parquet_uri"}
+        ),
     ]
 
 
@@ -37,7 +51,7 @@ def dag_compiler(time_density_tasks):
 def test_yaml_config(dag_compiler: DagCompiler):
     yaml = ruamel.yaml.YAML(typ='safe')
     with open(EXAMPLES_DIR / "compilation-specs" / "calculate-time-density.yaml") as f:
-        from_yaml = DagCompiler(**yaml.load(f))
+        from_yaml = DagCompiler.from_spec(spec=yaml.load(f))
     assert from_yaml.dag_config == dag_compiler.dag_config
 
 

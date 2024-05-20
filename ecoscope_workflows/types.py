@@ -1,4 +1,4 @@
-from typing import Annotated, TypeVar
+from typing import Annotated, TypeVar, get_origin
 
 import pandera as pa
 from pydantic_core import core_schema as cs
@@ -32,3 +32,10 @@ DataFrame = Annotated[
     # validation behavior, only JSON Schema generation.
     WithJsonSchema({"type": "ecoscope.distributed.types.DataFrame"})
 ]
+
+
+def is_subscripted_pandera_dataframe(obj):
+    if hasattr(obj, "__origin__") and hasattr(obj, "__args__"):
+        if get_origin(obj) == pa.typing.DataFrame:
+            return True
+    return False

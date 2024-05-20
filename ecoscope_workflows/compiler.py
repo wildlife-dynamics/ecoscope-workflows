@@ -1,12 +1,20 @@
+import copy
 import pathlib
 from typing import Callable
 
+import pandera as pa
 from jinja2 import Environment, FileSystemLoader
 from pydantic import BaseModel, Field, computed_field
 
-from ecoscope_workflows.registry import KnownTask, known_tasks
+from ecoscope_workflows.registry import KnownTask, known_deserializers, known_tasks
+from ecoscope_workflows.types import is_subscripted_pandera_dataframe
+
 
 TEMPLATES = pathlib.Path(__file__).parent / "templates"
+
+
+class TasksSpec(BaseModel):
+    tasks: dict[str, dict[str, str] | None]
 
 
 class TaskInstance(BaseModel):
@@ -29,7 +37,7 @@ class TaskInstance(BaseModel):
 
 
 class DagCompiler(BaseModel):
-    name: str  # TODO: does this need to be a valid python identifier?
+    name: str  # TODO: needs to be a valid python identifier
     tasks: list[TaskInstance]
     cache_root: str  # e.g. "gcs://my-bucket/dag-runs/cache/" 
 
@@ -44,6 +52,39 @@ class DagCompiler(BaseModel):
 
     # TODO: on __init__ (or in cached_property), sort tasks
     # topologically so we know what order to invoke them in dag
+
+    @classmethod
+    def from_spec(cls, spec: dict) -> "DagCompiler":
+        non_task_kws = copy.deepcopy(spec)
+        del non_task_kws["tasks"]
+        tasks_spec = TasksSpec(**spec)
+        tasks = []
+        for task_name in tasks_spec.tasks:
+            arg_dependencies = {}
+            arg_prevalidators = {}
+            # if the value of the task is None, the task has no dependencies
+            if tasks_spec.tasks[task_name] is not None:
+                # if the value is a dict, then then that dict's k:v pairs are the
+                # arg on the task mapped to the dependency to deserialize it from
+                for arg, dep in tasks_spec.tasks[task_name].items():
+                    arg_dependencies |= {arg: f"{dep}_return"}
+                    # now we have to figure out how to deserialize this arg when passed
+                    # FIXME: this factoring seems sub-optimal; ideally we only introspect the
+                    # signature (which triggers import, and might be slow) once per compilation.
+                    kt = known_tasks[task_name]
+                    arg_type = kt.parameters_annotation[arg][0]
+                    # FIXME: this logic possibly clearer as a computed_field on the KnownTask model?
+                    if is_subscripted_pandera_dataframe(arg_type):
+                        arg_type = pa.typing.DataFrame
+                    arg_prevalidators |= {arg: known_deserializers[arg_type]}
+            tasks.append(
+                TaskInstance(
+                    known_task_name=task_name,
+                    arg_dependencies=arg_dependencies,
+                    arg_prevalidators=arg_prevalidators,
+                )
+            )
+        return cls(tasks=tasks, **non_task_kws)
 
     @property
     def dag_config(self) -> dict:
