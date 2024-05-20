@@ -109,4 +109,30 @@ known_tasks = {
             }
         ),
     ),
+    "relocations_to_trajectory": KnownTask(
+        importable_reference="ecoscope_workflows.tasks.python.preprocessing.relocations_to_trajectory",
+        operator=KubernetesPodOperator(
+            image="ecoscope-workflows:latest",
+            name="pod",  # TODO: defer assignment of this?
+            container_resources={
+                "request_memory": "128Mi",
+                "request_cpu": "500m",
+                "limit_memory": "500Mi",
+                "limit_cpu": 1,
+            }
+        ),
+    ),
+    "calculate_time_density": KnownTask(
+        importable_reference="ecoscope_workflows.tasks.python.analysis.calculate_time_density",
+        operator=KubernetesPodOperator(
+            image="ecoscope-workflows:latest",
+            name="pod",  # TODO: defer assignment of this?
+            container_resources={
+                "request_memory": "128Mi",
+                "request_cpu": "500m",
+                "limit_memory": "500Mi",
+                "limit_cpu": 1,
+            }
+        ),
+    ),
 }

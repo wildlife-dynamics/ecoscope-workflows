@@ -7,3 +7,14 @@ tasks:
       observations: get_subjectgroup_observations_return
     arg_prevalidators:
       observations: gpd_from_parquet_uri
+  - known_task_name: relocations_to_trajectory
+    arg_dependencies:
+      relocations: process_relocations_return
+    arg_prevalidators:
+      observations: gpd_from_parquet_uri
+  - known_task_name: calculate_time_density
+    arg_dependencies:
+      trajectory_gdf: relocations_to_trajectory_return
+    arg_prevalidators:
+      observations: gpd_from_parquet_uri
+
