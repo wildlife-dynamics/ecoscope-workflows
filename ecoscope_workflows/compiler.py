@@ -15,6 +15,11 @@ TEMPLATES = pathlib.Path(__file__).parent / "templates"
 
 class TasksSpec(BaseModel):
     tasks: dict[str, dict[str, str] | None]
+    # TODO: pydantic validator for `self.tasks`, as follows:
+    #  - all outer dict keys must be registered `known_tasks`
+    #  - all inner dict keys must be argument names on the known task they are nested under
+    #  - all inner dict values must be names of other known tasks in the spec
+    #  - there cannot be any cycle errors
 
 
 class TaskInstance(BaseModel):
@@ -71,12 +76,14 @@ class DagCompiler(BaseModel):
                     # now we have to figure out how to deserialize this arg when passed
                     # FIXME: this factoring seems sub-optimal; ideally we only introspect the
                     # signature (which triggers import, and might be slow) once per compilation.
-                    kt = known_tasks[task_name]
-                    arg_type = kt.parameters_annotation[arg][0]
-                    # FIXME: this logic possibly clearer as a computed_field on the KnownTask model?
+                    arg_type = known_tasks[task_name].parameters_annotation[arg][0]
                     if is_subscripted_pandera_dataframe(arg_type):
-                        arg_type = pa.typing.DataFrame
-                    arg_prevalidators |= {arg: known_deserializers[arg_type]}
+                        # NOTE: even if an argument is passed as as an `arg_dependency`, we don't need a
+                        # pre-validator unless the value passed needs some custom logic for deserialization
+                        # (e.g. being loaded from a storage device, etc.). For just strings that Pydantic
+                        # will know how to parse in built-in/obvious ways, this is not needed.
+                        arg_prevalidators |= {arg: known_deserializers[pa.typing.DataFrame]}
+                        # TODO: right now the only custom type we're handling is the dataframe, let's add others soon!
             tasks.append(
                 TaskInstance(
                     known_task_name=task_name,
