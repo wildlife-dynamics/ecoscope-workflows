@@ -28,7 +28,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
-    "ecoscope",
+    "ecoscope @ git+https://github.com/wildlife-dynamics/ecoscope@0cad9c793d644729556d878bfff11a6c7be74589",
     "pytest",
 ]
 
