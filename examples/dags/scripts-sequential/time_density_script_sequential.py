@@ -19,7 +19,7 @@ if __name__ == "__main__":
     params = yaml.safe_load(args.config_file)
     # FIXME: first pass assumes tasks are already in topological order
     
-    get_subjectgroup_observations_return = get_subjectgroup_observations.replace(validate=True)(params["get_subjectgroup_observations"])
+    get_subjectgroup_observations_return = get_subjectgroup_observations.replace(validate=True)(**params["get_subjectgroup_observations"])
     
     process_relocations_return = process_relocations.replace(validate=True)(
         observations=get_subjectgroup_observations_return,

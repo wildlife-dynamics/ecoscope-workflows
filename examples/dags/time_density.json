@@ -38,11 +38,13 @@
                 "description": "Whether or not to include inactive subjects"
             },
             "since": {
+                "format": "date-time",
                 "title": "Since",
                 "type": "string",
                 "description": "Start date"
             },
             "until": {
+                "format": "date-time",
                 "title": "Until",
                 "type": "string",
                 "description": "End date"
@@ -94,79 +96,87 @@
         "type": "object"
     },
     "relocations_to_trajectory": {
-        "maxItems": 7,
-        "minItems": 7,
-        "prefixItems": [
-            {
+        "additionalProperties": false,
+        "properties": {
+            "relocations": {
                 "title": "Relocations",
                 "type": "ecoscope.distributed.types.DataFrame"
             },
-            {
+            "min_length_meters": {
                 "title": "Min Length Meters",
                 "type": "number"
             },
-            {
+            "max_length_meters": {
                 "title": "Max Length Meters",
                 "type": "number"
             },
-            {
+            "max_time_secs": {
                 "title": "Max Time Secs",
                 "type": "number"
             },
-            {
+            "min_time_secs": {
                 "title": "Min Time Secs",
                 "type": "number"
             },
-            {
+            "max_speed_kmhr": {
                 "title": "Max Speed Kmhr",
                 "type": "number"
             },
-            {
+            "min_speed_kmhr": {
                 "title": "Min Speed Kmhr",
                 "type": "number"
             }
+        },
+        "required": [
+            "relocations",
+            "min_length_meters",
+            "max_length_meters",
+            "max_time_secs",
+            "min_time_secs",
+            "max_speed_kmhr",
+            "min_speed_kmhr"
         ],
-        "type": "array"
+        "type": "object"
     },
     "calculate_time_density": {
-        "maxItems": 8,
-        "minItems": 1,
-        "prefixItems": [
-            {
+        "additionalProperties": false,
+        "properties": {
+            "trajectory_gdf": {
                 "title": "Trajectory Gdf",
                 "type": "ecoscope.distributed.types.DataFrame"
             },
-            {
+            "pixel_size": {
                 "default": 250.0,
                 "title": "Pixel Size",
-                "type": "number"
+                "type": "number",
+                "description": "Pixel size for raster profile."
             },
-            {
+            "crs": {
                 "default": "ESRI:102022",
                 "title": "Crs",
                 "type": "string"
             },
-            {
+            "nodata_value": {
                 "default": NaN,
                 "title": "Nodata Value",
                 "type": "number"
             },
-            {
+            "band_count": {
                 "default": 1,
                 "title": "Band Count",
                 "type": "integer"
             },
-            {
+            "max_speed_factor": {
                 "default": 1.05,
                 "title": "Max Speed Factor",
                 "type": "number"
             },
-            {
+            "expansion_factor": {
                 "default": 1.3,
                 "title": "Expansion Factor",
                 "type": "number"
             },
-            {
+            "percentiles": {
                 "default": [
                     50.0,
                     60.0,
@@ -181,7 +191,10 @@
                 "title": "Percentiles",
                 "type": "array"
             }
+        },
+        "required": [
+            "trajectory_gdf"
         ],
-        "type": "array"
+        "type": "object"
     }
 }
