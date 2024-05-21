@@ -5,8 +5,16 @@ import pytest
 import ruamel.yaml
 
 from ecoscope_workflows.compiler import DagCompiler, TaskInstance
+from ecoscope_workflows.registry import KnownTask, known_tasks
 
 EXAMPLES_DIR = pathlib.Path(__file__).parent.parent / "examples"
+
+
+def test_task_instance_known_task_parsing():
+    task_name = "get_subjectgroup_observations"
+    ti = TaskInstance(known_task_name=task_name)
+    assert isinstance(ti.known_task, KnownTask)
+    assert ti.known_task == known_tasks[task_name]
 
 
 @pytest.fixture
