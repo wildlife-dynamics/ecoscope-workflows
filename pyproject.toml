@@ -21,6 +21,7 @@ classifiers = [
 # license = { text = "" }
 # keywords = []
 dependencies = [
+    "dill",  # for function deep-copies (maybe there's a better way to do this)
     "pandera",
     "pydantic",
     "ruamel.yaml"
@@ -28,7 +29,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
-    "ecoscope",
+    "ecoscope @ git+https://github.com/wildlife-dynamics/ecoscope@0cad9c793d644729556d878bfff11a6c7be74589",
     "pytest",
 ]
 
