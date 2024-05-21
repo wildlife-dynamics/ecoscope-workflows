@@ -7,7 +7,7 @@ from typing import Callable, get_args
 
 import ruamel.yaml
 import pandera as pa
-from pydantic import BaseModel, TypeAdapter, computed_field
+from pydantic import BaseModel, SerializationInfo, TypeAdapter, computed_field, field_serializer
 
 from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
@@ -35,10 +35,10 @@ class KubernetesPodOperator(BaseModel):
 
 
 class KnownTask(BaseModel):
-    # pod_name: str
     importable_reference: str
     # tags: list[str]
     operator: KubernetesPodOperator
+    testing_implementation: str | None = None
 
     @property
     def _importable_reference_parts(self):
@@ -50,6 +50,15 @@ class KnownTask(BaseModel):
     def module(self) -> str:
         return self._importable_reference_parts[0]
     
+    @field_serializer("module")
+    def remove_stopwords(self, v: str, info: SerializationInfo):
+        context = info.context
+        if context:
+            testing = context.get("testing", False)
+            if testing:
+                v = ...  # TODO: substitute testing implementation/mock here
+        return v
+
     @computed_field
     @property
     def function(self) -> str:
@@ -97,6 +106,7 @@ known_tasks = {
                 "limit_cpu": 1,
             }
         ),
+        testing_implementation="ecoscope_workflows.testing.tasks.python.io.get_subjectgroup_observations",
     ),
     "process_relocations": KnownTask(
         importable_reference="ecoscope_workflows.tasks.python.preprocessing.process_relocations",

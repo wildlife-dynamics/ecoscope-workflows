@@ -55,6 +55,9 @@ class DagCompiler(BaseModel):
     template: str = "airflow-kubernetes.jinja2"
     template_dir: str = TEMPLATES
 
+    # compilation settings
+    testing: bool = False
+
     # TODO: on __init__ (or in cached_property), sort tasks
     # topologically so we know what order to invoke them in dag
 
@@ -95,8 +98,11 @@ class DagCompiler(BaseModel):
 
     @property
     def dag_config(self) -> dict:
-        return self.model_dump(exclude={"template", "template_dir"})
-    
+        return self.model_dump(
+            exclude={"template", "template_dir"},
+            context={"testing": self.testing},
+        )
+
     def dag_params_schema(self) -> dict[str, dict]:
         return {t.known_task_name: t.known_task.parameters_jsonschema() for t in self.tasks}
     
