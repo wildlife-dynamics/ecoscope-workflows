@@ -1,0 +1,10 @@
+name: calculate_time_density
+cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
+tasks:
+  get_subjectgroup_observations:
+  process_relocations:
+    observations: get_subjectgroup_observations
+  relocations_to_trajectory:
+    relocations: process_relocations
+  calculate_time_density:
+    trajectory_gdf: relocations_to_trajectory
