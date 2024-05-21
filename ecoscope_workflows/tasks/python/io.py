@@ -1,14 +1,22 @@
+import functools
 import os
+from datetime import datetime
 from typing import Annotated, Any
 
 import pandas as pd
 import pandera as pa
 from pydantic import Field
+from pydantic.functional_validators import BeforeValidator
 
 from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.types import DataFrame, JsonSerializableDataFrameModel
 
 
+def from_env(value: str | None = None, var_name: str | None  = None) -> str:
+    """If no value is passed, load a value from the provided var_name."""
+    return value if value else os.environ[var_name]
+
+    
 class SubjectGroupObservationsGDFSchema(JsonSerializableDataFrameModel):
     geometry: pa.typing.Series[Any] = pa.Field()   # see note in tasks/time_density re: geometry typing
     groupby_col: pa.typing.Series[object] = pa.Field()
@@ -20,16 +28,28 @@ class SubjectGroupObservationsGDFSchema(JsonSerializableDataFrameModel):
 @distributed
 def get_subjectgroup_observations(
     # client
-    server: Annotated[str, Field(description="URL for EarthRanger API")],
-    username: Annotated[str, Field(description="EarthRanger username")],
-    password: Annotated[str, Field(description="EarthRanger password")],
+    server: Annotated[
+        str,
+        Field(description="URL for EarthRanger API"),
+        BeforeValidator(functools.partial(from_env, var_name="ER_SERVER")),
+    ],
+    username: Annotated[
+        str,
+        Field(description="EarthRanger username"),
+        BeforeValidator(functools.partial(from_env, var_name="ER_USERNAME")),
+    ],
+    password: Annotated[
+        str,
+        Field(description="EarthRanger password"),
+        BeforeValidator(functools.partial(from_env, var_name="ER_PASSWORD")),
+    ],
     tcp_limit: Annotated[int, Field(description="TCP limit for EarthRanger API requests")],
     sub_page_size: Annotated[int, Field(description="Sub page size for EarthRanger API requests")],
     # get_subjectgroup_observations
     subject_group_name: Annotated[str, Field(description="Name of EarthRanger Subject")],
     include_inactive: Annotated[bool, Field(description="Whether or not to include inactive subjects")],
-    since: Annotated[str, Field(description="Start date")],
-    until: Annotated[str, Field(description="End date")],
+    since: Annotated[datetime, Field(description="Start date")],
+    until: Annotated[datetime, Field(description="End date")],
 ) -> DataFrame[SubjectGroupObservationsGDFSchema]:
     from ecoscope.io import EarthRangerIO
 

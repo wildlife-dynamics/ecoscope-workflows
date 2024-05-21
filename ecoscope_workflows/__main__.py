@@ -9,7 +9,7 @@ from ecoscope_workflows.registry import known_tasks
 
 def compile_command(args):
     compilation_spec = yaml.safe_load(args.spec)
-    dc = DagCompiler(**compilation_spec)
+    dc = DagCompiler.from_spec(spec=compilation_spec)
     if args.template:
         dc.template = args.template
     dag_str = dc._generate_dag()
@@ -31,7 +31,7 @@ def tasks_command(args):
 
 def get_params_command(args):
     compilation_spec = yaml.safe_load(args.spec)
-    dc = DagCompiler(**compilation_spec)
+    dc = DagCompiler.from_spec(spec=compilation_spec)
     if args.format == "json":
         params = dc.dag_params_schema()
     elif args.format == "yaml":

@@ -23,6 +23,6 @@ if __name__ == "__main__":
     {%- if t.arg_dependencies %}
         {% for arg in t.arg_dependencies %}{{ arg }}={{ t.arg_dependencies[arg] }},{% endfor %}
         **params["{{ t.known_task_name }}"])
-    {% else %}params["{{ t.known_task_name }}"])
+    {% else %}**params["{{ t.known_task_name }}"])
     {% endif -%}
     {% endfor -%}

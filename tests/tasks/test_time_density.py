@@ -25,8 +25,8 @@ def test_calculate_time_density(
     raster_kws = dict(
         pixel_size=250.0,
         crs="ESRI:102022",
-        nodata_value=float("nan"),
         band_count=1,
+        nodata_value=float("nan"),
     )
     density_kws = dict(
         max_speed_factor=1.05,

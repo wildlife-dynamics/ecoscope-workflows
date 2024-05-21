@@ -18,7 +18,6 @@ class TimeDensityReturnGDFSchema(JsonSerializableDataFrameModel):
 @distributed
 def calculate_time_density(
     trajectory_gdf: DataFrame[TrajectoryGDFSchema],
-    /,
     # raster profile
     pixel_size: Annotated[
         float,

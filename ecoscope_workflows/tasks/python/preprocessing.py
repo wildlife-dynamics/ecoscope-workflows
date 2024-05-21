@@ -59,7 +59,6 @@ class TrajectoryGDFSchema(JsonSerializableDataFrameModel):
 @distributed
 def relocations_to_trajectory(
     relocations: DataFrame[RelocationsGDFSchema],
-    /,
     min_length_meters: Annotated[float, Field()],
     max_length_meters: Annotated[float, Field()],
     max_time_secs: Annotated[float, Field()],
