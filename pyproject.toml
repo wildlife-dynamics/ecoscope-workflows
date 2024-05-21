@@ -21,6 +21,7 @@ classifiers = [
 # license = { text = "" }
 # keywords = []
 dependencies = [
+    "dill",  # for function deep-copies (maybe there's a better way to do this)
     "pandera",
     "pydantic",
     "ruamel.yaml"
