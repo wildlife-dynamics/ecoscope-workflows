@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 
 from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
-from ecoscope_workflows.types import DataFrame, JsonSerializableDataFrameModel
+from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
 
 
 def test_jsonschema_from_signature_basic():
