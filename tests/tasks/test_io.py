@@ -26,7 +26,12 @@ def test_subjectgroup_observations(tmp_path):
     )
     in_memory = get_subjectgroup_observations(**kws)
 
-    assert all([column in in_memory for column in ["geometry", "groupby_col", "fixtime", "junk_status"]])
+    assert all(
+        [
+            column in in_memory
+            for column in ["geometry", "groupby_col", "fixtime", "junk_status"]
+        ]
+    )
 
     # compare to `distributed` calling style; in this mode, we return *a path*, not a GeoDataFrame
     def serialize_result(gdf: gpd.GeoDataFrame) -> str:
@@ -41,5 +46,7 @@ def test_subjectgroup_observations(tmp_path):
     pd.testing.assert_frame_equal(in_memory, distributed_result)
 
     # we've cached this result to speed up downstream tests, to make sure the cache is not stale
-    cached = gpd.read_parquet(Path(__file__).parent.parent / "data" / "subject-group.parquet")
+    cached = gpd.read_parquet(
+        Path(__file__).parent.parent / "data" / "subject-group.parquet"
+    )
     pd.testing.assert_frame_equal(in_memory, cached)

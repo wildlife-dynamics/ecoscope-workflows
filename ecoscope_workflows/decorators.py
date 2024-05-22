@@ -13,16 +13,18 @@ ArgName = NewType("ArgName", str)
 
 def _get_annotation_metadata(func: types.FunctionType, arg_name: ArgName):
     assert func.__annotations__, f"{func.__name__=} has no annotations."
-    assert arg_name in func.__annotations__, f"{arg_name=} on {func.__name__=} is not annotated."
     assert (
-        hasattr(func.__annotations__[arg_name], "__metadata__"),
-        f"The annotation of {arg_name=} on {func.__name__=} is not of type `typing.Annotated`."
-    )
+        arg_name in func.__annotations__
+    ), f"{arg_name=} on {func.__name__=} is not annotated."
+    assert hasattr(
+        func.__annotations__[arg_name], "__metadata__"
+    ), f"The annotation of {arg_name=} on {func.__name__=} is not of type `typing.Annotated`."
     return list(func.__annotations__[arg_name].__metadata__)
 
 
 def _get_validator_index(
-    existing_meta: dict, validator_type: AfterValidator | BeforeValidator,
+    existing_meta: dict,
+    validator_type: AfterValidator | BeforeValidator,
 ) -> int:
     """If there are is an existing validator instance of the specified type in the metadata,
     we will overwrite it by re-assigning to its index. if not, we will just add our new
@@ -31,7 +33,9 @@ def _get_validator_index(
     return (
         -1
         if not any([isinstance(m, validator_type) for m in existing_meta])
-        else [i for i, m in enumerate(existing_meta) if isinstance(m, validator_type)][0]
+        else [i for i, m in enumerate(existing_meta) if isinstance(m, validator_type)][
+            0
+        ]
     )
 
 
@@ -45,7 +49,8 @@ class distributed:
     arg_prevalidators : dict[ArgName, Callable]
         ...
     """
-    func: types.FunctionType
+
+    func: Callable
     arg_prevalidators: dict[ArgName, Callable] = field(default_factory=dict)
     return_postvalidator: Callable | None = None
     validate: bool = False
@@ -57,7 +62,7 @@ class distributed:
 
     def replace(self, **changes: dict) -> "distributed":
         self._initialized = False
-        return replace(self, **changes)
+        return replace(self, **changes)  # type: ignore
 
     def __setattr__(self, name, value):
         if self._initialized and name != "_initialized":

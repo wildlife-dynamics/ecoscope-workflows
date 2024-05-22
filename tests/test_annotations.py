@@ -3,11 +3,11 @@ import pandera as pa
 import pytest
 from pydantic import BaseModel, ValidationError
 
-from ecoscope_workflows.types import DataFrame, JsonSerializableDataFrameModel
+from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
 
 
-def test_dataframe_type() -> tuple[pd.DataFrame, pa.DataFrameModel]:
-    df = pd.DataFrame(data={'col1': [1, 2]})
+def test_dataframe_type():
+    df = pd.DataFrame(data={"col1": [1, 2]})
 
     class ValidSchema(JsonSerializableDataFrameModel):
         col1: pa.typing.Series[int] = pa.Field(unique=True)

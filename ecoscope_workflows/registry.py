@@ -1,7 +1,9 @@
 """Task and de/serialization function registry.
 Can be mutated with entry points.
 """
+
 import importlib
+
 # from importlib.metadata import entry_points
 from typing import Callable, get_args
 
@@ -49,7 +51,7 @@ class KnownTask(BaseModel):
     @property
     def module(self) -> str:
         return self._importable_reference_parts[0]
-    
+
     @computed_field
     @property
     def function(self) -> str:
@@ -62,7 +64,9 @@ class KnownTask(BaseModel):
         # maybe we can also enforce this programmatically.
         mod = importlib.import_module(self.module)
         func = getattr(mod, self.function)
-        assert isinstance(func, distributed), f"{self.importable_reference} is not `@distributed`"
+        assert isinstance(
+            func, distributed
+        ), f"{self.importable_reference} is not `@distributed`"
         return func.func
 
     def parameters_jsonschema(self) -> dict:
@@ -70,10 +74,11 @@ class KnownTask(BaseModel):
         return TypeAdapter(func).json_schema(schema_generator=SurfacesDescriptionSchema)
 
     @property
-    def parameters_annotation(self) -> dict[str, list]:
+    def parameters_annotation(self) -> dict[str, tuple]:
         func = self._import_func()
         return {
-            arg: get_args(annotation) for arg, annotation in func.__annotations__.items()
+            arg: get_args(annotation)
+            for arg, annotation in func.__annotations__.items()
         }
 
     def parameters_annotation_yaml_str(self) -> str:
@@ -83,6 +88,7 @@ class KnownTask(BaseModel):
             yaml_str += f"  {arg}:   # {param}\n"
         _ = yaml.load(yaml_str)
         return yaml_str
+
 
 known_tasks = {
     "get_subjectgroup_observations": KnownTask(
@@ -95,7 +101,7 @@ known_tasks = {
                 "request_cpu": "500m",
                 "limit_memory": "500Mi",
                 "limit_cpu": 1,
-            }
+            },
         ),
     ),
     "process_relocations": KnownTask(
@@ -108,7 +114,7 @@ known_tasks = {
                 "request_cpu": "500m",
                 "limit_memory": "500Mi",
                 "limit_cpu": 1,
-            }
+            },
         ),
     ),
     "relocations_to_trajectory": KnownTask(
@@ -121,7 +127,7 @@ known_tasks = {
                 "request_cpu": "500m",
                 "limit_memory": "500Mi",
                 "limit_cpu": 1,
-            }
+            },
         ),
     ),
     "calculate_time_density": KnownTask(
@@ -134,7 +140,7 @@ known_tasks = {
                 "request_cpu": "500m",
                 "limit_memory": "500Mi",
                 "limit_cpu": 1,
-            }
+            },
         ),
     ),
 }
