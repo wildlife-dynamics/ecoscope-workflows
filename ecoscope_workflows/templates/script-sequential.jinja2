@@ -1,7 +1,7 @@
 import argparse
 import yaml
 {% for t in tasks -%}
-from {{ t.known_task.module }} import {{ t.known_task.function }}
+from {{ t.known_task.importable_reference.module }} import {{ t.known_task.importable_reference.function }}
 {% if loop.last %}
 {% endif -%}
 {% endfor -%}
@@ -19,7 +19,7 @@ if __name__ == "__main__":
     params = yaml.safe_load(args.config_file)
     # FIXME: first pass assumes tasks are already in topological order
     {% for t in tasks %}
-    {{ t.known_task.function }}_return = {{ t.known_task.function }}.replace(validate=True)(
+    {{ t.known_task.importable_reference.function }}_return = {{ t.known_task.importable_reference.function }}.replace(validate=True)(
     {%- if t.arg_dependencies %}
         {% for arg in t.arg_dependencies %}{{ arg }}={{ t.arg_dependencies[arg] }},{% endfor %}
         **params["{{ t.known_task_name }}"])

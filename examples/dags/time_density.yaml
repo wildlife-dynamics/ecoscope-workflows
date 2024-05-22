@@ -1,7 +1,7 @@
 get_subjectgroup_observations:
-  server:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='URL for EarthRanger API'), BeforeValidator(func=functools.partial(<function from_env at 0x182e51ab0>, var_name='ER_SERVER')))
-  username:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='EarthRanger username'), BeforeValidator(func=functools.partial(<function from_env at 0x182e51ab0>, var_name='ER_USERNAME')))
-  password:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='EarthRanger password'), BeforeValidator(func=functools.partial(<function from_env at 0x182e51ab0>, var_name='ER_PASSWORD')))
+  server:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='URL for EarthRanger API'), BeforeValidator(func=functools.partial(<function from_env at 0x185465b40>, var_name='ER_SERVER')))
+  username:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='EarthRanger username'), BeforeValidator(func=functools.partial(<function from_env at 0x185465b40>, var_name='ER_USERNAME')))
+  password:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='EarthRanger password'), BeforeValidator(func=functools.partial(<function from_env at 0x185465b40>, var_name='ER_PASSWORD')))
   tcp_limit:   # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='TCP limit for EarthRanger API requests'))
   sub_page_size:   # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='Sub page size for EarthRanger API requests'))
   subject_group_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of EarthRanger Subject'))

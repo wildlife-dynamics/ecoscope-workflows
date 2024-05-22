@@ -3,11 +3,12 @@ Can be mutated with entry points.
 """
 import importlib
 # from importlib.metadata import entry_points
-from typing import Callable, get_args
+from typing import Annotated, Any, Callable, get_args
 
 import ruamel.yaml
 import pandera as pa
-from pydantic import BaseModel, SerializationInfo, TypeAdapter, computed_field, field_serializer
+from pydantic import BaseModel, FieldSerializationInfo, TypeAdapter, field_serializer
+from pydantic.functional_validators import AfterValidator
 
 from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
@@ -34,35 +35,55 @@ class KubernetesPodOperator(BaseModel):
     container_resources: dict
 
 
+def _rsplit_importable_reference(reference: str) -> tuple[str, str]:
+    """Splits enclosing module and object name from importable reference."""
+    return reference.rsplit(".", 1)
+
+
+def _validate_importable_reference(reference: str):
+    """Without importing the reference, does the best we can to ensure that it will be importable."""
+    parts = _rsplit_importable_reference(reference)
+    assert len(parts) == 2, f"{reference} is not a valid importable reference, must be a dotted string."
+    assert parts[1].isidentifier(), f"{parts[1]} is not a valid Python identifier, it will not be importable."
+    assert all([module_part.isidentifier() for module_part in parts[0].split(".")]), (
+        f"{parts[0]} is not a valid Python module path, it will not be importable."
+    )
+    return reference
+
+
+ImportableReference = Annotated[str, AfterValidator(_validate_importable_reference)]
+
+
 class KnownTask(BaseModel):
-    importable_reference: str
+    importable_reference: ImportableReference
     # tags: list[str]
     operator: KubernetesPodOperator
-    testing_implementation: str | None = None
+    testing_implementation: ImportableReference | None = None    
 
-    @property
-    def _importable_reference_parts(self):
-        # TODO: assert rsplit len = 2 on __init__
-        return self.importable_reference.rsplit(".", 1)
-
-    @computed_field
-    @property
-    def module(self) -> str:
-        return self._importable_reference_parts[0]
-    
-    @field_serializer("module")
-    def remove_stopwords(self, v: str, info: SerializationInfo):
-        context = info.context
+    @field_serializer("importable_reference")
+    def serialize_importable_reference(self, v: Any, info: FieldSerializationInfo):
+        context: dict = info.context
         if context:
             testing = context.get("testing", False)
             if testing:
-                v = ...  # TODO: substitute testing implementation/mock here
-        return v
+                return {"module": self.testing_module, "function": self.testing_function}
+        return {"module": self.module, "function": self.function}
 
-    @computed_field
+    @property
+    def module(self) -> str:
+        return _rsplit_importable_reference(self.importable_reference)[0]
+
+    @property
+    def testing_module(self) -> str:
+        return _rsplit_importable_reference(self.testing_implementation)[0]
+
     @property
     def function(self) -> str:
-        return self._importable_reference_parts[1]
+        return _rsplit_importable_reference(self.importable_reference)[1]
+
+    @property
+    def testing_function(self) -> str:
+        return _rsplit_importable_reference(self.testing_implementation)[1]
 
     def _import_func(self) -> Callable:
         # imports the distributed function. we will need to be clear in docs about what imports are
@@ -76,6 +97,8 @@ class KnownTask(BaseModel):
 
     def parameters_jsonschema(self) -> dict:
         func = self._import_func()
+        # NOTE: SurfacesDescriptionSchema is a workaround for https://github.com/pydantic/pydantic/issues/9404
+        # Once that issue is closed, we can remove SurfaceDescriptionSchema and the default schema_generator.
         return TypeAdapter(func).json_schema(schema_generator=SurfacesDescriptionSchema)
 
     @property

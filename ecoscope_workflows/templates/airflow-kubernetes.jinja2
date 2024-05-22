@@ -44,7 +44,7 @@ def {{ t.known_task_name }}_task(
     {% endif -%}
 
     # the task itself
-    from {{ t.known_task.module }} import {{ t.known_task.function }}
+    from {{ t.known_task.importable_reference.module }} import {{ t.known_task.importable_reference.function }}
 
     # user-passed kwargs for the task (via airflow dag params)
     task_kwargs = params["{{ t.known_task_name }}"]
@@ -66,7 +66,7 @@ def {{ t.known_task_name }}_task(
         dataframe.to_parquet(url)
         return url
 
-    serialized_result_url = {{ t.known_task.function }}.replace(
+    serialized_result_url = {{ t.known_task.importable_reference.function }}.replace(
         {%- if t.arg_dependencies %}
         arg_prevalidators={
             {% for arg in t.arg_dependencies %}"{{ arg }}": {{ t.arg_prevalidators[arg] }},{% endfor %}
