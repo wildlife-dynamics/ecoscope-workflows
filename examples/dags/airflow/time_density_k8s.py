@@ -15,7 +15,7 @@ class SupportsToParquet(Protocol):
     closures defined within task scopes in this module.
     """
 
-    def to_parquet(self, url): ...
+    def to_parquet(self): ...
 
 
 @task.kubernetes(
@@ -220,7 +220,6 @@ def calculate_time_density_task(
     params: dict | None = None,  # Airflow DAG Params passed with `--conf` on trigger
     ti: TaskInstance | None = None,
 ):
-    assert ti is not None, "TaskInstance must be injected by Airflow."
     # deserializers
     from ecoscope_workflows.serde import gpd_from_parquet_uri
 
@@ -278,7 +277,7 @@ def calculate_time_density():
         relocations=process_relocations_return,
     )
 
-    calculate_time_density_return = calculate_time_density_task(  # noqa: F841
+    calculate_time_density_return = calculate_time_density_task(
         trajectory_gdf=relocations_to_trajectory_return,
     )
 

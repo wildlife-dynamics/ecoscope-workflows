@@ -24,7 +24,8 @@ dependencies = [
     "dill",  # for function deep-copies (maybe there's a better way to do this)
     "pandera",
     "pydantic",
-    "ruamel.yaml"
+    "ruamel.yaml",
+    "ruff",  # for linting compiled workflows
 ]
 
 [project.optional-dependencies]

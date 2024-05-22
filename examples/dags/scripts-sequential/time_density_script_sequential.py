@@ -21,7 +21,9 @@ if __name__ == "__main__":
 
     get_subjectgroup_observations_return = get_subjectgroup_observations.replace(
         validate=True
-    )(**params["get_subjectgroup_observations"])
+    )(
+        **params["get_subjectgroup_observations"],
+    )
 
     process_relocations_return = process_relocations.replace(validate=True)(
         observations=get_subjectgroup_observations_return,
@@ -29,7 +31,8 @@ if __name__ == "__main__":
     )
 
     relocations_to_trajectory_return = relocations_to_trajectory.replace(validate=True)(
-        relocations=process_relocations_return, **params["relocations_to_trajectory"]
+        relocations=process_relocations_return,
+        **params["relocations_to_trajectory"],
     )
 
     calculate_time_density_return = calculate_time_density.replace(validate=True)(

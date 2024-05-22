@@ -1,5 +1,7 @@
 import copy
+import functools
 import pathlib
+import subprocess
 from typing import Any, Callable
 
 import pandera as pa
@@ -51,6 +53,20 @@ class TaskInstance(BaseModel):
         return {k: v.__name__ for k, v in self.arg_prevalidators.items()}
 
     def validate_argprevalidators(self): ...
+
+
+def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
+    """Decorator to format the output of a function that returns a string with ruff."""
+
+    @functools.wraps(returns_str_func)
+    def wrapper(*args, **kwargs):
+        unformatted = returns_str_func(*args, **kwargs)
+        # https://github.com/astral-sh/ruff/issues/8401#issuecomment-1788806462
+        cmd = ["ruff", "format", "-"]
+        formatted = subprocess.check_output(cmd, input=unformatted, encoding="utf-8")
+        return formatted
+
+    return wrapper
 
 
 class DagCompiler(BaseModel):
@@ -132,6 +148,7 @@ class DagCompiler(BaseModel):
             for t in self.tasks
         }
 
+    @ruff_formatted
     def dag_params_yaml(self) -> str:
         yaml_str = ""
         for t in self.tasks:
@@ -140,6 +157,7 @@ class DagCompiler(BaseModel):
             )
         return yaml_str
 
+    @ruff_formatted
     def _generate_dag(self) -> str:
         env = Environment(loader=FileSystemLoader(self.template_dir))
         template = env.get_template(self.template)
