@@ -41,7 +41,6 @@ def test_jsonschema_from_signature_basic_distributed():
 
 
 def test_DataFrameModel_generate_schema():
-
     class Schema(JsonSerializableDataFrameModel):
         col1: pa.typing.Series[int] = pa.Field(unique=True)
 
@@ -50,13 +49,12 @@ def test_DataFrameModel_generate_schema():
 
 
 def test_DataFrame_generate_schema():
-
     class Schema(JsonSerializableDataFrameModel):
         col1: pa.typing.Series[int] = pa.Field(unique=True)
 
     Foo = DataFrame[Schema]
     schema = TypeAdapter(Foo).json_schema()
-    assert schema == {'type': 'ecoscope.distributed.types.DataFrame'}
+    assert schema == {"type": "ecoscope.distributed.types.DataFrame"}
 
 
 def test_jsonschema_from_signature_nontrivial():
@@ -78,7 +76,9 @@ def test_jsonschema_from_signature_nontrivial():
         band_count: Annotated[int, Field(default=1)]
         max_speed_factor: Annotated[float, Field(default=1.05)]
         expansion_factor: Annotated[float, Field(default=1.3)]
-        percentiles: Annotated[list[float], Field(default=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0])]
+        percentiles: Annotated[
+            list[float], Field(default=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0])
+        ]
 
     def calculate_time_density(
         input_df: DataFrame[Schema],
@@ -91,7 +91,9 @@ def test_jsonschema_from_signature_nontrivial():
         band_count: Annotated[int, Field(default=1)],
         max_speed_factor: Annotated[float, Field(default=1.05)],
         expansion_factor: Annotated[float, Field(default=1.3)],
-        percentiles: Annotated[list[float], Field(default=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0])],
+        percentiles: Annotated[
+            list[float], Field(default=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0])
+        ],
     ): ...
 
     schema_kws = dict(schema_generator=SurfacesDescriptionSchema)

@@ -7,29 +7,32 @@ from ecoscope_workflows.tasks.python.analysis import calculate_time_density
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    g = parser.add_argument_group('calculate_time_density')
+    g = parser.add_argument_group("calculate_time_density")
     g.add_argument(
-        '--config-file',
-        dest='config_file',
+        "--config-file",
+        dest="config_file",
         required=True,
-        type=argparse.FileType(mode='r'),
+        type=argparse.FileType(mode="r"),
     )
     args = parser.parse_args()
     # TODO: omit fields which are listed in arg_dependencies at the TaskInstance level
     params = yaml.safe_load(args.config_file)
     # FIXME: first pass assumes tasks are already in topological order
-    
-    get_subjectgroup_observations_return = get_subjectgroup_observations.replace(validate=True)(**params["get_subjectgroup_observations"])
-    
+
+    get_subjectgroup_observations_return = get_subjectgroup_observations.replace(
+        validate=True
+    )(**params["get_subjectgroup_observations"])
+
     process_relocations_return = process_relocations.replace(validate=True)(
         observations=get_subjectgroup_observations_return,
-        **params["process_relocations"])
-    
+        **params["process_relocations"],
+    )
+
     relocations_to_trajectory_return = relocations_to_trajectory.replace(validate=True)(
-        relocations=process_relocations_return,
-        **params["relocations_to_trajectory"])
-    
+        relocations=process_relocations_return, **params["relocations_to_trajectory"]
+    )
+
     calculate_time_density_return = calculate_time_density.replace(validate=True)(
         trajectory_gdf=relocations_to_trajectory_return,
-        **params["calculate_time_density"])
-    
+        **params["calculate_time_density"],
+    )

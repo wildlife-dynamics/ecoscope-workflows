@@ -4,13 +4,16 @@ import geopandas as gpd
 import pandas as pd
 import pytest
 
-from ecoscope_workflows.tasks.python.preprocessing import process_relocations, relocations_to_trajectory
+from ecoscope_workflows.tasks.python.preprocessing import (
+    process_relocations,
+    relocations_to_trajectory,
+)
 
 TEST_DATA_DIR = Path(__file__).parent.parent / "data"
 
 
 @pytest.fixture
-def observations_parquet_path() -> str:
+def observations_parquet_path() -> Path:
     return TEST_DATA_DIR / "subject-group.parquet"
 
 
@@ -33,7 +36,9 @@ def test_process_relocations(observations_parquet_path: str, tmp_path):
         return_postvalidator=serialize_result,
         validate=True,
     )
-    result_path = process_relocations.replace(**distributed_kws)(observations_parquet_path, **kws)
+    result_path = process_relocations.replace(**distributed_kws)(
+        observations_parquet_path, **kws
+    )
     distributed_result = gpd.read_parquet(result_path)
 
     pd.testing.assert_frame_equal(in_memory, distributed_result)
@@ -44,7 +49,7 @@ def test_process_relocations(observations_parquet_path: str, tmp_path):
 
 
 @pytest.fixture
-def relocations_parquet_path() -> str:
+def relocations_parquet_path() -> Path:
     return TEST_DATA_DIR / "relocations.parquet"
 
 
@@ -71,7 +76,9 @@ def test_relocations_to_trajectory(relocations_parquet_path: str, tmp_path):
         return_postvalidator=serialize_result,
         validate=True,
     )
-    result_path = relocations_to_trajectory.replace(**distributed_kws)(relocations_parquet_path, **kws)
+    result_path = relocations_to_trajectory.replace(**distributed_kws)(
+        relocations_parquet_path, **kws
+    )
     distributed_result = gpd.read_parquet(result_path)
 
     pd.testing.assert_frame_equal(in_memory, distributed_result)

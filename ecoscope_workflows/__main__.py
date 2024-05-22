@@ -47,59 +47,60 @@ def get_params_command(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(prog='ecoscope-workflows')
-    subparsers = parser.add_subparsers(title='subcommands', dest='command')
-    
+    parser = argparse.ArgumentParser(prog="ecoscope-workflows")
+    subparsers = parser.add_subparsers(title="subcommands", dest="command")
+
     # Subcommand 'compile'
-    compile_parser = subparsers.add_parser('compile', help='Compile workflows')
+    compile_parser = subparsers.add_parser("compile", help="Compile workflows")
     compile_parser.set_defaults(func=compile_command)
     compile_parser.add_argument(
-        '--spec',
-        dest='spec',
+        "--spec",
+        dest="spec",
         required=True,
-        type=argparse.FileType(mode='r'),
+        type=argparse.FileType(mode="r"),
     )
     compile_parser.add_argument(
-        '--template',
-        dest='template',
-        default='airflow-kubernetes.jinja2',
+        "--template",
+        dest="template",
+        default="airflow-kubernetes.jinja2",
     )
     compile_parser.add_argument(
-        '--outpath',
-        dest='outpath',
+        "--outpath",
+        dest="outpath",
     )
 
     # Subcommand 'tasks'
-    tasks_parser = subparsers.add_parser('tasks', help='Manage tasks')
+    tasks_parser = subparsers.add_parser("tasks", help="Manage tasks")
     tasks_parser.set_defaults(func=tasks_command)
 
     # Subcommand 'tasks'
-    get_params_parser = subparsers.add_parser('get-params', help='Get params')
+    get_params_parser = subparsers.add_parser("get-params", help="Get params")
     get_params_parser.set_defaults(func=get_params_command)
     # FIXME: duplicative with `compile`
     get_params_parser.add_argument(
-        '--spec',
-        dest='spec',
+        "--spec",
+        dest="spec",
         required=True,
-        type=argparse.FileType(mode='r'),
+        type=argparse.FileType(mode="r"),
     )
     get_params_parser.add_argument(
-        '--outpath',
-        dest='outpath',
+        "--outpath",
+        dest="outpath",
     )
     get_params_parser.add_argument(
-        '--format',
-        dest='format',
-        default='json',
+        "--format",
+        dest="format",
+        default="json",
     )
 
     # Parse args
     args = parser.parse_args()
 
-    if hasattr(args, 'func'):
+    if hasattr(args, "func"):
         args.func(args)
     else:
         parser.print_help()
+
 
 if __name__ == "__main__":
     main()

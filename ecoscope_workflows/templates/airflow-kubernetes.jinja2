@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import Protocol
 
-from airflow.configuration import conf 
+from airflow.configuration import conf
 from airflow.decorators import dag, task
 from airflow.models.taskinstance import TaskInstance
 
@@ -48,7 +48,7 @@ def {{ t.known_task_name }}_task(
 
     # user-passed kwargs for the task (via airflow dag params)
     task_kwargs = params["{{ t.known_task_name }}"]
-    
+
     # TODO: support various serialization types based on the return type of `plain_task`
     # for just right now we are going to assume it's always a geopandas dataframe
     def return_postvalidator(dataframe: SupportsToParquet) -> str:
@@ -74,7 +74,7 @@ def {{ t.known_task_name }}_task(
         {% else %}
         # this task has no arg_dependencies, therefore it does not require arg_prevalidators
         {% endif -%}
-        return_postvalidator=return_postvalidator,  
+        return_postvalidator=return_postvalidator,
         validate=True
     )(
         {%- if t.arg_dependencies %}

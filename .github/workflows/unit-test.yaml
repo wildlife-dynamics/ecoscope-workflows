@@ -30,7 +30,7 @@ jobs:
 
     - name: Test with pytest
       run: |
-        pytest -m "${{ matrix.mark-io }}" tests -vvv 
+        pytest -m "${{ matrix.mark-io }}" tests -vvv
 
     # - name: Upload Coverage to Codecov
     #   uses: codecov/codecov-action@v2

@@ -11,7 +11,7 @@ from ecoscope_workflows.types import JsonSerializableDataFrameModel, DataFrame
 
 class TimeDensityReturnGDFSchema(JsonSerializableDataFrameModel):
     percentile: pa.typing.Series[float] = pa.Field()
-    geometry: pa.typing.Series[Any] = pa.Field()   # see note above re: geometry typing
+    geometry: pa.typing.Series[Any] = pa.Field()  # see note above re: geometry typing
     area_sqkm: pa.typing.Series[float] = pa.Field()
 
 
@@ -29,7 +29,9 @@ def calculate_time_density(
     # time density
     max_speed_factor: Annotated[float, Field(default=1.05)],
     expansion_factor: Annotated[float, Field(default=1.3)],
-    percentiles: Annotated[list[float], Field(default=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0])],
+    percentiles: Annotated[
+        list[float], Field(default=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0])
+    ],
 ) -> DataFrame[TimeDensityReturnGDFSchema]:
     from ecoscope.analysis.percentile import get_percentile_area
     from ecoscope.analysis.UD import calculate_etd_range
