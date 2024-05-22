@@ -1,4 +1,4 @@
-dags: 
+dags:
   mountPath: /opt/dags  # tells airflow where to find the dags
 
 volumeMounts:  # maps the "dag" volume onto the containers (with the same path name)

@@ -1,7 +1,9 @@
 """Task and de/serialization function registry.
 Can be mutated with entry points.
 """
+
 import importlib
+
 # from importlib.metadata import entry_points
 from typing import Annotated, Any, Callable, get_args
 
@@ -37,17 +39,23 @@ class KubernetesPodOperator(BaseModel):
 
 def _rsplit_importable_reference(reference: str) -> tuple[str, str]:
     """Splits enclosing module and object name from importable reference."""
-    return reference.rsplit(".", 1)
+    split = reference.rsplit(".", 1)
+    assert len(split) == 2, f"{reference} is not a valid importable reference."
+    return tuple(split)
 
 
 def _validate_importable_reference(reference: str):
     """Without importing the reference, does the best we can to ensure that it will be importable."""
     parts = _rsplit_importable_reference(reference)
-    assert len(parts) == 2, f"{reference} is not a valid importable reference, must be a dotted string."
-    assert parts[1].isidentifier(), f"{parts[1]} is not a valid Python identifier, it will not be importable."
-    assert all([module_part.isidentifier() for module_part in parts[0].split(".")]), (
-        f"{parts[0]} is not a valid Python module path, it will not be importable."
-    )
+    assert (
+        len(parts) == 2
+    ), f"{reference} is not a valid importable reference, must be a dotted string."
+    assert (
+        parts[1].isidentifier()
+    ), f"{parts[1]} is not a valid Python identifier, it will not be importable."
+    assert all(
+        [module_part.isidentifier() for module_part in parts[0].split(".")]
+    ), f"{parts[0]} is not a valid Python module path, it will not be importable."
     return reference
 
 
@@ -58,7 +66,7 @@ class KnownTask(BaseModel):
     importable_reference: ImportableReference
     # tags: list[str]
     operator: KubernetesPodOperator
-    testing_implementation: ImportableReference | None = None    
+    testing_implementation: ImportableReference | None = None
 
     @field_serializer("importable_reference")
     def serialize_importable_reference(self, v: Any, info: FieldSerializationInfo):
@@ -66,7 +74,10 @@ class KnownTask(BaseModel):
         if context:
             testing = context.get("testing", False)
             if testing:
-                return {"module": self.testing_module, "function": self.testing_function}
+                return {
+                    "module": self.testing_module,
+                    "function": self.testing_function,
+                }
         return {"module": self.module, "function": self.function}
 
     @property
@@ -92,24 +103,35 @@ class KnownTask(BaseModel):
         # maybe we can also enforce this programmatically.
         mod = importlib.import_module(self.module)
         func = getattr(mod, self.function)
-        assert isinstance(func, distributed), f"{self.importable_reference} is not `@distributed`"
+        assert isinstance(
+            func, distributed
+        ), f"{self.importable_reference} is not `@distributed`"
         return func.func
 
     def parameters_jsonschema(self, omit_args: list[str] | None = None) -> dict:
         func = self._import_func()
         # NOTE: SurfacesDescriptionSchema is a workaround for https://github.com/pydantic/pydantic/issues/9404
         # Once that issue is closed, we can remove SurfaceDescriptionSchema and use the default schema_generator.
-        schema = TypeAdapter(func).json_schema(schema_generator=SurfacesDescriptionSchema)
+        schema = TypeAdapter(func).json_schema(
+            schema_generator=SurfacesDescriptionSchema
+        )
         if omit_args:
-            schema["properties"] = {arg: schema["properties"][arg] for arg in schema["properties"] if arg not in omit_args}
-            schema["required"] = [arg for arg in schema["required"] if arg not in omit_args]
+            schema["properties"] = {
+                arg: schema["properties"][arg]
+                for arg in schema["properties"]
+                if arg not in omit_args
+            }
+            schema["required"] = [
+                arg for arg in schema["required"] if arg not in omit_args
+            ]
         return schema
 
     @property
-    def parameters_annotation(self) -> dict[str, list]:
+    def parameters_annotation(self) -> dict[str, tuple]:
         func = self._import_func()
         return {
-            arg: get_args(annotation) for arg, annotation in func.__annotations__.items()
+            arg: get_args(annotation)
+            for arg, annotation in func.__annotations__.items()
         }
 
     def parameters_annotation_yaml_str(self, omit_args: list[str] | None = None) -> str:
@@ -122,6 +144,7 @@ class KnownTask(BaseModel):
         _ = yaml.load(yaml_str)
         return yaml_str
 
+
 known_tasks = {
     "get_subjectgroup_observations": KnownTask(
         importable_reference="ecoscope_workflows.tasks.python.io.get_subjectgroup_observations",
@@ -133,7 +156,7 @@ known_tasks = {
                 "request_cpu": "500m",
                 "limit_memory": "500Mi",
                 "limit_cpu": 1,
-            }
+            },
         ),
         testing_implementation="ecoscope_workflows.testing.tasks.python.io.get_subjectgroup_observations",
     ),
@@ -147,7 +170,7 @@ known_tasks = {
                 "request_cpu": "500m",
                 "limit_memory": "500Mi",
                 "limit_cpu": 1,
-            }
+            },
         ),
     ),
     "relocations_to_trajectory": KnownTask(
@@ -160,7 +183,7 @@ known_tasks = {
                 "request_cpu": "500m",
                 "limit_memory": "500Mi",
                 "limit_cpu": 1,
-            }
+            },
         ),
     ),
     "calculate_time_density": KnownTask(
@@ -173,7 +196,7 @@ known_tasks = {
                 "request_cpu": "500m",
                 "limit_memory": "500Mi",
                 "limit_cpu": 1,
-            }
+            },
         ),
     ),
 }

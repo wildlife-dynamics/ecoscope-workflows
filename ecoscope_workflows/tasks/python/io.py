@@ -9,18 +9,25 @@ from pydantic import Field
 from pydantic.functional_validators import BeforeValidator
 
 from ecoscope_workflows.decorators import distributed
-from ecoscope_workflows.types import DataFrame, JsonSerializableDataFrameModel
+from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
 
 
-def from_env(value: str | None = None, var_name: str | None  = None) -> str:
+def from_env(_, var_name: str) -> str:
     """If no value is passed, load a value from the provided var_name."""
-    return value if value else os.environ[var_name]
+    value = os.environ.get(var_name)
+    if value is None:
+        raise ValueError(f"Environment variable {var_name} not set.")
+    return value
 
-    
+
 class SubjectGroupObservationsGDFSchema(JsonSerializableDataFrameModel):
-    geometry: pa.typing.Series[Any] = pa.Field()   # see note in tasks/time_density re: geometry typing
+    geometry: pa.typing.Series[Any] = (
+        pa.Field()
+    )  # see note in tasks/time_density re: geometry typing
     groupby_col: pa.typing.Series[object] = pa.Field()
-    fixtime: pa.typing.Series[pd.DatetimeTZDtype] = pa.Field(dtype_kwargs={"unit": "ns", "tz": "UTC"})
+    fixtime: pa.typing.Series[pd.DatetimeTZDtype] = pa.Field(
+        dtype_kwargs={"unit": "ns", "tz": "UTC"}
+    )
     junk_status: pa.typing.Series[bool] = pa.Field()
     # TODO: can we be any more specific about the `extra__` field expectations?
 
@@ -43,11 +50,19 @@ def get_subjectgroup_observations(
         Field(description="EarthRanger password"),
         BeforeValidator(functools.partial(from_env, var_name="ER_PASSWORD")),
     ],
-    tcp_limit: Annotated[int, Field(description="TCP limit for EarthRanger API requests")],
-    sub_page_size: Annotated[int, Field(description="Sub page size for EarthRanger API requests")],
+    tcp_limit: Annotated[
+        int, Field(description="TCP limit for EarthRanger API requests")
+    ],
+    sub_page_size: Annotated[
+        int, Field(description="Sub page size for EarthRanger API requests")
+    ],
     # get_subjectgroup_observations
-    subject_group_name: Annotated[str, Field(description="Name of EarthRanger Subject")],
-    include_inactive: Annotated[bool, Field(description="Whether or not to include inactive subjects")],
+    subject_group_name: Annotated[
+        str, Field(description="Name of EarthRanger Subject")
+    ],
+    include_inactive: Annotated[
+        bool, Field(description="Whether or not to include inactive subjects")
+    ],
     since: Annotated[datetime, Field(description="Start date")],
     until: Annotated[datetime, Field(description="End date")],
 ) -> DataFrame[SubjectGroupObservationsGDFSchema]:
