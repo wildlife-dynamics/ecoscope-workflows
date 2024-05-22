@@ -6,7 +6,7 @@ from pydantic import Field
 
 from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.tasks.python.preprocessing import TrajectoryGDFSchema
-from ecoscope_workflows.types import JsonSerializableDataFrameModel, DataFrame
+from ecoscope_workflows.annotations import JsonSerializableDataFrameModel, DataFrame
 
 
 class TimeDensityReturnGDFSchema(JsonSerializableDataFrameModel):
