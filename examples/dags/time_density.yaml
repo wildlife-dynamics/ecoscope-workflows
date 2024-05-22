@@ -1,7 +1,7 @@
 get_subjectgroup_observations:
-  server:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='URL for EarthRanger API'), BeforeValidator(func=functools.partial(<function from_env at 0x18d125fc0>, var_name='ER_SERVER')))
-  username:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='EarthRanger username'), BeforeValidator(func=functools.partial(<function from_env at 0x18d125fc0>, var_name='ER_USERNAME')))
-  password:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='EarthRanger password'), BeforeValidator(func=functools.partial(<function from_env at 0x18d125fc0>, var_name='ER_PASSWORD')))
+  server:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='URL for EarthRanger API'), BeforeValidator(func=functools.partial(<function from_env at 0x10bce0310>, var_name='ER_SERVER')))
+  username:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='EarthRanger username'), BeforeValidator(func=functools.partial(<function from_env at 0x10bce0310>, var_name='ER_USERNAME')))
+  password:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='EarthRanger password'), BeforeValidator(func=functools.partial(<function from_env at 0x10bce0310>, var_name='ER_PASSWORD')))
   tcp_limit:   # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='TCP limit for EarthRanger API requests'))
   sub_page_size:   # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='Sub page size for EarthRanger API requests'))
   subject_group_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of EarthRanger Subject'))
@@ -21,7 +21,7 @@ relocations_to_trajectory:
 calculate_time_density:
   pixel_size:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=250.0, description='Pixel size for raster profile.'))
   crs:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default='ESRI:102022'))
-  nodata_value:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=nan, metadata=[_PydanticGeneralMetadata(allow_inf_nan=True)]))
+  nodata_value:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default='nan', metadata=[_PydanticGeneralMetadata(allow_inf_nan=True)]))
   band_count:   # (<class 'int'>, FieldInfo(annotation=NoneType, required=False, default=1))
   max_speed_factor:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=1.05))
   expansion_factor:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=1.3))

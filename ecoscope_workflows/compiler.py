@@ -148,7 +148,6 @@ class DagCompiler(BaseModel):
             for t in self.tasks
         }
 
-    @ruff_formatted
     def dag_params_yaml(self) -> str:
         yaml_str = ""
         for t in self.tasks:
