@@ -143,7 +143,7 @@
                 "type": "string"
             },
             "nodata_value": {
-                "default": NaN,
+                "default": "nan",
                 "title": "Nodata Value",
                 "type": "number"
             },

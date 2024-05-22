@@ -24,7 +24,7 @@ def calculate_time_density(
         Field(default=250.0, description="Pixel size for raster profile."),
     ],
     crs: Annotated[str, Field(default="ESRI:102022")],
-    nodata_value: Annotated[float, Field(default=float("nan"), allow_inf_nan=True)],
+    nodata_value: Annotated[float, Field(default="nan", allow_inf_nan=True)],
     band_count: Annotated[int, Field(default=1)],
     # time density
     max_speed_factor: Annotated[float, Field(default=1.05)],
