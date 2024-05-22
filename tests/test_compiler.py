@@ -78,39 +78,33 @@ def test_dag_builder_generate_dag_script_sequential(dag_compiler: DagCompiler):
     dag_compiler.template = "script-sequential.jinja2"
     dag_str = dag_compiler._generate_dag()
 
-    # TODO: remove after this looks right
     with open(
         EXAMPLES_DIR
         / "dags"
         / "scripts-sequential"
         / "time_density_script_sequential.py",
-        "w",
     ) as f:
-        f.write(dag_str)
-    # with open(EXAMPLES_DIR / "dags" / "calculate_time_density.py") as f:
-    #     assert dag_str == f.read()
+        assert dag_str == f.read()
 
 
 def test_dag_builder_dag_params_schema(dag_compiler: DagCompiler):
     params = dag_compiler.dag_params_schema()
-
-    # TODO: remove after this looks right
-    with open(EXAMPLES_DIR / "dags" / "time_density.json", "w") as f:
-        json.dump(params, f, indent=4)
     assert "get_subjectgroup_observations" in params
     assert "process_relocations" in params
 
-    # with open(EXAMPLES_DIR / "dags" / "calculate_time_density.json") as f:
-    #     assert params == json.load(f)
-    # TODO: assert valid json schema
+    with open(EXAMPLES_DIR / "dags" / "time_density.json") as f:
+        current_example = json.load(f)
+    assert params == current_example
 
 
 def test_dag_builder_dag_params_yaml_template(dag_compiler: DagCompiler):
     yaml_str = dag_compiler.dag_params_yaml()
     yaml = ruamel.yaml.YAML(typ="rt")
-    # TODO: remove after this looks right
-    with open(EXAMPLES_DIR / "dags" / "time_density.yaml", "w") as f:
-        yaml.dump(yaml.load(yaml_str), f)
+
+    with open(EXAMPLES_DIR / "dags" / "time_density.yaml") as f:
+        current_example = yaml.load(f)
+
+    assert yaml.load(yaml_str) == current_example
 
 
 # def test_dag_builder(dag_builder: DagBuilder):
