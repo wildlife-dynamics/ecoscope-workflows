@@ -85,7 +85,6 @@
             }
         },
         "required": [
-            "observations",
             "filter_point_coords",
             "relocs_columns"
         ],
@@ -120,7 +119,6 @@
             }
         },
         "required": [
-            "relocations",
             "min_length_meters",
             "max_length_meters",
             "max_time_secs",
@@ -180,9 +178,7 @@
                 "type": "array"
             }
         },
-        "required": [
-            "trajectory_gdf"
-        ],
+        "required": [],
         "type": "object"
     }
 }
