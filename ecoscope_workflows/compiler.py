@@ -103,13 +103,20 @@ class DagCompiler(BaseModel):
             context={"testing": self.testing},
         )
 
+    @property
+    def _omit_args(self) -> list[str]:
+        # for a given task arg, if it is dependent on another task's return value,
+        # we don't need to include it in the `dag_params_schema`,
+        # because we don't need it to be passed as a parameter by the user.
+        return ["return"] + [arg for t in self.tasks for arg in t.arg_dependencies]
+
     def dag_params_schema(self) -> dict[str, dict]:
-        return {t.known_task_name: t.known_task.parameters_jsonschema() for t in self.tasks}
+        return {t.known_task_name: t.known_task.parameters_jsonschema(omit_args=self._omit_args) for t in self.tasks}
     
     def dag_params_yaml(self) -> str:
         yaml_str = ""
         for t in self.tasks:
-            yaml_str += t.known_task.parameters_annotation_yaml_str()
+            yaml_str += t.known_task.parameters_annotation_yaml_str(omit_args=self._omit_args)
         return yaml_str
 
     def _generate_dag(self) -> str:

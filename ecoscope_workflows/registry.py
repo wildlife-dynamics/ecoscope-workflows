@@ -95,11 +95,15 @@ class KnownTask(BaseModel):
         assert isinstance(func, distributed), f"{self.importable_reference} is not `@distributed`"
         return func.func
 
-    def parameters_jsonschema(self) -> dict:
+    def parameters_jsonschema(self, omit_args: list[str] | None = None) -> dict:
         func = self._import_func()
         # NOTE: SurfacesDescriptionSchema is a workaround for https://github.com/pydantic/pydantic/issues/9404
-        # Once that issue is closed, we can remove SurfaceDescriptionSchema and the default schema_generator.
-        return TypeAdapter(func).json_schema(schema_generator=SurfacesDescriptionSchema)
+        # Once that issue is closed, we can remove SurfaceDescriptionSchema and use the default schema_generator.
+        schema = TypeAdapter(func).json_schema(schema_generator=SurfacesDescriptionSchema)
+        if omit_args:
+            schema["properties"] = {arg: schema["properties"][arg] for arg in schema["properties"] if arg not in omit_args}
+            schema["required"] = [arg for arg in schema["required"] if arg not in omit_args]
+        return schema
 
     @property
     def parameters_annotation(self) -> dict[str, list]:
@@ -108,10 +112,12 @@ class KnownTask(BaseModel):
             arg: get_args(annotation) for arg, annotation in func.__annotations__.items()
         }
 
-    def parameters_annotation_yaml_str(self) -> str:
+    def parameters_annotation_yaml_str(self, omit_args: list[str] | None = None) -> str:
         yaml = ruamel.yaml.YAML(typ="rt")
         yaml_str = f"{self.function}:\n"
         for arg, param in self.parameters_annotation.items():
+            if omit_args and arg in omit_args:
+                continue  # skip this arg
             yaml_str += f"  {arg}:   # {param}\n"
         _ = yaml.load(yaml_str)
         return yaml_str
