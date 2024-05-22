@@ -1,10 +1,16 @@
 import copy
 import pathlib
-from typing import Callable
+from typing import Any, Callable
 
 import pandera as pa
 from jinja2 import Environment, FileSystemLoader
-from pydantic import BaseModel, Field, computed_field
+from pydantic import (
+    BaseModel,
+    Field,
+    FieldSerializationInfo,
+    computed_field,
+    field_serializer,
+)
 
 from ecoscope_workflows.registry import KnownTask, known_deserializers, known_tasks
 from ecoscope_workflows.annotations import is_subscripted_pandera_dataframe
@@ -14,7 +20,7 @@ TEMPLATES = pathlib.Path(__file__).parent / "templates"
 
 
 class TasksSpec(BaseModel):
-    tasks: dict[str, dict[str, str] | None]
+    tasks: dict[str, dict[str, str]]
     # TODO: pydantic validator for `self.tasks`, as follows:
     #  - all outer dict keys must be registered `known_tasks`
     #  - all inner dict keys must be argument names on the known task they are nested under
@@ -30,12 +36,19 @@ class TaskInstance(BaseModel):
     arg_prevalidators: dict = Field(default_factory=dict)
     return_postvalidator: Callable | None = None
 
-    @computed_field
+    @computed_field  # type: ignore[misc]
     @property
     def known_task(self) -> KnownTask:
         kt = known_tasks[self.known_task_name]
         assert self.known_task_name == kt.function
         return kt
+
+    @field_serializer("arg_prevalidators")
+    def serialize_importable_reference(self, v: Any, info: FieldSerializationInfo):
+        context: dict = info.context
+        if context:
+            pass
+        return {k: v.__name__ for k, v in self.arg_prevalidators.items()}
 
     def validate_argprevalidators(self): ...
 

@@ -18,6 +18,7 @@ def spec(request: pytest.FixtureRequest) -> dict:
     with open(example_spec_path) as f:
         return yaml.safe_load(f)
 
+
 params = """\
 get_subjectgroup_observations:
   server:  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='URL for EarthRanger API'))
@@ -59,12 +60,17 @@ def test_example(spec: dict, tmp_path: Path):
     script_outpath = tmp / "script.py"
     with open(script_outpath, mode="w") as f:
         f.write(script)
-    
+
     params_outpath = tmp / "params.yaml"
     with open(params_outpath, "w") as f:
         f.write(params)
 
-    cmd = ["python3", script_outpath.as_posix(), "--config-file", params_outpath]
+    cmd = [
+        "python3",
+        script_outpath.as_posix(),
+        "--config-file",
+        params_outpath.as_posix(),
+    ]
     out = subprocess.run(cmd)
     assert out.returncode == 0
     print(out.stdout)

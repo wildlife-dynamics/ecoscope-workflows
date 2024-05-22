@@ -37,11 +37,9 @@ class KubernetesPodOperator(BaseModel):
     container_resources: dict
 
 
-def _rsplit_importable_reference(reference: str) -> tuple[str, str]:
+def _rsplit_importable_reference(reference: str) -> list[str]:
     """Splits enclosing module and object name from importable reference."""
-    split = reference.rsplit(".", 1)
-    assert len(split) == 2, f"{reference} is not a valid importable reference."
-    return tuple(split)
+    return reference.rsplit(".", 1)
 
 
 def _validate_importable_reference(reference: str):
@@ -85,16 +83,24 @@ class KnownTask(BaseModel):
         return _rsplit_importable_reference(self.importable_reference)[0]
 
     @property
-    def testing_module(self) -> str:
-        return _rsplit_importable_reference(self.testing_implementation)[0]
+    def testing_module(self) -> str | None:
+        return (
+            _rsplit_importable_reference(self.testing_implementation)[0]
+            if self.testing_implementation
+            else None
+        )
 
     @property
     def function(self) -> str:
         return _rsplit_importable_reference(self.importable_reference)[1]
 
     @property
-    def testing_function(self) -> str:
-        return _rsplit_importable_reference(self.testing_implementation)[1]
+    def testing_function(self) -> str | None:
+        return (
+            _rsplit_importable_reference(self.testing_implementation)[1]
+            if self.testing_implementation
+            else None
+        )
 
     def _import_func(self) -> Callable:
         # imports the distributed function. we will need to be clear in docs about what imports are
@@ -202,5 +208,5 @@ known_tasks = {
 }
 
 known_deserializers = {
-    pa.typing.DataFrame: gpd_from_parquet_uri.__name__,
+    pa.typing.DataFrame: gpd_from_parquet_uri,
 }

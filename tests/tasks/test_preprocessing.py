@@ -4,6 +4,7 @@ import geopandas as gpd
 import pandas as pd
 import pytest
 
+from ecoscope_workflows.serde import gpd_from_parquet_uri
 from ecoscope_workflows.tasks.python.preprocessing import (
     process_relocations,
     relocations_to_trajectory,
@@ -31,14 +32,11 @@ def test_process_relocations(observations_parquet_path: str, tmp_path):
         gdf.to_parquet(path)
         return path.as_posix()
 
-    distributed_kws = dict(
-        arg_prevalidators={"observations": lambda path: gpd.read_parquet(path)},
+    result_path = process_relocations.replace(
+        arg_prevalidators={"observations": gpd_from_parquet_uri},
         return_postvalidator=serialize_result,
         validate=True,
-    )
-    result_path = process_relocations.replace(**distributed_kws)(
-        observations_parquet_path, **kws
-    )
+    )(observations_parquet_path, **kws)
     distributed_result = gpd.read_parquet(result_path)
 
     pd.testing.assert_frame_equal(in_memory, distributed_result)
@@ -71,14 +69,11 @@ def test_relocations_to_trajectory(relocations_parquet_path: str, tmp_path):
         gdf.to_parquet(path)
         return path.as_posix()
 
-    distributed_kws = dict(
-        arg_prevalidators={"relocations": lambda path: gpd.read_parquet(path)},
+    result_path = relocations_to_trajectory.replace(
+        arg_prevalidators={"relocations": gpd_from_parquet_uri},
         return_postvalidator=serialize_result,
         validate=True,
-    )
-    result_path = relocations_to_trajectory.replace(**distributed_kws)(
-        relocations_parquet_path, **kws
-    )
+    )(relocations_parquet_path, **kws)
     distributed_result = gpd.read_parquet(result_path)
 
     pd.testing.assert_frame_equal(in_memory, distributed_result)

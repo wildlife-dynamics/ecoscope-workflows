@@ -6,6 +6,7 @@ import ruamel.yaml
 
 from ecoscope_workflows.compiler import DagCompiler, TaskInstance
 from ecoscope_workflows.registry import KnownTask, known_tasks
+from ecoscope_workflows.serde import gpd_from_parquet_uri
 
 EXAMPLES_DIR = pathlib.Path(__file__).parent.parent / "examples"
 
@@ -28,21 +29,21 @@ def time_density_tasks():
             arg_dependencies={
                 "observations": "get_subjectgroup_observations_return",
             },
-            arg_prevalidators={"observations": "gpd_from_parquet_uri"},
+            arg_prevalidators={"observations": gpd_from_parquet_uri},
         ),
         TaskInstance(
             known_task_name="relocations_to_trajectory",
             arg_dependencies={
                 "relocations": "process_relocations_return",
             },
-            arg_prevalidators={"relocations": "gpd_from_parquet_uri"},
+            arg_prevalidators={"relocations": gpd_from_parquet_uri},
         ),
         TaskInstance(
             known_task_name="calculate_time_density",
             arg_dependencies={
                 "trajectory_gdf": "relocations_to_trajectory_return",
             },
-            arg_prevalidators={"trajectory_gdf": "gpd_from_parquet_uri"},
+            arg_prevalidators={"trajectory_gdf": gpd_from_parquet_uri},
         ),
     ]
 

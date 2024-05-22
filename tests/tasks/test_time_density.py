@@ -4,6 +4,7 @@ import pandas as pd
 import pytest
 import geopandas as gpd
 
+from ecoscope_workflows.serde import gpd_from_parquet_uri
 from ecoscope_workflows.tasks.python.analysis import calculate_time_density
 
 
@@ -47,15 +48,12 @@ def test_calculate_time_density(
         gdf.to_parquet(path)
         return path.as_posix()
 
-    distributed_kws = dict(
-        arg_prevalidators={"trajectory_gdf": lambda path: gpd.read_parquet(path)},
+    # note two things: we are passing *a path*, not a GeoDataFrame, and we also return a path
+    result_path = calculate_time_density.replace(
+        arg_prevalidators={"trajectory_gdf": gpd_from_parquet_uri},
         return_postvalidator=serialize_result,
         validate=True,
-    )
-    # note two things: we are passing *a path*, not a GeoDataFrame, and we also return a path
-    result_path = calculate_time_density.replace(**distributed_kws)(
-        trajectory_parquet_path, **kws
-    )
+    )(trajectory_parquet_path, **kws)
     # the result of this call *is a path* to the serialized result, so we need to load it from disk
     distributed_result = gpd.read_parquet(result_path)
     # assert distributed result is the same as the in_memory result
