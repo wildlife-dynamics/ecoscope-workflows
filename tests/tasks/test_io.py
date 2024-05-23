@@ -7,7 +7,7 @@ import geopandas as gpd
 import pandas as pd
 import pytest
 
-from ecoscope_workflows.tasks.python.io import get_subjectgroup_observations
+from ecoscope_workflows.tasks.io import get_subjectgroup_observations
 
 
 @pytest.mark.io
@@ -48,7 +48,7 @@ def test_subjectgroup_observations(tmp_path):
 
     # we've cached this result to speed up downstream tests, to make sure the cache is not stale
     cached = gpd.read_parquet(
-        resources.files("ecoscope_workflows.tasks.python.io")
-        / "get-subjectgroup-observations.parquet"
+        resources.files("ecoscope_workflows.tasks.io")
+        / "get-subjectgroup-observations-example-data.parquet"
     )
     pd.testing.assert_frame_equal(in_memory, cached)

@@ -6,13 +6,13 @@ import pytest
 import geopandas as gpd
 
 from ecoscope_workflows.serde import gpd_from_parquet_uri
-from ecoscope_workflows.tasks.python.analysis import calculate_time_density
+from ecoscope_workflows.tasks.analysis import calculate_time_density
 
 
 @pytest.fixture
 def trajectory_parquet_path():
     return (
-        resources.files("ecoscope_workflows.tasks.python.preprocessing")
+        resources.files("ecoscope_workflows.tasks.preprocessing")
         / "relocations-to-trajectory-example-return.parquet"
     )
 

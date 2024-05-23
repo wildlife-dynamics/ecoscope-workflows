@@ -1,10 +1,10 @@
 import argparse
 import yaml
 
-from ecoscope_workflows.tasks.python.io import get_subjectgroup_observations
-from ecoscope_workflows.tasks.python.preprocessing import process_relocations
-from ecoscope_workflows.tasks.python.preprocessing import relocations_to_trajectory
-from ecoscope_workflows.tasks.python.analysis import calculate_time_density
+from ecoscope_workflows.tasks.io import get_subjectgroup_observations
+from ecoscope_workflows.tasks.preprocessing import process_relocations
+from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
+from ecoscope_workflows.tasks.analysis import calculate_time_density
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

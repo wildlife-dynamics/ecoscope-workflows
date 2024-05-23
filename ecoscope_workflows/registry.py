@@ -122,7 +122,7 @@ class KnownTask(BaseModel):
 
 known_tasks = {
     "get_subjectgroup_observations": KnownTask(
-        importable_reference="ecoscope_workflows.tasks.python.io.get_subjectgroup_observations",
+        importable_reference="ecoscope_workflows.tasks.io.get_subjectgroup_observations",
         operator=KubernetesPodOperator(
             image="ecoscope-workflows:latest",
             name="pod",  # TODO: defer assignment of this?
@@ -135,7 +135,7 @@ known_tasks = {
         ),
     ),
     "process_relocations": KnownTask(
-        importable_reference="ecoscope_workflows.tasks.python.preprocessing.process_relocations",
+        importable_reference="ecoscope_workflows.tasks.preprocessing.process_relocations",
         operator=KubernetesPodOperator(
             image="ecoscope-workflows:latest",
             name="pod",  # TODO: defer assignment of this?
@@ -148,7 +148,7 @@ known_tasks = {
         ),
     ),
     "relocations_to_trajectory": KnownTask(
-        importable_reference="ecoscope_workflows.tasks.python.preprocessing.relocations_to_trajectory",
+        importable_reference="ecoscope_workflows.tasks.preprocessing.relocations_to_trajectory",
         operator=KubernetesPodOperator(
             image="ecoscope-workflows:latest",
             name="pod",  # TODO: defer assignment of this?
@@ -161,7 +161,7 @@ known_tasks = {
         ),
     ),
     "calculate_time_density": KnownTask(
-        importable_reference="ecoscope_workflows.tasks.python.analysis.calculate_time_density",
+        importable_reference="ecoscope_workflows.tasks.analysis.calculate_time_density",
         operator=KubernetesPodOperator(
             image="ecoscope-workflows:latest",
             name="pod",  # TODO: defer assignment of this?

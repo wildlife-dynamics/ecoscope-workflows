@@ -5,7 +5,7 @@ import pandera as pa
 from pydantic import Field
 
 from ecoscope_workflows.decorators import distributed
-from ecoscope_workflows.tasks.python.preprocessing import TrajectoryGDFSchema
+from ecoscope_workflows.tasks.preprocessing import TrajectoryGDFSchema
 from ecoscope_workflows.annotations import JsonSerializableDataFrameModel, DataFrame
 
 

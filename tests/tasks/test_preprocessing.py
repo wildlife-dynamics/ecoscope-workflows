@@ -6,7 +6,7 @@ import pandas as pd
 import pytest
 
 from ecoscope_workflows.serde import gpd_from_parquet_uri
-from ecoscope_workflows.tasks.python.preprocessing import (
+from ecoscope_workflows.tasks.preprocessing import (
     process_relocations,
     relocations_to_trajectory,
 )
@@ -15,7 +15,7 @@ from ecoscope_workflows.tasks.python.preprocessing import (
 @pytest.fixture
 def observations_parquet_path():
     return (
-        resources.files("ecoscope_workflows.tasks.python.io")
+        resources.files("ecoscope_workflows.tasks.io")
         / "get-subjectgroup-observations-example-return.parquet"
     )
 
@@ -45,7 +45,7 @@ def test_process_relocations(observations_parquet_path: str, tmp_path):
 
     # we've cached this result for downstream tests, to make sure the cache is not stale
     cached = gpd.read_parquet(
-        resources.files("ecoscope_workflows.tasks.python.preprocessing")
+        resources.files("ecoscope_workflows.tasks.preprocessing")
         / "process-relocations-example-return.parquet"
     )
     pd.testing.assert_frame_equal(in_memory, cached)
@@ -54,7 +54,7 @@ def test_process_relocations(observations_parquet_path: str, tmp_path):
 @pytest.fixture
 def process_relocations_parquet_path():
     return (
-        resources.files("ecoscope_workflows.tasks.python.preprocessing")
+        resources.files("ecoscope_workflows.tasks.preprocessing")
         / "process-relocations-example-return.parquet"
     )
 
@@ -88,7 +88,7 @@ def test_relocations_to_trajectory(process_relocations_parquet_path: str, tmp_pa
 
     # we've cached this result for downstream tests, to make sure the cache is not stale
     cached = gpd.read_parquet(
-        resources.files("ecoscope_workflows.tasks.python.preprocessing")
+        resources.files("ecoscope_workflows.tasks.preprocessing")
         / "relocations-to-trajectory-example-return.parquet"
     )
     pd.testing.assert_frame_equal(in_memory, cached)
