@@ -8,3 +8,5 @@ tasks:
     relocations: process_relocations
   calculate_time_density:
     trajectory_gdf: relocations_to_trajectory
+  draw_ecomap:
+    geodataframe: calculate_time_density

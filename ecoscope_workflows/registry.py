@@ -173,6 +173,19 @@ known_tasks = {
             },
         ),
     ),
+    "draw_ecomap": KnownTask(
+        importable_reference="ecoscope_workflows.tasks.results.draw_ecomap",
+        operator=KubernetesPodOperator(
+            image="ecoscope-workflows:latest",
+            name="pod",  # TODO: defer assignment of this?
+            container_resources={
+                "request_memory": "128Mi",
+                "request_cpu": "500m",
+                "limit_memory": "500Mi",
+                "limit_cpu": 1,
+            },
+        ),
+    ),
 }
 
 known_deserializers = {
