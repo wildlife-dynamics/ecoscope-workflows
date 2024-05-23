@@ -54,6 +54,8 @@ calculate_time_density:
 def test_example(spec: dict, tmp_path: Path):
     dc = DagCompiler.from_spec(spec=spec)
     dc.template = "script-sequential.jinja2"
+    dc.testing = True
+    dc.mock_tasks = ["get_subjectgroup_observations"]
     script = dc._generate_dag()
     tmp = tmp_path / "tmp"
     tmp.mkdir()
@@ -71,6 +73,6 @@ def test_example(spec: dict, tmp_path: Path):
         "--config-file",
         params_outpath.as_posix(),
     ]
-    out = subprocess.run(cmd)
+    out = subprocess.run(cmd, capture_output=True, text=True)
     assert out.returncode == 0
     print(out.stdout)

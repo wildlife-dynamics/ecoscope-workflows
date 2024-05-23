@@ -2,13 +2,12 @@
 # -------------------------START MOCKING IMPORTS-----------------------------
 # This code was generated in a testing context that specified certain functions
 # shoud be mocked. The following block is included to permit generation of mocks.
-from importlib.resources import files
-from typing import Protocol, TYPE_CHECKING
+from importlib import resources
+from typing import Protocol
 from unittest.mock import create_autospec
 
-if TYPE_CHECKING:
-    class mock_distributed_task(Protocol):
-        def replace(validate: bool): ...
+class mock_distributed_task(Protocol):
+    def replace(validate: bool): ...
 # --------------------------END MOCKING IMPORTS------------------------------
 {% endif %}
 

@@ -82,8 +82,8 @@ class KnownTask(BaseModel):
                 # match the signature of the wrapped function, to require same arguments
                 mock_{self.function}.replace.return_value = create_autospec({self.function}.func)
                 # TODO: what if sample data is not a geopandas dataframe?
-                from ecoscope.workflows.serde import gpd_from_parquet_uri
-                sample_data = gpd_from_parquet_uri({self.sample_data_path})
+                from ecoscope_workflows.serde import gpd_from_parquet_uri
+                sample_data = gpd_from_parquet_uri(resources.files("{self.module}") / "{self.sample_data_fname}")
                 mock_{self.function}.replace.return_value.return_value = sample_data
                 {self.function} = mock_{self.function}
                 # ------------------------------END MOCK-----------------------------------
@@ -94,6 +94,12 @@ class KnownTask(BaseModel):
             "function": self.function,
             "statement": statement,
         }
+
+    @property
+    def sample_data_fname(self) -> str:
+        return (
+            f"{self.function.replace('_', '-')}.parquet"  # FIXME: might not be parquet
+        )
 
     @property
     def module(self) -> str:
