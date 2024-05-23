@@ -10,7 +10,7 @@ import yaml
 {%- if testing %}
 import warnings  # 🧪
 from ecoscope_workflows.testing import create_distributed_task_magicmock  # 🧪
-{% endif -%}
+{% endif %}
 
 {% for t in tasks -%}
 {{ t.known_task.importable_reference.statement }}
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     params = yaml.safe_load(args.config_file)
     {%- if testing %}
     warnings.warn("This test script should not be used in production!")  # 🧪
-    {% endif -%}
+    {% endif %}
     # FIXME: first pass assumes tasks are already in topological order
     {% for t in tasks %}
     {{ t.known_task.importable_reference.function }}_return = {{ t.known_task.importable_reference.function }}.replace(validate=True)(
