@@ -14,9 +14,9 @@ from pydantic.functional_validators import AfterValidator
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
 from ecoscope_workflows.serde import gpd_from_parquet_uri
 from ecoscope_workflows.util import (
-    _rsplit_importable_reference,
-    _validate_importable_reference,
     import_distributed_task_from_reference,
+    rsplit_importable_reference,
+    validate_importable_reference,
 )
 
 # def process_entries():
@@ -40,7 +40,7 @@ class KubernetesPodOperator(BaseModel):
     container_resources: dict
 
 
-ImportableReference = Annotated[str, AfterValidator(_validate_importable_reference)]
+ImportableReference = Annotated[str, AfterValidator(validate_importable_reference)]
 
 
 class KnownTask(BaseModel):
@@ -85,11 +85,11 @@ class KnownTask(BaseModel):
 
     @property
     def module(self) -> str:
-        return _rsplit_importable_reference(self.importable_reference)[0]
+        return rsplit_importable_reference(self.importable_reference)[0]
 
     @property
     def function(self) -> str:
-        return _rsplit_importable_reference(self.importable_reference)[1]
+        return rsplit_importable_reference(self.importable_reference)[1]
 
     def parameters_jsonschema(self, omit_args: list[str] | None = None) -> dict:
         func = import_distributed_task_from_reference(self.module, self.function)
