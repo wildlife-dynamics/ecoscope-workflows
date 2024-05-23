@@ -50,7 +50,7 @@ def _example_return_path_from_task_reference(anchor: str, func_name: str) -> Pat
     example_return_fnames_for_task = [
         f
         for f in all_example_return_fnames
-        if f.stem == f"{func_name.replace('_', '-')}-example-return"
+        if f.stem == f"{func_name.replace('_', '-')}.example-return"
     ]
     assert (
         len(example_return_fnames_for_task) == 1

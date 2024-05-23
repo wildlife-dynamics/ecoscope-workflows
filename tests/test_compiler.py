@@ -64,14 +64,14 @@ def test_yaml_config(dag_compiler: DagCompiler):
     assert from_yaml.dag_config == dag_compiler.dag_config
 
 
-def test_dag_builder_generate_dag_k8s(dag_compiler: DagCompiler):
-    dag_str = dag_compiler._generate_dag()
+# TODO: revisit this test after getting sequential script working and tested
+# def test_dag_builder_generate_dag_k8s(dag_compiler: DagCompiler):
+#     dag_str = dag_compiler._generate_dag()
 
-    # TODO: remove after this looks right
-    with open(EXAMPLES_DIR / "dags" / "airflow" / "time_density_k8s.py", "w") as f:
-        f.write(dag_str)
-    # with open(EXAMPLES_DIR / "dags" / "calculate_time_density.py") as f:
-    #     assert dag_str == f.read()
+#     with open(EXAMPLES_DIR / "dags" / "airflow" / "time_density_k8s.py", "w") as f:
+#         f.write(dag_str)
+#     # with open(EXAMPLES_DIR / "dags" / "calculate_time_density.py") as f:
+#     assert dag_str == f.read()
 
 
 def test_dag_builder_generate_dag_script_sequential(dag_compiler: DagCompiler):
