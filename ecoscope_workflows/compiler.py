@@ -85,7 +85,7 @@ class DagCompiler(BaseModel):
 
     # compilation settings
     testing: bool = False
-
+    mock_tasks: list[str] = Field(default_factory=list)
     # TODO: on __init__ (or in cached_property), sort tasks
     # topologically so we know what order to invoke them in dag
 
@@ -128,9 +128,16 @@ class DagCompiler(BaseModel):
 
     @property
     def dag_config(self) -> dict:
+        if self.mock_tasks and not self.testing:
+            raise ValueError(
+                "If you provide mocks, you must set `testing=True` to use them."
+            )
         return self.model_dump(
             exclude={"template", "template_dir"},
-            context={"testing": self.testing},
+            context={
+                "testing": self.testing,
+                "mocks": self.mock_tasks,
+            },
         )
 
     @property

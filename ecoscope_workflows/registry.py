@@ -5,6 +5,7 @@ Can be mutated with entry points.
 import importlib
 
 # from importlib.metadata import entry_points
+from textwrap import dedent
 from typing import Annotated, Any, Callable, get_args
 
 import ruamel.yaml
@@ -64,43 +65,42 @@ class KnownTask(BaseModel):
     importable_reference: ImportableReference
     # tags: list[str]
     operator: KubernetesPodOperator
-    testing_implementation: ImportableReference | None = None
 
     @field_serializer("importable_reference")
     def serialize_importable_reference(self, v: Any, info: FieldSerializationInfo):
+        statement = f"from {self.module} import {self.function}"
         context: dict = info.context
-        if context:
-            testing = context.get("testing", False)
-            if testing:
-                return {
-                    "module": self.testing_module,
-                    "function": self.testing_function,
-                }
-        return {"module": self.module, "function": self.function}
+        testing = context.get("testing", False)
+        mocks = context.get("mocks", [])
+        if testing and self.function in mocks:
+            statement += dedent(
+                f"""
+                # -----------------------------START MOCK----------------------------------
+                # This code was generated in a testing context that specified
+                # `{self.function}` should be mocked. Here is the mock:
+                mock_{self.function}: mock_distributed_task = create_autospec({self.function})
+                # match the signature of the wrapped function, to require same arguments
+                mock_{self.function}.replace.return_value = create_autospec({self.function}.func)
+                # TODO: load actual return value from file here
+                sample_data = ...
+                mock_{self.function}.replace.return_value.return_value = sample_data
+                {self.function} = mock_{self.function}
+                # ------------------------------END MOCK-----------------------------------
+                """
+            )
+        return {
+            "module": self.module,
+            "function": self.function,
+            "statement": statement,
+        }
 
     @property
     def module(self) -> str:
         return _rsplit_importable_reference(self.importable_reference)[0]
 
     @property
-    def testing_module(self) -> str | None:
-        return (
-            _rsplit_importable_reference(self.testing_implementation)[0]
-            if self.testing_implementation
-            else None
-        )
-
-    @property
     def function(self) -> str:
         return _rsplit_importable_reference(self.importable_reference)[1]
-
-    @property
-    def testing_function(self) -> str | None:
-        return (
-            _rsplit_importable_reference(self.testing_implementation)[1]
-            if self.testing_implementation
-            else None
-        )
 
     def _import_func(self) -> Callable:
         # imports the distributed function. we will need to be clear in docs about what imports are
@@ -164,7 +164,6 @@ known_tasks = {
                 "limit_cpu": 1,
             },
         ),
-        testing_implementation="ecoscope_workflows.testing.tasks.python.io.get_subjectgroup_observations",
     ),
     "process_relocations": KnownTask(
         importable_reference="ecoscope_workflows.tasks.python.preprocessing.process_relocations",
