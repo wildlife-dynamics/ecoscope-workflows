@@ -1,5 +1,6 @@
 import argparse
 import yaml
+
 from ecoscope_workflows.tasks.python.io import get_subjectgroup_observations
 from ecoscope_workflows.tasks.python.preprocessing import process_relocations
 from ecoscope_workflows.tasks.python.preprocessing import relocations_to_trajectory
@@ -15,7 +16,6 @@ if __name__ == "__main__":
         type=argparse.FileType(mode="r"),
     )
     args = parser.parse_args()
-    # TODO: omit fields which are listed in arg_dependencies at the TaskInstance level
     params = yaml.safe_load(args.config_file)
     # FIXME: first pass assumes tasks are already in topological order
 
