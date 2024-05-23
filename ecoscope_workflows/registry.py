@@ -3,7 +3,6 @@ Can be mutated with entry points.
 """
 
 # from importlib.metadata import entry_points
-from textwrap import dedent
 from typing import Annotated, Any, get_args
 
 import ruamel.yaml
@@ -50,31 +49,24 @@ class KnownTask(BaseModel):
 
     @field_serializer("importable_reference")
     def serialize_importable_reference(self, v: Any, info: FieldSerializationInfo):
-        statement = f"from {self.module} import {self.function}"
         context: dict = info.context
         testing = context.get("testing", False)
         mocks = context.get("mocks", [])
-        if testing and self.function in mocks:
-            statement += dedent(
-                f"""
-                # -----------------------------START MOCK----------------------------------
-                # This code was generated in a testing context that specified
-                # `{self.function}` should be mocked. Here is the mock:
-                mock_{self.function}: mock_distributed_task = create_autospec({self.function})
-                # match the signature of the wrapped function, to require same arguments
-                mock_{self.function}.replace.return_value = create_autospec({self.function}.func)
-                # TODO: what if sample data is not a geopandas dataframe?
-                from ecoscope_workflows.serde import gpd_from_parquet_uri
-                sample_data = gpd_from_parquet_uri(resources.files("{self.module}") / "{self.sample_data_fname}")
-                mock_{self.function}.replace.return_value.return_value = sample_data
-                {self.function} = mock_{self.function}
-                # ------------------------------END MOCK-----------------------------------
-                """
-            )
         return {
             "module": self.module,
             "function": self.function,
-            "statement": statement,
+            "statement": (
+                (
+                    # if this is a testing context, and a mock was requested:
+                    f"{self.function} = create_distributed_task_magicmock(  # 🧪\n"
+                    f"    anchor='{self.module}',  # 🧪\n"
+                    f"    func_name='{self.function}',  # 🧪\n"
+                    ")  # 🧪"
+                )
+                if testing and self.function in mocks
+                # but in most cases just import the function in a normal way
+                else f"from {self.module} import {self.function}"
+            ),
         }
 
     @property

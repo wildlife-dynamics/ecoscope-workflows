@@ -1,18 +1,16 @@
 {%- if testing %}
-# -------------------------START MOCKING IMPORTS-----------------------------
-# This code was generated in a testing context that specified certain functions
-# shoud be mocked. The following block is included to permit generation of mocks.
-from importlib import resources
-from typing import Protocol
-from unittest.mock import create_autospec
-
-class mock_distributed_task(Protocol):
-    def replace(validate: bool): ...
-# --------------------------END MOCKING IMPORTS------------------------------
-{% endif %}
+"""WARNING: This file is generated in a testing context and should not be used in production.
+Lines specific to the testing context are marked with a test tube emoji (🧪) to indicate
+that they would not be included (or would be different) in the production version of this file.
+"""
+{% endif -%}
 
 import argparse
 import yaml
+{%- if testing %}
+import warnings  # 🧪
+from ecoscope_workflows.testing import create_distributed_task_magicmock  # 🧪
+{% endif -%}
 
 {% for t in tasks -%}
 {{ t.known_task.importable_reference.statement }}
@@ -30,6 +28,9 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     params = yaml.safe_load(args.config_file)
+    {%- if testing %}
+    warnings.warn("This test script should not be used in production!")  # 🧪
+    {% endif -%}
     # FIXME: first pass assumes tasks are already in topological order
     {% for t in tasks %}
     {{ t.known_task.importable_reference.function }}_return = {{ t.known_task.importable_reference.function }}.replace(validate=True)(
