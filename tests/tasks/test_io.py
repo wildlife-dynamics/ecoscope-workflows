@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from importlib import resources
 from pathlib import Path
 
 import geopandas as gpd
@@ -47,6 +48,7 @@ def test_subjectgroup_observations(tmp_path):
 
     # we've cached this result to speed up downstream tests, to make sure the cache is not stale
     cached = gpd.read_parquet(
-        Path(__file__).parent.parent / "data" / "subject-group.parquet"
+        resources.files("ecoscope_workflows.tasks.python.io")
+        / "get-subjectgroup-observations.parquet"
     )
     pd.testing.assert_frame_equal(in_memory, cached)

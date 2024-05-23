@@ -1,3 +1,4 @@
+from importlib import resources
 from pathlib import Path
 
 import pandas as pd
@@ -9,8 +10,11 @@ from ecoscope_workflows.tasks.python.analysis import calculate_time_density
 
 
 @pytest.fixture
-def trajectory_parquet_path() -> str:
-    return (Path(__file__).parent.parent / "data" / "trajectory.parquet").as_posix()
+def trajectory_parquet_path():
+    return (
+        resources.files("ecoscope_workflows.tasks.python.preprocessing")
+        / "relocations-to-trajectory.parquet"
+    )
 
 
 @pytest.fixture

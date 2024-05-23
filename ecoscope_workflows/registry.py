@@ -81,8 +81,9 @@ class KnownTask(BaseModel):
                 mock_{self.function}: mock_distributed_task = create_autospec({self.function})
                 # match the signature of the wrapped function, to require same arguments
                 mock_{self.function}.replace.return_value = create_autospec({self.function}.func)
-                # TODO: load actual return value from file here
-                sample_data = ...
+                # TODO: what if sample data is not a geopandas dataframe?
+                from ecoscope.workflows.serde import gpd_from_parquet_uri
+                sample_data = gpd_from_parquet_uri({self.sample_data_path})
                 mock_{self.function}.replace.return_value.return_value = sample_data
                 {self.function} = mock_{self.function}
                 # ------------------------------END MOCK-----------------------------------

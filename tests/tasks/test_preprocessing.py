@@ -1,3 +1,4 @@
+from importlib import resources
 from pathlib import Path
 
 import geopandas as gpd
@@ -10,12 +11,13 @@ from ecoscope_workflows.tasks.python.preprocessing import (
     relocations_to_trajectory,
 )
 
-TEST_DATA_DIR = Path(__file__).parent.parent / "data"
-
 
 @pytest.fixture
-def observations_parquet_path() -> Path:
-    return TEST_DATA_DIR / "subject-group.parquet"
+def observations_parquet_path():
+    return (
+        resources.files("ecoscope_workflows.tasks.python.io")
+        / "get-subjectgroup-observations.parquet"
+    )
 
 
 def test_process_relocations(observations_parquet_path: str, tmp_path):
@@ -42,17 +44,23 @@ def test_process_relocations(observations_parquet_path: str, tmp_path):
     pd.testing.assert_frame_equal(in_memory, distributed_result)
 
     # we've cached this result for downstream tests, to make sure the cache is not stale
-    cached = gpd.read_parquet(TEST_DATA_DIR / "relocations.parquet")
+    cached = gpd.read_parquet(
+        resources.files("ecoscope_workflows.tasks.python.preprocessing")
+        / "process-relocations.parquet"
+    )
     pd.testing.assert_frame_equal(in_memory, cached)
 
 
 @pytest.fixture
-def relocations_parquet_path() -> Path:
-    return TEST_DATA_DIR / "relocations.parquet"
+def process_relocations_parquet_path():
+    return (
+        resources.files("ecoscope_workflows.tasks.python.preprocessing")
+        / "process-relocations.parquet"
+    )
 
 
-def test_relocations_to_trajectory(relocations_parquet_path: str, tmp_path):
-    relocations = gpd.read_parquet(relocations_parquet_path)
+def test_relocations_to_trajectory(process_relocations_parquet_path: str, tmp_path):
+    relocations = gpd.read_parquet(process_relocations_parquet_path)
     kws = dict(
         min_length_meters=0.001,
         max_length_meters=10000,
@@ -73,11 +81,14 @@ def test_relocations_to_trajectory(relocations_parquet_path: str, tmp_path):
         arg_prevalidators={"relocations": gpd_from_parquet_uri},
         return_postvalidator=serialize_result,
         validate=True,
-    )(relocations_parquet_path, **kws)
+    )(process_relocations_parquet_path, **kws)
     distributed_result = gpd.read_parquet(result_path)
 
     pd.testing.assert_frame_equal(in_memory, distributed_result)
 
     # we've cached this result for downstream tests, to make sure the cache is not stale
-    cached = gpd.read_parquet(TEST_DATA_DIR / "trajectory.parquet")
+    cached = gpd.read_parquet(
+        resources.files("ecoscope_workflows.tasks.python.preprocessing")
+        / "relocations-to-trajectory.parquet"
+    )
     pd.testing.assert_frame_equal(in_memory, cached)
