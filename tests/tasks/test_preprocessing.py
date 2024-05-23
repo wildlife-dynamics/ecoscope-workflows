@@ -16,7 +16,7 @@ from ecoscope_workflows.tasks.python.preprocessing import (
 def observations_parquet_path():
     return (
         resources.files("ecoscope_workflows.tasks.python.io")
-        / "get-subjectgroup-observations.parquet"
+        / "get-subjectgroup-observations-example-return.parquet"
     )
 
 
@@ -46,7 +46,7 @@ def test_process_relocations(observations_parquet_path: str, tmp_path):
     # we've cached this result for downstream tests, to make sure the cache is not stale
     cached = gpd.read_parquet(
         resources.files("ecoscope_workflows.tasks.python.preprocessing")
-        / "process-relocations.parquet"
+        / "process-relocations-example-return.parquet"
     )
     pd.testing.assert_frame_equal(in_memory, cached)
 
@@ -55,7 +55,7 @@ def test_process_relocations(observations_parquet_path: str, tmp_path):
 def process_relocations_parquet_path():
     return (
         resources.files("ecoscope_workflows.tasks.python.preprocessing")
-        / "process-relocations.parquet"
+        / "process-relocations-example-return.parquet"
     )
 
 
@@ -89,6 +89,6 @@ def test_relocations_to_trajectory(process_relocations_parquet_path: str, tmp_pa
     # we've cached this result for downstream tests, to make sure the cache is not stale
     cached = gpd.read_parquet(
         resources.files("ecoscope_workflows.tasks.python.preprocessing")
-        / "relocations-to-trajectory.parquet"
+        / "relocations-to-trajectory-example-return.parquet"
     )
     pd.testing.assert_frame_equal(in_memory, cached)

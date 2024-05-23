@@ -13,7 +13,7 @@ from ecoscope_workflows.tasks.python.analysis import calculate_time_density
 def trajectory_parquet_path():
     return (
         resources.files("ecoscope_workflows.tasks.python.preprocessing")
-        / "relocations-to-trajectory.parquet"
+        / "relocations-to-trajectory-example-return.parquet"
     )
 
 
