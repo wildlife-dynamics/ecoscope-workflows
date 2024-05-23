@@ -36,10 +36,10 @@ process_relocations:
 relocations_to_trajectory:
   min_length_meters: 0.001  # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
   max_length_meters: 10000  # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
-  max_time_secs: 1  # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
-  min_time_secs: 3600  # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
-  max_speed_kmhr: 0.0  # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
-  min_speed_kmhr: 120  # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
+  max_time_secs: 3600  # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
+  min_time_secs: 1  # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
+  max_speed_kmhr: 120  # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
+  min_speed_kmhr: 0.0  # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
 calculate_time_density:
   pixel_size: 250.0  # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=250.0, description='Pixel size for raster profile.'))
   crs: "ESRI:102022"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default='ESRI:102022'))
