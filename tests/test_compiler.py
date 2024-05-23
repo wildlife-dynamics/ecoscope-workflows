@@ -59,7 +59,7 @@ def dag_compiler(time_density_tasks):
 
 def test_yaml_config(dag_compiler: DagCompiler):
     yaml = ruamel.yaml.YAML(typ="safe")
-    with open(EXAMPLES_DIR / "compilation-specs" / "calculate-time-density.yaml") as f:
+    with open(EXAMPLES_DIR / "compilation-specs" / "time-density.yaml") as f:
         from_yaml = DagCompiler.from_spec(spec=yaml.load(f))
     assert from_yaml.dag_config == dag_compiler.dag_config
 
@@ -79,10 +79,7 @@ def test_dag_builder_generate_dag_script_sequential(dag_compiler: DagCompiler):
     dag_str = dag_compiler._generate_dag()
 
     with open(
-        EXAMPLES_DIR
-        / "dags"
-        / "scripts-sequential"
-        / "time_density_script_sequential.py",
+        EXAMPLES_DIR / "dags" / "time_density_dag.script_sequential.py",
     ) as f:
         assert dag_str == f.read()
 
@@ -92,7 +89,7 @@ def test_dag_builder_dag_params_schema(dag_compiler: DagCompiler):
     assert "get_subjectgroup_observations" in params
     assert "process_relocations" in params
 
-    with open(EXAMPLES_DIR / "dags" / "time_density.json") as f:
+    with open(EXAMPLES_DIR / "dags" / "time_density_params.json") as f:
         current_example = json.load(f)
     assert params == current_example
 
@@ -101,7 +98,7 @@ def test_dag_builder_dag_params_yaml_template(dag_compiler: DagCompiler):
     yaml_str = dag_compiler.dag_params_yaml()
     yaml = ruamel.yaml.YAML(typ="rt")
 
-    with open(EXAMPLES_DIR / "dags" / "time_density.yaml") as f:
+    with open(EXAMPLES_DIR / "dags" / "time_density_params.yaml") as f:
         current_example = yaml.load(f)
 
     assert yaml.load(yaml_str) == current_example
