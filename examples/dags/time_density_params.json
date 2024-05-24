@@ -180,5 +180,61 @@
         },
         "required": [],
         "type": "object"
+    },
+    "draw_ecomap": {
+        "additionalProperties": false,
+        "properties": {
+            "static": {
+                "title": "Static",
+                "type": "boolean"
+            },
+            "height": {
+                "title": "Height",
+                "type": "integer"
+            },
+            "width": {
+                "title": "Width",
+                "type": "integer"
+            },
+            "search_control": {
+                "title": "Search Control",
+                "type": "boolean"
+            },
+            "title": {
+                "title": "Title",
+                "type": "string"
+            },
+            "title_kws": {
+                "title": "Title Kws",
+                "type": "object"
+            },
+            "tile_layers": {
+                "items": {
+                    "type": "object"
+                },
+                "title": "Tile Layers",
+                "type": "array"
+            },
+            "north_arrow_kws": {
+                "title": "North Arrow Kws",
+                "type": "object"
+            },
+            "add_gdf_kws": {
+                "title": "Add Gdf Kws",
+                "type": "object"
+            }
+        },
+        "required": [
+            "static",
+            "height",
+            "width",
+            "search_control",
+            "title",
+            "title_kws",
+            "tile_layers",
+            "north_arrow_kws",
+            "add_gdf_kws"
+        ],
+        "type": "object"
     }
 }

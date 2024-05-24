@@ -45,6 +45,13 @@ def time_density_tasks():
             },
             arg_prevalidators={"trajectory_gdf": gpd_from_parquet_uri},
         ),
+        TaskInstance(
+            known_task_name="draw_ecomap",
+            arg_dependencies={
+                "geodataframe": "calculate_time_density",
+            },
+            arg_prevalidators={"geodataframe": gpd_from_parquet_uri},
+        ),
     ]
 
 

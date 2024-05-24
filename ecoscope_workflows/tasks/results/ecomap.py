@@ -22,10 +22,10 @@ def draw_ecomap(
     width: Annotated[int, Field()],
     search_control: Annotated[bool, Field()],
     title: Annotated[str, Field()],
-    title_kws: Annotated[dict, Field(default_factory=dict)],
+    title_kws: Annotated[dict, Field()],
     tile_layers: Annotated[list[dict], Field()],
-    north_arrow_kws: Annotated[dict, Field(default_factory=dict)],
-    add_gdf_kws: Annotated[dict, Field(default_factory=dict)],
+    north_arrow_kws: Annotated[dict, Field()],
+    add_gdf_kws: Annotated[dict, Field()],
 ) -> Annotated[EcoMapProtocol, Field()]:
     from ecoscope.mapping import EcoMap
 
