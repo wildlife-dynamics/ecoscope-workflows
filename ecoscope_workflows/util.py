@@ -8,7 +8,7 @@ from ecoscope_workflows.serde import gpd_from_parquet_uri
 
 
 def rsplit_importable_reference(reference: str) -> list[str]:
-    """Splits enclosing module and object name from importable reference."""
+    """Splits enclosing module (or anchor) and object name from importable reference."""
     return reference.rsplit(".", 1)
 
 

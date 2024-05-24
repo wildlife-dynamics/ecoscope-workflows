@@ -53,24 +53,24 @@ class KnownTask(BaseModel):
         testing = context.get("testing", False)
         mocks = context.get("mocks", [])
         return {
-            "module": self.module,
+            "anchor": self.anchor,
             "function": self.function,
             "statement": (
                 (
                     # if this is a testing context, and a mock was requested:
                     f"{self.function} = create_distributed_task_magicmock(  # 🧪\n"
-                    f"    anchor='{self.module}',  # 🧪\n"
+                    f"    anchor='{self.anchor}',  # 🧪\n"
                     f"    func_name='{self.function}',  # 🧪\n"
                     ")  # 🧪"
                 )
                 if testing and self.function in mocks
                 # but in most cases just import the function in a normal way
-                else f"from {self.module} import {self.function}"
+                else f"from {self.anchor} import {self.function}"
             ),
         }
 
     @property
-    def module(self) -> str:
+    def anchor(self) -> str:
         return rsplit_importable_reference(self.importable_reference)[0]
 
     @property
@@ -78,7 +78,7 @@ class KnownTask(BaseModel):
         return rsplit_importable_reference(self.importable_reference)[1]
 
     def parameters_jsonschema(self, omit_args: list[str] | None = None) -> dict:
-        func = import_distributed_task_from_reference(self.module, self.function)
+        func = import_distributed_task_from_reference(self.anchor, self.function)
         # NOTE: SurfacesDescriptionSchema is a workaround for https://github.com/pydantic/pydantic/issues/9404
         # Once that issue is closed, we can remove SurfaceDescriptionSchema and use the default schema_generator.
         schema = TypeAdapter(func.func).json_schema(
@@ -97,7 +97,7 @@ class KnownTask(BaseModel):
 
     @property
     def parameters_annotation(self) -> dict[str, tuple]:
-        func = import_distributed_task_from_reference(self.module, self.function)
+        func = import_distributed_task_from_reference(self.anchor, self.function)
         return {
             arg: get_args(annotation)
             for arg, annotation in func.func.__annotations__.items()

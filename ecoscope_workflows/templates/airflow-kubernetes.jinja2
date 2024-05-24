@@ -44,7 +44,7 @@ def {{ t.known_task_name }}_task(
     {% endif -%}
 
     # the task itself
-    from {{ t.known_task.importable_reference.module }} import {{ t.known_task.importable_reference.function }}
+    {{ t.known_task.importable_reference.statement }}
 
     # user-passed kwargs for the task (via airflow dag params)
     task_kwargs = params["{{ t.known_task_name }}"]
