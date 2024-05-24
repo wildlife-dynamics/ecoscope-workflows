@@ -3,11 +3,18 @@ Can be mutated with entry points.
 """
 
 # from importlib.metadata import entry_points
+from enum import Enum
 from typing import Annotated, Any, get_args
 
 import ruamel.yaml
 import pandera as pa
-from pydantic import BaseModel, FieldSerializationInfo, TypeAdapter, field_serializer
+from pydantic import (
+    BaseModel,
+    Field,
+    FieldSerializationInfo,
+    TypeAdapter,
+    field_serializer,
+)
 from pydantic.functional_validators import AfterValidator
 
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
@@ -42,10 +49,14 @@ class KubernetesPodOperator(BaseModel):
 ImportableReference = Annotated[str, AfterValidator(validate_importable_reference)]
 
 
+class TaskTag(str, Enum):
+    io = "io"
+
+
 class KnownTask(BaseModel):
     importable_reference: ImportableReference
-    # tags: list[str]
     operator: KubernetesPodOperator
+    tags: list[TaskTag] = Field(default_factory=list)
 
     @field_serializer("importable_reference")
     def serialize_importable_reference(self, v: Any, info: FieldSerializationInfo):
@@ -117,6 +128,7 @@ class KnownTask(BaseModel):
 known_tasks = {
     "get_subjectgroup_observations": KnownTask(
         importable_reference="ecoscope_workflows.tasks.io.get_subjectgroup_observations",
+        tags=[TaskTag.io],
         operator=KubernetesPodOperator(
             image="ecoscope-workflows:latest",
             name="pod",  # TODO: defer assignment of this?

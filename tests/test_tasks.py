@@ -135,6 +135,8 @@ task_fixtures = {
         ),
     ),
 }
+# TODO: test `draw_map` task ... and possibly move to `conftest`
+# and ensure all known tasks are accounted for here?
 
 
 @pytest.mark.parametrize(

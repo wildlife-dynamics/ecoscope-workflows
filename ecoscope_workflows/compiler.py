@@ -147,7 +147,7 @@ class DagCompiler(BaseModel):
         # because we don't need it to be passed as a parameter by the user.
         return ["return"] + [arg for t in self.tasks for arg in t.arg_dependencies]
 
-    def dag_params_schema(self) -> dict[str, dict]:
+    def get_params_jsonschema(self) -> dict[str, dict]:
         return {
             t.known_task_name: t.known_task.parameters_jsonschema(
                 omit_args=self._omit_args
@@ -155,7 +155,7 @@ class DagCompiler(BaseModel):
             for t in self.tasks
         }
 
-    def dag_params_yaml(self) -> str:
+    def get_params_fillable_yaml(self) -> str:
         yaml_str = ""
         for t in self.tasks:
             yaml_str += t.known_task.parameters_annotation_yaml_str(
@@ -164,11 +164,7 @@ class DagCompiler(BaseModel):
         return yaml_str
 
     @ruff_formatted
-    def _generate_dag(self) -> str:
+    def generate_dag(self) -> str:
         env = Environment(loader=FileSystemLoader(self.template_dir))
         template = env.get_template(self.template)
         return template.render(self.dag_config)
-
-    # def generate(self):
-    #     params = self._get_params_schema()
-    #     dag = self._generate_dag()
