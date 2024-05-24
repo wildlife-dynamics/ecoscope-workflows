@@ -1,4 +1,4 @@
-from .preprocessing import (
+from ._preprocessing import (
     RelocationsGDFSchema,
     TrajectoryGDFSchema,
     process_relocations,

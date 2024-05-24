@@ -37,6 +37,10 @@ test = [
 [project.scripts]
 ecoscope-workflows = "ecoscope_workflows.__main__:main"
 
+[project.entry-points."ecoscope_workflows"]
+tasks = "ecoscope_workflows.tasks"  # for extensions, this could be "my_custom_tasks.tasks"
+serde = "ecoscope_workflows.serde"  # for extensions, this could be "my_custom_serde.serde"
+
 [project.urls]
 Homepage = "https://github.com/wildlife-dynamics/ecoscope-workflows"
 Tracker = "https://github.com/wildlife-dynamics/ecoscope-workflows/issues"

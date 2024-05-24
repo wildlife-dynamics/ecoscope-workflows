@@ -25,18 +25,6 @@ from ecoscope_workflows.util import (
     validate_importable_reference,
 )
 
-# def process_entries():
-#     if entry_points is not None:
-#         eps = entry_points()
-#         if hasattr(eps, "select"):  # Python 3.10+ / importlib_metadata >= 3.9.0
-#             specs = eps.select(group="fsspec.specs")
-#         else:
-#             specs = eps.get("ecoscope-workflows.tasks", [])
-#             for spec in specs:
-#                 known_tasks[spec.name] = spec
-
-# process_entries()
-
 
 class KubernetesPodOperator(BaseModel):
     image: str
@@ -197,3 +185,7 @@ known_tasks = {
 known_deserializers = {
     pa.typing.DataFrame: gpd_from_parquet_uri,
 }
+
+
+def register_known_task(known_task_kws: dict):
+    print(known_task_kws)
