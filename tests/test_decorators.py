@@ -15,6 +15,18 @@ def test_call_simple():
     assert f(1, 2) == 3
 
 
+def test_call_simple_with_operator_metadata():
+    @distributed(image="my_image", container_resources={"cpu": 1})
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    assert f.func(1, 2) == 3
+    assert f(1, 2) == 3
+    breakpoint()
+    assert f.image == "my_image"
+    assert f.container_resources == {"cpu": 1}
+
+
 def test_frozen_instance():
     @distributed
     def f(a: int) -> int:

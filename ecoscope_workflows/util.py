@@ -3,7 +3,7 @@ from importlib.resources import files
 from pathlib import Path
 from typing import cast
 
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import DistributedTask
 from ecoscope_workflows.serde import gpd_from_parquet_uri
 
 
@@ -27,7 +27,9 @@ def validate_importable_reference(reference: str):
     return reference
 
 
-def import_distributed_task_from_reference(anchor: str, func_name: str) -> distributed:
+def import_distributed_task_from_reference(
+    anchor: str, func_name: str
+) -> DistributedTask:
     """Import a distributed task function from an importable reference."""
     # TODO: we will need to be clear in docs about what imports are allowed at top
     # level (ecoscope_workflows, pydantic, pandera, pandas) and which imports must
@@ -35,7 +37,9 @@ def import_distributed_task_from_reference(anchor: str, func_name: str) -> distr
     # also enforce this programmatically.
     mod = importlib.import_module(anchor)
     func = getattr(mod, func_name)
-    assert isinstance(func, distributed), f"{anchor}.{func_name} is not `@distributed`"
+    assert isinstance(
+        func, DistributedTask
+    ), f"{anchor}.{func_name} is not `@distributed`"
     return func
 
 

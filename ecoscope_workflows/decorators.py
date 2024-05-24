@@ -38,7 +38,7 @@ def _get_validator_index(
 
 
 @dataclass
-class distributed:
+class _PlainDistributedTask:
     """
     Parameters
     ----------
@@ -125,3 +125,43 @@ class distributed:
             if self.validate
             else func_copy(*args, **kwargs)
         )
+
+
+@dataclass
+class _HasOperatorMetadata:
+    image: str | None = None
+    container_resources: dict[str, Any] | None = None
+
+    def __call__(self, distributed_task: _PlainDistributedTask) -> Any:
+        return distributed_task
+
+
+# for use in instance checks; e.g. `isinstance(obj, DistributedTask)`
+DistributedTask = _PlainDistributedTask | _HasOperatorMetadata
+
+
+def distributed(
+    func: Callable = None,
+    *,
+    image: str | None = None,
+    container_resources: dict[str, Any] | None = None,
+):
+    # Cf. pytest fixtures implementation
+    if func:
+        # for use without operator metadata, e.g.:
+        # ```
+        # @distributed
+        # def f(): ...
+        # ```
+        return _PlainDistributedTask(func)
+
+    # for including operator metadata, e.g.:
+    # ```
+    # @distributed(image="my_image", container_resources={"cpu": 1})
+    # def f(): ...
+    # ```
+    has_operator_metadata = _HasOperatorMetadata(
+        image=image,
+        container_resources=container_resources,
+    )
+    return has_operator_metadata(_PlainDistributedTask)
