@@ -41,4 +41,7 @@ if __name__ == "__main__":
     {% else %}**params["{{ t.known_task_name }}"],
     )
     {% endif -%}
+    {% if loop.last %}
+    print({{ t.known_task.importable_reference.function }}_return)
+    {% endif %}
     {% endfor -%}

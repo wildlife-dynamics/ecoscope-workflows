@@ -1,17 +1,9 @@
-from typing import Annotated, Protocol
+from typing import Annotated
 
 from pydantic import Field
 
 from ecoscope_workflows.annotations import AnyGeoDataFrame
 from ecoscope_workflows.decorators import distributed
-
-
-class EcoMapProtocol(Protocol):
-    """Protocol for EcoMap objects, to avoid importing mapping dependencies
-    at the top level of the module.
-    """
-
-    def to_html(self): ...
 
 
 @distributed
@@ -26,7 +18,7 @@ def draw_ecomap(
     tile_layers: Annotated[list[dict], Field()],
     north_arrow_kws: Annotated[dict, Field()],
     add_gdf_kws: Annotated[dict, Field()],
-) -> Annotated[EcoMapProtocol, Field()]:
+) -> Annotated[str, Field()]:
     from ecoscope.mapping import EcoMap
 
     m = EcoMap(static=static, height=height, width=width, search_control=search_control)
@@ -39,4 +31,4 @@ def draw_ecomap(
     m.add_gdf(geodataframe, **add_gdf_kws)
     m.zoom_to_gdf(geodataframe)
 
-    return m
+    return m._repr_html_(fill_parent=True)

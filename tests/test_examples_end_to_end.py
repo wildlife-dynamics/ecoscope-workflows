@@ -48,6 +48,16 @@ calculate_time_density:
   max_speed_factor: 1.05  # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=1.05))
   expansion_factor: 1.3  # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=1.3))
   percentiles: [50.0, 60.0, 70.0, 80.0, 90.0, 95.0]  # (list[float], FieldInfo(annotation=NoneType, required=False, default=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0]))
+draw_ecomap:
+  static: False  # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
+  height: 1000  # (<class 'int'>, FieldInfo(annotation=NoneType, required=True))
+  width: 1500  # (<class 'int'>, FieldInfo(annotation=NoneType, required=True))
+  search_control: True  # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
+  title: "Great Map"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True))
+  title_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
+  tile_layers: []  # (list[dict], FieldInfo(annotation=NoneType, required=True))
+  north_arrow_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
+  add_gdf_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
 """
 
 
@@ -69,10 +79,13 @@ def test_example(spec: dict, tmp_path: Path):
 
     cmd = [
         "python3",
+        "-W",
+        "ignore",  # in testing context warnings are added; exclude them from stdout
         script_outpath.as_posix(),
         "--config-file",
         params_outpath.as_posix(),
     ]
     out = subprocess.run(cmd, capture_output=True, text=True)
     assert out.returncode == 0
-    print(out.stdout)
+    assert "webkitallowfullscreen" in out.stdout
+    assert "function geo_json_" in out.stdout

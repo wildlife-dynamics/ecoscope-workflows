@@ -45,3 +45,5 @@ if __name__ == "__main__":
         geodataframe=calculate_time_density_return,
         **params["draw_ecomap"],
     )
+
+    print(draw_ecomap_return)
