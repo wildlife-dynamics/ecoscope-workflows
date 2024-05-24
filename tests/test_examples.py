@@ -61,7 +61,7 @@ draw_ecomap:
 """
 
 
-def test_example(spec: dict, tmp_path: Path):
+def test_end_to_end(spec: dict, tmp_path: Path):
     dc = DagCompiler.from_spec(spec=spec)
     dc.template = "script-sequential.jinja2"
     dc.testing = True
