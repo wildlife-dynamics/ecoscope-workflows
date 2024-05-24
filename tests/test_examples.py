@@ -6,7 +6,6 @@ from textwrap import dedent
 from typing import Callable, Literal
 
 import pytest
-import yaml
 import ruamel.yaml
 
 from ecoscope_workflows.compiler import DagCompiler
@@ -45,8 +44,9 @@ class SpecFixture:
 )
 def spec(request: pytest.FixtureRequest) -> SpecFixture:
     example_spec_path: Path = request.param
+    yaml = ruamel.yaml.YAML(typ="safe")
     with open(example_spec_path) as f:
-        spec_dict = yaml.safe_load(f)
+        spec_dict = yaml.load(f)
     return SpecFixture(example_spec_path, spec_dict)
 
 
