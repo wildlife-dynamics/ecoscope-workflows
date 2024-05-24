@@ -1,4 +1,6 @@
+import os
 from dataclasses import dataclass
+from datetime import datetime
 from importlib.resources import files
 from pathlib import Path
 from typing import Callable
@@ -10,6 +12,7 @@ import pytest
 from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.serde import gpd_from_parquet_uri
 from ecoscope_workflows.tasks.analysis import calculate_time_density
+from ecoscope_workflows.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows.tasks.preprocessing import (
     process_relocations,
     relocations_to_trajectory,
@@ -27,6 +30,39 @@ class TaskFixture:
 
 
 task_fixtures = {
+    "get_subjectgroup_observations": pytest.param(
+        TaskFixture(
+            task=get_subjectgroup_observations,
+            input_dataframe_arg_name="",
+            example_input_dataframe_path="",
+            kws=dict(
+                # earthranger client
+                server=os.environ.get("ER_SERVER"),
+                username=os.environ.get("ER_USERNAME"),
+                password=os.environ.get("ER_PASSWORD"),
+                tcp_limit=5,
+                sub_page_size=4000,
+                # get_subjectgroup_observations
+                subject_group_name="Elephants",
+                include_inactive=True,
+                since=datetime.strptime("2011-01-01", "%Y-%m-%d"),
+                until=datetime.strptime("2023-01-01", "%Y-%m-%d"),
+            ),
+            assert_that_return_dataframe=[
+                lambda df: all(
+                    [
+                        col in df
+                        for col in ["geometry", "groupby_col", "fixtime", "junk_status"]
+                    ]
+                ),
+            ],
+            example_return_path=str(
+                files("ecoscope_workflows.tasks.io")
+                / "get-subjectgroup-observations.example-return.parquet"
+            ),
+        ),
+        marks=pytest.mark.io,
+    ),
     "process_relocations": TaskFixture(
         task=process_relocations,
         input_dataframe_arg_name="observations",
@@ -106,12 +142,16 @@ task_fixtures = {
     task_fixtures.values(),
     ids=task_fixtures.keys(),
 )
-def test_consumes_and_produces_dataframe(
+def test_consumes_and_or_produces_dataframe(
     tf: TaskFixture,
     tmp_path: Path,
 ):
-    input_dataframe = gpd.read_parquet(tf.example_input_dataframe_path)
-    in_memory = tf.task(input_dataframe, **tf.kws)
+    args = (
+        (gpd.read_parquet(tf.example_input_dataframe_path),)
+        if tf.example_input_dataframe_path
+        else ()  # io tasks don't have input dataframes
+    )
+    in_memory = tf.task(*args, **tf.kws)
 
     for assert_fn in tf.assert_that_return_dataframe:
         assert assert_fn(in_memory)
@@ -127,7 +167,11 @@ def test_consumes_and_produces_dataframe(
         return path.as_posix()
 
     result_path = tf.task.replace(
-        arg_prevalidators={tf.input_dataframe_arg_name: gpd_from_parquet_uri},
+        arg_prevalidators=(
+            {tf.input_dataframe_arg_name: gpd_from_parquet_uri}
+            if tf.input_dataframe_arg_name
+            else {}  # io tasks don't have input dataframes
+        ),
         return_postvalidator=serialize_result,
         validate=True,
     )(tf.example_input_dataframe_path, **tf.kws)
