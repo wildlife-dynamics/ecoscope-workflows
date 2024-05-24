@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from importlib.resources import files
 from pathlib import Path
+from typing import Callable
 
 import geopandas as gpd
 import pandas as pd
@@ -21,6 +22,7 @@ class TaskFixture:
     input_dataframe_arg_name: str
     example_input_dataframe_path: str
     kws: dict
+    assert_that_return_dataframe: list[Callable[[gpd.GeoDataFrame], bool]]
     example_return_path: str
 
 
@@ -36,6 +38,9 @@ task_fixtures = {
             filter_point_coords=[[180, 90], [0, 0]],
             relocs_columns=["groupby_col", "fixtime", "junk_status", "geometry"],
         ),
+        assert_that_return_dataframe=[
+            lambda df: hasattr(df, "geometry"),  # smoke test
+        ],
         example_return_path=str(
             files("ecoscope_workflows.tasks.preprocessing")
             / "process-relocations.example-return.parquet"
@@ -56,6 +61,9 @@ task_fixtures = {
             min_speed_kmhr=0.0,
             max_speed_kmhr=120,
         ),
+        assert_that_return_dataframe=[
+            lambda df: hasattr(df, "geometry"),  # smoke test
+        ],
         example_return_path=str(
             files("ecoscope_workflows.tasks.preprocessing")
             / "relocations-to-trajectory.example-return.parquet"
@@ -77,6 +85,14 @@ task_fixtures = {
             expansion_factor=1.3,
             percentiles=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0],
         ),
+        assert_that_return_dataframe=[
+            lambda df: df.shape == (6, 3),
+            lambda df: all(
+                [column in df for column in ["percentile", "geometry", "area_sqkm"]]
+            ),
+            lambda df: list(df["area_sqkm"])
+            == [17.75, 13.4375, 8.875, 6.25, 4.4375, 3.125],
+        ],
         example_return_path=str(
             files("ecoscope_workflows.tasks.analysis")
             / "calculate-time-density.example-return.parquet"
@@ -96,6 +112,9 @@ def test_consumes_and_produces_dataframe(
 ):
     input_dataframe = gpd.read_parquet(tf.example_input_dataframe_path)
     in_memory = tf.task(input_dataframe, **tf.kws)
+
+    for assert_fn in tf.assert_that_return_dataframe:
+        assert assert_fn(in_memory)
 
     # we've cached this result for reuse by other tests, so check that cache is not stale
     cached = gpd.read_parquet(tf.example_return_path)
