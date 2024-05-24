@@ -1,22 +1,57 @@
 import subprocess
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
 import pytest
 import yaml
 
 from ecoscope_workflows.compiler import DagCompiler
 
-EXAMPLE_SPECS_DIR = Path(__file__).parent.parent / "examples" / "compilation-specs"
+EXAMPLES = Path(__file__).parent.parent / "examples"
+
+TemplateName = Literal["script-sequential.jinja2", "airflow-kubernetes.jinja2"]
+
+
+def _spec_path_to_dag_fname(path: Path, template: TemplateName) -> str:
+    return (
+        f"{path.stem.replace('-', '_')}_dag.{Path(template).stem.replace('-', '_')}.py"
+    )
+
+
+@dataclass
+class SpecFixture:
+    path: Path
+    spec: dict
 
 
 @pytest.fixture(
-    params=[path.absolute() for path in EXAMPLE_SPECS_DIR.iterdir()],
-    ids=[path.name for path in EXAMPLE_SPECS_DIR.iterdir()],
+    params=[
+        path.absolute() for path in EXAMPLES.joinpath("compilation-specs").iterdir()
+    ],
+    ids=[path.name for path in EXAMPLES.joinpath("compilation-specs").iterdir()],
 )
-def spec(request: pytest.FixtureRequest) -> dict:
-    example_spec_path = request.param
+def spec(request: pytest.FixtureRequest) -> SpecFixture:
+    example_spec_path: Path = request.param
     with open(example_spec_path) as f:
-        return yaml.safe_load(f)
+        spec_dict = yaml.safe_load(f)
+    return SpecFixture(example_spec_path, spec_dict)
+
+
+@pytest.mark.parametrize(
+    "template",
+    [
+        "script-sequential.jinja2",
+        # TODO: "airflow-kubernetes.jinja2",
+    ],
+)
+def test_generate_dag(spec: SpecFixture, template: TemplateName):
+    dag_compiler = DagCompiler.from_spec(spec=spec.spec)
+    dag_compiler.template = template
+    dag_str = dag_compiler._generate_dag()
+    script_fname = _spec_path_to_dag_fname(path=spec.path, template=template)
+    with open(EXAMPLES / "dags" / script_fname) as f:
+        assert dag_str == f.read()
 
 
 params = """\
@@ -61,8 +96,8 @@ draw_ecomap:
 """
 
 
-def test_end_to_end(spec: dict, tmp_path: Path):
-    dc = DagCompiler.from_spec(spec=spec)
+def test_end_to_end(spec: SpecFixture, tmp_path: Path):
+    dc = DagCompiler.from_spec(spec=spec.spec)
     dc.template = "script-sequential.jinja2"
     dc.testing = True
     dc.mock_tasks = ["get_subjectgroup_observations"]
