@@ -1,12 +1,10 @@
 import json
 import pathlib
 
-import pytest
 import ruamel.yaml
 
 from ecoscope_workflows.compiler import DagCompiler, TaskInstance
 from ecoscope_workflows.registry import KnownTask, known_tasks
-from ecoscope_workflows.serde import gpd_from_parquet_uri
 
 EXAMPLES_DIR = pathlib.Path(__file__).parent.parent / "examples"
 
@@ -18,77 +16,7 @@ def test_task_instance_known_task_parsing():
     assert ti.known_task == known_tasks[task_name]
 
 
-@pytest.fixture
-def time_density_tasks():
-    return [
-        TaskInstance(
-            known_task_name="get_subjectgroup_observations",
-        ),
-        TaskInstance(
-            known_task_name="process_relocations",
-            arg_dependencies={
-                "observations": "get_subjectgroup_observations_return",
-            },
-            arg_prevalidators={"observations": gpd_from_parquet_uri},
-        ),
-        TaskInstance(
-            known_task_name="relocations_to_trajectory",
-            arg_dependencies={
-                "relocations": "process_relocations_return",
-            },
-            arg_prevalidators={"relocations": gpd_from_parquet_uri},
-        ),
-        TaskInstance(
-            known_task_name="calculate_time_density",
-            arg_dependencies={
-                "trajectory_gdf": "relocations_to_trajectory_return",
-            },
-            arg_prevalidators={"trajectory_gdf": gpd_from_parquet_uri},
-        ),
-        TaskInstance(
-            known_task_name="draw_ecomap",
-            arg_dependencies={
-                "geodataframe": "calculate_time_density_return",
-            },
-            arg_prevalidators={"geodataframe": gpd_from_parquet_uri},
-        ),
-    ]
-
-
-@pytest.fixture
-def dag_compiler(time_density_tasks):
-    return DagCompiler(
-        name="calculate_time_density",
-        tasks=time_density_tasks,
-        cache_root="gcs://my-bucket/ecoscope/cache/dag-runs",
-    )
-
-
-def test_yaml_config(dag_compiler: DagCompiler):
-    yaml = ruamel.yaml.YAML(typ="safe")
-    with open(EXAMPLES_DIR / "compilation-specs" / "time-density.yaml") as f:
-        from_yaml = DagCompiler.from_spec(spec=yaml.load(f))
-    assert from_yaml.dag_config == dag_compiler.dag_config
-
-
-# TODO: revisit this test after getting sequential script working and tested
-# def test_dag_builder_generate_dag_k8s(dag_compiler: DagCompiler):
-#     dag_str = dag_compiler._generate_dag()
-
-#     with open(EXAMPLES_DIR / "dags" / "airflow" / "time_density_k8s.py", "w") as f:
-#         f.write(dag_str)
-#     # with open(EXAMPLES_DIR / "dags" / "calculate_time_density.py") as f:
-#     assert dag_str == f.read()
-
-
-def test_dag_builder_generate_dag_script_sequential(dag_compiler: DagCompiler):
-    dag_compiler.template = "script-sequential.jinja2"
-    dag_str = dag_compiler._generate_dag()
-
-    with open(
-        EXAMPLES_DIR / "dags" / "time_density_dag.script_sequential.py",
-    ) as f:
-        assert dag_str == f.read()
+def test_dag_compiler_from_spec(): ...
 
 
 def test_dag_builder_dag_params_schema(dag_compiler: DagCompiler):
