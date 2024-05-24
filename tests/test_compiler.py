@@ -1,12 +1,5 @@
-import json
-import pathlib
-
-import ruamel.yaml
-
-from ecoscope_workflows.compiler import DagCompiler, TaskInstance
+from ecoscope_workflows.compiler import TaskInstance
 from ecoscope_workflows.registry import KnownTask, known_tasks
-
-EXAMPLES_DIR = pathlib.Path(__file__).parent.parent / "examples"
 
 
 def test_task_instance_known_task_parsing():
@@ -17,26 +10,6 @@ def test_task_instance_known_task_parsing():
 
 
 def test_dag_compiler_from_spec(): ...
-
-
-def test_dag_builder_dag_params_schema(dag_compiler: DagCompiler):
-    params = dag_compiler.dag_params_schema()
-    assert "get_subjectgroup_observations" in params
-    assert "process_relocations" in params
-
-    with open(EXAMPLES_DIR / "dags" / "time_density_params.json") as f:
-        current_example = json.load(f)
-    assert params == current_example
-
-
-def test_dag_builder_dag_params_yaml_template(dag_compiler: DagCompiler):
-    yaml_str = dag_compiler.dag_params_yaml()
-    yaml = ruamel.yaml.YAML(typ="rt")
-
-    with open(EXAMPLES_DIR / "dags" / "time_density_params.yaml") as f:
-        current_example = yaml.load(f)
-
-    assert yaml.load(yaml_str) == current_example
 
 
 # def test_dag_builder(dag_builder: DagBuilder):

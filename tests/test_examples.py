@@ -1,3 +1,4 @@
+import json
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -6,6 +7,7 @@ from typing import Literal
 
 import pytest
 import yaml
+import ruamel.yaml
 
 from ecoscope_workflows.compiler import DagCompiler
 
@@ -18,6 +20,14 @@ def _spec_path_to_dag_fname(path: Path, template: TemplateName) -> str:
     return (
         f"{path.stem.replace('-', '_')}_dag.{Path(template).stem.replace('-', '_')}.py"
     )
+
+
+def _spec_path_to_jsonschema_fname(path: Path) -> str:
+    return f"{path.stem.replace('-', '_')}_params.json"
+
+
+def _spec_path_to_yaml_fname(path: Path) -> str:
+    return f"{path.stem.replace('-', '_')}_params.yaml"
 
 
 @dataclass
@@ -53,6 +63,23 @@ def test_generate_dag(spec: SpecFixture, template: TemplateName):
     script_fname = _spec_path_to_dag_fname(path=spec.path, template=template)
     with open(EXAMPLES / "dags" / script_fname) as f:
         assert dag_str == f.read()
+
+
+def test_dag_params_schema(spec: SpecFixture):
+    dag_compiler = DagCompiler.from_spec(spec=spec.spec)
+    params = dag_compiler.dag_params_schema()
+    jsonschema_fname = _spec_path_to_jsonschema_fname(spec.path)
+    with open(EXAMPLES / "dags" / jsonschema_fname) as f:
+        assert params == json.load(f)
+
+
+def test_dag_params_yaml(spec: SpecFixture):
+    dag_compiler = DagCompiler.from_spec(spec=spec.spec)
+    yaml_str = dag_compiler.dag_params_yaml()
+    yaml = ruamel.yaml.YAML(typ="rt")
+    yaml_fname = _spec_path_to_yaml_fname(spec.path)
+    with open(EXAMPLES / "dags" / yaml_fname) as f:
+        assert yaml.load(yaml_str) == yaml.load(f)
 
 
 # TODO: generate this based on same kwargs used in test_tasks.py, or even better, generate this from those kwargs
