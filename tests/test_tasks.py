@@ -8,6 +8,7 @@ import pytest
 
 from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.serde import gpd_from_parquet_uri
+from ecoscope_workflows.tasks.analysis import calculate_time_density
 from ecoscope_workflows.tasks.preprocessing import (
     process_relocations,
     relocations_to_trajectory,
@@ -60,6 +61,27 @@ task_fixtures = {
             / "relocations-to-trajectory.example-return.parquet"
         ),
     ),
+    "calculate_time_density": TaskFixture(
+        task=calculate_time_density,
+        input_dataframe_arg_name="trajectory_gdf",
+        example_input_dataframe_path=str(
+            files("ecoscope_workflows.tasks.preprocessing")
+            / "relocations-to-trajectory.example-return.parquet"
+        ),
+        kws=dict(
+            pixel_size=250.0,
+            crs="ESRI:102022",
+            band_count=1,
+            nodata_value=float("nan"),
+            max_speed_factor=1.05,
+            expansion_factor=1.3,
+            percentiles=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0],
+        ),
+        example_return_path=str(
+            files("ecoscope_workflows.tasks.analysis")
+            / "calculate-time-density.example-return.parquet"
+        ),
+    ),
 }
 
 
@@ -68,7 +90,7 @@ task_fixtures = {
     task_fixtures.values(),
     ids=task_fixtures.keys(),
 )
-def test_distributed_task(
+def test_consumes_and_produces_dataframe(
     tf: TaskFixture,
     tmp_path: Path,
 ):
