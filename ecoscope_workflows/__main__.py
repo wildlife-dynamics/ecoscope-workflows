@@ -12,6 +12,10 @@ def compile_command(args):
     dc = DagCompiler.from_spec(spec=compilation_spec)
     if args.template:
         dc.template = args.template
+    if args.testing:
+        dc.testing = True
+    if args.mock_tasks:
+        dc.mock_tasks = args.mock_tasks
     dag_str = dc._generate_dag()
     if args.outpath:
         with open(args.outpath, "w") as f:
@@ -68,12 +72,21 @@ def main():
         "--outpath",
         dest="outpath",
     )
+    compile_parser.add_argument(
+        "--testing",
+        action=argparse.BooleanOptionalAction,
+    )
+    compile_parser.add_argument(
+        "--mock-tasks",
+        dest="mock_tasks",
+        nargs="+",
+    )
 
     # Subcommand 'tasks'
     tasks_parser = subparsers.add_parser("tasks", help="Manage tasks")
     tasks_parser.set_defaults(func=tasks_command)
 
-    # Subcommand 'tasks'
+    # Subcommand 'get-params'
     get_params_parser = subparsers.add_parser("get-params", help="Get params")
     get_params_parser.set_defaults(func=get_params_command)
     # FIXME: duplicative with `compile`

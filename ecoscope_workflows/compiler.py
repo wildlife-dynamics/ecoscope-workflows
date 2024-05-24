@@ -1,10 +1,18 @@
 import copy
+import functools
 import pathlib
-from typing import Callable
+import subprocess
+from typing import Any, Callable
 
 import pandera as pa
 from jinja2 import Environment, FileSystemLoader
-from pydantic import BaseModel, Field, computed_field
+from pydantic import (
+    BaseModel,
+    Field,
+    FieldSerializationInfo,
+    computed_field,
+    field_serializer,
+)
 
 from ecoscope_workflows.registry import KnownTask, known_deserializers, known_tasks
 from ecoscope_workflows.annotations import is_subscripted_pandera_dataframe
@@ -14,7 +22,7 @@ TEMPLATES = pathlib.Path(__file__).parent / "templates"
 
 
 class TasksSpec(BaseModel):
-    tasks: dict[str, dict[str, str] | None]
+    tasks: dict[str, dict[str, str]]
     # TODO: pydantic validator for `self.tasks`, as follows:
     #  - all outer dict keys must be registered `known_tasks`
     #  - all inner dict keys must be argument names on the known task they are nested under
@@ -30,14 +38,35 @@ class TaskInstance(BaseModel):
     arg_prevalidators: dict = Field(default_factory=dict)
     return_postvalidator: Callable | None = None
 
-    @computed_field
+    @computed_field  # type: ignore[misc]
     @property
     def known_task(self) -> KnownTask:
         kt = known_tasks[self.known_task_name]
         assert self.known_task_name == kt.function
         return kt
 
-    def validate_argprevalidators(self): ...
+    @field_serializer("arg_prevalidators")
+    def serialize_arg_prevalidators(self, v: Any, info: FieldSerializationInfo):
+        context: dict = info.context
+        if context:
+            pass
+        return {
+            arg_name: func.__name__ for arg_name, func in self.arg_prevalidators.items()
+        }
+
+
+def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
+    """Decorator to format the output of a function that returns a string with ruff."""
+
+    @functools.wraps(returns_str_func)
+    def wrapper(*args, **kwargs):
+        unformatted = returns_str_func(*args, **kwargs)
+        # https://github.com/astral-sh/ruff/issues/8401#issuecomment-1788806462
+        cmd = ["ruff", "format", "-"]
+        formatted = subprocess.check_output(cmd, input=unformatted, encoding="utf-8")
+        return formatted
+
+    return wrapper
 
 
 class DagCompiler(BaseModel):
@@ -54,6 +83,9 @@ class DagCompiler(BaseModel):
     template: str = "airflow-kubernetes.jinja2"
     template_dir: pathlib.Path = TEMPLATES
 
+    # compilation settings
+    testing: bool = False
+    mock_tasks: list[str] = Field(default_factory=list)
     # TODO: on __init__ (or in cached_property), sort tasks
     # topologically so we know what order to invoke them in dag
 
@@ -96,19 +128,42 @@ class DagCompiler(BaseModel):
 
     @property
     def dag_config(self) -> dict:
-        return self.model_dump(exclude={"template", "template_dir"})
+        if self.mock_tasks and not self.testing:
+            raise ValueError(
+                "If you provide mocks, you must set `testing=True` to use them."
+            )
+        return self.model_dump(
+            exclude={"template", "template_dir"},
+            context={
+                "testing": self.testing,
+                "mocks": self.mock_tasks,
+            },
+        )
+
+    @property
+    def _omit_args(self) -> list[str]:
+        # for a given task arg, if it is dependent on another task's return value,
+        # we don't need to include it in the `dag_params_schema`,
+        # because we don't need it to be passed as a parameter by the user.
+        return ["return"] + [arg for t in self.tasks for arg in t.arg_dependencies]
 
     def dag_params_schema(self) -> dict[str, dict]:
         return {
-            t.known_task_name: t.known_task.parameters_jsonschema() for t in self.tasks
+            t.known_task_name: t.known_task.parameters_jsonschema(
+                omit_args=self._omit_args
+            )
+            for t in self.tasks
         }
 
     def dag_params_yaml(self) -> str:
         yaml_str = ""
         for t in self.tasks:
-            yaml_str += t.known_task.parameters_annotation_yaml_str()
+            yaml_str += t.known_task.parameters_annotation_yaml_str(
+                omit_args=self._omit_args
+            )
         return yaml_str
 
+    @ruff_formatted
     def _generate_dag(self) -> str:
         env = Environment(loader=FileSystemLoader(self.template_dir))
         template = env.get_template(self.template)

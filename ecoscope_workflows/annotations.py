@@ -1,4 +1,4 @@
-from typing import Annotated, TypeVar, get_origin
+from typing import Annotated, Any, TypeVar, get_origin
 
 import pandera as pa
 from pydantic_core import core_schema as cs
@@ -32,6 +32,14 @@ DataFrame = Annotated[
     # validation behavior, only JSON Schema generation.
     WithJsonSchema({"type": "ecoscope.distributed.types.DataFrame"}),
 ]
+
+
+class AnyGeoDataFrameSchema(JsonSerializableDataFrameModel):
+    # see note in tasks/time_density re: geometry typing
+    geometry: pa.typing.Series[Any] = pa.Field()
+
+
+AnyGeoDataFrame = DataFrame[AnyGeoDataFrameSchema]
 
 
 def is_subscripted_pandera_dataframe(obj):

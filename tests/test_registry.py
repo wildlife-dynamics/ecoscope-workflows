@@ -2,9 +2,7 @@ from ecoscope_workflows.registry import KnownTask, KubernetesPodOperator
 
 
 def test_known_task_parameters_jsonschema():
-    importable_reference = (
-        "ecoscope_workflows.tasks.python.io.get_subjectgroup_observations"
-    )
+    importable_reference = "ecoscope_workflows.tasks.io.get_subjectgroup_observations"
     kt = KnownTask(
         importable_reference=importable_reference,
         operator=KubernetesPodOperator(image="", name="", container_resources={}),

@@ -2,16 +2,14 @@ import functools
 import types
 import warnings
 from dataclasses import FrozenInstanceError, dataclass, field, replace
-from typing import Callable, NewType
+from typing import Any, Callable
 
 import dill
 from pydantic import validate_call
 from pydantic.functional_validators import AfterValidator, BeforeValidator
 
-ArgName = NewType("ArgName", str)
 
-
-def _get_annotation_metadata(func: types.FunctionType, arg_name: ArgName):
+def _get_annotation_metadata(func: types.FunctionType, arg_name: str):
     assert func.__annotations__, f"{func.__name__=} has no annotations."
     assert (
         arg_name in func.__annotations__
@@ -51,7 +49,7 @@ class distributed:
     """
 
     func: Callable
-    arg_prevalidators: dict[ArgName, Callable] = field(default_factory=dict)
+    arg_prevalidators: dict[str, Callable[[str], Any]] = field(default_factory=dict)
     return_postvalidator: Callable | None = None
     validate: bool = False
     _initialized: bool = False
@@ -60,8 +58,22 @@ class distributed:
         functools.update_wrapper(self, self.func)
         self._initialized = True
 
-    def replace(self, **changes: dict) -> "distributed":
+    def replace(
+        self,
+        arg_prevalidators: dict[str, Callable] | None = None,
+        return_postvalidator: Callable | None = None,
+        validate: bool | None = None,
+    ) -> "distributed":
         self._initialized = False
+        changes = {
+            k: v
+            for k, v in {
+                "arg_prevalidators": arg_prevalidators,
+                "return_postvalidator": return_postvalidator,
+                "validate": validate,
+            }.items()
+            if v is not None
+        }
         return replace(self, **changes)  # type: ignore
 
     def __setattr__(self, name, value):

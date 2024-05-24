@@ -15,7 +15,7 @@ class SupportsToParquet(Protocol):
     closures defined within task scopes in this module.
     """
 
-    def to_parquet(self, url): ...
+    def to_parquet(self): ...
 
 
 @task.kubernetes(
@@ -41,7 +41,7 @@ def get_subjectgroup_observations_task(
     ti: TaskInstance | None = None,
 ):
     # the task itself
-    from ecoscope_workflows.tasks.python.io import get_subjectgroup_observations
+    from ecoscope_workflows.tasks.io import get_subjectgroup_observations
 
     # user-passed kwargs for the task (via airflow dag params)
     task_kwargs = params["get_subjectgroup_observations"]
@@ -100,7 +100,7 @@ def process_relocations_task(
     from ecoscope_workflows.serde import gpd_from_parquet_uri
 
     # the task itself
-    from ecoscope_workflows.tasks.python.preprocessing import process_relocations
+    from ecoscope_workflows.tasks.preprocessing import process_relocations
 
     # user-passed kwargs for the task (via airflow dag params)
     task_kwargs = params["process_relocations"]
@@ -162,7 +162,7 @@ def relocations_to_trajectory_task(
     from ecoscope_workflows.serde import gpd_from_parquet_uri
 
     # the task itself
-    from ecoscope_workflows.tasks.python.preprocessing import relocations_to_trajectory
+    from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
 
     # user-passed kwargs for the task (via airflow dag params)
     task_kwargs = params["relocations_to_trajectory"]
@@ -220,12 +220,11 @@ def calculate_time_density_task(
     params: dict | None = None,  # Airflow DAG Params passed with `--conf` on trigger
     ti: TaskInstance | None = None,
 ):
-    assert ti is not None, "TaskInstance must be injected by Airflow."
     # deserializers
     from ecoscope_workflows.serde import gpd_from_parquet_uri
 
     # the task itself
-    from ecoscope_workflows.tasks.python.analysis import calculate_time_density
+    from ecoscope_workflows.tasks.analysis import calculate_time_density
 
     # user-passed kwargs for the task (via airflow dag params)
     task_kwargs = params["calculate_time_density"]

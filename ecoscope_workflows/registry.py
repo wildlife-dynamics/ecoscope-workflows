@@ -2,18 +2,21 @@
 Can be mutated with entry points.
 """
 
-import importlib
-
 # from importlib.metadata import entry_points
-from typing import Callable, get_args
+from typing import Annotated, Any, get_args
 
 import ruamel.yaml
 import pandera as pa
-from pydantic import BaseModel, TypeAdapter, computed_field
+from pydantic import BaseModel, FieldSerializationInfo, TypeAdapter, field_serializer
+from pydantic.functional_validators import AfterValidator
 
-from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
 from ecoscope_workflows.serde import gpd_from_parquet_uri
+from ecoscope_workflows.util import (
+    import_distributed_task_from_reference,
+    rsplit_importable_reference,
+    validate_importable_reference,
+)
 
 # def process_entries():
 #     if entry_points is not None:
@@ -36,55 +39,76 @@ class KubernetesPodOperator(BaseModel):
     container_resources: dict
 
 
+ImportableReference = Annotated[str, AfterValidator(validate_importable_reference)]
+
+
 class KnownTask(BaseModel):
-    # pod_name: str
-    importable_reference: str
+    importable_reference: ImportableReference
     # tags: list[str]
     operator: KubernetesPodOperator
 
-    @property
-    def _importable_reference_parts(self):
-        # TODO: assert rsplit len = 2 on __init__
-        return self.importable_reference.rsplit(".", 1)
+    @field_serializer("importable_reference")
+    def serialize_importable_reference(self, v: Any, info: FieldSerializationInfo):
+        context: dict = info.context
+        testing = context.get("testing", False)
+        mocks = context.get("mocks", [])
+        return {
+            "anchor": self.anchor,
+            "function": self.function,
+            "statement": (
+                (
+                    # if this is a testing context, and a mock was requested:
+                    f"{self.function} = create_distributed_task_magicmock(  # 🧪\n"
+                    f"    anchor='{self.anchor}',  # 🧪\n"
+                    f"    func_name='{self.function}',  # 🧪\n"
+                    ")  # 🧪"
+                )
+                if testing and self.function in mocks
+                # but in most cases just import the function in a normal way
+                else f"from {self.anchor} import {self.function}"
+            ),
+        }
 
-    @computed_field
     @property
-    def module(self) -> str:
-        return self._importable_reference_parts[0]
+    def anchor(self) -> str:
+        return rsplit_importable_reference(self.importable_reference)[0]
 
-    @computed_field
     @property
     def function(self) -> str:
-        return self._importable_reference_parts[1]
+        return rsplit_importable_reference(self.importable_reference)[1]
 
-    def _import_func(self) -> Callable:
-        # imports the distributed function. we will need to be clear in docs about what imports are
-        # allowed at top level (ecoscope_workflows, pydantic, pandera, pandas) and which imports
-        # must be deferred to function body (geopandas, ecoscope itself, etc.).
-        # maybe we can also enforce this programmatically.
-        mod = importlib.import_module(self.module)
-        func = getattr(mod, self.function)
-        assert isinstance(
-            func, distributed
-        ), f"{self.importable_reference} is not `@distributed`"
-        return func.func
-
-    def parameters_jsonschema(self) -> dict:
-        func = self._import_func()
-        return TypeAdapter(func).json_schema(schema_generator=SurfacesDescriptionSchema)
+    def parameters_jsonschema(self, omit_args: list[str] | None = None) -> dict:
+        func = import_distributed_task_from_reference(self.anchor, self.function)
+        # NOTE: SurfacesDescriptionSchema is a workaround for https://github.com/pydantic/pydantic/issues/9404
+        # Once that issue is closed, we can remove SurfaceDescriptionSchema and use the default schema_generator.
+        schema = TypeAdapter(func.func).json_schema(
+            schema_generator=SurfacesDescriptionSchema
+        )
+        if omit_args:
+            schema["properties"] = {
+                arg: schema["properties"][arg]
+                for arg in schema["properties"]
+                if arg not in omit_args
+            }
+            schema["required"] = [
+                arg for arg in schema["required"] if arg not in omit_args
+            ]
+        return schema
 
     @property
     def parameters_annotation(self) -> dict[str, tuple]:
-        func = self._import_func()
+        func = import_distributed_task_from_reference(self.anchor, self.function)
         return {
             arg: get_args(annotation)
-            for arg, annotation in func.__annotations__.items()
+            for arg, annotation in func.func.__annotations__.items()
         }
 
-    def parameters_annotation_yaml_str(self) -> str:
+    def parameters_annotation_yaml_str(self, omit_args: list[str] | None = None) -> str:
         yaml = ruamel.yaml.YAML(typ="rt")
         yaml_str = f"{self.function}:\n"
         for arg, param in self.parameters_annotation.items():
+            if omit_args and arg in omit_args:
+                continue  # skip this arg
             yaml_str += f"  {arg}:   # {param}\n"
         _ = yaml.load(yaml_str)
         return yaml_str
@@ -92,7 +116,7 @@ class KnownTask(BaseModel):
 
 known_tasks = {
     "get_subjectgroup_observations": KnownTask(
-        importable_reference="ecoscope_workflows.tasks.python.io.get_subjectgroup_observations",
+        importable_reference="ecoscope_workflows.tasks.io.get_subjectgroup_observations",
         operator=KubernetesPodOperator(
             image="ecoscope-workflows:latest",
             name="pod",  # TODO: defer assignment of this?
@@ -105,7 +129,7 @@ known_tasks = {
         ),
     ),
     "process_relocations": KnownTask(
-        importable_reference="ecoscope_workflows.tasks.python.preprocessing.process_relocations",
+        importable_reference="ecoscope_workflows.tasks.preprocessing.process_relocations",
         operator=KubernetesPodOperator(
             image="ecoscope-workflows:latest",
             name="pod",  # TODO: defer assignment of this?
@@ -118,7 +142,7 @@ known_tasks = {
         ),
     ),
     "relocations_to_trajectory": KnownTask(
-        importable_reference="ecoscope_workflows.tasks.python.preprocessing.relocations_to_trajectory",
+        importable_reference="ecoscope_workflows.tasks.preprocessing.relocations_to_trajectory",
         operator=KubernetesPodOperator(
             image="ecoscope-workflows:latest",
             name="pod",  # TODO: defer assignment of this?
@@ -131,7 +155,20 @@ known_tasks = {
         ),
     ),
     "calculate_time_density": KnownTask(
-        importable_reference="ecoscope_workflows.tasks.python.analysis.calculate_time_density",
+        importable_reference="ecoscope_workflows.tasks.analysis.calculate_time_density",
+        operator=KubernetesPodOperator(
+            image="ecoscope-workflows:latest",
+            name="pod",  # TODO: defer assignment of this?
+            container_resources={
+                "request_memory": "128Mi",
+                "request_cpu": "500m",
+                "limit_memory": "500Mi",
+                "limit_cpu": 1,
+            },
+        ),
+    ),
+    "draw_ecomap": KnownTask(
+        importable_reference="ecoscope_workflows.tasks.results.draw_ecomap",
         operator=KubernetesPodOperator(
             image="ecoscope-workflows:latest",
             name="pod",  # TODO: defer assignment of this?
@@ -146,5 +183,5 @@ known_tasks = {
 }
 
 known_deserializers = {
-    pa.typing.DataFrame: gpd_from_parquet_uri.__name__,
+    pa.typing.DataFrame: gpd_from_parquet_uri,
 }
