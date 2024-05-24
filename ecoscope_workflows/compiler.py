@@ -164,7 +164,7 @@ class DagCompiler(BaseModel):
         return yaml_str
 
     @ruff_formatted
-    def _generate_dag(self) -> str:
+    def generate_dag(self) -> str:
         env = Environment(loader=FileSystemLoader(self.template_dir))
         template = env.get_template(self.template)
         return template.render(self.dag_config)

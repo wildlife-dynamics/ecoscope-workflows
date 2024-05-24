@@ -16,7 +16,7 @@ def compile_command(args):
         dc.testing = True
     if args.mock_tasks:
         dc.mock_tasks = args.mock_tasks
-    dag_str = dc._generate_dag()
+    dag_str = dc.generate_dag()
     if args.outpath:
         with open(args.outpath, "w") as f:
             f.write(dag_str)

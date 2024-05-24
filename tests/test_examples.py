@@ -59,7 +59,7 @@ def spec(request: pytest.FixtureRequest) -> SpecFixture:
 def test_generate_dag(spec: SpecFixture, template: TemplateName):
     dag_compiler = DagCompiler.from_spec(spec=spec.spec)
     dag_compiler.template = template
-    dag_str = dag_compiler._generate_dag()
+    dag_str = dag_compiler.generate_dag()
     script_fname = _spec_path_to_dag_fname(path=spec.path, template=template)
     with open(EXAMPLES / "dags" / script_fname) as f:
         assert dag_str == f.read()
@@ -135,7 +135,7 @@ def test_end_to_end(spec: SpecFixture, tmp_path: Path):
     dc.template = "script-sequential.jinja2"
     dc.testing = True
     dc.mock_tasks = ["get_subjectgroup_observations"]
-    script = dc._generate_dag()
+    script = dc.generate_dag()
     tmp = tmp_path / "tmp"
     tmp.mkdir()
     script_outpath = tmp / "script.py"
