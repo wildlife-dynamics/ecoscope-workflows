@@ -65,17 +65,17 @@ def test_generate_dag(spec: SpecFixture, template: TemplateName):
         assert dag_str == f.read()
 
 
-def test_dag_params_schema(spec: SpecFixture):
+def test_dag_params_jsonschema(spec: SpecFixture):
     dag_compiler = DagCompiler.from_spec(spec=spec.spec)
-    params = dag_compiler.dag_params_schema()
+    params = dag_compiler.get_params_jsonschema()
     jsonschema_fname = _spec_path_to_jsonschema_fname(spec.path)
     with open(EXAMPLES / "dags" / jsonschema_fname) as f:
         assert params == json.load(f)
 
 
-def test_dag_params_yaml(spec: SpecFixture):
+def test_dag_params_fillable_yaml(spec: SpecFixture):
     dag_compiler = DagCompiler.from_spec(spec=spec.spec)
-    yaml_str = dag_compiler.dag_params_yaml()
+    yaml_str = dag_compiler.get_params_fillable_yaml()
     yaml = ruamel.yaml.YAML(typ="rt")
     yaml_fname = _spec_path_to_yaml_fname(spec.path)
     with open(EXAMPLES / "dags" / yaml_fname) as f:

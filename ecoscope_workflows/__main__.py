@@ -37,9 +37,9 @@ def get_params_command(args):
     compilation_spec = yaml.safe_load(args.spec)
     dc = DagCompiler.from_spec(spec=compilation_spec)
     if args.format == "json":
-        params = dc.dag_params_schema()
+        params = dc.get_params_jsonschema()
     elif args.format == "yaml":
-        params = dc.dag_params_yaml()
+        params = dc.get_params_fillable_yaml()
     if args.outpath:
         with open(args.outpath, "w") as f:
             if args.format == "json":
