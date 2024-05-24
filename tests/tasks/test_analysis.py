@@ -62,3 +62,9 @@ def test_calculate_time_density(
     distributed_result = gpd.read_parquet(result_path)
     # assert distributed result is the same as the in_memory result
     pd.testing.assert_frame_equal(in_memory, distributed_result)
+    # we've cached this result for downstream tests, so make sure the cache is not stale
+    cached = gpd.read_parquet(
+        resources.files("ecoscope_workflows.tasks.analysis")
+        / "calculate-time-density.example-return.parquet"
+    )
+    pd.testing.assert_frame_equal(in_memory, cached)
