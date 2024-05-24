@@ -46,13 +46,13 @@ class TaskInstance(BaseModel):
         return kt
 
     @field_serializer("arg_prevalidators")
-    def serialize_importable_reference(self, v: Any, info: FieldSerializationInfo):
+    def serialize_arg_prevalidators(self, v: Any, info: FieldSerializationInfo):
         context: dict = info.context
         if context:
             pass
-        return {k: v.__name__ for k, v in self.arg_prevalidators.items()}
-
-    def validate_argprevalidators(self): ...
+        return {
+            arg_name: func.__name__ for arg_name, func in self.arg_prevalidators.items()
+        }
 
 
 def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
