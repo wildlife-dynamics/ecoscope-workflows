@@ -70,12 +70,6 @@ class KnownTask(BaseModel):
         }
 
     @property
-    def sample_data_fname(self) -> str:
-        return (
-            f"{self.function.replace('_', '-')}.parquet"  # FIXME: might not be parquet
-        )
-
-    @property
     def module(self) -> str:
         return rsplit_importable_reference(self.importable_reference)[0]
 
