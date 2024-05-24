@@ -3,13 +3,14 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from textwrap import dedent
-from typing import Literal
+from typing import Callable, Literal
 
 import pytest
 import yaml
 import ruamel.yaml
 
 from ecoscope_workflows.compiler import DagCompiler
+from ecoscope_workflows.registry import TaskTag, known_tasks
 
 EXAMPLES = Path(__file__).parent.parent / "examples"
 
@@ -130,11 +131,44 @@ params = {
 }
 
 
-def test_end_to_end(spec: SpecFixture, tmp_path: Path):
-    dc = DagCompiler.from_spec(spec=spec.spec)
+@dataclass
+class EndToEndFixture:
+    spec_fixture: SpecFixture
+    params: str
+    mock_tasks: list[str]
+    assert_that_stdout: list[Callable[[str], bool]]
+
+
+# TODO: package this alongside task somehow
+assert_that_stdout = {
+    "time-density.yaml": [
+        lambda out: "webkitallowfullscreen" in out,
+        lambda out: "function geo_json_" in out,
+    ]
+}
+
+
+@pytest.fixture
+def end_to_end(spec: SpecFixture) -> EndToEndFixture:
+    return EndToEndFixture(
+        spec_fixture=spec,
+        params=params[spec.path.name],
+        mock_tasks=[
+            task
+            for task in spec.spec["tasks"]
+            # mock tasks that require io
+            # TODO: this could also be a default for the compiler in --testing mode!
+            if TaskTag.io in known_tasks[task].tags
+        ],
+        assert_that_stdout=assert_that_stdout[spec.path.name],
+    )
+
+
+def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
+    dc = DagCompiler.from_spec(spec=end_to_end.spec_fixture.spec)
     dc.template = "script-sequential.jinja2"
     dc.testing = True
-    dc.mock_tasks = ["get_subjectgroup_observations"]
+    dc.mock_tasks = end_to_end.mock_tasks
     script = dc.generate_dag()
     tmp = tmp_path / "tmp"
     tmp.mkdir()
@@ -144,7 +178,7 @@ def test_end_to_end(spec: SpecFixture, tmp_path: Path):
 
     params_outpath = tmp / "params.yaml"
     with open(params_outpath, "w") as f:
-        f.write(params[spec.path.name])
+        f.write(end_to_end.params)
 
     cmd = [
         "python3",
@@ -156,5 +190,5 @@ def test_end_to_end(spec: SpecFixture, tmp_path: Path):
     ]
     out = subprocess.run(cmd, capture_output=True, text=True)
     assert out.returncode == 0
-    assert "webkitallowfullscreen" in out.stdout
-    assert "function geo_json_" in out.stdout
+    for assert_fn in end_to_end.assert_that_stdout:
+        assert assert_fn(out.stdout)
