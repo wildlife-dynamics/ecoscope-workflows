@@ -5,8 +5,10 @@ from dataclasses import FrozenInstanceError, dataclass, field, replace
 from typing import Any, Callable, overload
 
 import dill
-from pydantic import BaseModel, Field, validate_call
+from pydantic import validate_call
 from pydantic.functional_validators import AfterValidator, BeforeValidator
+
+from ecoscope_workflows.operators import OperatorKws
 
 
 def _get_annotation_metadata(func: types.FunctionType, arg_name: str):
@@ -34,17 +36,6 @@ def _get_validator_index(
         else [i for i, m in enumerate(existing_meta) if isinstance(m, validator_type)][
             0
         ]
-    )
-
-
-def default_container_resources():
-    return {"cpu": 1}
-
-
-class OperatorKws(BaseModel):
-    image: str = "ecoscope-workflows:latest"
-    container_resources: dict[str, Any] = Field(
-        default_factory=default_container_resources
     )
 
 
@@ -137,7 +128,7 @@ def distributed(
     func: Callable[..., Any],
     *,
     image: str | None = None,
-    container_resources: dict[str, int] | None = None,
+    container_resources: dict[str, Any] | None = None,
 ) -> DistributedTask: ...
 
 
@@ -145,15 +136,15 @@ def distributed(
 def distributed(
     *,
     image: str | None = None,
-    container_resources: dict[str, int] | None = None,
+    container_resources: dict[str, Any] | None = None,
 ) -> Callable[..., DistributedTask]: ...
 
 
 def distributed(
     func: Callable[..., Any] | None = None,
     *,
-    image: str | None = None,  # TODO: actually create this image
-    container_resources: dict[str, int] | None = None,
+    image: str | None = None,
+    container_resources: dict[str, Any] | None = None,
 ) -> Callable[..., DistributedTask] | DistributedTask:
     operator_kws = {
         k: v

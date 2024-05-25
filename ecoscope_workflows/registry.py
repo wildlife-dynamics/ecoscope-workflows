@@ -20,8 +20,9 @@ from pydantic import (
 )
 from pydantic.functional_validators import AfterValidator
 
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import DistributedTask
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
+from ecoscope_workflows.operators import KubernetesPodOperator
 from ecoscope_workflows.serde import gpd_from_parquet_uri
 from ecoscope_workflows.util import (
     import_distributed_task_from_reference,
@@ -35,7 +36,7 @@ def recurse_into_tasks(module: types.ModuleType):
     for name, obj in [
         m for m in getmembers(module) if not m[0].startswith(("__", "_"))
     ]:
-        if isinstance(obj, distributed):
+        if isinstance(obj, DistributedTask):
             yield name  # FIXME: return full `importable_reference`
         elif ismodule(obj):
             yield from recurse_into_tasks(obj)
@@ -55,7 +56,7 @@ def process_entries():
             f"Got: `{root_pkg_name}.{tasks_pkg_name}`"
         )
         root = import_module(root_pkg_name)
-        tasks = getattr(root, tasks_pkg_name)  # circular import
+        tasks = getattr(root, tasks_pkg_name)  # circular import # noqa: F841
         # members = [m for m in getmembers(tasks) if not m[0].startswith("__")]
 
         # register_known_task(task.load())
@@ -63,14 +64,6 @@ def process_entries():
 
 
 process_entries()
-
-
-class KubernetesPodOperator(BaseModel):
-    image: str
-    name: str  # This is the *pod* name
-    # TODO: BaseModel for resouces
-    # api reference: https://airflow.apache.org/docs/apache-airflow-providers-cncf-kubernetes/stable/_api/airflow/providers/cncf/kubernetes/operators/pod/index.html#airflow.providers.cncf.kubernetes.operators.pod.KubernetesPodOperator:~:text=by%20labels.%20(templated)-,container_resources,-(kubernetes.client
-    container_resources: dict
 
 
 ImportableReference = Annotated[str, AfterValidator(validate_importable_reference)]

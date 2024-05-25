@@ -14,18 +14,36 @@ def test_call_simple_default_operator_kws():
     assert f.func(1, 2) == 3
     assert f(1, 2) == 3
     assert f.operator_kws.image == "ecoscope-workflows:latest"
-    assert f.operator_kws.container_resources == {"cpu": 1}
+    assert f.operator_kws.container_resources == {
+        "request_memory": "128Mi",
+        "request_cpu": "500m",
+        "limit_memory": "500Mi",
+        "limit_cpu": 2,
+    }
 
 
 def test_call_simple_custom_operator_kws():
-    @distributed(image="my-custom-image", container_resources={"cpu": 16})
+    @distributed(
+        image="my-custom-image:abc123",
+        container_resources={
+            "request_memory": "400M",
+            "request_cpu": 16,
+            "limit_memory": "800M",
+            "limit_cpu": 32,
+        },
+    )
     def f(a: int, b: int) -> int:
         return a + b
 
     assert f.func(1, 2) == 3
     assert f(1, 2) == 3
-    assert f.operator_kws.image == "my-custom-image"
-    assert f.operator_kws.container_resources == {"cpu": 16}
+    assert f.operator_kws.image == "my-custom-image:abc123"
+    assert f.operator_kws.container_resources == {
+        "request_memory": "400M",
+        "request_cpu": 16,
+        "limit_memory": "800M",
+        "limit_cpu": 32,
+    }
 
 
 def test_frozen_instance():
