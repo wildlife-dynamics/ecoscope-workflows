@@ -54,7 +54,7 @@ class DistributedTask:
     arg_prevalidators: dict[str, Callable[[str], Any]] = field(default_factory=dict)
     return_postvalidator: Callable | None = None
     validate: bool = False
-    operator_kws: OperatorKws = OperatorKws()
+    operator_kws: OperatorKws = field(default_factory=OperatorKws)
     tags: list[str] = field(default_factory=list)
     _initialized: bool = False
 
