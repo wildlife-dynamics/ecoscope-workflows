@@ -171,69 +171,7 @@ class KnownTask(BaseModel):
         return yaml_str
 
 
-known_tasks = {
-    "get_subjectgroup_observations": KnownTask(
-        importable_reference="ecoscope_workflows.tasks.io.get_subjectgroup_observations",
-        tags=[TaskTag.io],
-        operator=KubernetesPodOperator(
-            image="ecoscope-workflows:latest",
-            container_resources={
-                "request_memory": "128Mi",
-                "request_cpu": "500m",
-                "limit_memory": "500Mi",
-                "limit_cpu": 1,
-            },
-        ),
-    ),
-    "process_relocations": KnownTask(
-        importable_reference="ecoscope_workflows.tasks.preprocessing.process_relocations",
-        operator=KubernetesPodOperator(
-            image="ecoscope-workflows:latest",
-            container_resources={
-                "request_memory": "128Mi",
-                "request_cpu": "500m",
-                "limit_memory": "500Mi",
-                "limit_cpu": 1,
-            },
-        ),
-    ),
-    "relocations_to_trajectory": KnownTask(
-        importable_reference="ecoscope_workflows.tasks.preprocessing.relocations_to_trajectory",
-        operator=KubernetesPodOperator(
-            image="ecoscope-workflows:latest",
-            container_resources={
-                "request_memory": "128Mi",
-                "request_cpu": "500m",
-                "limit_memory": "500Mi",
-                "limit_cpu": 1,
-            },
-        ),
-    ),
-    "calculate_time_density": KnownTask(
-        importable_reference="ecoscope_workflows.tasks.analysis.calculate_time_density",
-        operator=KubernetesPodOperator(
-            image="ecoscope-workflows:latest",
-            container_resources={
-                "request_memory": "128Mi",
-                "request_cpu": "500m",
-                "limit_memory": "500Mi",
-                "limit_cpu": 1,
-            },
-        ),
-    ),
-    "draw_ecomap": KnownTask(
-        importable_reference="ecoscope_workflows.tasks.results.draw_ecomap",
-        operator=KubernetesPodOperator(
-            image="ecoscope-workflows:latest",
-            container_resources={
-                "request_memory": "128Mi",
-                "request_cpu": "500m",
-                "limit_memory": "500Mi",
-                "limit_cpu": 1,
-            },
-        ),
-    ),
-}
+known_tasks = collect_task_entries()
 
 known_deserializers = {
     pa.typing.DataFrame: gpd_from_parquet_uri,
