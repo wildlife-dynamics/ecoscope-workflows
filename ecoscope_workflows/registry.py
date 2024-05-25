@@ -22,7 +22,7 @@ from pydantic import (
 )
 from pydantic.functional_validators import AfterValidator
 
-# from ecoscope_workflows.annotations import JsonSerializableDataFrameModel
+from ecoscope_workflows.annotations import JsonSerializableDataFrameModel
 from ecoscope_workflows.decorators import DistributedTask
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
 from ecoscope_workflows.operators import KubernetesPodOperator
@@ -58,8 +58,8 @@ def recurse_into_tasks(
             )
         elif ismodule(obj):
             yield from recurse_into_tasks(obj)
-        # elif issubclass(obj, JsonSerializableDataFrameModel):
-        #     continue
+        elif issubclass(obj, JsonSerializableDataFrameModel):
+            continue
         else:
             raise ValueError(f"Unexpected member {obj} in module {module}")
 
@@ -79,6 +79,7 @@ def collect_task_entries() -> dict[str, "KnownTask"]:
         root = import_module(root_pkg_name)
         tasks_module = getattr(root, tasks_pkg_name)
         known_task_args = [t for t in recurse_into_tasks(tasks_module)]
+        # FIXME: handle name collisions, which would currently result in overwriting
         known_tasks |= {
             kta.name: KnownTask(
                 # TODO: since we are assembling the importable reference here,
