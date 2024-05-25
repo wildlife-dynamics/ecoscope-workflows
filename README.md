@@ -88,6 +88,52 @@ def my_cool_analysis_task(
 
 ### Compilation specs
 
+Compilation specs define a DAG of known [tasks](#tasks), which can either be built-ins,
+or tasks registered via the [extensible task registry](#extensible-task-registry).
+
+The inline comments in this example explain what each line means:
+
+```yaml
+# the workflow name
+name: calculate_time_density
+# for distibuted compilation targets (e.g. Airflow), this is where task
+# results will be serialized for passing between nodes (i.e. tasks)
+cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
+# the tasks. these names either have to be built-ins or third-party registrations
+# via the "ecoscope_workflows.tasks" entry point. to see a list of known tasks for
+# a given python environment, from the terminal, run `ecoscope-workflows tasks` to
+# dump the current task registry to stdout.
+tasks:
+  # root tasks (which have no dependencies on the output of other tasks) are specified
+  # by their name, followed by empty curly braces, like so:
+  get_subjectgroup_observations: {}
+  # this next task has a dependency defined within it...
+  process_relocations:
+    # this means, that the `process_relocations` task takes an argument `observations`,
+    # and we want the value passed to this argument to be the return value of the task
+    # `get_subjectgroup_observations`, which is the root task of this workflow.
+    observations: get_subjectgroup_observations
+  relocations_to_trajectory:
+    # the pattern continues: `relocations_to_trajectory` has an argument named
+    # `relocations`. populate its value from the return value of `process_relocations`
+    relocations: process_relocations
+  calculate_time_density:
+    # etc.
+    trajectory_gdf: relocations_to_trajectory
+  draw_ecomap:
+    # and etc., until the last task!
+    geodataframe: calculate_time_density
+```
+
+Note that any arguments for a [task](#task) not specified in the spec will need to be passed
+at the time the workflow (script, Airflow DAG, etc.) is invoked. The following command
+
+```console
+$ ecoscope-workflows get-params --spec ${PATH_TO_SPEC}
+```
+will return these invocation-time parameters as either jsonschema (for programmatic consumption)
+or as a fillable yaml form (for humans); use the `--format` option to choose!
+
 ### CLI Quickstart
 
 ```console
@@ -144,3 +190,50 @@ You should see your extension packages listed and can now freely use them in [co
 > This same mechanism is how the built-in tasks are collected as well! If you're curious how this works,
 > check out the `pyproject.toml` for our package, as well as the `registry` module. This design is
 > [inspired by `fsspec`](https://filesystem-spec.readthedocs.io/en/latest/developer.html#implementing-a-backend).
+
+
+## Example workflows development
+
+To develop an new example workflow:
+
+1. Implement and test any necessary additional built-in [tasks](#tasks), adding them to the `.tasks`
+submodile that best fits their use:
+- `io`: Fetching data from third parties. Anthing requiring a client, token, credentials, etc. should go here.
+- `preprocessing`: Munging data prior to analysis
+- `analysis`: Performing an analytical function.
+- `results`: Encapulating the output of analyses as maps, summary tables, etc.
+2. Define a YAML [compilation spec](#compilation-specs) and put it in `examples/compilation-specs`
+3. Manually compile the spec to an example script for public reference, e.g.
+```console
+$ ecoscope-workflows compile \
+--spec examples/compilation-specs/${WORKFLOW_NAME}.yaml \
+--template script-sequential.jinja2 \
+--outpath examples/dags/${WORKFLOW_NAME}_dag.script_sequential.py
+```
+4. Export its parameters in both jsonschema, and fillable yaml formats, for reference, as well:
+
+As jsonschema:
+
+```console
+$ ecoscope-workflows get-params \
+--spec examples/compilation-specs/${WORKFLOW_NAME}.yaml \
+--format json \
+--outpath examples/dags/${WORKFLOW_NAME}_params.yaml
+```
+
+As  fillable yaml:
+
+```console
+$ ecoscope-workflows get-params \
+--spec examples/compilation-specs/${WORKFLOW_NAME}.yaml \
+--format yaml \
+--outpath examples/dags/${WORKFLOW_NAME}_params.yaml
+```
+
+### Testing and debugging
+
+```
+TODO: `ecoscope-workflows compile` offers a useful `--testing` mode which allows for
+mocking the output of tasks in a compiled DAG using example data packaged alongside
+the task definition. Documentation for this feature is forthcoming!
+```
