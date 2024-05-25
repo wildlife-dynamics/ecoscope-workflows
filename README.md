@@ -197,7 +197,7 @@ You should see your extension packages listed and can now freely use them in [co
 To develop an new example workflow:
 
 1. Implement and test any necessary additional built-in [tasks](#tasks), adding them to the `.tasks`
-submodile that best fits their use:
+submodule that best fits their use:
 - `io`: Fetching data from third parties. Anthing requiring a client, token, credentials, etc. should go here.
 - `preprocessing`: Munging data prior to analysis
 - `analysis`: Performing an analytical function.
