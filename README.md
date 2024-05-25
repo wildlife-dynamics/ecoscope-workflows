@@ -12,10 +12,12 @@ $ pip install -e ".[test]"
 
 ## Key concepts
 
-In `ecoscope-workflows`, _**tasks**_ (python functions) are composed into DAGs
-via _**compilation specs**_ defined in YAML. These specs can then be compiled
-to various targets including serial Python scripts and Airflow DAGs, via the
-`ecoscope-workflows` CLI.
+In `ecoscope-workflows`, [_**tasks**_](#tasks) (python functions) are composed into DAGs
+via [_**compilation specs**_](#compilation-specs) defined in YAML. These specs can then be compiled
+to various targets including serial Python scripts (to run locally) and Airflow DAGs (to run on Kubernetes),
+via the [`ecoscope-workflows` _**CLI**_](#compilation-specs). Finally, the
+[_**extensible task registry**_](#extensible-task-registry) supports registration of user-defined
+and third-party tasks.
 
 ### Tasks
 
@@ -70,9 +72,11 @@ def my_cool_analysis_task(
     # data analysis dependencies are deferred to the function scope.
     # this allows the compiler to import tasks and introspect their
     # call signatures, without requiring `awesome_pydata_package` to
-    # exist in the compilation/parsing environment. for serialization
-    # purposes as well, this type of import deferral is helpful and
-    # therefore not uncommon when using python in distributed settings.
+    # exist in the compilation/parsing environment. this becomes
+    # especially valuable when you consider that each task is capable
+    # of being run in a totally isolated container environment, so
+    # these "inner" task dependencies (versions, etc.) do not necessarily
+    # need to be compatible with those of other tasks in the same DAG.
     from heavy_duty_pydata_package import cool_analysis
 
     return cool_analysis(
@@ -81,9 +85,10 @@ def my_cool_analysis_task(
         another_float_parameter,
     )
 ```
-- **T
 
-## CLI Quickstart
+### Compilation specs
+
+### CLI Quickstart
 
 ```console
 $ ecoscope-workflows --help
@@ -99,13 +104,16 @@ subcommands:
     get-params          Get params
 ```
 
+### Extensible task registry
 
-## Development
+If the tasks
 
-### Tasks
+```toml
+# pyproject.toml
 
-```python
+[project]
+dependencies = ["ecoscope_workflows"]
 
+[project.entry-points."ecoscope_workflows"]
+tasks = "my_extension_package.tasks"
 ```
-
-### Workflows
