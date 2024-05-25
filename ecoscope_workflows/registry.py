@@ -22,7 +22,7 @@ from pydantic import (
 )
 from pydantic.functional_validators import AfterValidator
 
-from ecoscope_workflows.annotations import JsonSerializableDataFrameModel
+# from ecoscope_workflows.annotations import JsonSerializableDataFrameModel
 from ecoscope_workflows.decorators import DistributedTask
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
 from ecoscope_workflows.operators import KubernetesPodOperator
@@ -58,8 +58,8 @@ def recurse_into_tasks(
             )
         elif ismodule(obj):
             yield from recurse_into_tasks(obj)
-        elif issubclass(obj, JsonSerializableDataFrameModel):
-            continue
+        # elif issubclass(obj, JsonSerializableDataFrameModel):
+        #     continue
         else:
             raise ValueError(f"Unexpected member {obj} in module {module}")
 
