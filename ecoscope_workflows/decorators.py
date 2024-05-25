@@ -2,7 +2,7 @@ import functools
 import types
 import warnings
 from dataclasses import FrozenInstanceError, dataclass, field, replace
-from typing import Any, Callable
+from typing import Any, Callable, overload
 
 import dill
 from pydantic import validate_call
@@ -38,7 +38,7 @@ def _get_validator_index(
 
 
 @dataclass
-class _PlainDistributedTask:
+class DistributedTask:
     """
     Parameters
     ----------
@@ -63,7 +63,7 @@ class _PlainDistributedTask:
         arg_prevalidators: dict[str, Callable] | None = None,
         return_postvalidator: Callable | None = None,
         validate: bool | None = None,
-    ) -> "distributed":
+    ) -> "DistributedTask":
         self._initialized = False
         changes = {
             k: v
@@ -127,41 +127,35 @@ class _PlainDistributedTask:
         )
 
 
-@dataclass
-class _HasOperatorMetadata:
-    image: str | None = None
-    container_resources: dict[str, Any] | None = None
+@overload  # @distributed style
+def distributed(
+    func: Callable[..., Any],
+    *,
+    image: str | None = None,
+    container_resources: dict[str, int] | None = None,
+) -> DistributedTask: ...
 
-    def __call__(self, distributed_task: _PlainDistributedTask) -> Any:
-        return distributed_task
 
-
-# for use in instance checks; e.g. `isinstance(obj, DistributedTask)`
-DistributedTask = _PlainDistributedTask | _HasOperatorMetadata
+@overload  # @distributed(...) style
+def distributed(
+    *,
+    image: str | None = None,
+    container_resources: dict[str, int] | None = None,
+) -> Callable[..., DistributedTask]: ...
 
 
 def distributed(
-    func: Callable = None,
+    func: Callable[..., Any] | None = None,
     *,
-    image: str | None = None,
-    container_resources: dict[str, Any] | None = None,
-):
-    # Cf. pytest fixtures implementation
-    if func:
-        # for use without operator metadata, e.g.:
-        # ```
-        # @distributed
-        # def f(): ...
-        # ```
-        return _PlainDistributedTask(func)
+    image: str | None = None,  # TODO: actually create this image
+    container_resources: dict[str, int] | None = None,
+) -> Callable[..., DistributedTask] | DistributedTask:
+    def assigns_operator_fields(func: Callable) -> DistributedTask:
+        return DistributedTask(
+            func,
+            # TODO: assign mixin fields here
+        )
 
-    # for including operator metadata, e.g.:
-    # ```
-    # @distributed(image="my_image", container_resources={"cpu": 1})
-    # def f(): ...
-    # ```
-    has_operator_metadata = _HasOperatorMetadata(
-        image=image,
-        container_resources=container_resources,
-    )
-    return has_operator_metadata(_PlainDistributedTask)
+    if func:
+        return assigns_operator_fields(func)  # @distributed style
+    return assigns_operator_fields  # @distributed(...) style
