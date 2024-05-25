@@ -55,6 +55,7 @@ class DistributedTask:
     return_postvalidator: Callable | None = None
     validate: bool = False
     operator_kws: OperatorKws = OperatorKws()
+    tags: list[str] = field(default_factory=list)
     _initialized: bool = False
 
     def __post_init__(self):
@@ -129,6 +130,7 @@ def distributed(
     *,
     image: str | None = None,
     container_resources: dict[str, Any] | None = None,
+    tags: list[str] | None = None,
 ) -> DistributedTask: ...
 
 
@@ -137,6 +139,7 @@ def distributed(
     *,
     image: str | None = None,
     container_resources: dict[str, Any] | None = None,
+    tags: list[str] | None = None,
 ) -> Callable[..., DistributedTask]: ...
 
 
@@ -145,6 +148,7 @@ def distributed(
     *,
     image: str | None = None,
     container_resources: dict[str, Any] | None = None,
+    tags: list[str] | None = None,
 ) -> Callable[..., DistributedTask] | DistributedTask:
     operator_kws = {
         k: v
@@ -156,6 +160,7 @@ def distributed(
         return DistributedTask(
             func,
             operator_kws=OperatorKws(**operator_kws),
+            tags=tags or [],
         )
 
     if func:

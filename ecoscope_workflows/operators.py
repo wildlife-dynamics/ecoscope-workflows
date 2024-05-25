@@ -8,7 +8,7 @@ def default_container_resources():
         "request_memory": "128Mi",
         "request_cpu": "500m",
         "limit_memory": "500Mi",
-        "limit_cpu": 2,
+        "limit_cpu": 1,
     }
 
 

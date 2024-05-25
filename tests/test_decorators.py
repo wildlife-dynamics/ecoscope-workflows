@@ -18,7 +18,7 @@ def test_call_simple_default_operator_kws():
         "request_memory": "128Mi",
         "request_cpu": "500m",
         "limit_memory": "500Mi",
-        "limit_cpu": 2,
+        "limit_cpu": 1,
     }
 
 

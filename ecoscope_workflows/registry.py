@@ -38,7 +38,7 @@ class _KnownTaskArgs:
     name: str
     anchor: str
     operator_kws: dict
-    # tags: list[str]
+    tags: list[str]
 
 
 def recurse_into_tasks(
@@ -53,6 +53,7 @@ def recurse_into_tasks(
                 name=name,
                 anchor=module.__name__,
                 operator_kws=obj.operator_kws.model_dump(),
+                tags=obj.tags or [],
             )
         elif ismodule(obj):
             yield from recurse_into_tasks(obj)
@@ -62,7 +63,7 @@ def recurse_into_tasks(
             raise ValueError(f"Unexpected member {obj} in module {module}")
 
 
-def process_task_entrypoints() -> dict[str, "KnownTask"]:
+def collect_task_entries() -> dict[str, "KnownTask"]:
     eps = entry_points()
     assert hasattr(eps, "select")  # Python >= 3.10
     ecoscope_workflows_eps = eps.select(group="ecoscope_workflows")
@@ -84,7 +85,7 @@ def process_task_entrypoints() -> dict[str, "KnownTask"]:
                 # of KnownTask is strange? Maybe we should just pass them directly.
                 importable_reference=f"{kta.anchor}.{kta.name}",
                 operator=KubernetesPodOperator(**kta.operator_kws),
-                # tags=[TaskTag.io],  # TODO: include in decorator signature
+                tags=kta.tags,
             )
             for kta in known_task_args
         }
@@ -173,7 +174,7 @@ class KnownTask(BaseModel):
 known_tasks = {
     "get_subjectgroup_observations": KnownTask(
         importable_reference="ecoscope_workflows.tasks.io.get_subjectgroup_observations",
-        # tags=[TaskTag.io],
+        tags=[TaskTag.io],
         operator=KubernetesPodOperator(
             image="ecoscope-workflows:latest",
             container_resources={
