@@ -156,7 +156,7 @@ def distributed(
         if v is not None
     }
 
-    def assigns_operator_fields(func: Callable) -> DistributedTask:
+    def wrapper(func: Callable) -> DistributedTask:
         return DistributedTask(
             func,
             operator_kws=OperatorKws(**operator_kws),
@@ -164,5 +164,5 @@ def distributed(
         )
 
     if func:
-        return assigns_operator_fields(func)  # @distributed style
-    return assigns_operator_fields  # @distributed(...) style
+        return wrapper(func)  # @distributed style
+    return wrapper  # @distributed(...) style
