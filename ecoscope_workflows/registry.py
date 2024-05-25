@@ -1,5 +1,6 @@
-"""Task and de/serialization function registry.
-Can be mutated with entry points.
+"""Task and deserialization function registry. Can be extended on a per-session basis with
+entry points. This design is heavily inspired by the `fsspec` package's `registry` module,
+to which we owe a debt of gratitude.
 """
 
 import types
@@ -171,7 +172,9 @@ class KnownTask(BaseModel):
         return yaml_str
 
 
-known_tasks = collect_task_entries()
+_known_tasks = collect_task_entries()  # internal, mutable
+known_tasks = types.MappingProxyType(_known_tasks)  # external, immutable
+
 
 known_deserializers = {
     pa.typing.DataFrame: gpd_from_parquet_uri,
