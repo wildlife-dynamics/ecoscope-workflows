@@ -2,11 +2,13 @@ import functools
 import types
 import warnings
 from dataclasses import FrozenInstanceError, dataclass, field, replace
-from typing import Any, Callable
+from typing import Any, Callable, overload
 
 import dill
 from pydantic import validate_call
 from pydantic.functional_validators import AfterValidator, BeforeValidator
+
+from ecoscope_workflows.operators import OperatorKws
 
 
 def _get_annotation_metadata(func: types.FunctionType, arg_name: str):
@@ -38,7 +40,7 @@ def _get_validator_index(
 
 
 @dataclass
-class distributed:
+class DistributedTask:
     """
     Parameters
     ----------
@@ -52,6 +54,8 @@ class distributed:
     arg_prevalidators: dict[str, Callable[[str], Any]] = field(default_factory=dict)
     return_postvalidator: Callable | None = None
     validate: bool = False
+    operator_kws: OperatorKws = field(default_factory=OperatorKws)
+    tags: list[str] = field(default_factory=list)
     _initialized: bool = False
 
     def __post_init__(self):
@@ -63,7 +67,7 @@ class distributed:
         arg_prevalidators: dict[str, Callable] | None = None,
         return_postvalidator: Callable | None = None,
         validate: bool | None = None,
-    ) -> "distributed":
+    ) -> "DistributedTask":
         self._initialized = False
         changes = {
             k: v
@@ -89,22 +93,15 @@ class distributed:
         # the function before calling it. if we don't make a deep copy, these changes
         # will effect future calls. this is a way to make a copy that doesn't share a
         # reference to the original __annotations__ dict. perhaps a function factory
-        # would be a more robust approach. it looks like this is how airflow implements
-        # this idea: https://github.com/apache/airflow/blob/main/airflow/decorators/base.py
-        # TODO: see if we should and/or can adopt a more robust approach as in airflow.
+        # would be a more robust approach.
         func_copy = dill.loads(dill.dumps(self.func))
         # TODO: make sure the keys of arg_prevalidators are all arg_names on self.func
-        # TODO: `strict=True` requires the callable values of arg_prevalidators to be
-        # hinted with a return type, and for the return type of the callable to match
-        # the input type of the matching arg on self.func
         for arg_name in self.arg_prevalidators:
             arg_meta = _get_annotation_metadata(func_copy, arg_name)
             bv_idx = _get_validator_index(arg_meta, validator_type=BeforeValidator)
             arg_meta[bv_idx] = BeforeValidator(func=self.arg_prevalidators[arg_name])
             func_copy.__annotations__[arg_name].__metadata__ = tuple(arg_meta)
         # TODO: make sure return_postvalidator is a single-argument callable
-        # TODO: `strict=True` requires return_postvalidator to be type-hinted and for
-        # the type of it's single argument to be the same as the return type of self.func
         if self.return_postvalidator:
             return_meta = _get_annotation_metadata(func_copy, "return")
             av_idx = _get_validator_index(return_meta, validator_type=AfterValidator)
@@ -125,3 +122,47 @@ class distributed:
             if self.validate
             else func_copy(*args, **kwargs)
         )
+
+
+@overload  # @distributed style
+def distributed(
+    func: Callable[..., Any],
+    *,
+    image: str | None = None,
+    container_resources: dict[str, Any] | None = None,
+    tags: list[str] | None = None,
+) -> DistributedTask: ...
+
+
+@overload  # @distributed(...) style
+def distributed(
+    *,
+    image: str | None = None,
+    container_resources: dict[str, Any] | None = None,
+    tags: list[str] | None = None,
+) -> Callable[..., DistributedTask]: ...
+
+
+def distributed(
+    func: Callable[..., Any] | None = None,
+    *,
+    image: str | None = None,
+    container_resources: dict[str, Any] | None = None,
+    tags: list[str] | None = None,
+) -> Callable[..., DistributedTask] | DistributedTask:
+    operator_kws = {
+        k: v
+        for k, v in {"image": image, "container_resources": container_resources}.items()
+        if v is not None
+    }
+
+    def wrapper(func: Callable) -> DistributedTask:
+        return DistributedTask(
+            func,
+            operator_kws=OperatorKws(**operator_kws),
+            tags=tags or [],
+        )
+
+    if func:
+        return wrapper(func)  # @distributed style
+    return wrapper  # @distributed(...) style

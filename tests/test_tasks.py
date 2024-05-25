@@ -9,7 +9,7 @@ import geopandas as gpd
 import pandas as pd
 import pytest
 
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import DistributedTask
 from ecoscope_workflows.serde import gpd_from_parquet_uri
 from ecoscope_workflows.tasks.analysis import calculate_time_density
 from ecoscope_workflows.tasks.io import get_subjectgroup_observations
@@ -21,7 +21,7 @@ from ecoscope_workflows.tasks.preprocessing import (
 
 @dataclass
 class TaskFixture:
-    task: distributed
+    task: DistributedTask
     input_dataframe_arg_name: str
     example_input_dataframe_path: str
     kws: dict

@@ -32,7 +32,7 @@ class SubjectGroupObservationsGDFSchema(JsonSerializableDataFrameModel):
     # TODO: can we be any more specific about the `extra__` field expectations?
 
 
-@distributed
+@distributed(tags=["io"])
 def get_subjectgroup_observations(
     # client
     server: Annotated[
