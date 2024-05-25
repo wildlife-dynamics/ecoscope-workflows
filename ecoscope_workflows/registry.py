@@ -3,11 +3,12 @@ Can be mutated with entry points.
 """
 
 import types
+from dataclasses import dataclass
 from enum import Enum
 from importlib import import_module
 from importlib.metadata import entry_points
 from inspect import getmembers, ismodule
-from typing import Annotated, Any, get_args
+from typing import Annotated, Any, Generator, get_args
 
 import ruamel.yaml
 import pandera as pa
@@ -20,6 +21,7 @@ from pydantic import (
 )
 from pydantic.functional_validators import AfterValidator
 
+from ecoscope_workflows.annotations import JsonSerializableDataFrameModel
 from ecoscope_workflows.decorators import DistributedTask
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
 from ecoscope_workflows.operators import KubernetesPodOperator
@@ -31,23 +33,40 @@ from ecoscope_workflows.util import (
 )
 
 
-def recurse_into_tasks(module: types.ModuleType):
+@dataclass
+class _KnownTaskArgs:
+    name: str
+    anchor: str
+    operator_kws: dict
+    # tags: list[str]
+
+
+def recurse_into_tasks(
+    module: types.ModuleType,
+) -> Generator[_KnownTaskArgs, None, None]:
     """Recursively yield `@distributed` task names from the given module (i.e. package)."""
     for name, obj in [
         m for m in getmembers(module) if not m[0].startswith(("__", "_"))
     ]:
         if isinstance(obj, DistributedTask):
-            yield name  # FIXME: return full `importable_reference`
+            yield _KnownTaskArgs(
+                name=name,
+                anchor=module.__name__,
+                operator_kws=obj.operator_kws.model_dump(),
+            )
         elif ismodule(obj):
             yield from recurse_into_tasks(obj)
+        elif issubclass(obj, JsonSerializableDataFrameModel):
+            continue
         else:
             raise ValueError(f"Unexpected member {obj} in module {module}")
 
 
-def process_entries():
+def process_task_entrypoints() -> dict[str, "KnownTask"]:
     eps = entry_points()
     assert hasattr(eps, "select")  # Python >= 3.10
     ecoscope_workflows_eps = eps.select(group="ecoscope_workflows")
+    known_tasks: dict[str, "KnownTask"] = {}
     for ep in ecoscope_workflows_eps:
         # a bit redundant with `util.import_distributed_task_from_reference`
         root_pkg_name, tasks_pkg_name = ep.value.rsplit(".", 1)
@@ -56,14 +75,20 @@ def process_entries():
             f"Got: `{root_pkg_name}.{tasks_pkg_name}`"
         )
         root = import_module(root_pkg_name)
-        tasks = getattr(root, tasks_pkg_name)  # circular import # noqa: F841
-        # members = [m for m in getmembers(tasks) if not m[0].startswith("__")]
-
-        # register_known_task(task.load())
-        # breakpoint()
-
-
-process_entries()
+        tasks_module = getattr(root, tasks_pkg_name)
+        known_task_args = [t for t in recurse_into_tasks(tasks_module)]
+        known_tasks |= {
+            kta.name: KnownTask(
+                # TODO: since we are assembling the importable reference here,
+                # perhaps the fact that anchor and function names are properties
+                # of KnownTask is strange? Maybe we should just pass them directly.
+                importable_reference=f"{kta.anchor}.{kta.name}",
+                operator=KubernetesPodOperator(**kta.operator_kws),
+                # tags=[TaskTag.io],  # TODO: include in decorator signature
+            )
+            for kta in known_task_args
+        }
+    return known_tasks
 
 
 ImportableReference = Annotated[str, AfterValidator(validate_importable_reference)]
@@ -148,10 +173,9 @@ class KnownTask(BaseModel):
 known_tasks = {
     "get_subjectgroup_observations": KnownTask(
         importable_reference="ecoscope_workflows.tasks.io.get_subjectgroup_observations",
-        tags=[TaskTag.io],
+        # tags=[TaskTag.io],
         operator=KubernetesPodOperator(
             image="ecoscope-workflows:latest",
-            name="pod",  # TODO: defer assignment of this?
             container_resources={
                 "request_memory": "128Mi",
                 "request_cpu": "500m",
@@ -164,7 +188,6 @@ known_tasks = {
         importable_reference="ecoscope_workflows.tasks.preprocessing.process_relocations",
         operator=KubernetesPodOperator(
             image="ecoscope-workflows:latest",
-            name="pod",  # TODO: defer assignment of this?
             container_resources={
                 "request_memory": "128Mi",
                 "request_cpu": "500m",
@@ -177,7 +200,6 @@ known_tasks = {
         importable_reference="ecoscope_workflows.tasks.preprocessing.relocations_to_trajectory",
         operator=KubernetesPodOperator(
             image="ecoscope-workflows:latest",
-            name="pod",  # TODO: defer assignment of this?
             container_resources={
                 "request_memory": "128Mi",
                 "request_cpu": "500m",
@@ -190,7 +212,6 @@ known_tasks = {
         importable_reference="ecoscope_workflows.tasks.analysis.calculate_time_density",
         operator=KubernetesPodOperator(
             image="ecoscope-workflows:latest",
-            name="pod",  # TODO: defer assignment of this?
             container_resources={
                 "request_memory": "128Mi",
                 "request_cpu": "500m",
@@ -203,7 +224,6 @@ known_tasks = {
         importable_reference="ecoscope_workflows.tasks.results.draw_ecomap",
         operator=KubernetesPodOperator(
             image="ecoscope-workflows:latest",
-            name="pod",  # TODO: defer assignment of this?
             container_resources={
                 "request_memory": "128Mi",
                 "request_cpu": "500m",
@@ -217,7 +237,3 @@ known_tasks = {
 known_deserializers = {
     pa.typing.DataFrame: gpd_from_parquet_uri,
 }
-
-
-def register_known_task(known_task_kws: dict):
-    print(known_task_kws)
