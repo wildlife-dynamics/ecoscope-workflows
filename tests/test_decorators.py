@@ -6,26 +6,26 @@ import pytest
 from ecoscope_workflows.decorators import distributed
 
 
-def test_call_simple_default_operator_metadata():
+def test_call_simple_default_operator_kws():
     @distributed
     def f(a: int, b: int) -> int:
         return a + b
 
     assert f.func(1, 2) == 3
     assert f(1, 2) == 3
-    # assert f.image == "ecoscope-workflows:latest"
-    # assert f.container_resources == {"cpu": 1}
+    assert f.operator_kws.image == "ecoscope-workflows:latest"
+    assert f.operator_kws.container_resources == {"cpu": 1}
 
 
-def test_call_simple_custom_operator_metadata():
-    @distributed(image="my-image", container_resources={"cpu": 16})
+def test_call_simple_custom_operator_kws():
+    @distributed(image="my-custom-image", container_resources={"cpu": 16})
     def f(a: int, b: int) -> int:
         return a + b
 
     assert f.func(1, 2) == 3
     assert f(1, 2) == 3
-    # assert f.image == "my-image"
-    # assert f.container_resources == {"cpu": 16}
+    assert f.operator_kws.image == "my-custom-image"
+    assert f.operator_kws.container_resources == {"cpu": 16}
 
 
 def test_frozen_instance():

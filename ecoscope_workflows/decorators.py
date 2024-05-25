@@ -5,7 +5,7 @@ from dataclasses import FrozenInstanceError, dataclass, field, replace
 from typing import Any, Callable, overload
 
 import dill
-from pydantic import validate_call
+from pydantic import BaseModel, Field, validate_call
 from pydantic.functional_validators import AfterValidator, BeforeValidator
 
 
@@ -37,6 +37,17 @@ def _get_validator_index(
     )
 
 
+def default_container_resources():
+    return {"cpu": 1}
+
+
+class OperatorKws(BaseModel):
+    image: str = "ecoscope-workflows:latest"
+    container_resources: dict[str, Any] = Field(
+        default_factory=default_container_resources
+    )
+
+
 @dataclass
 class DistributedTask:
     """
@@ -52,6 +63,7 @@ class DistributedTask:
     arg_prevalidators: dict[str, Callable[[str], Any]] = field(default_factory=dict)
     return_postvalidator: Callable | None = None
     validate: bool = False
+    operator_kws: OperatorKws = OperatorKws()
     _initialized: bool = False
 
     def __post_init__(self):
@@ -89,22 +101,15 @@ class DistributedTask:
         # the function before calling it. if we don't make a deep copy, these changes
         # will effect future calls. this is a way to make a copy that doesn't share a
         # reference to the original __annotations__ dict. perhaps a function factory
-        # would be a more robust approach. it looks like this is how airflow implements
-        # this idea: https://github.com/apache/airflow/blob/main/airflow/decorators/base.py
-        # TODO: see if we should and/or can adopt a more robust approach as in airflow.
+        # would be a more robust approach.
         func_copy = dill.loads(dill.dumps(self.func))
         # TODO: make sure the keys of arg_prevalidators are all arg_names on self.func
-        # TODO: `strict=True` requires the callable values of arg_prevalidators to be
-        # hinted with a return type, and for the return type of the callable to match
-        # the input type of the matching arg on self.func
         for arg_name in self.arg_prevalidators:
             arg_meta = _get_annotation_metadata(func_copy, arg_name)
             bv_idx = _get_validator_index(arg_meta, validator_type=BeforeValidator)
             arg_meta[bv_idx] = BeforeValidator(func=self.arg_prevalidators[arg_name])
             func_copy.__annotations__[arg_name].__metadata__ = tuple(arg_meta)
         # TODO: make sure return_postvalidator is a single-argument callable
-        # TODO: `strict=True` requires return_postvalidator to be type-hinted and for
-        # the type of it's single argument to be the same as the return type of self.func
         if self.return_postvalidator:
             return_meta = _get_annotation_metadata(func_copy, "return")
             av_idx = _get_validator_index(return_meta, validator_type=AfterValidator)
@@ -150,10 +155,16 @@ def distributed(
     image: str | None = None,  # TODO: actually create this image
     container_resources: dict[str, int] | None = None,
 ) -> Callable[..., DistributedTask] | DistributedTask:
+    operator_kws = {
+        k: v
+        for k, v in {"image": image, "container_resources": container_resources}.items()
+        if v is not None
+    }
+
     def assigns_operator_fields(func: Callable) -> DistributedTask:
         return DistributedTask(
             func,
-            # TODO: assign mixin fields here
+            operator_kws=OperatorKws(**operator_kws),
         )
 
     if func:
