@@ -106,7 +106,21 @@ subcommands:
 
 ### Extensible task registry
 
-If the tasks
+Don't see the task you want here already? First, check the
+[`task-request` label on the issue tracker](https://github.com/wildlife-dynamics/ecoscope-workflows/labels/task-request)
+to see if anyone else has requested this task. If not, please raise an issue describing your requested task!
+This will give you an opportunity to crowdsource implementation ideas from the core team and community.
+
+It's possible your request will become a built-in task in `ecoscope-workflows` one day! But until then,
+we provide an means for extending the tasks visible to the compilation environment via Python's entry points.
+
+To extend the task registry, simply:
+
+1. Create an installable Python package that incudes a module named `tasks`
+2. In `tasks`, define your extension tasks using the `@distibuted` decorator, and adhering to the other
+style conventions described in [tasks](#tasks) above.
+3. In your package's `pyproject.toml`, use `projects.entry-points` to associate the fully qualified
+(i.e., absolute) import path for your tasks module with the `"ecoscope_workflows".tasks` entry point. For example:
 
 ```toml
 # pyproject.toml
@@ -115,5 +129,18 @@ If the tasks
 dependencies = ["ecoscope_workflows"]
 
 [project.entry-points."ecoscope_workflows"]
+# here we are imagining that your extension package is importable as `my_extension_package`,
+# but you will no doubt think of a catchier name than that! note that you must provide a
+# top-level `.tasks` module, i.e.:
 tasks = "my_extension_package.tasks"
 ```
+
+With these steps in place, simply install your package in the compilation Python environment, and then run:
+```console
+$ ecoscope-workflows tasks
+```
+You should see your extension packages listed and can now freely use them in [compilation specs](#compilation-specs).
+
+> This same mechanism is how the built-in tasks are collected as well! If you're curious how this works,
+> check out the `pyproject.toml` for our package, as well as the `registry` module. This design is
+> [inspired by `fsspec`](https://filesystem-spec.readthedocs.io/en/latest/developer.html#implementing-a-backend).
