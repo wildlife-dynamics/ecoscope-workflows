@@ -230,6 +230,17 @@ $ ecoscope-workflows get-params \
 --outpath examples/dags/${WORKFLOW_NAME}_params.yaml
 ```
 
+### Running the script
+
+1. Copy the fillable yaml form you generated above into a scratch directory outside
+this repo
+2. Fill in the yaml form with representative values for each parameter
+3. From the repo root, run the script with:
+```console
+$ python3 examples/dags/${WORKFLOW_NAME}_dag.script_sequential.py \
+--config ${PATH_TO_FILLED_YAML_PARAM_FORM}
+```
+
 ### Testing and debugging
 
 ```
