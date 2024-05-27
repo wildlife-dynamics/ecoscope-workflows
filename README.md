@@ -232,7 +232,7 @@ $ ecoscope-workflows get-params \
 
 ### Running the script
 
-1. Copy the fillable yaml file you generated above into a scratch directory outside
+1. Copy the fillable yaml form you generated above into a scratch directory outside
 this repo
 2. Fill in the yaml form with representative values for each parameter
 3. From the repo root, run the script with:
