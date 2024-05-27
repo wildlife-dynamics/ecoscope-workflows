@@ -238,7 +238,7 @@ this repo
 3. From the repo root, run the script with:
 ```console
 $ python3 examples/dags/${WORKFLOW_NAME}_dag.script_sequential.py \
---config ${PATH_TO_FILLED_YAML_PARAM_FILE}
+--config ${PATH_TO_FILLED_YAML_PARAM_FORM}
 ```
 
 ### Testing and debugging
