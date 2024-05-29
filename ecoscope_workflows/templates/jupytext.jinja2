@@ -20,7 +20,7 @@
 # %%
 # return value from this section
 
-tbd_var_name = {{ t.known_task.source_return }}
+{{ t.known_task.importable_reference.function }}_return = {{ t.known_task.source_return }}
 
 
 {% endfor %}
