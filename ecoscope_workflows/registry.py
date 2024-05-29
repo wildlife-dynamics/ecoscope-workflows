@@ -113,6 +113,7 @@ class KnownTask(BaseModel):
         context: dict = info.context if info.context else {}
         testing = context.get("testing", False)
         mocks = context.get("mocks", [])
+        omit_args = context.get("omit_args", [])
         return {
             "anchor": self.anchor,
             "function": self.function,
@@ -128,6 +129,7 @@ class KnownTask(BaseModel):
                 # but in most cases just import the function in a normal way
                 else f"from {self.anchor} import {self.function}"
             ),
+            "params_notebook": self.parameters_notebook(omit_args=omit_args),
         }
 
     @property
@@ -166,29 +168,51 @@ class KnownTask(BaseModel):
             for arg, annotation in self.task.func.__annotations__.items()
         }
 
+    def _iter_parameters_annotation(
+        self,
+        fmt: str,  # TODO: is there a stricter type for formatter w/ params?
+        omit_args: list[str] | None = None,
+    ) -> Generator[str, None, None]:
+        for arg, param in {
+            k: v
+            for k, v in self.parameters_annotation.items()
+            if k not in (omit_args or [])
+        }.items():
+            yield fmt.format(arg=arg, param=param)
+
     def parameters_annotation_yaml_str(self, omit_args: list[str] | None = None) -> str:
         yaml = ruamel.yaml.YAML(typ="rt")
         yaml_str = f"{self.function}:\n"
-        for arg, param in self.parameters_annotation.items():
-            if omit_args and arg in omit_args:
-                continue  # skip this arg
-            yaml_str += f"  {arg}:   # {param}\n"
+        for line in self._iter_parameters_annotation(
+            fmt="  {arg}:   # {param}\n",
+            omit_args=omit_args,
+        ):
+            yaml_str += line
         _ = yaml.load(yaml_str)
         return yaml_str
 
+    def parameters_notebook(self, omit_args: list[str] | None = None) -> str:
+        params = ""
+        for line in self._iter_parameters_annotation(
+            fmt="{arg} = ...\n",
+            omit_args=omit_args,
+        ):
+            params += line
+        return params
+
     @property
-    def _ast_parsed_function_body(self) -> list[ast.stmt]:
+    def _ast_parsed_function_def(self) -> ast.FunctionDef:
         source = getsource(self.task)
         module = ast.parse(source)
         function_def = module.body[0]
         assert isinstance(function_def, ast.FunctionDef)
-        return function_def.body
+        return function_def
 
     @computed_field
     def source_body(self) -> str:
         return "\n".join(
             ast.unparse(stmt)
-            for stmt in self._ast_parsed_function_body
+            for stmt in self._ast_parsed_function_def.body
             if not isinstance(stmt, ast.Return)
         )
 
@@ -196,7 +220,7 @@ class KnownTask(BaseModel):
     def source_return(self) -> str:
         return_stmt = [
             stmt
-            for stmt in self._ast_parsed_function_body
+            for stmt in self._ast_parsed_function_def.body
             if isinstance(stmt, ast.Return)
         ][0]
         return ast.unparse(return_stmt).replace("return ", "")
