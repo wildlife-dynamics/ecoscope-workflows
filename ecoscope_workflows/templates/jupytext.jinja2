@@ -7,6 +7,13 @@
 # %% [markdown]
 # ## {{ t.known_task.importable_reference.function.title().replace("_", " ") }}
 
+{%- if t.arg_dependencies %}
+# %%
+# dependencies assignments
+
+{% for arg in t.arg_dependencies %}{{ arg }} = {{ t.arg_dependencies[arg] }}{% endfor %}
+{% endif %}
+
 # %%
 # parameters
 
