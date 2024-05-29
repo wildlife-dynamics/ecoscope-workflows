@@ -1,4 +1,3 @@
-import tempfile
 from typing import Annotated, Any
 
 import pandera as pa
@@ -33,6 +32,7 @@ def calculate_time_density(
         list[float], Field(default=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0])
     ],
 ) -> DataFrame[TimeDensityReturnGDFSchema]:
+    import tempfile
     from ecoscope.analysis.percentile import get_percentile_area
     from ecoscope.analysis.UD import calculate_etd_range
     from ecoscope.io.raster import RasterProfile
