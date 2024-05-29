@@ -1,0 +1,26 @@
+# %% [markdown]
+# # {{ name.title().replace("_", " ") }}
+# TODO: top level description
+
+{% for t in tasks -%}
+
+# %% [markdown]
+# ## {{ t.known_task.importable_reference.function.title().replace("_", " ") }}
+
+# %%
+# parameters
+
+{# {{ t.known_task. }} #}
+
+# %%
+# the code for {{ t.known_task.importable_reference.function.title().replace("_", " ") }}
+
+{{ t.known_task.source_body }}
+
+# %%
+# return value from this section
+
+tbd_var_name = {{ t.known_task.source_return }}
+
+
+{% endfor %}

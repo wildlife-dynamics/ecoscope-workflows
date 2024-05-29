@@ -33,6 +33,9 @@ test = [
     "ecoscope @ git+https://github.com/wildlife-dynamics/ecoscope@0cad9c793d644729556d878bfff11a6c7be74589",
     "pytest",
 ]
+notebook = [
+    "jupytext",
+]
 
 [project.scripts]
 ecoscope-workflows = "ecoscope_workflows.__main__:main"
