@@ -36,6 +36,9 @@ test = [
 notebook = [
     "jupytext",
 ]
+visualize = [
+    "pygraphviz"  # maybe more stable over conda
+]
 
 [project.scripts]
 ecoscope-workflows = "ecoscope_workflows.__main__:main"
