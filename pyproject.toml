@@ -37,7 +37,7 @@ notebook = [
     "jupytext",
 ]
 visualize = [
-    "pygraphviz"  # maybe more stable over conda
+    "pydot"  # requires system install of `graphviz` for the `dot` executable
 ]
 
 [project.scripts]
