@@ -53,6 +53,7 @@ def spec(request: pytest.FixtureRequest) -> SpecFixture:
 @pytest.mark.parametrize(
     "template",
     [
+        "jupytext.jinja2",
         "script-sequential.jinja2",
         # TODO: "airflow-kubernetes.jinja2",
     ],

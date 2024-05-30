@@ -137,6 +137,7 @@ class DagCompiler(BaseModel):
             context={
                 "testing": self.testing,
                 "mocks": self.mock_tasks,
+                "omit_args": self._omit_args,
             },
         )
 

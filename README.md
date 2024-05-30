@@ -196,6 +196,8 @@ You should see your extension packages listed and can now freely use them in [co
 
 To develop an new example workflow:
 
+### Develop a compilation spec
+
 1. Implement and test any necessary additional built-in [tasks](#tasks), adding them to the `.tasks`
 submodule that best fits their use:
 - `io`: Fetching data from third parties. Anthing requiring a client, token, credentials, etc. should go here.
@@ -203,14 +205,39 @@ submodule that best fits their use:
 - `analysis`: Performing an analytical function.
 - `results`: Encapulating the output of analyses as maps, summary tables, etc.
 2. Define a YAML [compilation spec](#compilation-specs) and put it in `examples/compilation-specs`
-3. Manually compile the spec to an example script for public reference, e.g.
+
+### Interactive development with jupytext
+
+Once you have a compilation spec, you may want to interact with your compiled workflow in the form of a Jupyter notebook.
+
+To do so, first compile your spec to [jupytext](https://jupytext.readthedocs.io/en/latest/index.html#) with:
+
+```console
+$ ecoscope-workflows compile \
+--spec examples/compilation-specs/${WORKFLOW_NAME}.yaml \
+--template jupytext.jinja2 \
+--outpath examples/dags/${WORKFLOW_NAME}_dag.jupytext.py
+```
+
+The generated file `examples/dags/${WORKFLOW_NAME}_dag.jupytext.py` can be opened directly in Jupyter Lab or Notebook
+using the jupytext extension, or converted into `.ipynb` with the
+[jupytext CLI](https://jupytext.readthedocs.io/en/latest/using-cli.html#command-line-conversion).
+
+Running your workflow interacively in a Jupyter environment may be useful for development.
+
+### Compile example DAGs with parameters
+
+Once you are satisfied that your workflow runs as expected in the interactive environment, you may
+generate example dags in any applicable forms, along with parameters files.
+
+1. Manually compile the spec to an example script for public reference, e.g.
 ```console
 $ ecoscope-workflows compile \
 --spec examples/compilation-specs/${WORKFLOW_NAME}.yaml \
 --template script-sequential.jinja2 \
 --outpath examples/dags/${WORKFLOW_NAME}_dag.script_sequential.py
 ```
-4. Export its parameters in both jsonschema, and fillable yaml formats, for reference, as well:
+2. Export its parameters in both jsonschema, and fillable yaml formats, for reference, as well:
 
 As jsonschema:
 
@@ -230,7 +257,7 @@ $ ecoscope-workflows get-params \
 --outpath examples/dags/${WORKFLOW_NAME}_params.yaml
 ```
 
-### Running the script
+#### Running the script
 
 1. Copy the fillable yaml form you generated above into a scratch directory outside
 this repo
