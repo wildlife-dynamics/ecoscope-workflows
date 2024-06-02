@@ -5,6 +5,7 @@ import yaml
 
 from ecoscope_workflows.compiler import DagCompiler
 from ecoscope_workflows.registry import known_tasks
+from ecoscope_workflows.visualize import write_png
 
 
 def compile_command(args):
@@ -48,6 +49,12 @@ def get_params_command(args):
                 f.write(params)
     else:
         print(params)
+
+
+def visualize(args):
+    compilation_spec = yaml.safe_load(args.spec)
+    outpath = args.outpath
+    write_png(compilation_spec, outpath)
 
 
 def main():
@@ -104,6 +111,20 @@ def main():
         "--format",
         dest="format",
         default="json",
+    )
+
+    # Subcommand 'visualize'
+    visualize_parser = subparsers.add_parser("visualize", help="Visualize workflows")
+    visualize_parser.set_defaults(func=visualize)
+    visualize_parser.add_argument(
+        "--spec",
+        dest="spec",
+        required=True,
+        type=argparse.FileType(mode="r"),
+    )
+    visualize_parser.add_argument(
+        "--outpath",
+        dest="outpath",
     )
 
     # Parse args
