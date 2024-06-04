@@ -1,29 +1,41 @@
 name: Patrols Dashboard
 tasks:
   get_subjectgroup_observations: {}
-  etl:
+  get_earthranger_events: {}
+  etl_events:
+    dataframe: get_earthranger_events
+  etl_observations:
     dataframe: get_subjectgroup_observations
   process_relocations:
-    observations: etl
+    observations: etl_observations
   relocations_to_trajectory:
     relocations: process_relocations
   calculate_time_density:
     trajectory_gdf: relocations_to_trajectory
-  groupby:
+  groupby_observations:
     df: relocations_to_trajectory
   draw_ecomap_patrols:
-    trajectory_gdf: groupby
+    trajectory_gdf: groupby_observations
   draw_ecomap_etd:
     trajectory_gdf: calculate_time_density
+  groupby_events:
+    df: etl_events
+  plot_events_ungrouped:
+    events: etl_events
+  plot_events_grouped:
+    events: groupby_events
   calculate_single_values:
-    trajectory_gdf: groupby
+    trajectory_gdf: groupby_observations
   flatten_maps:
     maps0: draw_ecomap_patrols
     maps1: draw_ecomap_etd
+  flatten_plots:
+    plots0: plot_events_grouped
+    plots1: plot_events_ungrouped
   assemble_dashboard:
     single_values: calculate_single_values
     maps: flatten_maps
-    plots:
+    plots: flatten_plots
     tables:
     static_images:
     calendars:
