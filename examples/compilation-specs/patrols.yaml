@@ -12,7 +12,9 @@ tasks:
     relocations: process_relocations
   calculate_time_density:
     trajectory_gdf: relocations_to_trajectory
+  set_groupers: {}
   groupby_observations:
+    groupers: set_groupers
     df: relocations_to_trajectory
   set_styles: {}
   draw_ecomap_patrols:
@@ -22,6 +24,7 @@ tasks:
     style: set_styles
     trajectory_gdf: calculate_time_density
   groupby_events:
+    groupers: set_groupers
     df: etl_events
   plot_events_ungrouped:
     style: set_styles
