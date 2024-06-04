@@ -26,17 +26,9 @@ tasks:
     events: groupby_events
   calculate_single_values:
     trajectory_gdf: groupby_observations
-  flatten_maps:
-    maps0: draw_ecomap_patrols
-    maps1: draw_ecomap_etd
-  flatten_plots:
-    plots0: plot_events_grouped
-    plots1: plot_events_ungrouped
-  assemble_dashboard:
-    single_values: calculate_single_values
-    maps: flatten_maps
-    plots: flatten_plots
-    tables:
-    static_images:
-    calendars:
-    text:
+  make_patrols_dashboard:
+    trajectory_grouped_single_values: calculate_single_values
+    trajectory_grouped_maps: draw_ecomap_patrols
+    time_density_map: draw_ecomap_etd
+    events_grouped_plots: plot_events_grouped
+    events_ungrouped_plot: plot_events_ungrouped

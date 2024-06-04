@@ -64,35 +64,31 @@ class KeyedResult(Generic[Result]):
 class PerGroupPatrolReportDashboard:
     groupers: Groupers
     # trajectories results
-    mean_time: dict[GroupKey, SingleValue]
-    total_time: dict[GroupKey, SingleValue]
-    total_distance: dict[GroupKey, SingleValue]
-    mean_distance: dict[GroupKey, SingleValue]
-    trajectory_map: dict[GroupKey, Map]
+    mean_times: list[KeyedResult[SingleValue]]
+    total_times: list[KeyedResult[SingleValue]]
+    total_distances: list[KeyedResult[SingleValue]]
+    mean_distances: list[KeyedResult[SingleValue]]
+    trajectory_maps: list[KeyedResult[Map]]
     time_density_map: Map
     # events results
+    events_grouped_plots: list[KeyedResult[Plot]]
+    events_ungrouped_plot: Plot
 
 
 @distributed
 def make_patrols_dashboard(
-    trajectory_grouped_single_values: dict[str, dict[GroupKey, SingleValue]],
-    trajectory_grouped_maps: dict[GroupKey, Map],
+    trajectory_grouped_single_values: dict[str, KeyedResult[SingleValue]],
+    trajectory_grouped_maps: KeyedResult[Map],
     time_density_map: Map,
-    events_grouped_plots: dict[GroupKey, Plot],
-    events_non_grouped_plot: Plot,
+    events_grouped_plots: list[KeyedResult[Plot]],
+    events_ungrouped_plot: Plot,
 ) -> PerGroupPatrolReportDashboard:
     groupers: Groupers = ...  # infer groupers from grouped data indexes here
     return PerGroupPatrolReportDashboard(
         groupers=groupers,
-        # trajectories results
-        mean_time=trajectory_grouped_single_values["mean_time"],
-        total_time=trajectory_grouped_single_values["total_time"],
-        total_distance=trajectory_grouped_single_values["total_distance"],
-        mean_distance=trajectory_grouped_single_values["mean_distance"],
+        **trajectory_grouped_single_values,
         trajectory_grouped_maps=trajectory_grouped_maps,
-        # NOTE: use null GroupKey to store non-grouped results
-        time_density_map={GroupKey(): time_density_map},
-        # events results
+        time_density_map=time_density_map,
         events_grouped_plots=events_grouped_plots,
-        events_non_grouped_plot={GroupKey(): events_non_grouped_plot},
+        events_ungrouped_plot=events_ungrouped_plot,
     )
