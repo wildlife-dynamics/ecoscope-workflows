@@ -1,0 +1,30 @@
+name: Patrols Dashboard
+tasks:
+  get_subjectgroup_observations: {}
+  etl:
+    dataframe: get_subjectgroup_observations
+  process_relocations:
+    observations: etl
+  relocations_to_trajectory:
+    relocations: process_relocations
+  calculate_time_density:
+    trajectory_gdf: relocations_to_trajectory
+  groupby:
+    df: relocations_to_trajectory
+  draw_ecomap_patrols:
+    trajectory_gdf: groupby
+  draw_ecomap_etd:
+    trajectory_gdf: calculate_time_density
+  calculate_single_values:
+    trajectory_gdf: groupby
+  flatten_maps:
+    maps0: draw_ecomap_patrols
+    maps1: draw_ecomap_etd
+  assemble_dashboard:
+    single_values: calculate_single_values
+    maps: flatten_maps
+    plots:
+    tables:
+    static_images:
+    calendars:
+    text:
