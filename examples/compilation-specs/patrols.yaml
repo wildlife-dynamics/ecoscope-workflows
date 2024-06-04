@@ -14,15 +14,20 @@ tasks:
     trajectory_gdf: relocations_to_trajectory
   groupby_observations:
     df: relocations_to_trajectory
+  set_styles: {}
   draw_ecomap_patrols:
+    style: set_styles
     trajectory_gdf: groupby_observations
   draw_ecomap_etd:
+    style: set_styles
     trajectory_gdf: calculate_time_density
   groupby_events:
     df: etl_events
   plot_events_ungrouped:
+    style: set_styles
     events: etl_events
   plot_events_grouped:
+    style: set_styles
     events: groupby_events
   calculate_single_values:
     trajectory_gdf: groupby_observations
