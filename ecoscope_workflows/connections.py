@@ -1,6 +1,6 @@
 import functools
 from abc import ABC
-from typing import Annotated, Protocol
+from typing import Annotated, Protocol, Type
 
 from pydantic import Field
 from pydantic.functional_validators import BeforeValidator
@@ -9,12 +9,12 @@ from pydantic_settings import SettingsConfigDict
 from ecoscope_workflows.settings import Settings
 
 
-class DataConnection(ABC, type):
+class DataConnection(ABC):
     def get_client(self): ...
 
 
 def client_from_named_connection(
-    name: str, conn_type: DataConnection
+    name: str, conn_type: Type[DataConnection]
 ) -> DataConnection:
     connection = type(
         f"{name}_connection",
