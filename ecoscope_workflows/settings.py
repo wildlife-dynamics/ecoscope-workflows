@@ -28,10 +28,7 @@ import logging
 from typing import Any, Dict, Optional, Tuple, Type
 
 from pydantic.fields import FieldInfo
-from pydantic_settings import (
-    BaseSettings,
-    PydanticBaseSettingsSource,
-)
+from pydantic_settings import BaseSettings, PydanticBaseSettingsSource
 
 logger = logging.getLogger(__name__)
 
