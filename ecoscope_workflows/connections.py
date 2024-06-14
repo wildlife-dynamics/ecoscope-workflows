@@ -1,6 +1,6 @@
 import functools
 from abc import ABC
-from typing import Annotated, Protocol, Type
+from typing import Annotated, Protocol, Type, TypeVar
 
 from pydantic import Field
 from pydantic.functional_validators import BeforeValidator
@@ -13,9 +13,13 @@ class DataConnection(ABC):
     def get_client(self): ...
 
 
+DataConnectionType = TypeVar("DataConnectionType", bound=DataConnection)
+
+
 def client_from_named_connection(
-    name: str, conn_type: Type[DataConnection]
-) -> DataConnection:
+    name: str,
+    conn_type: Type[DataConnectionType],
+) -> DataConnectionType:
     connection = type(
         f"{name}_connection",
         (conn_type,),
