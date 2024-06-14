@@ -10,11 +10,7 @@
 # %%
 # parameters
 
-server = ...
-username = ...
-password = ...
-tcp_limit = ...
-sub_page_size = ...
+client = ...
 subject_group_name = ...
 include_inactive = ...
 since = ...
@@ -24,20 +20,12 @@ until = ...
 # %%
 # the code for Get Subjectgroup Observations
 
-from ecoscope.io import EarthRangerIO
-
-earthranger_io = EarthRangerIO(
-    server=server,
-    username=username,
-    password=password,
-    tcp_limit=tcp_limit,
-    sub_page_size=sub_page_size,
-)
+"Get observations for a subject group from EarthRanger."
 
 # %%
 # return value from this section
 
-get_subjectgroup_observations_return = earthranger_io.get_subjectgroup_observations(
+get_subjectgroup_observations_return = client.get_subjectgroup_observations(
     subject_group_name=subject_group_name,
     include_subject_details=True,
     include_inactive=include_inactive,
