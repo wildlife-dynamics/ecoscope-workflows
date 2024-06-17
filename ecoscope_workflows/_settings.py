@@ -113,7 +113,7 @@ class GoogleSecretManagerConfigSettingsSource(PydanticBaseSettingsSource):
         return d
 
 
-class Settings(BaseSettings):
+class _Settings(BaseSettings):
     @classmethod
     def settings_customise_sources(
         cls,

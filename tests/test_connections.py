@@ -1,10 +1,7 @@
 import os
 from unittest.mock import patch
 
-from ecoscope_workflows.connections import (
-    EarthRangerConnection,
-    _named_connection_type_from_connection_name,
-)
+from ecoscope_workflows.connections import EarthRangerConnection
 
 
 def test_earthranger_connection():
@@ -33,9 +30,7 @@ def test_named_earthranger_connection():
         "ER_SUB_PAGE_SIZE": "4000",
     }
     with patch.dict(os.environ, mock_env):
-        # er = EarthRangerConnection.from_named_connection("ER")
-        ER = _named_connection_type_from_connection_name("ER", EarthRangerConnection)
-        er = ER()
+        er = EarthRangerConnection.from_named_connection("ER")
         assert er.server == "https://earthranger.com"
         assert er.username == "user"
         assert er.password == "pass"
