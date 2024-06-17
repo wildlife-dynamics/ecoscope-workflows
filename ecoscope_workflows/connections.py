@@ -16,11 +16,11 @@ class DataConnection(ABC):
 DataConnectionType = TypeVar("DataConnectionType", bound=DataConnection)
 
 
-def client_from_named_connection(
+def _named_connection_type_from_connection_name(
     name: str,
     conn_type: Type[DataConnectionType],
-) -> DataConnectionType:
-    connection = type(
+) -> Type[DataConnectionType]:
+    return type(
         f"{name}_connection",
         (conn_type,),
         {
@@ -32,6 +32,13 @@ def client_from_named_connection(
             ),
         },
     )
+
+
+def client_from_named_connection(
+    name: str,
+    conn_type: Type[DataConnectionType],
+) -> DataConnectionType:
+    connection = _named_connection_type_from_connection_name(name, conn_type)
     return connection().get_client()
 
 
