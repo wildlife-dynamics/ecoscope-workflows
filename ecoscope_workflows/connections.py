@@ -50,7 +50,7 @@ class EarthRangerClientProtocol(Protocol):
     ) -> None: ...
 
 
-class EarthRangerConnection(DataConnection, EarthRangerClientProtocol):
+class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
     server: Annotated[str, Field(description="URL for EarthRanger API")]
     username: Annotated[str, Field(description="EarthRanger username")]
     password: Annotated[str, Field(description="EarthRanger password")]
