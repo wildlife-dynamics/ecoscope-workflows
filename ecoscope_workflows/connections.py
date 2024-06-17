@@ -1,6 +1,5 @@
-from abc import ABC
-from typing import Annotated, Protocol, Type, TypeVar
-from typing_extensions import Self
+from abc import ABC, abstractmethod
+from typing import Annotated, Generic, Protocol, Type, TypeVar
 
 from pydantic import Field
 from pydantic.functional_validators import BeforeValidator
@@ -8,12 +7,15 @@ from pydantic_settings import SettingsConfigDict
 
 from ecoscope_workflows._settings import _Settings
 
-T = TypeVar("T", bound="_DataConnection")
+DataConnectionType = TypeVar("DataConnectionType", bound="_DataConnection")
+ClientProtocolType = TypeVar("ClientProtocolType")
 
 
 class _DataConnection(_Settings):
     @classmethod
-    def from_named_connection(cls: Type[T], name: str) -> T:
+    def from_named_connection(
+        cls: Type[DataConnectionType], name: str
+    ) -> DataConnectionType:
         model_config = SettingsConfigDict(
             env_prefix=f"{name}_",
             case_sensitive=False,
@@ -28,11 +30,12 @@ class _DataConnection(_Settings):
         return _cls()
 
 
-class DataConnection(ABC, _DataConnection):
-    def get_client(self): ...
+class DataConnection(ABC, _DataConnection, Generic[ClientProtocolType]):
+    @abstractmethod
+    def get_client(self) -> ClientProtocolType: ...
 
     @classmethod
-    def client_from_named_connection(cls, name: str) -> Self:
+    def client_from_named_connection(cls, name: str) -> ClientProtocolType:
         return cls.from_named_connection(name).get_client()
 
 
@@ -47,7 +50,7 @@ class EarthRangerClientProtocol(Protocol):
     ) -> None: ...
 
 
-class EarthRangerConnection(DataConnection):
+class EarthRangerConnection(DataConnection, EarthRangerClientProtocol):
     server: Annotated[str, Field(description="URL for EarthRanger API")]
     username: Annotated[str, Field(description="EarthRanger username")]
     password: Annotated[str, Field(description="EarthRanger password")]
