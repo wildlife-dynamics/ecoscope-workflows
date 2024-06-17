@@ -1,0 +1,21 @@
+import os
+from unittest.mock import patch
+
+from ecoscope_workflows.connections import EarthRangerConnection
+
+
+def test_earthranger_connection():
+    mock_env = {
+        "SERVER": "https://earthranger.com",
+        "USERNAME": "user",
+        "PASSWORD": "pass",
+        "TCP_LIMIT": "5",
+        "SUB_PAGE_SIZE": "4000",
+    }
+    with patch.dict(os.environ, mock_env):
+        er = EarthRangerConnection()
+        assert er.server == "https://earthranger.com"
+        assert er.username == "user"
+        assert er.password == "pass"
+        assert er.tcp_limit == 5
+        assert er.sub_page_size == 4000
