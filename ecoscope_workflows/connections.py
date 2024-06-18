@@ -2,8 +2,6 @@ from abc import ABC, abstractmethod
 from typing import Annotated, Generic, Protocol, Type, TypeVar, runtime_checkable
 
 from pydantic import Field
-from pydantic.functional_validators import BeforeValidator
-from pydantic.json_schema import WithJsonSchema
 from pydantic_settings import SettingsConfigDict
 
 from ecoscope_workflows._settings import _Settings
@@ -70,12 +68,3 @@ class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
             tcp_limit=self.tcp_limit,
             sub_page_size=self.sub_page_size,
         )
-
-
-EarthRangerClient = Annotated[
-    EarthRangerClientProtocol,
-    BeforeValidator(EarthRangerConnection.client_from_named_connection),
-    WithJsonSchema(
-        {"type": "string", "description": "A named EarthRanger connection."}
-    ),
-]

@@ -1,4 +1,3 @@
-import os
 from dataclasses import dataclass
 from datetime import datetime
 from importlib.resources import files
@@ -36,13 +35,7 @@ task_fixtures = {
             input_dataframe_arg_name="",
             example_input_dataframe_path="",
             kws=dict(
-                # earthranger client
-                server=os.environ.get("ER_SERVER"),
-                username=os.environ.get("ER_USERNAME"),
-                password=os.environ.get("ER_PASSWORD"),
-                tcp_limit=5,
-                sub_page_size=4000,
-                # get_subjectgroup_observations
+                client="MEP_DEV",
                 subject_group_name="Elephants",
                 include_inactive=True,
                 since=datetime.strptime("2011-01-01", "%Y-%m-%d"),

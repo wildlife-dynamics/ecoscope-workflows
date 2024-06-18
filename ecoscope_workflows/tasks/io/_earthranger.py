@@ -6,8 +6,11 @@ import pandera as pa
 from pydantic import Field
 
 from ecoscope_workflows.decorators import distributed
-from ecoscope_workflows.connections import EarthRangerClient
-from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
+from ecoscope_workflows.annotations import (
+    DataFrame,
+    EarthRangerClient,
+    JsonSerializableDataFrameModel,
+)
 
 
 class SubjectGroupObservationsGDFSchema(JsonSerializableDataFrameModel):

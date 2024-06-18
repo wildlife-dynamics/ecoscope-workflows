@@ -3,7 +3,13 @@ from typing import Annotated, Any, TypeVar, get_origin
 import pandera as pa
 from pydantic_core import core_schema as cs
 from pydantic import GetJsonSchemaHandler
+from pydantic.functional_validators import BeforeValidator
 from pydantic.json_schema import JsonSchemaValue, WithJsonSchema
+
+from ecoscope_workflows.connections import (
+    EarthRangerClientProtocol,
+    EarthRangerConnection,
+)
 
 
 class JsonSerializableDataFrameModel(pa.DataFrameModel):
@@ -47,3 +53,15 @@ def is_subscripted_pandera_dataframe(obj):
         if get_origin(obj) == pa.typing.DataFrame:
             return True
     return False
+
+
+def is_connection(obj): ...
+
+
+EarthRangerClient = Annotated[
+    EarthRangerClientProtocol,
+    BeforeValidator(EarthRangerConnection.client_from_named_connection),
+    WithJsonSchema(
+        {"type": "string", "description": "A named EarthRanger connection."}
+    ),
+]

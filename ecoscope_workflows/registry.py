@@ -24,7 +24,7 @@ from pydantic import (
 )
 from pydantic.functional_validators import AfterValidator
 
-from ecoscope_workflows.annotations import JsonSerializableDataFrameModel
+from ecoscope_workflows.annotations import JsonSerializableDataFrameModel, is_connection
 from ecoscope_workflows.decorators import DistributedTask
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
 from ecoscope_workflows.operators import KubernetesPodOperator
@@ -168,6 +168,10 @@ class KnownTask(BaseModel):
             arg: get_args(annotation)
             for arg, annotation in self.task.func.__annotations__.items()
         }
+
+    @property
+    def connections(self) -> dict:
+        return {k: v for k, v in self.parameters_annotation.items() if is_connection(v)}
 
     def _iter_parameters_annotation(
         self,

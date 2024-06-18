@@ -4,7 +4,8 @@ from unittest.mock import patch
 import pytest
 from pydantic import validate_call
 
-from ecoscope_workflows.connections import EarthRangerConnection, EarthRangerClient
+from ecoscope_workflows.annotations import EarthRangerClient
+from ecoscope_workflows.connections import EarthRangerConnection
 
 
 def test_connection_no_prefix():
