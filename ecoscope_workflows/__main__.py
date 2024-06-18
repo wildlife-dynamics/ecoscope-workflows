@@ -1,5 +1,7 @@
 import argparse
+import copy
 import json
+import re
 
 import yaml
 
@@ -53,8 +55,33 @@ def get_params_command(args):
 def connections_command(args):
     compilation_spec = yaml.safe_load(args.spec)
     dc = DagCompiler.from_spec(spec=compilation_spec)
-    connections = dc.get_client_model_fields()
-    print(connections)
+    conns = dc.get_client_model_fields()
+    conns_copy = copy.deepcopy(conns)
+    for task in conns:
+        for client_param_name in conns[task]:
+            print(
+                f"Choose a name for the `{conns[task][client_param_name]['type']}` in `{task}`:"
+            )
+            name = input()
+            assert re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", name), (
+                "Name must be a valid environment variable name "
+                "(only letters, numbers, and underscores, no leading digits)."
+            )
+            conns_copy[task][client_param_name]["name"] = name
+    out = ""
+    for task in conns_copy:
+        for client_param_name in conns_copy[task]:
+            name = conns_copy[task][client_param_name]["name"]
+            for field in conns_copy[task][client_param_name]["fields"]:
+                out += f"{name.upper()}__{field.upper()}=  # {conns_copy[task][client_param_name]['fields'][field]}\n"
+    if args.outpath:
+        assert args.outpath.startswith((".env", ".env.")) or args.outpath.endswith(
+            ".env"
+        ), "Output path must start with '.env' or '.env.', or end with '.env'."
+        with open(args.outpath, "w") as f:
+            f.write(out)
+    else:
+        print(out)
 
 
 def main():
@@ -121,6 +148,10 @@ def main():
         dest="spec",
         required=True,
         type=argparse.FileType(mode="r"),
+    )
+    connections_parser.add_argument(
+        "--outpath",
+        dest="outpath",
     )
 
     # Parse args
