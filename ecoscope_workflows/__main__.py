@@ -55,7 +55,7 @@ def get_params_command(args):
 def connections_command(args):
     compilation_spec = yaml.safe_load(args.spec)
     dc = DagCompiler.from_spec(spec=compilation_spec)
-    conns = dc.get_client_model_fields()
+    conns = dc.get_connections_model_fields()
     conns_copy = copy.deepcopy(conns)
     for task in conns:
         for client_param_name in conns[task]:

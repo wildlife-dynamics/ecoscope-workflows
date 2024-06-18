@@ -164,11 +164,18 @@ class DagCompiler(BaseModel):
             )
         return yaml_str
 
-    def get_client_model_fields(self) -> dict:
+    def get_connections(self) -> dict:
         return {
-            t.known_task_name: t.known_task.client_model_fields
+            t.known_task_name: t.known_task.connections_model_fields
             for t in self.tasks
-            if t.known_task.client_model_fields
+            if t.known_task.connections_model_fields
+        }
+
+    def get_connections_model_fields(self) -> dict:
+        return {
+            t.known_task_name: t.known_task.connections_model_fields
+            for t in self.tasks
+            if t.known_task.connections_model_fields
         }
 
     @ruff_formatted

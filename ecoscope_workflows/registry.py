@@ -181,7 +181,7 @@ class KnownTask(BaseModel):
         }
 
     @property
-    def client_model_fields(self) -> dict:
+    def connections_model_fields(self) -> dict:
         cmf = {}
         for k, v in self.params_annotations.items():
             if is_client(v):
