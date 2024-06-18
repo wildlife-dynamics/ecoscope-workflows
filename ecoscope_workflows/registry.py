@@ -182,13 +182,15 @@ class KnownTask(BaseModel):
 
     @property
     def client_model_fields(self) -> dict:
-        d = {
-            k: connection_from_client(v).model_fields
-            for k, v in self.params_annotations.items()
-            if is_client(v)
-        }
-        # breakpoint()
-        return d
+        cmf = {}
+        for k, v in self.params_annotations.items():
+            if is_client(v):
+                conn = connection_from_client(v)
+                cmf[k] = {
+                    "type": conn.__name__,
+                    "fields": conn.model_fields,
+                }
+        return cmf
 
     def _iter_parameters_annotation(
         self,
