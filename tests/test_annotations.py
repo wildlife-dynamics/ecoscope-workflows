@@ -7,7 +7,7 @@ from ecoscope_workflows.annotations import (
     DataFrame,
     EarthRangerClient,
     JsonSerializableDataFrameModel,
-    is_connection,
+    is_client,
 )
 
 
@@ -33,6 +33,6 @@ def test_dataframe_type():
         InvalidModel(df=df)
 
 
-def test_is_connection():
-    assert is_connection(EarthRangerClient)
-    assert not is_connection(DataFrame)
+def test_is_client():
+    assert is_client(EarthRangerClient)
+    assert not is_client(DataFrame)

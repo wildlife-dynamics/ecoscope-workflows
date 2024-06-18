@@ -56,7 +56,7 @@ def is_subscripted_pandera_dataframe(obj):
     return False
 
 
-def is_connection(obj):
+def is_client(obj):
     if hasattr(obj, "__origin__") and hasattr(obj, "__args__"):
         if any(isinstance(arg, BeforeValidator) for arg in get_args(obj)):
             bv = [arg for arg in get_args(obj) if isinstance(arg, BeforeValidator)][0]
