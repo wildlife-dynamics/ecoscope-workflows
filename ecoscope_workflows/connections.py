@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Annotated, Generic, Protocol, Type, TypeVar
+from typing import Annotated, Generic, Protocol, Type, TypeVar, runtime_checkable
 
 from pydantic import Field
 from pydantic.functional_validators import BeforeValidator
@@ -17,7 +17,7 @@ class _DataConnection(_Settings):
         cls: Type[DataConnectionType], name: str
     ) -> DataConnectionType:
         model_config = SettingsConfigDict(
-            env_prefix=f"{name}_",
+            env_prefix=f"{name}__",
             case_sensitive=False,
             env_file=".env",
             env_file_encoding="utf-8",
@@ -39,6 +39,7 @@ class DataConnection(ABC, _DataConnection, Generic[ClientProtocolType]):
         return cls.from_named_connection(name).get_client()
 
 
+@runtime_checkable
 class EarthRangerClientProtocol(Protocol):
     def get_subjectgroup_observations(
         self,

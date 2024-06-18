@@ -1,10 +1,13 @@
 import os
 from unittest.mock import patch
 
-from ecoscope_workflows.connections import EarthRangerConnection
+import pytest
+from pydantic import validate_call
+
+from ecoscope_workflows.connections import EarthRangerConnection, EarthRangerClient
 
 
-def test_earthranger_connection():
+def test_connection_no_prefix():
     mock_env = {
         "SERVER": "https://earthranger.com",
         "USERNAME": "user",
@@ -13,26 +16,42 @@ def test_earthranger_connection():
         "SUB_PAGE_SIZE": "4000",
     }
     with patch.dict(os.environ, mock_env):
-        er = EarthRangerConnection()
-        assert er.server == "https://earthranger.com"
-        assert er.username == "user"
-        assert er.password == "pass"
-        assert er.tcp_limit == 5
-        assert er.sub_page_size == 4000
+        conn = EarthRangerConnection()
+        assert conn.server == "https://earthranger.com"
+        assert conn.username == "user"
+        assert conn.password == "pass"
+        assert conn.tcp_limit == 5
+        assert conn.sub_page_size == 4000
 
 
-def test_named_earthranger_connection():
-    mock_env = {
-        "ER_SERVER": "https://earthranger.com",
-        "ER_USERNAME": "user",
-        "ER_PASSWORD": "pass",
-        "ER_TCP_LIMIT": "5",
-        "ER_SUB_PAGE_SIZE": "4000",
+@pytest.fixture
+def named_mock_env():
+    return {
+        "MEP_DEV__SERVER": "https://mep-dev.pamdas.org",
+        "MEP_DEV__USERNAME": "user",
+        "MEP_DEV__PASSWORD": "pass",
+        "MEP_DEV__TCP_LIMIT": "5",
+        "MEP_DEV__SUB_PAGE_SIZE": "4000",
     }
-    with patch.dict(os.environ, mock_env):
-        er = EarthRangerConnection.from_named_connection("ER")
-        assert er.server == "https://earthranger.com"
-        assert er.username == "user"
-        assert er.password == "pass"
-        assert er.tcp_limit == 5
-        assert er.sub_page_size == 4000
+
+
+def test_connection_with_named_prefix(named_mock_env):
+    with patch.dict(os.environ, named_mock_env):
+        conn = EarthRangerConnection.from_named_connection("MEP_DEV")
+        assert conn.server == "https://mep-dev.pamdas.org"
+        assert conn.username == "user"
+        assert conn.password == "pass"
+        assert conn.tcp_limit == 5
+        assert conn.sub_page_size == 4000
+
+
+def test_resolve_earthranger_client(named_mock_env):
+    @validate_call(config={"arbitrary_types_allowed": True})
+    def f(client: EarthRangerClient):
+        return client
+
+    with patch.dict(os.environ, named_mock_env):
+        with patch("ecoscope.io.EarthRangerIO"):
+            client = f(client="MEP_DEV")
+            assert hasattr(client, "get_subjectgroup_observations")
+            assert callable(client.get_subjectgroup_observations)
