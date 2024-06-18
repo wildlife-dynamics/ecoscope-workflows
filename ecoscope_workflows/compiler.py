@@ -165,7 +165,14 @@ class DagCompiler(BaseModel):
         return yaml_str
 
     def get_client_model_fields(self) -> list[dict]:
-        return [t.known_task.client_model_fields for t in self.tasks]
+        client_model_fields = [
+            {t.known_task_name: t.known_task.client_model_fields} for t in self.tasks
+        ]
+        # here we get a list of dicts, e.g.:
+        # `[{"task_name_a": {"client_param_name": ...}, "task_name_b": {}}]`
+        # in this example, "task_name_b" has no client parameters, so it's value is an empty dict.
+        # we are only interested in the dicts that have values, so we filter out the empty ones here:
+        return [cmf for cmf in client_model_fields if cmf.get(next(iter(cmf)))]
 
     @ruff_formatted
     def generate_dag(self) -> str:
