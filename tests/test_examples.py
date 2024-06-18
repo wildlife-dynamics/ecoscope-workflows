@@ -90,11 +90,7 @@ params = {
     "time-density.yaml": dedent(
         """\
         get_subjectgroup_observations:
-          server:  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='URL for EarthRanger API'))
-          username:  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='EarthRanger username'))
-          password:  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='EarthRanger password'))
-          tcp_limit: 5  # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='TCP limit for EarthRanger API requests'))
-          sub_page_size: 4000   # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='Sub page size for EarthRanger API requests'))
+          client: "MEP_DEV"  # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
           subject_group_name: "Elephants"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of EarthRanger Subject'))
           include_inactive: True  # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether or not to include inactive subjects'))
           since: "2011-01-01"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
