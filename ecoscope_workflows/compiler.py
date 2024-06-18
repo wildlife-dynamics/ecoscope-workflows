@@ -164,8 +164,8 @@ class DagCompiler(BaseModel):
             )
         return yaml_str
 
-    def get_clients(self) -> list[str]:
-        return [t.known_task.clients for t in self.tasks]
+    def get_client_model_fields(self) -> list[dict]:
+        return [t.known_task.client_model_fields for t in self.tasks]
 
     @ruff_formatted
     def generate_dag(self) -> str:

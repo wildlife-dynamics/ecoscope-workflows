@@ -8,6 +8,7 @@ from pydantic.functional_validators import BeforeValidator
 from pydantic.json_schema import JsonSchemaValue, WithJsonSchema
 
 from ecoscope_workflows.connections import (
+    DataConnection,
     EarthRangerClientProtocol,
     EarthRangerConnection,
 )
@@ -63,6 +64,14 @@ def is_client(obj):
             if ismethod(bv.func) and bv.func.__name__ == "client_from_named_connection":
                 return True
     return False
+
+
+def connection_from_client(obj) -> DataConnection:
+    assert is_client(obj)
+    bv = [arg for arg in get_args(obj) if isinstance(arg, BeforeValidator)][0]
+    conn_type = bv.func.__self__
+    assert isinstance(conn_type, DataConnection)
+    return conn_type
 
 
 EarthRangerClient = Annotated[

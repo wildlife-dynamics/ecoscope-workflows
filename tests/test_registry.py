@@ -1,6 +1,21 @@
 from ecoscope_workflows.registry import KnownTask, KubernetesPodOperator
 
 
+def test_client_model_fields():
+    importable_reference = "ecoscope_workflows.tasks.io.get_subjectgroup_observations"
+    kt = KnownTask(
+        importable_reference=importable_reference,
+        operator=KubernetesPodOperator(image="", name="", container_resources={}),
+    )
+    assert kt.client_model_fields == {
+        "client": {
+            "description": "A named EarthRanger connection.",
+            "title": "Client",
+            "type": "string",
+        }
+    }
+
+
 def test_known_task_parameters_jsonschema():
     importable_reference = "ecoscope_workflows.tasks.io.get_subjectgroup_observations"
     kt = KnownTask(
