@@ -147,9 +147,10 @@ class KnownTask(BaseModel):
     def parameters_jsonschema(self, omit_args: list[str] | None = None) -> dict:
         # NOTE: SurfacesDescriptionSchema is a workaround for https://github.com/pydantic/pydantic/issues/9404
         # Once that issue is closed, we can remove SurfaceDescriptionSchema and use the default schema_generator.
-        schema = TypeAdapter(self.task.func).json_schema(
-            schema_generator=SurfacesDescriptionSchema
-        )
+        schema = TypeAdapter(
+            self.task.func,
+            config={"arbitrary_types_allowed": True},
+        ).json_schema(schema_generator=SurfacesDescriptionSchema)
         if omit_args:
             schema["properties"] = {
                 arg: schema["properties"][arg]
