@@ -50,6 +50,13 @@ def get_params_command(args):
         print(params)
 
 
+def connections_command(args):
+    compilation_spec = yaml.safe_load(args.spec)
+    dc = DagCompiler.from_spec(spec=compilation_spec)
+    connections = dc.get_client_model_fields()
+    print(connections)
+
+
 def main():
     parser = argparse.ArgumentParser(prog="ecoscope-workflows")
     subparsers = parser.add_subparsers(title="subcommands", dest="command")
@@ -104,6 +111,16 @@ def main():
         "--format",
         dest="format",
         default="json",
+    )
+
+    # Subcommand 'connections'
+    connections_parser = subparsers.add_parser("connections", help="Manage connections")
+    connections_parser.set_defaults(func=connections_command)
+    connections_parser.add_argument(
+        "--spec",
+        dest="spec",
+        required=True,
+        type=argparse.FileType(mode="r"),
     )
 
     # Parse args

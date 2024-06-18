@@ -70,7 +70,7 @@ def connection_from_client(obj) -> DataConnection:
     assert is_client(obj)
     bv = [arg for arg in get_args(obj) if isinstance(arg, BeforeValidator)][0]
     conn_type = bv.func.__self__
-    assert isinstance(conn_type, DataConnection)
+    assert issubclass(conn_type, DataConnection)
     return conn_type
 
 

@@ -107,7 +107,7 @@ class DagCompiler(BaseModel):
                     # now we have to figure out how to deserialize this arg when passed
                     # FIXME: this factoring seems sub-optimal; ideally we only introspect the
                     # signature (which triggers import, and might be slow) once per compilation.
-                    arg_type = known_tasks[task_name].parameters_annotation[arg][0]
+                    arg_type = known_tasks[task_name].params_annotations_args[arg][0]
                     if is_subscripted_pandera_dataframe(arg_type):
                         # NOTE: even if an argument is passed as as an `arg_dependency`, we don't need a
                         # pre-validator unless the value passed needs some custom logic for deserialization

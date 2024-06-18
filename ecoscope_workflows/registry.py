@@ -167,19 +167,28 @@ class KnownTask(BaseModel):
         return schema
 
     @property
-    def parameters_annotation(self) -> dict[str, tuple]:
+    def params_annotations(self) -> dict[str, tuple]:
         return {
-            arg: get_args(annotation)
+            arg: annotation
             for arg, annotation in self.task.func.__annotations__.items()
         }
 
     @property
-    def client_model_fields(self) -> dict:
+    def params_annotations_args(self) -> dict[str, tuple]:
         return {
+            arg: get_args(annotation)
+            for arg, annotation in self.params_annotations.items()
+        }
+
+    @property
+    def client_model_fields(self) -> dict:
+        d = {
             k: connection_from_client(v).model_fields
-            for k, v in self.parameters_annotation.items()
+            for k, v in self.params_annotations.items()
             if is_client(v)
         }
+        # breakpoint()
+        return d
 
     def _iter_parameters_annotation(
         self,
@@ -188,7 +197,7 @@ class KnownTask(BaseModel):
     ) -> Generator[str, None, None]:
         for arg, param in {
             k: v
-            for k, v in self.parameters_annotation.items()
+            for k, v in self.params_annotations_args.items()
             if k not in (omit_args or [])
         }.items():
             yield fmt.format(arg=arg, param=param)
