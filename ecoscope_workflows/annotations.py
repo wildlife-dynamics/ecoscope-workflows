@@ -1,4 +1,5 @@
-from typing import Annotated, Any, TypeVar, get_origin
+from inspect import ismethod
+from typing import Annotated, Any, TypeVar, get_args, get_origin
 
 import pandera as pa
 from pydantic_core import core_schema as cs
@@ -55,7 +56,13 @@ def is_subscripted_pandera_dataframe(obj):
     return False
 
 
-def is_connection(obj): ...
+def is_connection(obj):
+    if hasattr(obj, "__origin__") and hasattr(obj, "__args__"):
+        if any(isinstance(arg, BeforeValidator) for arg in get_args(obj)):
+            bv = [arg for arg in get_args(obj) if isinstance(arg, BeforeValidator)][0]
+            if ismethod(bv.func) and bv.func.__name__ == "client_from_named_connection":
+                return True
+    return False
 
 
 EarthRangerClient = Annotated[

@@ -3,7 +3,12 @@ import pandera as pa
 import pytest
 from pydantic import BaseModel, ValidationError
 
-from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
+from ecoscope_workflows.annotations import (
+    DataFrame,
+    EarthRangerClient,
+    JsonSerializableDataFrameModel,
+    is_connection,
+)
 
 
 def test_dataframe_type():
@@ -26,3 +31,8 @@ def test_dataframe_type():
 
     with pytest.raises(ValidationError):
         InvalidModel(df=df)
+
+
+def test_is_connection():
+    assert is_connection(EarthRangerClient)
+    assert not is_connection(DataFrame)
