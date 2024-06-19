@@ -2,7 +2,7 @@ import os
 from unittest.mock import patch
 
 import pytest
-from pydantic import validate_call
+from pydantic import SecretStr, validate_call
 
 from ecoscope_workflows.annotations import EarthRangerClient
 from ecoscope_workflows.connections import EarthRangerConnection
@@ -20,7 +20,11 @@ def test_connection_no_prefix():
         conn = EarthRangerConnection()
         assert conn.server == "https://earthranger.com"
         assert conn.username == "user"
-        assert conn.password == "pass"
+
+        assert isinstance(conn.password, SecretStr)
+        assert str(conn.password) == "**********"
+        assert conn.password.get_secret_value() == "pass"
+
         assert conn.tcp_limit == 5
         assert conn.sub_page_size == 4000
 
@@ -41,7 +45,11 @@ def test_connection_with_named_prefix(named_mock_env):
         conn = EarthRangerConnection.from_named_connection("MEP_DEV")
         assert conn.server == "https://mep-dev.pamdas.org"
         assert conn.username == "user"
-        assert conn.password == "pass"
+
+        assert isinstance(conn.password, SecretStr)
+        assert str(conn.password) == "**********"
+        assert conn.password.get_secret_value() == "pass"
+
         assert conn.tcp_limit == 5
         assert conn.sub_page_size == 4000
 

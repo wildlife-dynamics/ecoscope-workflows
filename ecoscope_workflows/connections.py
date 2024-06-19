@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Annotated, Generic, Protocol, Type, TypeVar, runtime_checkable
 
-from pydantic import Field
+from pydantic import Field, SecretStr
 from pydantic_settings import SettingsConfigDict
 
 from ecoscope_workflows._settings import _Settings
@@ -53,7 +53,7 @@ class EarthRangerClientProtocol(Protocol):
 class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
     server: Annotated[str, Field(description="URL for EarthRanger API")]
     username: Annotated[str, Field(description="EarthRanger username")]
-    password: Annotated[str, Field(description="EarthRanger password")]
+    password: Annotated[SecretStr, Field(description="EarthRanger password")]
     tcp_limit: Annotated[int, Field(description="TCP limit for API requests")]
     sub_page_size: Annotated[int, Field(description="Sub page size for API requests")]
 
