@@ -56,3 +56,7 @@ def test_resolve_earthranger_client(named_mock_env):
             client = f(client="MEP_DEV")
             assert hasattr(client, "get_subjectgroup_observations")
             assert callable(client.get_subjectgroup_observations)
+
+
+@pytest.mark.xfail
+def test_google_secrets_manager(): ...
