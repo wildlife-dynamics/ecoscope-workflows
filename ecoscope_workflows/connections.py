@@ -64,7 +64,7 @@ class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
             server=self.server,
             # TODO: token-based authentication
             username=self.username,
-            password=self.password,
+            password=self.password.get_secret_value(),
             tcp_limit=self.tcp_limit,
             sub_page_size=self.sub_page_size,
         )
