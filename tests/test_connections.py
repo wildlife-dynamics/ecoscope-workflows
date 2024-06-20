@@ -1,14 +1,22 @@
 import os
+import sys
+from pathlib import Path
 from unittest.mock import patch
+from textwrap import dedent
 
 import pytest
 from pydantic import SecretStr, validate_call
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 from ecoscope_workflows.annotations import EarthRangerClient
 from ecoscope_workflows.connections import EarthRangerConnection
 
 
-def test_connection_no_prefix():
+def test_connection_unnamed():
     mock_env = {
         "SERVER": "https://earthranger.com",
         "USERNAME": "user",
@@ -40,7 +48,7 @@ def named_mock_env():
     }
 
 
-def test_connection_with_named_prefix(named_mock_env):
+def test_connection_named_from_env(named_mock_env):
     with patch.dict(os.environ, named_mock_env):
         conn = EarthRangerConnection.from_named_connection("MEP_DEV")
         assert conn.server == "https://mep-dev.pamdas.org"
@@ -54,7 +62,39 @@ def test_connection_with_named_prefix(named_mock_env):
         assert conn.sub_page_size == 4000
 
 
-def test_resolve_earthranger_client(named_mock_env):
+@pytest.fixture
+def mock_toml_config(tmp_path: Path):
+    toml_config = dedent(
+        """\
+        [connections.mep_dev]
+        server = "https://mep-dev.pamdas.org"
+        username = "user"
+        password = "pass"
+        tcp_limit = 5
+        sub_page_size = 4000
+        """
+    )
+    _ = tomllib.loads(toml_config)  # make sure toml string is loadable
+    tmp_config_path = tmp_path / ".config.toml"
+    tmp_config_path.write_text(toml_config)
+    yield tmp_config_path
+
+
+def test_connection_named_from_toml(mock_toml_config: Path):
+    with patch("ecoscope_workflows.config.PATH", mock_toml_config):
+        conn = EarthRangerConnection.from_named_connection("mep_dev")
+        assert conn.server == "https://mep-dev.pamdas.org"
+        assert conn.username == "user"
+
+        assert isinstance(conn.password, SecretStr)
+        assert str(conn.password) == "**********"
+        assert conn.password.get_secret_value() == "pass"
+
+        assert conn.tcp_limit == 5
+        assert conn.sub_page_size == 4000
+
+
+def test_resolve_client_from_env(named_mock_env):
     @validate_call(config={"arbitrary_types_allowed": True})
     def f(client: EarthRangerClient):
         return client
@@ -62,6 +102,18 @@ def test_resolve_earthranger_client(named_mock_env):
     with patch.dict(os.environ, named_mock_env):
         with patch("ecoscope.io.EarthRangerIO"):
             client = f(client="MEP_DEV")
+            assert hasattr(client, "get_subjectgroup_observations")
+            assert callable(client.get_subjectgroup_observations)
+
+
+def test_resolve_client_from_toml(mock_toml_config: Path):
+    @validate_call(config={"arbitrary_types_allowed": True})
+    def f(client: EarthRangerClient):
+        return client
+
+    with patch("ecoscope_workflows.config.PATH", mock_toml_config):
+        with patch("ecoscope.io.EarthRangerIO"):
+            client = f(client="mep_dev")
             assert hasattr(client, "get_subjectgroup_observations")
             assert callable(client.get_subjectgroup_observations)
 

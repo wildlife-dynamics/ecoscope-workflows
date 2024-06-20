@@ -1,4 +1,3 @@
-import pathlib
 from abc import ABC, abstractmethod
 from typing import Annotated, Generic, Protocol, Type, TypeVar, runtime_checkable
 
@@ -6,10 +5,6 @@ from pydantic import Field, SecretStr
 from pydantic_settings import SettingsConfigDict
 
 from ecoscope_workflows._settings import _Settings
-
-ECOSCOPE_CONNECTIONS = (
-    pathlib.Path().home() / ".config" / ".ecoscope" / "connections.toml"
-)
 
 DataConnectionType = TypeVar("DataConnectionType", bound="_DataConnection")
 ClientProtocolType = TypeVar("ClientProtocolType")
@@ -23,7 +18,7 @@ class _DataConnection(_Settings):
         model_config = SettingsConfigDict(
             env_prefix=f"{name}__",
             case_sensitive=False,
-            toml_file=ECOSCOPE_CONNECTIONS,
+            pyproject_toml_table_header=("connections", name),
         )
         _cls = type(
             f"{name}_connection",
@@ -72,3 +67,8 @@ class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
             tcp_limit=self.tcp_limit,
             sub_page_size=self.sub_page_size,
         )
+
+
+ALL_CONNECTION_TYPES = {
+    "earthranger": EarthRangerConnection,
+}

@@ -50,7 +50,9 @@ def get_params_command(args):
         print(params)
 
 
-def connections_create_command(args): ...
+def connections_create_command(args):
+    if args.type == "earthranger":
+        print("Creating EarthRanger connection")
 
 
 def main():
@@ -117,6 +119,12 @@ def main():
         help="Create a new named connection",
     )
     connections_create_parser.set_defaults(func=connections_create_command)
+    connections_create_parser.add_argument(
+        "--type",
+        dest="type",
+        required=True,
+        choices=["earthranger"],
+    )
 
     # Parse args
     args = parser.parse_args()

@@ -1,7 +1,11 @@
-from pydantic_settings import BaseSettings, PydanticBaseSettingsSource
+from pydantic_settings import (
+    BaseSettings,
+    PydanticBaseSettingsSource,
+    PyprojectTomlConfigSettingsSource,
+)
 
+import ecoscope_workflows.config as config
 # from ._gsm import GoogleSecretManagerConfigSettingsSource
-from ._onekeytoml import OneKeyTomlConfigSettingsSource
 
 
 class _Settings(BaseSettings):
@@ -17,7 +21,7 @@ class _Settings(BaseSettings):
         return (
             init_settings,
             env_settings,
-            OneKeyTomlConfigSettingsSource(settings_cls),
+            PyprojectTomlConfigSettingsSource(settings_cls, toml_file=config.PATH),
             # dotenv_settings,
             # file_secret_settings,
             # GoogleSecretManagerConfigSettingsSource(settings_cls),
