@@ -32,6 +32,9 @@ class DataConnection(ABC, _DataConnection, Generic[ClientProtocolType]):
     @abstractmethod
     def get_client(self) -> ClientProtocolType: ...
 
+    @abstractmethod
+    def check_connection(self) -> None: ...
+
     @classmethod
     def client_from_named_connection(cls, name: str) -> ClientProtocolType:
         return cls.from_named_connection(name).get_client()
@@ -50,7 +53,7 @@ class EarthRangerClientProtocol(Protocol):
 
 
 class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
-    server: Annotated[str, Field(description="URL for EarthRanger API")]
+    server: Annotated[str, Field(description="EarthRanger API URL")]
     username: Annotated[str, Field(description="EarthRanger username")]
     password: Annotated[SecretStr, Field(description="EarthRanger password")]
     tcp_limit: Annotated[int, Field(description="TCP limit for API requests")]

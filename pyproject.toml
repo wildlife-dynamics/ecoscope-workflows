@@ -27,6 +27,7 @@ dependencies = [
     "pydantic-settings",
     "ruamel.yaml",
     "ruff",  # for linting compiled workflows
+    "tomli-w",
 ]
 
 [project.optional-dependencies]

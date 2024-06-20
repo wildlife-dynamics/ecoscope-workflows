@@ -6,6 +6,7 @@ import yaml
 from pydantic import SecretStr
 
 from ecoscope_workflows.compiler import DagCompiler
+from ecoscope_workflows.config import TomlConfigTable
 from ecoscope_workflows.registry import known_connections, known_tasks
 
 
@@ -55,16 +56,25 @@ def get_params_command(args):
 def connections_create_command(args):
     conn_type = known_connections[args.type]
     if args.fields:
-        NotImplementedError("Only interactive creation is supported at this time.")
+        fields = json.loads(args.fields)
     else:
         fields = {}
-        print(f"Creating {args.type} connection interactively...")
+        print(f"Creating {args.type} connection '{args.name}' interactively...")
         for k, v in conn_type.model_fields.items():
+            prompt = f"{k} ({v.description})"
             if v.annotation == SecretStr:
-                fields[k] = getpass(f"{k}: ")
+                prompt = f"{prompt} (input hidden for security)"
+                if args.use_keyring:
+                    ...
+                else:
+                    fields[k] = getpass(f"{prompt}: ")
             else:
-                fields[k] = input(f"{k}: ")
-    print(fields)
+                fields[k] = input(f"{prompt}: ")
+    tct = TomlConfigTable(header="connections", name=args.name, fields=fields)
+    tct.dump()
+    if args.check_connection:
+        conn = conn_type.from_named_connection(args.name)
+        conn.check_connection()
 
 
 def main():
@@ -138,9 +148,24 @@ def main():
         choices=["earthranger"],
     )
     connections_create_parser.add_argument(
+        "--name",
+        dest="name",
+        required=True,
+    )
+    connections_create_parser.add_argument(
         "--fields",
         dest="fields",
         default=None,
+    )
+    connections_create_parser.add_argument(
+        "--check-connection",
+        dest="check_connection",
+        action=argparse.BooleanOptionalAction,
+    )
+    connections_create_parser.add_argument(
+        "--use-keyring",
+        dest="use_keyring",
+        action=argparse.BooleanOptionalAction,
     )
 
     # Parse args
