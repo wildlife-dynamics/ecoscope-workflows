@@ -9,15 +9,47 @@ from ecoscope_workflows.decorators import distributed
 @distributed
 def map_columns(
     df: DataFrame[JsonSerializableDataFrameModel],
-    drop_columns: Annotated[list[str], Field()],
-    retain_columns: Annotated[list[str], Field()],
-    rename_columns: Annotated[dict[str, str], Field()],
+    drop_columns: Annotated[
+        list[str], Field(default=[], description="List of columns to drop.")
+    ],
+    retain_columns: Annotated[
+        list[str],
+        Field(
+            default=[],
+            description="""List of columns to retain with the order specified by the list.
+                        "Keep all the columns is the list is empty.""",
+        ),
+    ],
+    rename_columns: Annotated[
+        dict[str, str],
+        Field(default={}, description="Dictionary of columns to rename."),
+    ],
 ) -> DataFrame[JsonSerializableDataFrameModel]:
+    """
+    Maps and transforms the columns of a DataFrame based on the provided parameters. The order of the operations is as
+    follows: drop columns, retain/reorder columns, and rename columns.
 
-    df.drop(columns=drop_columns, inplace=True)
+    Args:
+        df (DataFrame[JsonSerializableDataFrameModel]): The input DataFrame to be transformed.
+        drop_columns (list[str]): List of columns to drop from the DataFrame.
+        retain_columns (list[str]): List of columns to retain. The order of columns will be preserved.
+        rename_columns (dict[str, str]): Dictionary of columns to rename.
+
+    Returns:
+        DataFrame[JsonSerializableDataFrameModel]: The transformed DataFrame.
+
+    Raises:
+        KeyError: If any of the columns specified are not found in the DataFrame.
+    """
+
+    df = df.drop(columns=drop_columns)
     if retain_columns:
-        df.reindex(columns=[retain_columns], inplace=True)
+        if any(col not in df.columns for col in retain_columns):
+            raise KeyError(f"Columns {retain_columns} not found in DataFrame.")
+        df = df.reindex(columns=retain_columns)
     if rename_columns:
-        df.rename(columns=rename_columns, inplace=True)
+        if any(col not in df.columns for col in rename_columns):
+            raise KeyError(f"Columns {retain_columns} not found in DataFrame.")
+        df = df.rename(columns=rename_columns)
 
     return df
