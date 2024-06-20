@@ -1,3 +1,4 @@
+from pydantic import SecretStr
 from pydantic.fields import FieldInfo
 
 from ecoscope_workflows.registry import KnownTask, KubernetesPodOperator
@@ -29,7 +30,7 @@ def test_connections_model_fields():
                 "type": "EarthRangerConnection",
                 "fields": {
                     "password": FieldInfo(
-                        annotation=str,
+                        annotation=SecretStr,
                         required=True,
                         description="EarthRanger password",
                     ),
