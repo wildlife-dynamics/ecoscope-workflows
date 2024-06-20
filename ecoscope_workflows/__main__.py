@@ -1,10 +1,12 @@
 import argparse
 import json
+from getpass import getpass
 
 import yaml
+from pydantic import SecretStr
 
 from ecoscope_workflows.compiler import DagCompiler
-from ecoscope_workflows.registry import known_tasks
+from ecoscope_workflows.registry import known_connections, known_tasks
 
 
 def compile_command(args):
@@ -51,8 +53,18 @@ def get_params_command(args):
 
 
 def connections_create_command(args):
-    if args.type == "earthranger":
-        print("Creating EarthRanger connection")
+    conn_type = known_connections[args.type]
+    if args.fields:
+        NotImplementedError("Only interactive creation is supported at this time.")
+    else:
+        fields = {}
+        print(f"Creating {args.type} connection interactively...")
+        for k, v in conn_type.model_fields.items():
+            if v.annotation == SecretStr:
+                fields[k] = getpass(f"{k}: ")
+            else:
+                fields[k] = input(f"{k}: ")
+    print(fields)
 
 
 def main():
@@ -124,6 +136,11 @@ def main():
         dest="type",
         required=True,
         choices=["earthranger"],
+    )
+    connections_create_parser.add_argument(
+        "--fields",
+        dest="fields",
+        default=None,
     )
 
     # Parse args

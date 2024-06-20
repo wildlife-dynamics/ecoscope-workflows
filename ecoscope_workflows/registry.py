@@ -29,6 +29,7 @@ from ecoscope_workflows.annotations import (
     is_client,
     connection_from_client,
 )
+from ecoscope_workflows.connections import EarthRangerConnection
 from ecoscope_workflows.decorators import DistributedTask
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
 from ecoscope_workflows.operators import KubernetesPodOperator
@@ -253,6 +254,9 @@ class KnownTask(BaseModel):
 _known_tasks = collect_task_entries()  # internal, mutable
 known_tasks = types.MappingProxyType(_known_tasks)  # external, immutable
 
+known_connections = {
+    "earthranger": EarthRangerConnection,
+}
 
 known_deserializers = {
     pa.typing.DataFrame: gpd_from_parquet_uri,

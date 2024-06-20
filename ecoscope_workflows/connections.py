@@ -67,8 +67,3 @@ class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
             tcp_limit=self.tcp_limit,
             sub_page_size=self.sub_page_size,
         )
-
-
-ALL_CONNECTION_TYPES = {
-    "earthranger": EarthRangerConnection,
-}
