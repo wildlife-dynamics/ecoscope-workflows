@@ -1,7 +1,5 @@
 import argparse
-import copy
 import json
-import re
 
 import yaml
 
@@ -52,36 +50,7 @@ def get_params_command(args):
         print(params)
 
 
-def connections_command(args):
-    compilation_spec = yaml.safe_load(args.spec)
-    dc = DagCompiler.from_spec(spec=compilation_spec)
-    conns = dc.get_connections_model_fields()
-    conns_copy = copy.deepcopy(conns)
-    for task in conns:
-        for client_param_name in conns[task]:
-            print(
-                f"Choose a name for the `{conns[task][client_param_name]['type']}` in `{task}`:"
-            )
-            name = input()
-            assert re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", name), (
-                "Name must be a valid environment variable name "
-                "(only letters, numbers, and underscores, no leading digits)."
-            )
-            conns_copy[task][client_param_name]["name"] = name
-    out = ""
-    for task in conns_copy:
-        for client_param_name in conns_copy[task]:
-            name = conns_copy[task][client_param_name]["name"]
-            for field in conns_copy[task][client_param_name]["fields"]:
-                out += f"{name.upper()}__{field.upper()}=  # {conns_copy[task][client_param_name]['fields'][field]}\n"
-    if args.outpath:
-        assert args.outpath.startswith((".env", ".env.")) or args.outpath.endswith(
-            ".env"
-        ), "Output path must start with '.env' or '.env.', or end with '.env'."
-        with open(args.outpath, "w") as f:
-            f.write(out)
-    else:
-        print(out)
+def connections_create_command(args): ...
 
 
 def main():
@@ -142,17 +111,12 @@ def main():
 
     # Subcommand 'connections'
     connections_parser = subparsers.add_parser("connections", help="Manage connections")
-    connections_parser.set_defaults(func=connections_command)
-    connections_parser.add_argument(
-        "--spec",
-        dest="spec",
-        required=True,
-        type=argparse.FileType(mode="r"),
+    connections_subparsers = connections_parser.add_subparsers()
+    connections_create_parser = connections_subparsers.add_parser(
+        "create",
+        help="Create a new named connection",
     )
-    connections_parser.add_argument(
-        "--outpath",
-        dest="outpath",
-    )
+    connections_create_parser.set_defaults(func=connections_create_command)
 
     # Parse args
     args = parser.parse_args()
