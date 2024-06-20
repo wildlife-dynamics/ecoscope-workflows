@@ -1,5 +1,8 @@
 from pydantic_settings import BaseSettings, PydanticBaseSettingsSource
 
+# from ._gsm import GoogleSecretManagerConfigSettingsSource
+from ._onekeytoml import OneKeyTomlConfigSettingsSource
+
 
 class _Settings(BaseSettings):
     @classmethod
@@ -14,6 +17,7 @@ class _Settings(BaseSettings):
         return (
             init_settings,
             env_settings,
+            OneKeyTomlConfigSettingsSource(settings_cls),
             # dotenv_settings,
             # file_secret_settings,
             # GoogleSecretManagerConfigSettingsSource(settings_cls),

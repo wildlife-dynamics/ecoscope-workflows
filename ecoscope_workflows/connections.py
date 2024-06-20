@@ -1,3 +1,4 @@
+import pathlib
 from abc import ABC, abstractmethod
 from typing import Annotated, Generic, Protocol, Type, TypeVar, runtime_checkable
 
@@ -5,6 +6,10 @@ from pydantic import Field, SecretStr
 from pydantic_settings import SettingsConfigDict
 
 from ecoscope_workflows._settings import _Settings
+
+ECOSCOPE_CONNECTIONS = (
+    pathlib.Path().home() / ".config" / ".ecoscope" / "connections.toml"
+)
 
 DataConnectionType = TypeVar("DataConnectionType", bound="_DataConnection")
 ClientProtocolType = TypeVar("ClientProtocolType")
@@ -18,8 +23,7 @@ class _DataConnection(_Settings):
         model_config = SettingsConfigDict(
             env_prefix=f"{name}__",
             case_sensitive=False,
-            env_file=".env",
-            env_file_encoding="utf-8",
+            toml_file=ECOSCOPE_CONNECTIONS,
         )
         _cls = type(
             f"{name}_connection",
