@@ -1,5 +1,6 @@
 import pathlib
 import os
+import re
 import sys
 from dataclasses import dataclass, field
 
@@ -23,6 +24,13 @@ class TomlConfigTable:
     header: str
     name: str
     fields: dict = field(default_factory=dict)
+
+    def __post_init__(self):
+        if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", self.name):
+            raise ValueError(
+                f"Table name '{self.name}' must be a valid unix environment variable "
+                "(starts with a letter, followed by letters, numbers, or underscores)."
+            )
 
     @property
     def asdict(self):

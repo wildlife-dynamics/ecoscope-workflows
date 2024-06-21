@@ -16,9 +16,9 @@ class _DataConnection(_Settings):
         cls: Type[DataConnectionType], name: str
     ) -> DataConnectionType:
         model_config = SettingsConfigDict(
-            env_prefix=f"{name}__",
+            env_prefix=f"{name.lower()}__",
             case_sensitive=False,
-            pyproject_toml_table_header=("connections", name),
+            pyproject_toml_table_header=("connections", name.lower()),
         )
         _cls = type(
             f"{name}_connection",

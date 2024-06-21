@@ -5,7 +5,7 @@ from unittest.mock import patch
 from textwrap import dedent
 
 import pytest
-from pydantic import SecretStr, validate_call
+from pydantic import SecretStr, ValidationError, validate_call
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -92,6 +92,42 @@ def test_connection_named_from_toml(mock_toml_config: Path):
 
         assert conn.tcp_limit == 5
         assert conn.sub_page_size == 4000
+
+
+@pytest.fixture
+def mock_toml_config_no_secrets(tmp_path: Path):
+    toml_config = dedent(
+        """\
+        [connections.mep_dev]
+        server = "https://mep-dev.pamdas.org"
+        username = "user"
+        tcp_limit = 5
+        sub_page_size = 4000
+        """
+    )
+    _ = tomllib.loads(toml_config)  # make sure toml string is loadable
+    tmp_config_path = tmp_path / ".config.toml"
+    tmp_config_path.write_text(toml_config)
+    yield tmp_config_path
+
+
+def test_connection_named_from_toml_with_env_secrets(mock_toml_config_no_secrets: Path):
+    with patch("ecoscope_workflows.config.PATH", mock_toml_config_no_secrets):
+        with pytest.raises(ValidationError, match="password"):
+            _ = EarthRangerConnection.from_named_connection("mep_dev")
+
+    with patch("ecoscope_workflows.config.PATH", mock_toml_config_no_secrets):
+        with patch.dict(os.environ, {"MEP_DEV__PASSWORD": "pass"}):
+            conn = EarthRangerConnection.from_named_connection("mep_dev")
+            assert conn.server == "https://mep-dev.pamdas.org"
+            assert conn.username == "user"
+
+            assert isinstance(conn.password, SecretStr)
+            assert str(conn.password) == "**********"
+            assert conn.password.get_secret_value() == "pass"
+
+            assert conn.tcp_limit == 5
+            assert conn.sub_page_size == 4000
 
 
 def test_resolve_client_from_env(named_mock_env):
