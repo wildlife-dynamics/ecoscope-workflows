@@ -86,12 +86,18 @@ def connections_create_command(args):
             else:
                 fields[k] = input(f"{prompt}: ")
     tct = TomlConfigTable(header="connections", name=args.name, fields=fields)
-    tct.dump()
+    if args.store == "local":
+        tct.dump()
+    else:
+        raise NotImplementedError(f"Storage method '{args.store}' not implemented.")
 
 
 def connections_delete_command(args):
     tct = TomlConfigTable(header="connections", name=args.name)
-    tct.delete()
+    if args.store == "local":
+        tct.delete()
+    else:
+        raise NotImplementedError(f"Storage method '{args.store}' not implemented.")
 
 
 # def connections_check_command(args):
@@ -176,6 +182,12 @@ def main():
         required=True,
     )
     connections_create_parser.add_argument(
+        "--store",
+        dest="store",
+        default="local",
+        choices=["local"],
+    )
+    connections_create_parser.add_argument(
         "--fields",
         dest="fields",
         default=None,
@@ -189,6 +201,12 @@ def main():
         "--name",
         dest="name",
         required=True,
+    )
+    connections_delete_parser.add_argument(
+        "--store",
+        dest="store",
+        default="local",
+        choices=["local"],
     )
 
     # Parse args
