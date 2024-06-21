@@ -40,11 +40,13 @@ def test_connection_unnamed():
 @pytest.fixture
 def named_mock_env():
     return {
-        "MEP_DEV__SERVER": "https://mep-dev.pamdas.org",
-        "MEP_DEV__USERNAME": "user",
-        "MEP_DEV__PASSWORD": "pass",
-        "MEP_DEV__TCP_LIMIT": "5",
-        "MEP_DEV__SUB_PAGE_SIZE": "4000",
+        "ECOSCOPE_WORKFLOWS__CONNECTIONS__EARTHRANGER__MEP_DEV__SERVER": (
+            "https://mep-dev.pamdas.org"
+        ),
+        "ECOSCOPE_WORKFLOWS__CONNECTIONS__EARTHRANGER__MEP_DEV__USERNAME": "user",
+        "ECOSCOPE_WORKFLOWS__CONNECTIONS__EARTHRANGER__MEP_DEV__PASSWORD": "pass",
+        "ECOSCOPE_WORKFLOWS__CONNECTIONS__EARTHRANGER__MEP_DEV__TCP_LIMIT": "5",
+        "ECOSCOPE_WORKFLOWS__CONNECTIONS__EARTHRANGER__MEP_DEV__SUB_PAGE_SIZE": "4000",
     }
 
 
@@ -117,7 +119,10 @@ def test_connection_named_from_toml_with_env_secrets(mock_toml_config_no_secrets
             _ = EarthRangerConnection.from_named_connection("mep_dev")
 
     with patch("ecoscope_workflows.config.PATH", mock_toml_config_no_secrets):
-        with patch.dict(os.environ, {"MEP_DEV__PASSWORD": "pass"}):
+        with patch.dict(
+            os.environ,
+            {"ECOSCOPE_WORKFLOWS__CONNECTIONS__EARTHRANGER__MEP_DEV__PASSWORD": "pass"},
+        ):
             conn = EarthRangerConnection.from_named_connection("mep_dev")
             assert conn.server == "https://mep-dev.pamdas.org"
             assert conn.username == "user"

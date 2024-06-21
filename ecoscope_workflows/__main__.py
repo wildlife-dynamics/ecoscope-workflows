@@ -67,7 +67,8 @@ def connections_create_command(args):
         f"stored in clear text at '{str(config.PATH)}'. If you prefer not to store secrets in "
         "clear text in this location, you may: (a) change the local storage path by setting the "
         "`ECOSCOPE_WORKFLOWS_CONFIG` env var; (b) leave secrets fields empty here, and inject "
-        f"values at with the `ECOSCOPE_CONNECTIONS__{args.name.upper()}__{{field_name}}` env var."
+        "values at with the `ECOSCOPE_WORKFLOWS__CONNECTIONS__"
+        f"{args.type.upper()}__{args.name.upper()}__{{field_name}}` env var."
         f"\nContinue? [y/N]: {Colors.ENDC}"
     )
     if cont.lower() != "y":

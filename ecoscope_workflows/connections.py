@@ -24,7 +24,10 @@ class _DataConnection(_Settings):
         cls: Type[DataConnectionType], name: str
     ) -> DataConnectionType:
         model_config = SettingsConfigDict(
-            env_prefix=f"{name.lower()}__",
+            env_prefix=(
+                "ecoscope_workflows__connections__"
+                f"{cls.__ecoscope_connection_type__}__{name.lower()}__"
+            ),
             case_sensitive=False,
             pyproject_toml_table_header=(
                 "connections",

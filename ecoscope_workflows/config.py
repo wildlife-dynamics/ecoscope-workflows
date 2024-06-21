@@ -17,7 +17,7 @@ import tomli_w
 if "ECOSCOPE_WORKFLOWS_CONFIG" in os.environ:
     PATH = pathlib.Path(os.environ["ECOSCOPE_WORKFLOWS_CONFIG"])
 else:
-    PATH = pathlib.Path().home() / ".config" / ".ecoscope" / ".config.toml"
+    PATH = pathlib.Path().home() / ".config" / ".ecoscope-workflows" / ".config.toml"
 
 
 @dataclass
