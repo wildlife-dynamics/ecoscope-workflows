@@ -44,8 +44,10 @@ class TomlConfigTable:
 
     def _merged(self):
         conf = self._existing()
-        if self.name not in conf.get(self.header, {}):
-            conf |= self.asdict
+        if not conf:
+            conf = self.asdict
+        elif conf and self.name not in conf.get(self.header, {}):
+            conf[self.header][self.name] = self.asdict[self.header][self.name]
         else:
             raise ValueError(
                 f"Table '{self.header}.{self.name}' already exists in config file '{str(PATH)}'"
@@ -58,8 +60,9 @@ class TomlConfigTable:
     def dump(self):
         if not PATH.parent.exists():
             PATH.parent.mkdir(parents=True, exist_ok=True)
+        conf = self._merged()
         with open(PATH, mode="wb") as f:
-            tomli_w.dump(self._merged(), f)
+            tomli_w.dump(conf, f)
 
     def delete(self):
         conf = self._existing()
