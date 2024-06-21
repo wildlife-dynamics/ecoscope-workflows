@@ -241,7 +241,7 @@ _known_tasks = collect_task_entries()  # internal, mutable
 known_tasks = types.MappingProxyType(_known_tasks)  # external, immutable
 
 known_connections = {
-    "earthranger": EarthRangerConnection,
+    conn.__ecoscope_connection_type__: conn for conn in (EarthRangerConnection,)
 }
 
 known_deserializers = {

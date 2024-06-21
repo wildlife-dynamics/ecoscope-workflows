@@ -1,12 +1,20 @@
 from abc import ABC, abstractmethod
-from typing import Annotated, Generic, Protocol, Type, TypeVar, runtime_checkable
+from typing import (
+    Annotated,
+    ClassVar,
+    Generic,
+    Protocol,
+    Type,
+    TypeVar,
+    runtime_checkable,
+)
 
 from pydantic import Field, SecretStr
 from pydantic_settings import SettingsConfigDict
 
 from ecoscope_workflows._settings import _Settings
 
-DataConnectionType = TypeVar("DataConnectionType", bound="_DataConnection")
+DataConnectionType = TypeVar("DataConnectionType", bound="DataConnection")
 ClientProtocolType = TypeVar("ClientProtocolType")
 
 
@@ -18,17 +26,26 @@ class _DataConnection(_Settings):
         model_config = SettingsConfigDict(
             env_prefix=f"{name.lower()}__",
             case_sensitive=False,
-            pyproject_toml_table_header=("connections", name.lower()),
+            pyproject_toml_table_header=(
+                "connections",
+                cls.__ecoscope_connection_type__,
+                name.lower(),
+            ),
         )
         _cls = type(
             f"{name}_connection",
             (cls,),
-            {"model_config": model_config},
+            {
+                "__ecoscope_connection_type__": cls.__ecoscope_connection_type__,
+                "model_config": model_config,
+            },
         )
         return _cls()
 
 
 class DataConnection(ABC, _DataConnection, Generic[ClientProtocolType]):
+    __ecoscope_connection_type__: ClassVar[str] = NotImplemented
+
     @abstractmethod
     def get_client(self) -> ClientProtocolType: ...
 
@@ -53,6 +70,8 @@ class EarthRangerClientProtocol(Protocol):
 
 
 class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
+    __ecoscope_connection_type__: ClassVar[str] = "earthranger"
+
     server: Annotated[str, Field(description="EarthRanger API URL")]
     username: Annotated[str, Field(description="EarthRanger username")]
     password: Annotated[SecretStr, Field(description="EarthRanger password")]

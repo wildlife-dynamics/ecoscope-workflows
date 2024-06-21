@@ -85,7 +85,9 @@ def connections_create_command(args):
                 fields[k] = getpass(f"{prompt}: ")
             else:
                 fields[k] = input(f"{prompt}: ")
-    tct = TomlConfigTable(header="connections", name=args.name, fields=fields)
+    tct = TomlConfigTable(
+        header="connections", subheader=args.type, name=args.name, fields=fields
+    )
     if args.store == "local":
         tct.dump()
     else:
@@ -93,7 +95,7 @@ def connections_create_command(args):
 
 
 def connections_delete_command(args):
-    tct = TomlConfigTable(header="connections", name=args.name)
+    tct = TomlConfigTable(header="connections", subheader=args.type, name=args.name)
     if args.store == "local":
         tct.delete()
     else:
@@ -197,6 +199,12 @@ def main():
         help="Delete a named connection",
     )
     connections_delete_parser.set_defaults(func=connections_delete_command)
+    connections_delete_parser.add_argument(
+        "--type",
+        dest="type",
+        required=True,
+        choices=["earthranger"],
+    )
     connections_delete_parser.add_argument(
         "--name",
         dest="name",

@@ -3,6 +3,7 @@ import os
 import re
 import sys
 from dataclasses import dataclass, field
+from typing import Any
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -22,6 +23,7 @@ else:
 @dataclass
 class TomlConfigTable:
     header: str
+    subheader: str
     name: str
     fields: dict = field(default_factory=dict)
 
@@ -34,9 +36,9 @@ class TomlConfigTable:
 
     @property
     def asdict(self):
-        return {self.header: {self.name: self.fields}}
+        return {self.header: {self.subheader: {self.name: self.fields}}}
 
-    def _existing(self) -> dict:
+    def _existing(self) -> dict[str, dict[str, dict[str, Any]]]:
         if PATH.exists():
             with open(PATH, mode="rb") as f:
                 return tomllib.load(f)
@@ -46,11 +48,16 @@ class TomlConfigTable:
         conf = self._existing()
         if not conf:
             conf = self.asdict
-        elif conf and self.name not in conf.get(self.header, {}):
-            conf[self.header][self.name] = self.asdict[self.header][self.name]
+        elif conf and self.name not in conf.get(self.header, {}).get(
+            self.subheader, {}
+        ):
+            conf[self.header][self.subheader][self.name] = self.asdict[self.header][
+                self.subheader
+            ][self.name]
         else:
             raise ValueError(
-                f"Table '{self.header}.{self.name}' already exists in config file '{str(PATH)}'"
+                f"Table '{self.header}.{self.subheader}.{self.name}' "
+                f"already exists in config file '{str(PATH)}'"
             )
         return conf
 
@@ -66,8 +73,8 @@ class TomlConfigTable:
 
     def delete(self):
         conf = self._existing()
-        if self.name in conf.get(self.header, {}):
-            del conf[self.header][self.name]
+        if self.name in conf.get(self.header, {}).get(self.subheader, {}):
+            del conf[self.header][self.subheader][self.name]
             with open(PATH, mode="wb") as f:
                 tomli_w.dump(conf, f)
         else:
