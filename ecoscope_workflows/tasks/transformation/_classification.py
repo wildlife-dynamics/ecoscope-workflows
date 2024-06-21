@@ -28,10 +28,10 @@ def classify_categorical_value(
     pd.DataFrame: The dataframe with an additional color column.
     """
 
-    import matplotlib.cm as cm
+    import matplotlib
 
     # Get the colormap
-    colormap = cm.get_cmap(colormap_name)
+    colormap = matplotlib.colormaps[colormap_name]
 
     # Get unique categories
     unique_categories = df[column_name].unique()
