@@ -1,13 +1,20 @@
 import argparse
 import json
+from enum import Enum
 from getpass import getpass
 
 import yaml
 from pydantic import SecretStr
 
+from ecoscope_workflows import config
 from ecoscope_workflows.compiler import DagCompiler
 from ecoscope_workflows.config import TomlConfigTable
 from ecoscope_workflows.registry import known_connections, known_tasks
+
+
+class Colors(str, Enum):
+    WARNING = "\033[93m"
+    ENDC = "\033[0m"
 
 
 def compile_command(args):
@@ -55,19 +62,27 @@ def get_params_command(args):
 
 def connections_create_command(args):
     conn_type = known_connections[args.type]
+    cont = input(
+        f"{Colors.WARNING}WARNING: All connection fields set here, including secrets, will be "
+        f"stored in clear text at '{str(config.PATH)}'. If you prefer not to store secrets in "
+        "clear text in this location, you may: (a) change the local storage path by setting the "
+        "`ECOSCOPE_WORKFLOWS_CONFIG` env var; (b) leave secrets fields empty here, and inject "
+        f"values at with the `ECOSCOPE_CONNECTIONS__{args.name.upper()}__{{field_name}}` env var."
+        f"\nContinue? [y/N]: {Colors.ENDC}"
+    )
+    if cont.lower() != "y":
+        print("Exiting...")
+        return
     if args.fields:
         fields = json.loads(args.fields)
     else:
         fields = {}
         print(f"Creating {args.type} connection '{args.name}' interactively...")
         for k, v in conn_type.model_fields.items():
-            prompt = f"{k} ({v.description})"
+            prompt = f"{v.description}"
             if v.annotation == SecretStr:
                 prompt = f"{prompt} (input hidden for security)"
-                if args.use_keyring:
-                    ...
-                else:
-                    fields[k] = getpass(f"{prompt}: ")
+                fields[k] = getpass(f"{prompt}: ")
             else:
                 fields[k] = input(f"{prompt}: ")
     tct = TomlConfigTable(header="connections", name=args.name, fields=fields)
@@ -160,11 +175,6 @@ def main():
     connections_create_parser.add_argument(
         "--check-connection",
         dest="check_connection",
-        action=argparse.BooleanOptionalAction,
-    )
-    connections_create_parser.add_argument(
-        "--use-keyring",
-        dest="use_keyring",
         action=argparse.BooleanOptionalAction,
     )
 

@@ -30,7 +30,7 @@ class TomlConfigTable:
 
     def _existing(self) -> dict:
         if PATH.exists():
-            with open(PATH, "rb") as f:
+            with open(PATH, mode="rb") as f:
                 return tomllib.load(f)
         return {}
 
@@ -48,5 +48,7 @@ class TomlConfigTable:
         return tomli_w.dumps(self._merged())
 
     def dump(self):
-        with open(PATH, "wb") as f:
+        if not PATH.parent.exists():
+            PATH.parent.mkdir(parents=True, exist_ok=True)
+        with open(PATH, mode="wb") as f:
             tomli_w.dump(self._merged(), f)
