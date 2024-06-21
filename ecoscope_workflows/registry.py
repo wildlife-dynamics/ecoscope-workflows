@@ -26,8 +26,6 @@ from pydantic.functional_validators import AfterValidator
 
 from ecoscope_workflows.annotations import (
     JsonSerializableDataFrameModel,
-    is_client,
-    connection_from_client,
 )
 from ecoscope_workflows.connections import EarthRangerConnection
 from ecoscope_workflows.decorators import DistributedTask
@@ -180,18 +178,6 @@ class KnownTask(BaseModel):
             arg: get_args(annotation)
             for arg, annotation in self.params_annotations.items()
         }
-
-    @property
-    def connections_model_fields(self) -> dict:
-        cmf = {}
-        for k, v in self.params_annotations.items():
-            if is_client(v):
-                conn = connection_from_client(v)
-                cmf[k] = {
-                    "type": conn.__name__,
-                    "fields": conn.model_fields,
-                }
-        return cmf
 
     def _iter_parameters_annotation(
         self,
