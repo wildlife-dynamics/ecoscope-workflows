@@ -15,9 +15,14 @@ $ pip install -e ".[test]"
 In `ecoscope-workflows`, [_**tasks**_](#tasks) (python functions) are composed into DAGs
 via [_**compilation specs**_](#compilation-specs) defined in YAML. These specs can then be compiled
 to various targets including serial Python scripts (to run locally) and Airflow DAGs (to run on Kubernetes),
-via the [`ecoscope-workflows` _**CLI**_](#compilation-specs). Finally, the
-[_**extensible task registry**_](#extensible-task-registry) supports registration of user-defined
-and third-party tasks.
+via the [`ecoscope-workflows` _**CLI**_](#compilation-specs).
+
+The [_**extensible task registry**_](#extensible-task-registry) supports registration of
+user-defined and third-party tasks.
+
+[_**Data connections**_](#data-connections) are a special type of parameter
+that can be provided to a task, which automatically resolves a client for an external data source
+at runtime from pre-configured fields and/or environment variables.
 
 ### Tasks
 
@@ -190,6 +195,41 @@ You should see your extension packages listed and can now freely use them in [co
 > This same mechanism is how the built-in tasks are collected as well! If you're curious how this works,
 > check out the `pyproject.toml` for our package, as well as the `registry` module. This design is
 > [inspired by `fsspec`](https://filesystem-spec.readthedocs.io/en/latest/developer.html#implementing-a-backend).
+
+### Data connections
+
+Data
+
+```console
+$ ecoscope-workflows connections create --type earthranger --name mep
+```
+
+
+
+Supported data connections:
+
+```python
+from ecoscope_workflows.annotations import DataFrame, EarthRangerClient
+from ecoscope_workflows.decorators import distributed
+
+OutputSchema: ...
+
+@distributed
+def fetch_data_from_earthranger(
+    # the `EarthRangerClient` annotation here tells us what type this
+    # parameter *will be* by the time we enter the body of this task.
+    # this is not
+    client: EarthRangerClient,
+) -> DataFrame[OutputSchema]:
+    # once we get here, we have a real client,
+    client.get_some_data()
+```
+
+```yaml
+# params.yaml
+fetch_data_from_earthranger:
+
+```
 
 
 ## Example workflows development

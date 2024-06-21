@@ -1,11 +1,35 @@
+import os
 from pathlib import Path
 from textwrap import dedent
 from unittest.mock import patch
 
+import pytest
+
 from ecoscope_workflows.config import TomlConfigTable
 
 
+def test_path_default():
+    from ecoscope_workflows.config import PATH
+
+    assert PATH == Path.home() / ".config" / ".ecoscope-workflows" / ".config.toml"
+
+
+@pytest.mark.xfail
+def test_path_override():
+    # I believe this works, but I'm not sure how to test this,
+    # while also keeping PATH a constant
+    override = "my_custom_path/config.toml"
+    with patch.dict(os.environ, {"ECOSCOPE_WORKFLOWS_CONFIG": override}):
+        from ecoscope_workflows.config import PATH
+
+        assert PATH == Path(override)
+
+
 def test_toml_config_table_dumps():
+    # deferring import of TomlConfigTable to avoid triggering assignment of PATH
+    # before the patching of os.environ in test_path_override (kind of a code smell,
+    # this interdependency between the tests, maybe there's a better way to do this)
+
     tct = TomlConfigTable(
         header="connections",
         subheader="earthranger",
