@@ -87,9 +87,17 @@ def connections_create_command(args):
                 fields[k] = input(f"{prompt}: ")
     tct = TomlConfigTable(header="connections", name=args.name, fields=fields)
     tct.dump()
-    if args.check_connection:
-        conn = conn_type.from_named_connection(args.name)
-        conn.check_connection()
+
+
+def connections_delete_command(args):
+    tct = TomlConfigTable(header="connections", name=args.name)
+    tct.delete()
+
+
+# def connections_check_command(args):
+#     conn_type = known_connections[args.type]
+#     conn = conn_type.from_named_connection(args.name)
+#     conn.check_connection()
 
 
 def main():
@@ -172,10 +180,15 @@ def main():
         dest="fields",
         default=None,
     )
-    connections_create_parser.add_argument(
-        "--check-connection",
-        dest="check_connection",
-        action=argparse.BooleanOptionalAction,
+    connections_delete_parser = connections_subparsers.add_parser(
+        "delete",
+        help="Delete a named connection",
+    )
+    connections_delete_parser.set_defaults(func=connections_delete_command)
+    connections_delete_parser.add_argument(
+        "--name",
+        dest="name",
+        required=True,
     )
 
     # Parse args

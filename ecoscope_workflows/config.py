@@ -1,7 +1,7 @@
 import pathlib
 import os
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -22,7 +22,7 @@ else:
 class TomlConfigTable:
     header: str
     name: str
-    fields: dict
+    fields: dict = field(default_factory=dict)
 
     @property
     def asdict(self):
@@ -52,3 +52,14 @@ class TomlConfigTable:
             PATH.parent.mkdir(parents=True, exist_ok=True)
         with open(PATH, mode="wb") as f:
             tomli_w.dump(self._merged(), f)
+
+    def delete(self):
+        conf = self._existing()
+        if self.name in conf.get(self.header, {}):
+            del conf[self.header][self.name]
+            with open(PATH, mode="wb") as f:
+                tomli_w.dump(conf, f)
+        else:
+            raise ValueError(
+                f"Table '{self.header}.{self.name}' does not exist in config file '{str(PATH)}'"
+            )
