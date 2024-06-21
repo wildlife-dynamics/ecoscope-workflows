@@ -61,7 +61,7 @@ def map_columns(
         df = df.reindex(columns=retain_columns)
     if rename_columns:
         if any(col not in df.columns for col in rename_columns):
-            raise KeyError(f"Columns {retain_columns} not all found in DataFrame.")
+            raise KeyError(f"Columns {rename_columns} not all found in DataFrame.")
         df = df.rename(columns=rename_columns)
 
     return df
