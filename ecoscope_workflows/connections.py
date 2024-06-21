@@ -35,10 +35,7 @@ class _DataConnection(_Settings):
         _cls = type(
             f"{name}_connection",
             (cls,),
-            {
-                "__ecoscope_connection_type__": cls.__ecoscope_connection_type__,
-                "model_config": model_config,
-            },
+            {"model_config": model_config},
         )
         return _cls()
 
