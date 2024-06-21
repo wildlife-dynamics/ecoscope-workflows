@@ -1,9 +1,12 @@
+import logging
 from typing import Annotated
 
 from pydantic import Field
 
 from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
 from ecoscope_workflows.decorators import distributed
+
+logger = logging.getLogger(__name__)
 
 
 @distributed
@@ -17,7 +20,7 @@ def map_columns(
         Field(
             default=[],
             description="""List of columns to retain with the order specified by the list.
-                        "Keep all the columns is the list is empty.""",
+                        "Keep all the columns if the list is empty.""",
         ),
     ],
     rename_columns: Annotated[
@@ -41,15 +44,24 @@ def map_columns(
     Raises:
         KeyError: If any of the columns specified are not found in the DataFrame.
     """
+    if "geometry" in drop_columns:
+        logger.warning(
+            "'geometry' found in drop_columns, which may affect spatial operations."
+        )
+
+    if "geometry" in rename_columns.keys():
+        logger.warning(
+            "'geometry' found in rename_columns, which may affect spatial operations."
+        )
 
     df = df.drop(columns=drop_columns)
     if retain_columns:
         if any(col not in df.columns for col in retain_columns):
-            raise KeyError(f"Columns {retain_columns} not found in DataFrame.")
+            raise KeyError(f"Columns {retain_columns} not all found in DataFrame.")
         df = df.reindex(columns=retain_columns)
     if rename_columns:
         if any(col not in df.columns for col in rename_columns):
-            raise KeyError(f"Columns {retain_columns} not found in DataFrame.")
+            raise KeyError(f"Columns {retain_columns} not all found in DataFrame.")
         df = df.rename(columns=rename_columns)
 
     return df
