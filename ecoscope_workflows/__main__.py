@@ -102,6 +102,9 @@ def connections_delete_command(args):
         raise NotImplementedError(f"Storage method '{args.store}' not implemented.")
 
 
+# def connections_list_command(args):
+#     ...
+
 # def connections_check_command(args):
 #     conn_type = known_connections[args.type]
 #     conn = conn_type.from_named_connection(args.name)
@@ -216,6 +219,11 @@ def main():
         default="local",
         choices=["local"],
     )
+    # connections_list_parser = connections_subparsers.add_parser(
+    #     "list",
+    #     help="List configured connections",
+    # )
+    # connections_list_parser.set_defaults(func=connections_list_command)
 
     # Parse args
     args = parser.parse_args()
