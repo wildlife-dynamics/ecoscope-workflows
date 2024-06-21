@@ -198,15 +198,18 @@ You should see your extension packages listed and can now freely use them in [co
 
 ### Data connections
 
-Data
+Data connections are configuration that allows us to resolve clients for external data services
+at runtime. To create a new connection, run `ecoscope-workflows connections create`, for example:
 
 ```console
-$ ecoscope-workflows connections create --type earthranger --name mep
+$ ecoscope-workflows connections create --type earthranger --name amboseli
 ```
 
 
+In this case, we are creating an `EarthRangerConnection` named `amboseli`. This connection can then
+be resolved into a client at runtime in any task which takes an argument annotated with the type
+`EarthRangerClient`, for example:
 
-Supported data connections:
 
 ```python
 from ecoscope_workflows.annotations import DataFrame, EarthRangerClient
@@ -218,17 +221,20 @@ OutputSchema: ...
 def fetch_data_from_earthranger(
     # the `EarthRangerClient` annotation here tells us what type this
     # parameter *will be* by the time we enter the body of this task.
-    # this is not
     client: EarthRangerClient,
 ) -> DataFrame[OutputSchema]:
-    # once we get here, we have a real client,
+    # once we get here, we have a real client
     client.get_some_data()
 ```
+
+When configuring this task to run, the _name_ of a pre-configured connection can then be passed
+to the `client` argument as a string, and it will be resolved into an actual client object automatically
+based on the pre-configured connection of the same name. For example:
 
 ```yaml
 # params.yaml
 fetch_data_from_earthranger:
-
+  client: "amboseli"
 ```
 
 
