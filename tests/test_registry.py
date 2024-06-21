@@ -37,7 +37,7 @@ def test_connections_model_fields():
                     "server": FieldInfo(
                         annotation=str,
                         required=True,
-                        description="URL for EarthRanger API",
+                        description="EarthRanger API URL",
                     ),
                     "sub_page_size": FieldInfo(
                         annotation=int,

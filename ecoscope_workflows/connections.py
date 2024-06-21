@@ -32,8 +32,8 @@ class DataConnection(ABC, _DataConnection, Generic[ClientProtocolType]):
     @abstractmethod
     def get_client(self) -> ClientProtocolType: ...
 
-    @abstractmethod
-    def check_connection(self) -> None: ...
+    # @abstractmethod
+    # def check_connection(self) -> None: ...
 
     @classmethod
     def client_from_named_connection(cls, name: str) -> ClientProtocolType:
