@@ -66,7 +66,7 @@ def test_connection_named_from_env(named_mock_env):
 def mock_toml_config(tmp_path: Path):
     toml_config = dedent(
         """\
-        [connections.mep_dev]
+        [connections.earthranger.mep_dev]
         server = "https://mep-dev.pamdas.org"
         username = "user"
         password = "pass"
@@ -98,7 +98,7 @@ def test_connection_named_from_toml(mock_toml_config: Path):
 def mock_toml_config_no_secrets(tmp_path: Path):
     toml_config = dedent(
         """\
-        [connections.mep_dev]
+        [connections.earthranger.mep_dev]
         server = "https://mep-dev.pamdas.org"
         username = "user"
         tcp_limit = 5
