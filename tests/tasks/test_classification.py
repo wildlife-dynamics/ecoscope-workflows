@@ -2,14 +2,12 @@ import matplotlib
 import numpy as np
 import pandas as pd
 
-from ecoscope_workflows.tasks.transformation._classification import (
-    classify_categorical_value,
-)
+from ecoscope_workflows.tasks.transformation._classification import color_map
 
 
-def test_classify_categorical_value():
+def test_color_map():
     df = pd.DataFrame({"column_name": ["A", "B", "A", "C", "B", "C"]})
-    result = classify_categorical_value(df, "column_name", "viridis")
+    result = color_map(df, "column_name", "viridis")
 
     assert "label" in result.columns
 

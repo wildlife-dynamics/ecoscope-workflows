@@ -7,7 +7,7 @@ from ecoscope_workflows.decorators import distributed
 
 
 @distributed
-def classify_categorical_value(
+def color_map(
     df: DataFrame[JsonSerializableDataFrameModel],
     column_name: Annotated[
         str, Field(description="The name of the column with categorical values.")
