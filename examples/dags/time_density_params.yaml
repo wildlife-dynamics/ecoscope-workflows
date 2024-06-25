@@ -1,9 +1,5 @@
 get_subjectgroup_observations:
-  server:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='URL for EarthRanger API'), BeforeValidator(func=functools.partial(<function from_env at 0x18cc825f0>, var_name='ER_SERVER')))
-  username:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='EarthRanger username'), BeforeValidator(func=functools.partial(<function from_env at 0x18cc825f0>, var_name='ER_USERNAME')))
-  password:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='EarthRanger password'), BeforeValidator(func=functools.partial(<function from_env at 0x18cc825f0>, var_name='ER_PASSWORD')))
-  tcp_limit:   # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='TCP limit for EarthRanger API requests'))
-  sub_page_size:   # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='Sub page size for EarthRanger API requests'))
+  client:   # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
   subject_group_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of EarthRanger Subject'))
   include_inactive:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether or not to include inactive subjects'))
   since:   # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))

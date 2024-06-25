@@ -24,7 +24,10 @@ from pydantic import (
 )
 from pydantic.functional_validators import AfterValidator
 
-from ecoscope_workflows.annotations import JsonSerializableDataFrameModel
+from ecoscope_workflows.annotations import (
+    JsonSerializableDataFrameModel,
+)
+from ecoscope_workflows.connections import EarthRangerConnection
 from ecoscope_workflows.decorators import DistributedTask
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
 from ecoscope_workflows.operators import KubernetesPodOperator
@@ -147,9 +150,10 @@ class KnownTask(BaseModel):
     def parameters_jsonschema(self, omit_args: list[str] | None = None) -> dict:
         # NOTE: SurfacesDescriptionSchema is a workaround for https://github.com/pydantic/pydantic/issues/9404
         # Once that issue is closed, we can remove SurfaceDescriptionSchema and use the default schema_generator.
-        schema = TypeAdapter(self.task.func).json_schema(
-            schema_generator=SurfacesDescriptionSchema
-        )
+        schema = TypeAdapter(
+            self.task.func,
+            config={"arbitrary_types_allowed": True},
+        ).json_schema(schema_generator=SurfacesDescriptionSchema)
         if omit_args:
             schema["properties"] = {
                 arg: schema["properties"][arg]
@@ -162,10 +166,17 @@ class KnownTask(BaseModel):
         return schema
 
     @property
-    def parameters_annotation(self) -> dict[str, tuple]:
+    def params_annotations(self) -> dict[str, tuple]:
+        return {
+            arg: annotation
+            for arg, annotation in self.task.func.__annotations__.items()
+        }
+
+    @property
+    def params_annotations_args(self) -> dict[str, tuple]:
         return {
             arg: get_args(annotation)
-            for arg, annotation in self.task.func.__annotations__.items()
+            for arg, annotation in self.params_annotations.items()
         }
 
     def _iter_parameters_annotation(
@@ -175,7 +186,7 @@ class KnownTask(BaseModel):
     ) -> Generator[str, None, None]:
         for arg, param in {
             k: v
-            for k, v in self.parameters_annotation.items()
+            for k, v in self.params_annotations_args.items()
             if k not in (omit_args or [])
         }.items():
             yield fmt.format(arg=arg, param=param)
@@ -229,6 +240,9 @@ class KnownTask(BaseModel):
 _known_tasks = collect_task_entries()  # internal, mutable
 known_tasks = types.MappingProxyType(_known_tasks)  # external, immutable
 
+known_connections = {
+    conn.__ecoscope_connection_type__: conn for conn in (EarthRangerConnection,)
+}
 
 known_deserializers = {
     pa.typing.DataFrame: gpd_from_parquet_uri,
