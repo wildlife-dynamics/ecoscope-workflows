@@ -8,8 +8,8 @@ from ecoscope_workflows.decorators import distributed
 
 @dataclass
 class Dashboard:
-    groupers: ...
-    widgets: ...
+    groupers: list
+    widgets: list
 
     @property
     def views(self): ...
@@ -17,7 +17,7 @@ class Dashboard:
 
 @distributed
 def gather_dashboard(
-    widgets: Annotated[..., Field()],
-    groupers: Annotated[..., Field()],
+    widgets: Annotated[list, Field()],
+    groupers: Annotated[list, Field()],
 ):
     return Dashboard(groupers=groupers, widgets=widgets)
