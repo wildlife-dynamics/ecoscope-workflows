@@ -2,6 +2,7 @@ import argparse
 import functools
 import os
 
+import geopandas as gpd
 import yaml
 
 from ecoscope_workflows.serde import (
@@ -20,6 +21,7 @@ from ecoscope_workflows.tasks.results import (
     map_to_widget,
     gather_dashboard,
 )
+from ecoscope_workflows.tasks.transformation import assign_from_column_attribute
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -34,73 +36,70 @@ if __name__ == "__main__":
     params = yaml.safe_load(args.config_file)
     # FIXME: first pass assumes tasks are already in topological order
 
-    set_groupers_return = set_groupers.replace(validate=True)(
-        **params["set_groupers"],
+    groupers = set_groupers.replace(validate=True)(**params["set_groupers"])
+    map_styles = set_map_styles.replace(validate=True)(**params["set_map_styles"])
+
+    # we're about to head into the distributed world, so we need to serialize
+    # the geodataframe out to a cloud bucket or shared storage of some kind
+    serialize_groups = functools.partial(
+        gdf_to_parquet_uri,
+        uri=os.environ["ECOSCOPE_WORKFLOWS_TMP"],  # cloud bucket, local disk, etc.
+    )
+    groups = (
+        get_subjectgroup_observations.replace(validate=True)(
+            **params["get_subjectgroup_observations"]
+        )
+        .pipe(
+            assign_from_column_attribute.replace(validate=True),
+            **params["assign_from_column_attribute"],
+        )
+        .pipe(
+            split_groups.replace(validate=True, return_postvalidator=serialize_groups),
+            **groupers,
+        )
     )
 
-    set_map_styles_return = set_map_styles.replace(validate=True)(
-        **params["set_map_styles"],
-    )
-
-    get_subjectgroup_observations_return = get_subjectgroup_observations.replace(
-        validate=True
-    )(
-        **params["get_subjectgroup_observations"],
-    )
-
-    process_relocations_return = process_relocations.replace(validate=True)(
-        observations=get_subjectgroup_observations_return,
-        **params["process_relocations"],
-    )
-
-    relocations_to_trajectory_return = relocations_to_trajectory.replace(validate=True)(
-        relocations=process_relocations_return,
-        **params["relocations_to_trajectory"],
-    )
-
-    calculate_time_density_return = calculate_time_density.replace(validate=True)(
-        trajectory_gdf=relocations_to_trajectory_return,
-        **params["calculate_time_density"],
-    )
-
-    # map reduce
-    split_groups_return = split_groups.replace(
-        # we're about to head into the distributed world, so we need to serialize
-        # the geodataframe out to a cloud bucket or shared storage of some kind
-        return_postvalidator=functools.partial(
-            gdf_to_parquet_uri,
-            uri=os.environ["ECOSCOPE_WORKFLOWS_TMP"],  # cloud bucket, local disk, etc.
-        ),
-        validate=True,
-    )(
-        groupers=set_groupers_return,
-        dataframe=calculate_time_density_return,
-    )
-    # this can parallelize on local threads, gcp cloud run, or other cloud serverless
-    # compute backends, depending on the lithops configuration set at runtime.
-    map_reduce_return = map_reduce(
-        groups=split_groups_return,
-        mappers=[
-            (
-                draw_ecomap.replace(
+    def gdf_pipe(gdf: gpd.GeoDataFrame):
+        return (
+            gdf.pipe(
+                process_relocations.replace(
                     # the dataframe is given here as a list of URIs to parquet files,
                     # so we need to deserialize it back into a geodataframe
                     arg_prevalidators={"geodataframe": gpd_from_parquet_uri},
-                    return_postvalidator=functools.partial(
-                        html_text_to_uri,
-                        uri=os.environ["ECOSCOPE_WORKFLOWS_TMP"],
-                    ),
                     validate=True,
                 ),
-                set_map_styles_return,
+                **params["process_relocations"],
+            )
+            .pipe(
+                relocations_to_trajectory.replace(validate=True),
+                **params["relocations_to_trajectory"],
+            )
+            .pipe(
+                calculate_time_density.replace(validate=True),
+                **params["calculate_time_density"],
+            )
+            .pipe(
+                draw_ecomap.replace(
+                    return_postvalidator=functools.partial(
+                        html_text_to_uri, uri=os.environ["ECOSCOPE_WORKFLOWS_TMP"]
+                    ),
+                    validate=True,
+                )
+                ** map_styles
             ),
-            (
-                map_to_widget.replace(validate=True),
-                {},
-            ),
-        ],
+        )
+
+    def map_function(gdf: gpd.GeoDataFrame):
+        return map_to_widget(gdf_pipe(gdf))
+
+    # map reduce
+    # this can parallelize on local threads, gcp cloud run, or other cloud serverless
+    # compute backends, depending on the lithops configuration set at runtime.
+    map_reduce_return = map_reduce(
+        groups=groups,
+        map_function=map_function,
         reducer=gather_dashboard,
-        reducer_kwargs=set_groupers_return,
+        reducer_kwargs=groupers,
     )
 
     print(map_reduce_return)
