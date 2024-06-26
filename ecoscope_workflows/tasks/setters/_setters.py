@@ -7,13 +7,13 @@ from ecoscope_workflows.decorators import distributed
 
 @distributed
 def set_groupers(
-    groupers: Annotated[..., Field()],
+    groupers: Annotated[dict, Field()],
 ):
     return groupers
 
 
 @distributed
 def set_map_styles(
-    map_styles: Annotated[..., Field()],
+    map_styles: Annotated[dict, Field()],
 ):
     return map_styles
