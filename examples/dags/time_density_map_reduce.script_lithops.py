@@ -6,9 +6,7 @@ from importlib import resources
 import geopandas as gpd
 # import yaml
 
-from ecoscope_workflows.serde import (
-    gdf_to_parquet_uri,
-)
+from ecoscope_workflows.serde import gdf_to_parquet_uri
 from ecoscope_workflows.tasks.setters import set_groupers, set_map_styles
 
 # from ecoscope_workflows.tasks.io import get_subjectgroup_observations
