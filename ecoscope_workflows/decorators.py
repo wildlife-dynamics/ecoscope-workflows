@@ -11,6 +11,7 @@ from pydantic.functional_validators import AfterValidator, BeforeValidator
 from ecoscope_workflows.operators import OperatorKws
 
 FuncReturn = TypeVar("FuncReturn")
+ReturnPostValidatorReturn = TypeVar("ReturnPostValidatorReturn")
 
 
 def _get_annotation_metadata(func: types.FunctionType, arg_name: str):
@@ -42,7 +43,7 @@ def _get_validator_index(
 
 
 @dataclass
-class DistributedTask(Generic[FuncReturn]):
+class DistributedTask(Generic[FuncReturn, ReturnPostValidatorReturn]):
     """
     Parameters
     ----------
@@ -54,7 +55,7 @@ class DistributedTask(Generic[FuncReturn]):
 
     func: Callable[..., FuncReturn]
     arg_prevalidators: dict[str, Callable[[str], Any]] = field(default_factory=dict)
-    return_postvalidator: Callable | None = None
+    return_postvalidator: Callable[..., ReturnPostValidatorReturn] | None = None
     validate: bool = False
     operator_kws: OperatorKws = field(default_factory=OperatorKws)
     tags: list[str] = field(default_factory=list)
@@ -69,7 +70,7 @@ class DistributedTask(Generic[FuncReturn]):
         arg_prevalidators: dict[str, Callable] | None = None,
         return_postvalidator: Callable | None = None,
         validate: bool | None = None,
-    ) -> "DistributedTask[FuncReturn]":
+    ) -> "DistributedTask[FuncReturn, ReturnPostValidatorReturn]":
         self._initialized = False
         changes = {
             k: v
@@ -90,7 +91,7 @@ class DistributedTask(Generic[FuncReturn]):
             )
         return super().__setattr__(name, value)
 
-    def __call__(self, *args, **kwargs) -> FuncReturn:
+    def __call__(self, *args, **kwargs) -> FuncReturn | ReturnPostValidatorReturn:
         # to get distributed behaviors, we need to mutate the __annotations__ dict of
         # the function before calling it. if we don't make a deep copy, these changes
         # will effect future calls. this is a way to make a copy that doesn't share a
@@ -133,7 +134,7 @@ def distributed(
     image: str | None = None,
     container_resources: dict[str, Any] | None = None,
     tags: list[str] | None = None,
-) -> DistributedTask[FuncReturn]: ...
+) -> DistributedTask[FuncReturn, ReturnPostValidatorReturn]: ...
 
 
 @overload  # @distributed(...) style
@@ -142,7 +143,10 @@ def distributed(
     image: str | None = None,
     container_resources: dict[str, Any] | None = None,
     tags: list[str] | None = None,
-) -> Callable[[Callable[..., FuncReturn]], DistributedTask[FuncReturn]]: ...
+) -> Callable[
+    [Callable[..., FuncReturn]],
+    DistributedTask[FuncReturn, ReturnPostValidatorReturn],
+]: ...
 
 
 def distributed(
@@ -151,7 +155,10 @@ def distributed(
     image: str | None = None,
     container_resources: dict[str, Any] | None = None,
     tags: list[str] | None = None,
-) -> Callable[..., DistributedTask[FuncReturn]] | DistributedTask[FuncReturn]:
+) -> (
+    Callable[..., DistributedTask[FuncReturn, ReturnPostValidatorReturn]]
+    | DistributedTask[FuncReturn, ReturnPostValidatorReturn]
+):
     operator_kws = {
         k: v
         for k, v in {"image": image, "container_resources": container_resources}.items()
@@ -160,7 +167,7 @@ def distributed(
 
     def wrapper(
         func: Callable[..., FuncReturn],
-    ) -> DistributedTask[FuncReturn]:
+    ) -> DistributedTask[FuncReturn, ReturnPostValidatorReturn]:
         return DistributedTask(
             func,
             operator_kws=OperatorKws(**operator_kws),
