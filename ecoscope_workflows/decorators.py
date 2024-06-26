@@ -2,13 +2,15 @@ import functools
 import types
 import warnings
 from dataclasses import FrozenInstanceError, dataclass, field, replace
-from typing import Any, Callable, overload
+from typing import Any, Callable, Generic, TypeVar, overload
 
 import dill
 from pydantic import validate_call
 from pydantic.functional_validators import AfterValidator, BeforeValidator
 
 from ecoscope_workflows.operators import OperatorKws
+
+TaskFuncReturnType = TypeVar("TaskFuncReturnType")
 
 
 def _get_annotation_metadata(func: types.FunctionType, arg_name: str):
@@ -40,7 +42,7 @@ def _get_validator_index(
 
 
 @dataclass
-class DistributedTask:
+class DistributedTask(Generic[TaskFuncReturnType]):
     """
     Parameters
     ----------
@@ -50,7 +52,7 @@ class DistributedTask:
         ...
     """
 
-    func: Callable
+    func: Callable[..., TaskFuncReturnType]
     arg_prevalidators: dict[str, Callable[[str], Any]] = field(default_factory=dict)
     return_postvalidator: Callable | None = None
     validate: bool = False
@@ -67,7 +69,7 @@ class DistributedTask:
         arg_prevalidators: dict[str, Callable] | None = None,
         return_postvalidator: Callable | None = None,
         validate: bool | None = None,
-    ) -> "DistributedTask":
+    ) -> "DistributedTask[TaskFuncReturnType]":
         self._initialized = False
         changes = {
             k: v
@@ -88,7 +90,7 @@ class DistributedTask:
             )
         return super().__setattr__(name, value)
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> TaskFuncReturnType:
         # to get distributed behaviors, we need to mutate the __annotations__ dict of
         # the function before calling it. if we don't make a deep copy, these changes
         # will effect future calls. this is a way to make a copy that doesn't share a
@@ -126,12 +128,12 @@ class DistributedTask:
 
 @overload  # @distributed style
 def distributed(
-    func: Callable[..., Any],
+    func: Callable[..., TaskFuncReturnType],
     *,
     image: str | None = None,
     container_resources: dict[str, Any] | None = None,
     tags: list[str] | None = None,
-) -> DistributedTask: ...
+) -> DistributedTask[TaskFuncReturnType]: ...
 
 
 @overload  # @distributed(...) style
@@ -140,23 +142,30 @@ def distributed(
     image: str | None = None,
     container_resources: dict[str, Any] | None = None,
     tags: list[str] | None = None,
-) -> Callable[..., DistributedTask]: ...
+) -> Callable[
+    [Callable[..., TaskFuncReturnType]], DistributedTask[TaskFuncReturnType]
+]: ...
 
 
 def distributed(
-    func: Callable[..., Any] | None = None,
+    func: Callable[..., TaskFuncReturnType] | None = None,
     *,
     image: str | None = None,
     container_resources: dict[str, Any] | None = None,
     tags: list[str] | None = None,
-) -> Callable[..., DistributedTask] | DistributedTask:
+) -> (
+    Callable[..., DistributedTask[TaskFuncReturnType]]
+    | DistributedTask[TaskFuncReturnType]
+):
     operator_kws = {
         k: v
         for k, v in {"image": image, "container_resources": container_resources}.items()
         if v is not None
     }
 
-    def wrapper(func: Callable) -> DistributedTask:
+    def wrapper(
+        func: Callable[..., TaskFuncReturnType],
+    ) -> DistributedTask[TaskFuncReturnType]:
         return DistributedTask(
             func,
             operator_kws=OperatorKws(**operator_kws),
