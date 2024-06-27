@@ -12,4 +12,5 @@ def split_groups(
     dataframe: Annotated[pa.typing.DataFrame[JsonSerializableDataFrameModel], Field()],
     groupers: Annotated[list[str], Field()],
 ) -> Annotated[dict, Field()]:
+    # FIXME: this can actually be .groupby(levels=[1, 2, 3]) if we have a heirarchical index
     return {k: v for k, v in dataframe.groupby(groupers)}

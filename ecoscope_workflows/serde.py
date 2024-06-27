@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+
+
 def gpd_from_parquet_uri(uri: str):
     import geopandas as gpd
 
@@ -13,3 +16,55 @@ def gdf_to_parquet_uri(gdf, uri: str):
 def html_text_to_uri(html_text: str, path: str):
     # TODO: use fsspec probably for filesystem-agnostic writing
     ...
+
+
+def persist_gdf_to_hive_partitioned_parquet(
+    gdf,
+    path: str,
+    partition_on: list[str],
+    persist_geometry_col_as_name: str = "geometry",
+):
+    import pandas as pd
+    import geopandas as gpd
+
+    assert isinstance(gdf, gpd.GeoDataFrame), f"gdf must be a GeoDataFrame, got {type(gdf)}"
+
+    geometry_col_name = gdf.geometry.name
+    assert all(
+        gdf[geometry_col_name].dropna().apply(lambda x: hasattr(x, "wkb"))
+    ), "To roundtrip via Pandas, all non-null geometry values must have a 'wkb' attribute"
+
+    as_pd = pd.DataFrame(gdf)
+    # convert geometries to WKB for roundtrip via Pandas
+    as_pd[geometry_col_name] = as_pd[geometry_col_name].apply(lambda x: x.wkb)
+    if not geometry_col_name == persist_geometry_col_as_name:
+        # we need a deterministic geometry column name for efficient roundtrip
+        as_pd.rename(columns={geometry_col_name: persist_geometry_col_as_name}, inplace=True)
+    as_pd.to_parquet(path, partition_cols=partition_on)
+    return path
+
+
+@dataclass
+class HiveKey:
+    column: str
+    value: str
+
+    @property
+    def filter(self):
+        return (self.column, "=", self.value)
+
+
+def load_gdf_from_hive_partitioned_parquet(
+    path: str,
+    filters: list[HiveKey] | None = None,
+    geometry_col_name: str = "geometry",
+):
+    import geopandas as gpd
+    import pandas as pd
+    import shapely.wkb
+
+    kw = {} if not filter else {"filters": [hk.filter for hk in filters]}
+    as_pd = pd.read_parquet(path, **kw)
+    as_pd[geometry_col_name] = as_pd[geometry_col_name].apply(lambda x: shapely.wkb.loads(x))
+
+    return gpd.GeoDataFrame(as_pd, geometry=geometry_col_name)
