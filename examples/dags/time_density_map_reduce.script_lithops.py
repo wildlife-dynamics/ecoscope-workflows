@@ -97,10 +97,8 @@ if __name__ == "__main__":
     )
 
     parallel_collection = [
-        {
-            "element": (nested_hk, str(df_url))
-            for nested_hk in groupbykeys_to_hivekeys(df, **groupers)
-        }
+        {"element": (nested_hk, str(df_url))}
+        for nested_hk in groupbykeys_to_hivekeys(df, **groupers)
         # e.g.:
         # {
         #   "element": (
