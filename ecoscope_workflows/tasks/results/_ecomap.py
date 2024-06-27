@@ -32,9 +32,3 @@ def draw_ecomap(
     m.zoom_to_gdf(geodataframe)
 
     return m._repr_html_(fill_parent=True)
-
-
-@distributed
-def map_to_widget(
-    map_html_path: Annotated[str, Field()],
-): ...

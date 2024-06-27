@@ -10,7 +10,7 @@ def map_reduce(
     map_function: Annotated[Callable, Field()],
     groups: Annotated[list[tuple[str, ...]], Field()],
     reducer: Annotated[DistributedTask, Field()],
-    reducer_kwargs: Annotated[dict, Field(default_factory=dict)],
+    # reducer_kwargs: Annotated[dict, Field(default_factory=dict)],
 ):
     import lithops
 
@@ -22,6 +22,6 @@ def map_reduce(
         map_function=map_function,
         map_iterdata=groups,
         reduce_function=reducer,
-        extra_args_reduce=(reducer_kwargs,),
+        # extra_args_reduce=(reducer_kwargs,),
     )
     return fexec.get_result()

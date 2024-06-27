@@ -13,7 +13,11 @@ from ecoscope_workflows.tasks.preprocessing import (
     process_relocations,
     relocations_to_trajectory,
 )
-from ecoscope_workflows.tasks.results import draw_ecomap, gather_dashboard
+from ecoscope_workflows.tasks.results import (
+    draw_ecomap,
+    gather_dashboard,
+    gather_widget,
+)
 from ecoscope_workflows.tasks.transformation import assign_temporal_column
 from ecoscope_workflows.serde import (
     groupbykeys_to_hivekeys,
@@ -124,33 +128,31 @@ if __name__ == "__main__":
             )
         )
 
-    def map_function(element: tuple[tuple, str]):
+    def map_function(element: tuple[tuple, str]) -> tuple[tuple, str]:
         composite_hivekey, df_url = element
         df = load_gdf_from_hive_partitioned_parquet(
             path=df_url,
             filters=[composite_hivekey],
             crs="EPSG:4326",
         )
-        map_html = draw_ecomap.replace(validate=True)(
+        html_text = draw_ecomap.replace(validate=True)(
             geodataframe=df.pipe(pipe_fn),
             **params["draw_ecomap"],
         )
         outpath = RESULTS_DIR / storage_object_key_from_composite_hivekey(
             composite_hivekey
         )
-        return persist_html_text(map_html, outpath)
-
-    # def map_function(gdf: gpd.GeoDataFrame):
-    #     return map_to_widget(gdf_pipe(gdf))
+        return composite_hivekey, persist_html_text(html_text, outpath)
 
     # map reduce
     # this can parallelize on local threads, gcp cloud run, or other cloud serverless
     # compute backends, depending on the lithops configuration set at runtime.
-    map_reduce_return = map_reduce(
+    time_density_ecomap_widget = map_reduce(
         groups=parallel_collection,
         map_function=map_function,
-        reducer=gather_dashboard,
-        reducer_kwargs=groupers,
+        reducer=gather_widget.replace(validate=True),
+        # reducer_kwargs={"widget_type": "ecomap", "title": "Time Density Ecomap"},
     )
 
-    print(map_reduce_return)
+    dashboard = gather_dashboard(widgets=[time_density_ecomap_widget], **groupers)
+    print(dashboard)
