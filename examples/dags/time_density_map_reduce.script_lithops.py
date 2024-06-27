@@ -8,12 +8,12 @@ import geopandas as gpd
 from ecoscope_workflows.tasks.setters import set_groupers, set_map_styles
 from ecoscope_workflows.tasks.analysis import calculate_time_density
 
-# from ecoscope_workflows.tasks.parallelism import map_reduce
+from ecoscope_workflows.tasks.parallelism import map_reduce
 from ecoscope_workflows.tasks.preprocessing import (
     process_relocations,
     relocations_to_trajectory,
 )
-from ecoscope_workflows.tasks.results import draw_ecomap  # , gather_dashboard
+from ecoscope_workflows.tasks.results import draw_ecomap, gather_dashboard
 from ecoscope_workflows.tasks.transformation import assign_temporal_column
 from ecoscope_workflows.serde import (
     groupbykeys_to_hivekeys,
@@ -97,9 +97,17 @@ if __name__ == "__main__":
     )
 
     parallel_collection = [
-        (nested_hk, str(df_url))
-        for nested_hk in groupbykeys_to_hivekeys(df, **groupers)
-        # e.g., (('animal_name', '=', 'Bo'), ('month', '=', 'January')), "gcs://bucket/tmp.parquet"
+        {
+            "element": (nested_hk, str(df_url))
+            for nested_hk in groupbykeys_to_hivekeys(df, **groupers)
+        }
+        # e.g.:
+        # {
+        #   "element": (
+        #       (('animal_name', '=', 'Bo'), ('month', '=', 'January')),
+        #       "gcs://bucket/tmp/job-3456788/tmp.parquet",
+        #   )
+        # }
     ]
 
     def pipe_fn(gdf: gpd.GeoDataFrame):
@@ -118,8 +126,8 @@ if __name__ == "__main__":
             )
         )
 
-    def map_function(parallel_collection_element: tuple[tuple, str]):
-        composite_hivekey, df_url = parallel_collection_element
+    def map_function(element: tuple[tuple, str]):
+        composite_hivekey, df_url = element
         df = load_gdf_from_hive_partitioned_parquet(
             path=df_url,
             filters=[composite_hivekey],
@@ -134,19 +142,17 @@ if __name__ == "__main__":
         )
         return persist_html_text(map_html, outpath)
 
-    map_function(parallel_collection[0])
-
     # def map_function(gdf: gpd.GeoDataFrame):
     #     return map_to_widget(gdf_pipe(gdf))
 
     # map reduce
     # this can parallelize on local threads, gcp cloud run, or other cloud serverless
     # compute backends, depending on the lithops configuration set at runtime.
-    # map_reduce_return = map_reduce(
-    #     groups=groups,
-    #     map_function=map_function,
-    #     reducer=gather_dashboard,
-    #     reducer_kwargs=groupers,
-    # )
+    map_reduce_return = map_reduce(
+        groups=parallel_collection,
+        map_function=map_function,
+        reducer=gather_dashboard,
+        reducer_kwargs=groupers,
+    )
 
-    # print(map_reduce_return)
+    print(map_reduce_return)
