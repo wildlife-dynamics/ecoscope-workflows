@@ -21,8 +21,12 @@ from ecoscope_workflows.testing import generate_synthetic_gps_fixes_dataframe
 # represents user input via config file, web frontend form, etc.
 # these params would not be hardcoded in a real-world application
 params = {
-    "set_groupers": dict(groupers={"groupers": ["animal_name", "month"]}),
-    "set_map_styles": dict(map_styles={"map_styles": {}}),
+    "set_groupers": dict(
+        groupers={"groupers": ["animal_name", "month"]},
+    ),
+    "set_map_styles": dict(
+        map_styles={"map_styles": {}},
+    ),
     "assign_temporal_column": dict(
         col_name="month",
         time_col="fixtime",
@@ -32,23 +36,24 @@ params = {
         filter_point_coords=[[180, 90], [0, 0]],
         relocs_columns=["groupby_col", "fixtime", "junk_status", "geometry"],
     ),
-    "relocations_to_trajectory": {
-        "min_length_meters": 0.001,
-        "max_length_meters": 10000,
-        "max_time_secs": 3600,
-        "min_time_secs": 1,
-        "max_speed_kmhr": 120,
-        "min_speed_kmhr": 0.0,
-    },
-    "calculate_time_density": {
-        "pixel_size": 250.0,
-        "crs": "ESRI:102022",
-        "nodata_value": "nan",
-        "band_count": 1,
-        "max_speed_factor": 1.05,
-        "expansion_factor": 1.3,
-        "percentiles": [50.0, 60.0, 70.0, 80.0, 90.0, 95.0],
-    },
+    # rewrite the remainder of this dict with the dict constructor
+    "relocations_to_trajectory": dict(
+        min_length_meters=0.001,
+        max_length_meters=10000,
+        max_time_secs=3600,
+        min_time_secs=1,
+        max_speed_kmhr=120,
+        min_speed_kmhr=0.0,
+    ),
+    "calculate_time_density": dict(
+        pixel_size=250.0,
+        crs="ESRI:102022",
+        nodata_value="nan",
+        band_count=1,
+        max_speed_factor=1.05,
+        expansion_factor=1.3,
+        percentiles=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0],
+    ),
 }
 # override get_subjectgroup_observations with synthetic data generator
 # for demonstration purposes; remove this line to use real data
