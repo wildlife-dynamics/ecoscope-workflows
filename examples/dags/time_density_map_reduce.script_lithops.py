@@ -11,6 +11,7 @@ from ecoscope_workflows.tasks.preprocessing import (
     process_relocations,
     relocations_to_trajectory,
 )
+from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.transformation import assign_temporal_column
 from ecoscope_workflows.serde import (
     groupbykeys_to_hivekeys,
@@ -36,7 +37,6 @@ params = {
         filter_point_coords=[[180, 90], [0, 0]],
         relocs_columns=["groupby_col", "fixtime", "junk_status", "geometry"],
     ),
-    # rewrite the remainder of this dict with the dict constructor
     "relocations_to_trajectory": dict(
         min_length_meters=0.001,
         max_length_meters=10000,
@@ -53,6 +53,17 @@ params = {
         max_speed_factor=1.05,
         expansion_factor=1.3,
         percentiles=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0],
+    ),
+    "draw_ecomap": dict(
+        static=False,
+        height=1000,
+        width=1500,
+        search_control=True,
+        title="Great Map",
+        title_kws={},
+        tile_layers=[],
+        north_arrow_kws={},
+        add_gdf_kws={},
     ),
 }
 # override get_subjectgroup_observations with synthetic data generator
@@ -83,14 +94,11 @@ if __name__ == "__main__":
         for nested_hk in groupbykeys_to_hivekeys(df, **groupers)
         # e.g., (('animal_name', '=', 'Bo'), ('month', '=', 'January')), "gcs://bucket/tmp.parquet"
     ]
-    print(parallel_collection)
 
-    def gdf_pipe(gdf: gpd.GeoDataFrame):
+    def pipe_fn(gdf: gpd.GeoDataFrame):
         return (
             gdf.pipe(
-                process_relocations.replace(
-                    validate=True,
-                ),
+                process_relocations.replace(validate=True),
                 **params["process_relocations"],
             )
             .pipe(
@@ -101,17 +109,14 @@ if __name__ == "__main__":
                 calculate_time_density.replace(validate=True),
                 **params["calculate_time_density"],
             )
-            # .pipe(
-            #     draw_ecomap.replace(
-            #         validate=True,
-            #         # return_postvalidator=
-            #     )
-            #     ** map_styles
-            # ),
+            .pipe(
+                draw_ecomap.replace(validate=True),  # return_postvalidator=)
+                **params["draw_ecomap"],
+            )
         )
 
-    td = df.pipe(gdf_pipe)
-    print(td)
+    map = df.pipe(pipe_fn)
+    print(map)
 
     # def map_function(gdf: gpd.GeoDataFrame):
     #     return map_to_widget(gdf_pipe(gdf))
