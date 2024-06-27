@@ -7,15 +7,20 @@ import geopandas as gpd
 # from ecoscope_workflows.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows.tasks.setters import set_groupers, set_map_styles
 from ecoscope_workflows.tasks.analysis import calculate_time_density
+
+# from ecoscope_workflows.tasks.parallelism import map_reduce
 from ecoscope_workflows.tasks.preprocessing import (
     process_relocations,
     relocations_to_trajectory,
 )
-from ecoscope_workflows.tasks.results import draw_ecomap
+from ecoscope_workflows.tasks.results import draw_ecomap  # , gather_dashboard
 from ecoscope_workflows.tasks.transformation import assign_temporal_column
 from ecoscope_workflows.serde import (
     groupbykeys_to_hivekeys,
+    load_gdf_from_hive_partitioned_parquet,
+    persist_html_text,
     persist_gdf_to_hive_partitioned_parquet,
+    storage_object_key_from_composite_hivekey,
 )
 from ecoscope_workflows.testing import generate_synthetic_gps_fixes_dataframe
 
@@ -74,6 +79,8 @@ if __name__ == "__main__":
     ECOSCOPE_WORKFLOWS_TMP = Path(os.environ.get("ECOSCOPE_WORKFLOWS_TMP", "."))
     JOB_ID = os.environ.get("JOB_ID", f"job-{int(time.monotonic())}")
     TMP_PARQUET = (ECOSCOPE_WORKFLOWS_TMP / JOB_ID / "tmp.parquet").absolute().as_uri()
+    RESULTS_DIR = ECOSCOPE_WORKFLOWS_TMP / JOB_ID / "results"
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
     groupers = set_groupers.replace(validate=True)(**params["set_groupers"])
     map_styles = set_map_styles.replace(validate=True)(**params["set_map_styles"])
@@ -109,21 +116,32 @@ if __name__ == "__main__":
                 calculate_time_density.replace(validate=True),
                 **params["calculate_time_density"],
             )
-            .pipe(
-                draw_ecomap.replace(validate=True),  # return_postvalidator=)
-                **params["draw_ecomap"],
-            )
         )
 
-    map = df.pipe(pipe_fn)
-    print(map)
+    def map_function(parallel_collection_element: tuple[tuple, str]):
+        composite_hivekey, df_url = parallel_collection_element
+        df = load_gdf_from_hive_partitioned_parquet(
+            path=df_url,
+            filters=[composite_hivekey],
+            crs="EPSG:4326",
+        )
+        map_html = draw_ecomap.replace(validate=True)(
+            geodataframe=df.pipe(pipe_fn),
+            **params["draw_ecomap"],
+        )
+        outpath = RESULTS_DIR / storage_object_key_from_composite_hivekey(
+            composite_hivekey
+        )
+        return persist_html_text(map_html, outpath)
+
+    map_function(parallel_collection[0])
 
     # def map_function(gdf: gpd.GeoDataFrame):
     #     return map_to_widget(gdf_pipe(gdf))
 
-    # # map reduce
-    # # this can parallelize on local threads, gcp cloud run, or other cloud serverless
-    # # compute backends, depending on the lithops configuration set at runtime.
+    # map reduce
+    # this can parallelize on local threads, gcp cloud run, or other cloud serverless
+    # compute backends, depending on the lithops configuration set at runtime.
     # map_reduce_return = map_reduce(
     #     groups=groups,
     #     map_function=map_function,

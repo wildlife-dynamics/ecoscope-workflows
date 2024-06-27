@@ -1,4 +1,28 @@
 from dataclasses import dataclass
+from pathlib import Path
+
+
+@dataclass(frozen=True)
+class HiveKey:
+    column: str
+    value: str
+
+    @property
+    def filter(self) -> tuple[str, str, str]:
+        return (self.column, "=", self.value)
+
+    @classmethod
+    def from_filter(cls, filter: tuple[str, str, str]):
+        return cls(column=filter[0], value=filter[2])
+
+    def as_str(self) -> str:
+        return "".join(self.filter)
+
+
+def storage_object_key_from_composite_hivekey(
+    composite_hivekey: tuple[tuple[str, str, str]],
+) -> str:
+    return "/".join(HiveKey.from_filter(f).as_str() for f in composite_hivekey)
 
 
 def gpd_from_parquet_uri(uri: str):
@@ -13,9 +37,17 @@ def gdf_to_parquet_uri(gdf, uri: str):
     return uri
 
 
-def html_text_to_uri(html_text: str, path: str):
-    # TODO: use fsspec probably for filesystem-agnostic writing
-    ...
+def persist_html_text(html_text: str, path: Path) -> str:
+    # TODO: import fsspec for storage-agnostic file writing
+    path.mkdir(parents=True, exist_ok=True)
+
+    # FIXME: the name of the file should be dynamically set to distinguish
+    # between different html map outputs for the same workflow
+    fname = "map.html"
+    with open(path / fname, "w") as f:
+        f.write(html_text)
+
+    return path.absolute().as_uri()
 
 
 def persist_gdf_to_hive_partitioned_parquet(
@@ -48,20 +80,13 @@ def persist_gdf_to_hive_partitioned_parquet(
     return path
 
 
-@dataclass(frozen=True)
-class HiveKey:
-    column: str
-    value: str
-
-    @property
-    def filter(self):
-        return (self.column, "=", self.value)
-
-
 def load_gdf_from_hive_partitioned_parquet(
     path: str,
     filters: list[tuple[tuple[str, ...], ...]] | None = None,
     geometry_col_name: str = "geometry",
+    # FIXME: how are we going to actually, robustly rountrip original crs?
+    # TODO: enumerate hive partitioned geoparquet writing options pros and cons
+    crs: str = "EPSG:4326",
 ):
     import geopandas as gpd
     import pandas as pd
@@ -73,10 +98,13 @@ def load_gdf_from_hive_partitioned_parquet(
         lambda x: shapely.wkb.loads(x)
     )
 
-    return gpd.GeoDataFrame(as_pd, geometry=geometry_col_name)
+    return gpd.GeoDataFrame(as_pd, geometry=geometry_col_name, crs=crs)
 
 
-def groupbykeys_to_hivekeys(gdf, groupers: list[str]) -> list[tuple[str, ...]]:
+def groupbykeys_to_hivekeys(
+    gdf,
+    groupers: list[str],
+) -> list[tuple[tuple[str, str, str], ...]]:
     import geopandas as gpd
 
     assert isinstance(
