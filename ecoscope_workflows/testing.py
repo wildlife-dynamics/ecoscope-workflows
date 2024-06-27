@@ -91,33 +91,37 @@ def generate_synthetic_gps_fixes_dataframe(
     animal_type: str = "Elephant",
     animal_names: list[str] = ["Bo", "Mo", "Jo"],
     bbox: BoundingBox = BoundingBox(-5, 5, -5, 5),
+    crs: str = "EPSG:4326",
     social_structure: Literal["solitary", "group"] = "solitary",
 ) -> gpd.GeoDataFrame:
-    # Generate fix times
     fix_times = pd.date_range(
-        start=start_time, periods=num_fixes, freq=f"{time_interval_minutes}T"
+        start=start_time,
+        periods=num_fixes,
+        freq=f"{time_interval_minutes}T",
+        tz="UTC",
     )
-
     # Generate random 2D walk coordinates within the bounding box
     geometry = []
     for i in range(len(animal_names)):
         geometry += _generate_random_2d_walk_coordinates(num_fixes, bbox, seed=seed + i)
 
+    nrows = num_fixes * len(animal_names)
     if social_structure == "group":
         # randomly assign each fix to an animal, the animals will move adjacent to one another
-        animal_name = [
-            np.random.choice(animal_names) for _ in range(num_fixes * len(animal_names))
-        ]
+        animal_name = [np.random.choice(animal_names) for _ in range(nrows)]
     elif social_structure == "solitary":
         # each animal moves independently on its own trajectory
         animal_name = [name for name in animal_names for _ in range(num_fixes)]
 
-    df = pd.DataFrame(
+    return gpd.GeoDataFrame(
         {
-            "animal_type": [animal_type] * num_fixes * len(animal_names),
+            "animal_type": [animal_type] * nrows,
             "animal_name": animal_name,
             "fixtime": list(fix_times) * len(animal_names),
             "geometry": geometry,
-        }
+            "junk_status": [False] * nrows,
+            "groupby_col": ["group"] * nrows,
+        },
+        geometry="geometry",
+        crs=crs,
     )
-    return gpd.GeoDataFrame(df, geometry="geometry")

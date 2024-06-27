@@ -1,4 +1,5 @@
 import os
+import time
 from pathlib import Path
 
 import geopandas as gpd
@@ -17,7 +18,9 @@ from ecoscope_workflows.serde import (
 )
 from ecoscope_workflows.testing import generate_synthetic_gps_fixes_dataframe
 
-params = {  # represents user input via config file, http, etc.
+# represents user input via config file, web frontend form, etc.
+# these params would not be hardcoded in a real-world application
+params = {
     "set_groupers": dict(groupers={"groupers": ["animal_name", "month"]}),
     "set_map_styles": dict(map_styles={"map_styles": {}}),
     "assign_temporal_column": dict(
@@ -25,6 +28,27 @@ params = {  # represents user input via config file, http, etc.
         time_col="fixtime",
         directive="%B",  # month name
     ),
+    "process_relocations": dict(
+        filter_point_coords=[[180, 90], [0, 0]],
+        relocs_columns=["groupby_col", "fixtime", "junk_status", "geometry"],
+    ),
+    "relocations_to_trajectory": {
+        "min_length_meters": 0.001,
+        "max_length_meters": 10000,
+        "max_time_secs": 3600,
+        "min_time_secs": 1,
+        "max_speed_kmhr": 120,
+        "min_speed_kmhr": 0.0,
+    },
+    "calculate_time_density": {
+        "pixel_size": 250.0,
+        "crs": "ESRI:102022",
+        "nodata_value": "nan",
+        "band_count": 1,
+        "max_speed_factor": 1.05,
+        "expansion_factor": 1.3,
+        "percentiles": [50.0, 60.0, 70.0, 80.0, 90.0, 95.0],
+    },
 }
 # override get_subjectgroup_observations with synthetic data generator
 # for demonstration purposes; remove this line to use real data
@@ -32,7 +56,7 @@ get_subjectgroup_observations = generate_synthetic_gps_fixes_dataframe
 
 if __name__ == "__main__":
     ECOSCOPE_WORKFLOWS_TMP = Path(os.environ.get("ECOSCOPE_WORKFLOWS_TMP", "."))
-    JOB_ID = os.environ.get("JOB_ID", "test-job-id")
+    JOB_ID = os.environ.get("JOB_ID", f"job-{int(time.monotonic())}")
     TMP_PARQUET = (ECOSCOPE_WORKFLOWS_TMP / JOB_ID / "tmp.parquet").absolute().as_uri()
 
     groupers = set_groupers.replace(validate=True)(**params["set_groupers"])
@@ -80,6 +104,9 @@ if __name__ == "__main__":
             #     ** map_styles
             # ),
         )
+
+    td = df.pipe(gdf_pipe)
+    print(td)
 
     # def map_function(gdf: gpd.GeoDataFrame):
     #     return map_to_widget(gdf_pipe(gdf))
