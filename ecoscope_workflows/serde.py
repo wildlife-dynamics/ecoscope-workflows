@@ -23,11 +23,13 @@ def persist_gdf_to_hive_partitioned_parquet(
     path: str,
     partition_on: list[str],
     persist_geometry_col_as_name: str = "geometry",
-):
+) -> str:
     import pandas as pd
     import geopandas as gpd
 
-    assert isinstance(gdf, gpd.GeoDataFrame), f"gdf must be a GeoDataFrame, got {type(gdf)}"
+    assert isinstance(
+        gdf, gpd.GeoDataFrame
+    ), f"gdf must be a GeoDataFrame, got {type(gdf)}"
 
     geometry_col_name = gdf.geometry.name
     assert all(
@@ -39,12 +41,14 @@ def persist_gdf_to_hive_partitioned_parquet(
     as_pd[geometry_col_name] = as_pd[geometry_col_name].apply(lambda x: x.wkb)
     if not geometry_col_name == persist_geometry_col_as_name:
         # we need a deterministic geometry column name for efficient roundtrip
-        as_pd.rename(columns={geometry_col_name: persist_geometry_col_as_name}, inplace=True)
+        as_pd.rename(
+            columns={geometry_col_name: persist_geometry_col_as_name}, inplace=True
+        )
     as_pd.to_parquet(path, partition_cols=partition_on)
     return path
 
 
-@dataclass
+@dataclass(frozen=True)
 class HiveKey:
     column: str
     value: str
@@ -56,15 +60,35 @@ class HiveKey:
 
 def load_gdf_from_hive_partitioned_parquet(
     path: str,
-    filters: list[HiveKey] | None = None,
+    filters: list[tuple[tuple[str, ...], ...]] | None = None,
     geometry_col_name: str = "geometry",
 ):
     import geopandas as gpd
     import pandas as pd
     import shapely.wkb
 
-    kw = {} if not filter else {"filters": [hk.filter for hk in filters]}
+    kw = {} if not filters else {"filters": filters}
     as_pd = pd.read_parquet(path, **kw)
-    as_pd[geometry_col_name] = as_pd[geometry_col_name].apply(lambda x: shapely.wkb.loads(x))
+    as_pd[geometry_col_name] = as_pd[geometry_col_name].apply(
+        lambda x: shapely.wkb.loads(x)
+    )
 
     return gpd.GeoDataFrame(as_pd, geometry=geometry_col_name)
+
+
+def groupbykeys_to_hivekeys(gdf, groupers: list[str]) -> list[tuple[str, ...]]:
+    import geopandas as gpd
+
+    assert isinstance(
+        gdf, gpd.GeoDataFrame
+    ), f"gdf must be a GeoDataFrame, got {type(gdf)}"
+
+    hivekeys = []
+    for composite_groupkey, _ in gdf.groupby(groupers):
+        # composite_key might be, e.g. `("Bo", "January")`
+        composite_hivekey = tuple(
+            HiveKey(column=groupers[i], value=key).filter
+            for i, key in enumerate(composite_groupkey)
+        )
+        hivekeys.append(composite_hivekey)
+    return hivekeys

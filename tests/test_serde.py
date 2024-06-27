@@ -18,12 +18,12 @@ def test_hive_partitioned_gdf_rountrip_group(tmp_path: Path):
     )
     path = persist_gdf_to_hive_partitioned_parquet(
         gdf=original,
-        path=tmp_path / "test.parquet",
+        path=(tmp_path / "test.parquet").as_uri(),
         partition_on=["animal_name"],
     )
     load_only_bo = load_gdf_from_hive_partitioned_parquet(
         path,
-        filters=[HiveKey(column="animal_name", value="Bo")],
+        filters=[HiveKey(column="animal_name", value="Bo").filter],
     )
 
     # cast to CategoricalDtype because that is how it's loaded back from
