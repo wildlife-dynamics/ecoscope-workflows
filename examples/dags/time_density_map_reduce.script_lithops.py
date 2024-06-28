@@ -2,7 +2,6 @@ import os
 import time
 from pathlib import Path
 
-import geopandas as gpd
 
 # from ecoscope_workflows.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows.tasks.setters import set_groupers, set_map_styles
@@ -99,50 +98,35 @@ if __name__ == "__main__":
         partition_on=groupers["groupers"],
         path=TMP_PARQUET,
     )
-
     parallel_collection = [
         {"element": (nested_hk, str(df_url))}
         for nested_hk in groupbykeys_to_hivekeys(df, **groupers)
-        # e.g.:
-        # {
-        #   "element": (
-        #       (('animal_name', '=', 'Bo'), ('month', '=', 'January')),
-        #       "gcs://bucket/tmp/job-3456788/tmp.parquet",
-        #   )
-        # }
+        # {"element": ((('animal_name', '=', 'Bo'), ('month', '=', 'January')), "gcs://bucket/tmp/job-3456788/tmp.parquet")}
     ]
-
-    def pipe_fn(gdf: gpd.GeoDataFrame):
-        return (
-            gdf.pipe(
-                process_relocations.replace(validate=True),
-                **params["process_relocations"],
-            )
-            .pipe(
-                relocations_to_trajectory.replace(validate=True),
-                **params["relocations_to_trajectory"],
-            )
-            .pipe(
-                calculate_time_density.replace(validate=True),
-                **params["calculate_time_density"],
-            )
-        )
 
     def map_function(element: tuple[tuple, str]) -> tuple[tuple, str]:
         composite_hivekey, df_url = element
+
         df = load_gdf_from_hive_partitioned_parquet(
             path=df_url,
             filters=[composite_hivekey],
             crs="EPSG:4326",
         )
-        html_text = draw_ecomap.replace(validate=True)(
-            geodataframe=df.pipe(pipe_fn),
-            **params["draw_ecomap"],
+        reloc = process_relocations.replace(validate=True)(
+            df, **params["process_relocations"]
         )
-        outpath = RESULTS_DIR / storage_object_key_from_composite_hivekey(
-            composite_hivekey
+        traj = relocations_to_trajectory.replace(validate=True)(
+            reloc, **params["relocations_to_trajectory"]
         )
-        return composite_hivekey, persist_html_text(html_text, outpath)
+        td = calculate_time_density.replace(validate=True)(
+            traj, **params["calculate_time_density"]
+        )
+        html_text = draw_ecomap.replace(validate=True)(td, **params["draw_ecomap"])
+        return composite_hivekey, persist_html_text(
+            html_text,
+            path=RESULTS_DIR
+            / storage_object_key_from_composite_hivekey(composite_hivekey),
+        )
 
     # map reduce
     # this can parallelize on local threads, gcp cloud run, or other cloud serverless
