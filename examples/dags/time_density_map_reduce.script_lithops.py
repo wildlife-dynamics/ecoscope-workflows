@@ -73,6 +73,10 @@ params = {
         north_arrow_kws={},
         add_gdf_kws={},
     ),
+    "gather_widget": dict(
+        widget_type="ecomap",
+        title="Time Density Ecomap",
+    ),
 }
 # override get_subjectgroup_observations with synthetic data generator
 # for demonstration purposes; remove this line to use real data
@@ -109,7 +113,7 @@ if __name__ == "__main__":
 
         df = load_gdf_from_hive_partitioned_parquet(
             path=df_url,
-            filters=[composite_hivekey],
+            filters=composite_hivekey,
             crs="EPSG:4326",
         )
         reloc = process_relocations.replace(validate=True)(
@@ -128,14 +132,15 @@ if __name__ == "__main__":
             / storage_object_key_from_composite_hivekey(composite_hivekey),
         )
 
-    # map reduce
+    def reduce_function(results: list[tuple[tuple, str]]) -> list[str]:
+        return gather_widget.replace(validate=True)(results, **params["gather_widget"])
+
     # this can parallelize on local threads, gcp cloud run, or other cloud serverless
     # compute backends, depending on the lithops configuration set at runtime.
     time_density_ecomap_widget = map_reduce(
         groups=parallel_collection,
         map_function=map_function,
-        reducer=gather_widget.replace(validate=True),
-        # reducer_kwargs={"widget_type": "ecomap", "title": "Time Density Ecomap"},
+        reduce_function=reduce_function,
     )
 
     dashboard = gather_dashboard(widgets=[time_density_ecomap_widget], **groupers)

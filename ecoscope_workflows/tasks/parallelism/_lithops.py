@@ -2,15 +2,14 @@ from typing import Annotated, Callable
 
 from pydantic import Field
 
-from ecoscope_workflows.decorators import DistributedTask, distributed
+from ecoscope_workflows.decorators import distributed
 
 
 @distributed
 def map_reduce(
     map_function: Annotated[Callable, Field()],
     groups: Annotated[list[tuple[str, ...]], Field()],
-    reducer: Annotated[DistributedTask, Field()],
-    # reducer_kwargs: Annotated[dict, Field(default_factory=dict)],
+    reduce_function: Annotated[Callable, Field()],
 ):
     import lithops
 
@@ -21,7 +20,6 @@ def map_reduce(
     fexec.map_reduce(
         map_function=map_function,
         map_iterdata=groups,
-        reduce_function=reducer,
-        # extra_args_reduce=(reducer_kwargs,),
+        reduce_function=reduce_function,
     )
     return fexec.get_result()
