@@ -1,6 +1,5 @@
 import os
 import time
-from pathlib import Path
 
 # from ecoscope_workflows.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows.tasks.setters import set_groupers, set_map_styles
@@ -92,11 +91,11 @@ params = {
 get_subjectgroup_observations = generate_synthetic_gps_fixes_dataframe
 
 if __name__ == "__main__":
-    ECOSCOPE_WORKFLOWS_TMP = Path(os.environ.get("ECOSCOPE_WORKFLOWS_TMP", "."))
+    ECOSCOPE_WORKFLOWS_TMP = os.environ.get("ECOSCOPE_WORKFLOWS_TMP", ".")
     JOB_ID = os.environ.get("JOB_ID", f"job-{int(time.monotonic())}")
-    TMP_PARQUET = (ECOSCOPE_WORKFLOWS_TMP / JOB_ID / "tmp.parquet").absolute().as_uri()
-    RESULTS_DIR = ECOSCOPE_WORKFLOWS_TMP / JOB_ID / "results"
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    TMP_PARQUET = os.path.join(ECOSCOPE_WORKFLOWS_TMP, JOB_ID, "tmp.parquet")
+    RESULTS_DIR = os.path.join(ECOSCOPE_WORKFLOWS_TMP, JOB_ID, "results")
+    # RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
     # "global" settings
     groupers = set_groupers.replace(validate=True)(**params["set_groupers"])
@@ -129,7 +128,7 @@ if __name__ == "__main__":
         df = load_gdf_from_hive_partitioned_parquet(
             path=df_url,
             filters=composite_hivekey,
-            crs="EPSG:4326",
+            crs="EPSG:4326",  # sketchy
         )
         reloc = process_relocations.replace(validate=True)(
             df, **params["process_relocations"]
@@ -143,8 +142,10 @@ if __name__ == "__main__":
         html_text = draw_ecomap.replace(validate=True)(td, **params["draw_ecomap"])
         return composite_hivekey, persist_html_text(
             html_text,
-            path=RESULTS_DIR
-            / storage_object_key_from_composite_hivekey(composite_hivekey),
+            root_path=os.path.join(
+                RESULTS_DIR,
+                storage_object_key_from_composite_hivekey(composite_hivekey),
+            ),
         )
 
     def reduce_function(results: list[tuple[tuple, str]]) -> list[str]:

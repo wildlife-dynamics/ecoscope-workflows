@@ -1,5 +1,7 @@
+import os
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.parse import urlparse
 
 
 @dataclass(frozen=True)
@@ -37,17 +39,21 @@ def gdf_to_parquet_uri(gdf, uri: str):
     return uri
 
 
-def persist_html_text(html_text: str, path: Path) -> str:
-    # TODO: import fsspec for storage-agnostic file writing
-    path.mkdir(parents=True, exist_ok=True)
+def persist_html_text(html_text: str, root_path: str) -> str:
+    aspath = Path(root_path)
+    if urlparse(root_path).scheme in ("file", ""):
+        if not aspath.exists():
+            aspath.mkdir(parents=True, exist_ok=True)
+        if not aspath.is_absolute():
+            root_path = aspath.absolute().as_posix()
 
     # FIXME: the name of the file should be dynamically set to distinguish
     # between different html map outputs for the same workflow
-    fname = "map.html"
-    with open(path / fname, "w") as f:
+    dst = os.path.join(root_path, "map.html")
+    with open(dst, "w") as f:
         f.write(html_text)
 
-    return path.absolute().as_uri()
+    return dst
 
 
 def persist_gdf_to_hive_partitioned_parquet(
