@@ -1,12 +1,55 @@
 name: calculate_time_density
-cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
 tasks:
-  get_subjectgroup_observations: {}
-  process_relocations:
-    observations: get_subjectgroup_observations
-  relocations_to_trajectory:
-    relocations: process_relocations
-  calculate_time_density:
-    trajectory_gdf: relocations_to_trajectory
-  draw_ecomap:
-    geodataframe: calculate_time_density
+  # "global" settings
+  - name: Set groupers
+    id: set-groupers
+    uses: ecoscope_workflows.tasks.setters.set_groupers
+    with: {}
+  - name: Set map styles
+    id: set-map-styles
+    uses: ecoscope_workflows.tasks.setters.set_map_styles
+    with: {}
+  # fetching and preparing source table
+  - name: Get observations
+    id: get-observations
+    uses: ecoscope_workflows.tasks.io.get_subjectgroup_observations
+    with: {}
+  - name: Process relocations
+    id: process-relocations
+    uses: ecoscope_workflows.tasks.preprocessing.process_relocations
+    with:
+      observations: get-observations.return
+  - name: Relocations to trajectory
+    id: relocations-to-trajectory
+    uses: ecoscope_workflows.tasks.preprocessing.relocations_to_trajectory
+    with:
+      relocations: process-relocations.return
+  - name: Calculate time density
+    id: calculate-time-density
+    uses: ecoscope_workflows.tasks.analysis.calculate_time_density
+    with:
+      trajectory_gdf: relocations-to-trajectory.return
+  # map reduce
+  - name: Split groups
+    id: split-groups
+    uses: ecoscope_workflows.tasks.parallelism.split_groups
+    with:
+      groupers: set-groupers.return
+      dataframe: calculate-time-density.return
+  - name: Map reduce
+    id: map-reduce
+    uses: ecoscope_workflows.tasks.parallelism.map_reduce
+    with:
+      groups: split-groups.return
+      mappers:
+        - uses: ecoscope_workflows.tasks.results.draw_ecomap
+          with:
+            # kws is a reserved name that indicates the value
+            # will be a dict and should be unpacked as kwargs
+            kws: set-map-styles.return
+        - uses: ecoscope_workflows.tasks.results.map_to_widget
+          with: {}
+      reducer:
+        uses: ecoscope_workflows.tasks.results.gather_dashboard
+        with:
+          groupers: set-groupers.return

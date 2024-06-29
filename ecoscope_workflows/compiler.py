@@ -21,6 +21,14 @@ from ecoscope_workflows.annotations import is_subscripted_pandera_dataframe
 TEMPLATES = pathlib.Path(__file__).parent / "templates"
 
 
+class TaskSpec(BaseModel):
+    name: str
+    id_: str
+    uses: str
+    from_: str | None = None
+    with_: dict[str, str] = Field(default_factory=dict)
+
+
 class TasksSpec(BaseModel):
     tasks: dict[str, dict[str, str]]
     # TODO: pydantic validator for `self.tasks`, as follows:

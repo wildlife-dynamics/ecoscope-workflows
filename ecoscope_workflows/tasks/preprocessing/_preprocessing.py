@@ -41,7 +41,6 @@ def process_relocations(
 
 
 class TrajectoryGDFSchema(JsonSerializableDataFrameModel):
-    id: pa.typing.Index[str] = pa.Field()
     groupby_col: pa.typing.Series[str] = pa.Field()
     segment_start: pa.typing.Series[pd.DatetimeTZDtype] = pa.Field(
         dtype_kwargs={"unit": "ns", "tz": "UTC"}
