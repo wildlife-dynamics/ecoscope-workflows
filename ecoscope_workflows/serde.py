@@ -40,6 +40,8 @@ def gdf_to_parquet_uri(gdf, uri: str):
 
 
 def persist_html_text(html_text: str, root_path: str) -> str:
+    import fsspec
+
     aspath = Path(root_path)
     if urlparse(root_path).scheme in ("file", ""):
         if not aspath.exists():
@@ -50,7 +52,7 @@ def persist_html_text(html_text: str, root_path: str) -> str:
     # FIXME: the name of the file should be dynamically set to distinguish
     # between different html map outputs for the same workflow
     dst = os.path.join(root_path, "map.html")
-    with open(dst, "w") as f:
+    with fsspec.open(dst, "w") as f:
         f.write(html_text)
 
     return dst
