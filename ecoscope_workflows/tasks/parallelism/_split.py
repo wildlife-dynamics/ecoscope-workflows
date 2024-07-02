@@ -6,6 +6,7 @@ import pandera as pa
 from ecoscope_workflows.annotations import JsonSerializableDataFrameModel
 from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.serde import (
+    Filter,
     groupbykeys_to_hivekeys,
     persist_gdf_to_hive_partitioned_parquet,
 )
@@ -16,7 +17,7 @@ def split_groups(
     dataframe: Annotated[pa.typing.DataFrame[JsonSerializableDataFrameModel], Field()],
     groupers: Annotated[list[str], Field()],
     cache_path: Annotated[str, Field()],
-) -> Annotated[list[dict[str, tuple[tuple[tuple[str, str, str], ...], str]]], Field()]:
+) -> Annotated[list[dict[str, tuple[tuple[Filter, ...], str]]], Field()]:
     df_url = dataframe.pipe(
         persist_gdf_to_hive_partitioned_parquet,
         partition_on=groupers,

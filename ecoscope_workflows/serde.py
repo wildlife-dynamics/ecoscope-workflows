@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlparse
 
+Filter = tuple[str, str, str]
+
 
 @dataclass(frozen=True)
 class HiveKey:
@@ -10,11 +12,11 @@ class HiveKey:
     value: str
 
     @property
-    def filter(self) -> tuple[str, str, str]:
+    def filter(self) -> Filter:
         return (self.column, "=", self.value)
 
     @classmethod
-    def from_filter(cls, filter: tuple[str, str, str]):
+    def from_filter(cls, filter: Filter):
         return cls(column=filter[0], value=filter[2])
 
     def as_str(self) -> str:
@@ -22,7 +24,7 @@ class HiveKey:
 
 
 def storage_object_key_from_composite_hivekey(
-    composite_hivekey: tuple[tuple[str, str, str]],
+    composite_hivekey: tuple[Filter, ...],
 ) -> str:
     return "/".join(HiveKey.from_filter(f).as_str() for f in composite_hivekey)
 
