@@ -4,6 +4,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 Filter = tuple[str, str, str]
+CompositeFilter = tuple[Filter, ...]
 
 
 @dataclass(frozen=True)
@@ -92,7 +93,7 @@ def persist_gdf_to_hive_partitioned_parquet(
 
 def load_gdf_from_hive_partitioned_parquet(
     path: str,
-    filters: list[tuple[tuple[str, ...], ...]] | None = None,
+    filters: list[CompositeFilter] | None = None,
     geometry_col_name: str = "geometry",
     # FIXME: how are we going to actually, robustly rountrip original crs?
     # TODO: enumerate hive partitioned geoparquet writing options pros and cons
@@ -114,7 +115,7 @@ def load_gdf_from_hive_partitioned_parquet(
 def groupbykeys_to_hivekeys(
     gdf,
     groupers: list[str],
-) -> list[tuple[tuple[str, str, str], ...]]:
+) -> list[CompositeFilter]:
     import geopandas as gpd
 
     assert isinstance(
