@@ -38,6 +38,7 @@ RUN pip install --no-cache-dir numba scipy
 RUN pip install --no-cache-dir scikit-learn
 RUN pip install --no-cache-dir folium matplotlib selenium mapclassify
 RUN pip install --no-cache-dir "ecoscope-workflows @ git+https://github.com/wildlife-dynamics/ecoscope-workflows.git@split-apply-combine"
+RUN pip install --no-cache-dir gcsfs
 ##
 
 ENV PYTHONUNBUFFERED TRUE
