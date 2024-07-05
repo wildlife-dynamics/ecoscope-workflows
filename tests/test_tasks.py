@@ -8,6 +8,7 @@ import geopandas as gpd
 import pandas as pd
 import pytest
 
+from ecoscope_workflows.connections import EarthRangerConnection
 from ecoscope_workflows.decorators import DistributedTask
 from ecoscope_workflows.serde import gpd_from_parquet_uri
 from ecoscope_workflows.tasks.analysis import calculate_time_density
@@ -35,7 +36,7 @@ task_fixtures = {
             input_dataframe_arg_name="",
             example_input_dataframe_path="",
             kws=dict(
-                client="MEP_DEV",
+                client=EarthRangerConnection.from_named_connection("MEP_DEV").get_client(),
                 subject_group_name="Elephants",
                 include_inactive=True,
                 since=datetime.strptime("2011-01-01", "%Y-%m-%d"),
