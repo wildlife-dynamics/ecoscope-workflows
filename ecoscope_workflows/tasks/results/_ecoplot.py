@@ -12,15 +12,28 @@ def draw_ecoplot(
         str, Field(description="The dataframe column to group by.")
     ],
     x_axis: Annotated[
-        str, Field(description="The dataframe column to plot in the x axis")
+        str, Field(description="The dataframe column to plot in the x axis.")
     ],
     y_axis: Annotated[
-        str, Field(description="The dataframe column to plot in the y axis")
+        str, Field(description="The dataframe column to plot in the y axis.")
     ],
     style_kws: Annotated[
-        dict, Field(description="Style arguments")
+        dict, Field(description="Style arguments passed to plotly.graph_objects.Scatter.")
     ]
 ) -> Annotated[str, Field()]:
+    """
+    Generates an EcoPlot from the provided params
+
+    Args:
+    dataframe (pd.DataFrame): The input dataframe.
+    group_by (str): The dataframe column to group by.
+    x_axis (str): The dataframe column to plot in the x axis.
+    y_axis (str): The dataframe column to plot in the y axis.
+    style_kws (str): Style arguments passed to plotly.graph_objects.Scatter.
+
+    Returns:
+    The generated plot html as a string
+    """
     import ecoscope.plotting as plotting
 
     grouped = dataframe.groupby(group_by)
