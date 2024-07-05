@@ -5,12 +5,11 @@ from pydantic import Field
 from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
 from ecoscope_workflows.decorators import distributed
 
+
 @distributed
 def draw_ecoplot(
     dataframe: DataFrame[JsonSerializableDataFrameModel],
-    group_by: Annotated[
-        str, Field(description="The dataframe column to group by.")
-    ],
+    group_by: Annotated[str, Field(description="The dataframe column to group by.")],
     x_axis: Annotated[
         str, Field(description="The dataframe column to plot in the x axis.")
     ],
@@ -18,8 +17,9 @@ def draw_ecoplot(
         str, Field(description="The dataframe column to plot in the y axis.")
     ],
     style_kws: Annotated[
-        dict, Field(description="Style arguments passed to plotly.graph_objects.Scatter.")
-    ]
+        dict,
+        Field(description="Style arguments passed to plotly.graph_objects.Scatter."),
+    ],
 ) -> Annotated[str, Field()]:
     """
     Generates an EcoPlot from the provided params
@@ -49,4 +49,13 @@ def draw_ecoplot(
         data=[data],
     )
 
-    return plot.to_html(default_height="100%", default_width="100%", config={"autosizable": True, "fillFrame":True, "responsive": True, "displayModeBar": False})
+    return plot.to_html(
+        default_height="100%",
+        default_width="100%",
+        config={
+            "autosizable": True,
+            "fillFrame": True,
+            "responsive": True,
+            "displayModeBar": False,
+        },
+    )
