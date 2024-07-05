@@ -84,16 +84,17 @@ def mock_toml_config(tmp_path: Path):
 
 def test_connection_named_from_toml(mock_toml_config: Path):
     with patch("ecoscope_workflows.config.PATH", mock_toml_config):
-        conn = EarthRangerConnection.from_named_connection("mep_dev")
-        assert conn.server == "https://mep-dev.pamdas.org"
-        assert conn.username == "user"
+        with patch.dict(os.environ, clear=True):
+            conn = EarthRangerConnection.from_named_connection("mep_dev")
+            assert conn.server == "https://mep-dev.pamdas.org"
+            assert conn.username == "user"
 
-        assert isinstance(conn.password, SecretStr)
-        assert str(conn.password) == "**********"
-        assert conn.password.get_secret_value() == "pass"
+            assert isinstance(conn.password, SecretStr)
+            assert str(conn.password) == "**********"
+            assert conn.password.get_secret_value() == "pass"
 
-        assert conn.tcp_limit == 5
-        assert conn.sub_page_size == 4000
+            assert conn.tcp_limit == 5
+            assert conn.sub_page_size == 4000
 
 
 @pytest.fixture
@@ -114,25 +115,28 @@ def mock_toml_config_no_secrets(tmp_path: Path):
 
 
 def test_connection_named_from_toml_with_env_secrets(mock_toml_config_no_secrets: Path):
-    with patch("ecoscope_workflows.config.PATH", mock_toml_config_no_secrets):
-        with pytest.raises(ValidationError, match="password"):
-            _ = EarthRangerConnection.from_named_connection("mep_dev")
+    with patch.dict(os.environ, clear=True):
+        with patch("ecoscope_workflows.config.PATH", mock_toml_config_no_secrets):
+            with pytest.raises(ValidationError, match="password"):
+                _ = EarthRangerConnection.from_named_connection("mep_dev")
 
-    with patch("ecoscope_workflows.config.PATH", mock_toml_config_no_secrets):
-        with patch.dict(
-            os.environ,
-            {"ECOSCOPE_WORKFLOWS__CONNECTIONS__EARTHRANGER__MEP_DEV__PASSWORD": "pass"},
-        ):
-            conn = EarthRangerConnection.from_named_connection("mep_dev")
-            assert conn.server == "https://mep-dev.pamdas.org"
-            assert conn.username == "user"
+        with patch("ecoscope_workflows.config.PATH", mock_toml_config_no_secrets):
+            with patch.dict(
+                os.environ,
+                {
+                    "ECOSCOPE_WORKFLOWS__CONNECTIONS__EARTHRANGER__MEP_DEV__PASSWORD": "pass"
+                },
+            ):
+                conn = EarthRangerConnection.from_named_connection("mep_dev")
+                assert conn.server == "https://mep-dev.pamdas.org"
+                assert conn.username == "user"
 
-            assert isinstance(conn.password, SecretStr)
-            assert str(conn.password) == "**********"
-            assert conn.password.get_secret_value() == "pass"
+                assert isinstance(conn.password, SecretStr)
+                assert str(conn.password) == "**********"
+                assert conn.password.get_secret_value() == "pass"
 
-            assert conn.tcp_limit == 5
-            assert conn.sub_page_size == 4000
+                assert conn.tcp_limit == 5
+                assert conn.sub_page_size == 4000
 
 
 def test_resolve_client_from_env(named_mock_env):
