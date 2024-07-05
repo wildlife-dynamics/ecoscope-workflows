@@ -36,7 +36,9 @@ task_fixtures = {
             input_dataframe_arg_name="",
             example_input_dataframe_path="",
             kws=dict(
-                client=EarthRangerConnection.from_named_connection("MEP_DEV").get_client(),
+                client=EarthRangerConnection.from_named_connection(
+                    "MEP_DEV"
+                ).get_client(),
                 subject_group_name="Elephants",
                 include_inactive=True,
                 since=datetime.strptime("2011-01-01", "%Y-%m-%d"),
