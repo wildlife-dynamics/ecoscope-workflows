@@ -25,7 +25,7 @@ def test_path_override():
         assert PATH == Path(override)
 
 
-def test_toml_config_table_dumps():
+def test_toml_config_table_dumps(tmp_path: Path):
     # deferring import of TomlConfigTable to avoid triggering assignment of PATH
     # before the patching of os.environ in test_path_override (kind of a code smell,
     # this interdependency between the tests, maybe there's a better way to do this)
@@ -42,16 +42,18 @@ def test_toml_config_table_dumps():
             "sub_page_size": 4000,
         },
     )
-    assert tct.dumps() == dedent(
-        """\
-        [connections.earthranger.mep_dev]
-        server = "https://mep-dev.pamdas.org"
-        username = "user"
-        password = "pass"
-        tcp_limit = 5
-        sub_page_size = 4000
-        """
-    )
+    tmp_config_path = tmp_path / ".config.toml"
+    with patch("ecoscope_workflows.config.PATH", tmp_config_path):
+        assert tct.dumps() == dedent(
+            """\
+            [connections.earthranger.mep_dev]
+            server = "https://mep-dev.pamdas.org"
+            username = "user"
+            password = "pass"
+            tcp_limit = 5
+            sub_page_size = 4000
+            """
+        )
 
 
 def test_toml_config_table_dump(tmp_path: Path):
