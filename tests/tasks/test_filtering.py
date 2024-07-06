@@ -33,3 +33,15 @@ def test_filter_dataframe_invalid_expression(sample_df):
     """Test handling of invalid expressions."""
     with pytest.raises(SyntaxError):
         filter_dataframe(sample_df, "this is NOT a valid expression")
+
+
+def test_filter_dataframe_assignment(sample_df):
+    """Test handling of invalid expressions."""
+    with pytest.raises(SyntaxError):
+        filter_dataframe(sample_df, "df['age'] = 100")
+
+
+def test_filter_dataframe_unsupported_function(sample_df):
+    """Test handling of invalid expressions."""
+    with pytest.raises(ValueError):
+        filter_dataframe(sample_df, "str(age)")
