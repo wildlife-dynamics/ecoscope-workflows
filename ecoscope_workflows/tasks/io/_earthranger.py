@@ -51,15 +51,24 @@ def get_subjectgroup_observations(
 @distributed(tags=["io"])
 def get_patrol_observations(
     client: EarthRangerClient,
-    since: Annotated[datetime, Field(description="Start date")],
-    until: Annotated[datetime, Field(description="End date")],
-    patrol_type: Annotated[str, Field(description="Type of patrol")],
-    status: Annotated[str, Field(description="Status of patrol")],
+    since: Annotated[str, Field(description="Start date")],
+    until: Annotated[str, Field(description="End date")],
+    patrol_type: Annotated[
+        str,
+        Field(default=None, description="Comma-separated list of type of patrol UUID"),
+    ],
+    status: Annotated[
+        str,
+        Field(
+            default=None,
+            description="Comma-separated list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'",
+        ),
+    ],
     include_patrol_details: Annotated[
-        bool, Field(description="Include patrol details")
+        bool, Field(default=False, description="Include patrol details")
     ],
 ) -> DataFrame[SubjectGroupObservationsGDFSchema]:
-    """Get observations for a subject group from EarthRanger."""
+    """Get observations for a patrol type from EarthRanger."""
     return client.get_patrol_observations_with_patrol_filter(
         since=since,
         until=until,
