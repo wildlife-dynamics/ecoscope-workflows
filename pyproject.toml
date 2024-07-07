@@ -28,6 +28,7 @@ dependencies = [
     "ruamel.yaml",
     "ruff",  # for linting compiled workflows
     "tomli-w",
+    "numexpr",
 ]
 
 [project.optional-dependencies]
