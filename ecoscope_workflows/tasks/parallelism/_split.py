@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, TypedDict
 
 from pydantic import Field
 import pandera as pa
@@ -12,19 +12,27 @@ from ecoscope_workflows.serde import (
 )
 
 
+class Groups(TypedDict):
+    path: str
+    filters: CompositeFilter
+
+
 @distributed
 def split_groups(
     dataframe: Annotated[pa.typing.DataFrame[JsonSerializableDataFrameModel], Field()],
     groupers: Annotated[list[str], Field()],
     cache_path: Annotated[str, Field()],
-) -> Annotated[list[dict[str, tuple[CompositeFilter, str]]], Field()]:
+) -> Annotated[list[Groups], Field()]:
     df_url = dataframe.pipe(
         persist_gdf_to_hive_partitioned_parquet,
         partition_on=groupers,
         path=cache_path,
     )
     return [
-        {"element": (nested_hk, str(df_url))}
+        {"path": str(df_url), "filters": nested_hk}
         for nested_hk in groupbykeys_to_hivekeys(dataframe, groupers)
-        # {"element": ((('animal_name', '=', 'Bo'), ('month', '=', 'January')), "gcs://bucket/tmp/job-3456788/tmp.parquet")}
+        # {
+        #   "path": "gcs://bucket/tmp/job-3456788/tmp.parquet",
+        #   "filters": (('animal_name', '=', 'Bo'), ('month', '=', 'January')),
+        # }
     ]

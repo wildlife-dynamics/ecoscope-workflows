@@ -29,6 +29,7 @@ def gather_widget(
     widget_type: Annotated[str, Field()] = "ecomap",
     title: Annotated[str, Field()] = "Time Density Ecomap",
 ):
+    print("Gathering widget")
     if widget_type == "ecomap":
         return {
             "widget_type": "ecomap",

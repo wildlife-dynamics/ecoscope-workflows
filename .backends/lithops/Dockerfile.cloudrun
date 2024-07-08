@@ -1,4 +1,4 @@
-FROM python:3.12-slim-bookworm
+FROM python:3.10.12-slim-bookworm
 
 RUN apt-get update && apt-get install -y \
         zip \
@@ -27,7 +27,6 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir "ecoscope-workflows @ git+https://github.com/wildlife-dynamics/ecoscope-workflows.git@split-apply-combine"
 RUN pip install --no-cache-dir "ecoscope==1.7.3" --no-deps
 RUN pip install --no-cache-dir geopandas shapely
 RUN pip install --no-cache-dir pyarrow
@@ -39,6 +38,7 @@ RUN pip install --no-cache-dir scikit-learn
 RUN pip install --no-cache-dir folium matplotlib selenium mapclassify
 RUN pip install --no-cache-dir "ecoscope-workflows @ git+https://github.com/wildlife-dynamics/ecoscope-workflows.git@split-apply-combine"
 RUN pip install --no-cache-dir gcsfs
+RUN pip install --no-cache-dir tomli
 ##
 
 ENV PYTHONUNBUFFERED TRUE

@@ -55,9 +55,11 @@ def persist_html_text(html_text: str, root_path: str) -> str:
     # FIXME: the name of the file should be dynamically set to distinguish
     # between different html map outputs for the same workflow
     dst = os.path.join(root_path, "map.html")
-    with fsspec.open(dst, "w") as f:
-        f.write(html_text)
-
+    try:
+        with fsspec.open(dst, "w") as f:
+            f.write(html_text)
+    except Exception as e:
+        raise ValueError(f"Failed to write HTML to {dst}") from e
     return dst
 
 
