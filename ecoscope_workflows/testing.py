@@ -97,7 +97,7 @@ def generate_synthetic_gps_fixes_dataframe(
     fix_times = pd.date_range(
         start=start_time,
         periods=num_fixes,
-        freq=f"{time_interval_minutes}T",
+        freq=f"{time_interval_minutes}min",
         tz="UTC",
     )
     # Generate random 2D walk coordinates within the bounding box

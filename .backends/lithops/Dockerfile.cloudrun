@@ -36,9 +36,10 @@ RUN pip install --no-cache-dir earthengine-api rasterio
 RUN pip install --no-cache-dir numba scipy
 RUN pip install --no-cache-dir scikit-learn
 RUN pip install --no-cache-dir folium matplotlib selenium mapclassify
-RUN pip install --no-cache-dir "ecoscope-workflows @ git+https://github.com/wildlife-dynamics/ecoscope-workflows.git@split-apply-combine"
 RUN pip install --no-cache-dir gcsfs
 RUN pip install --no-cache-dir tomli
+RUN pip install --no-cache-dir "ecoscope-workflows @ git+https://github.com/wildlife-dynamics/ecoscope-workflows.git@split-apply-combine"
+RUN pip install --no-cache-dir -U "ecoscope @ git+https://github.com/wildlife-dynamics/ecoscope.git@db5fe0c502b9425bcfcbb39e9f56ad9a4be85208"
 ##
 
 ENV PYTHONUNBUFFERED TRUE
@@ -50,4 +51,4 @@ WORKDIR $APP_HOME
 COPY lithops_cloudrun.zip .
 RUN unzip lithops_cloudrun.zip && rm lithops_cloudrun.zip
 
-CMD exec gunicorn --bind :$PORT lithopsproxy:proxy
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 1 --timeout 300 lithopsproxy:proxy
