@@ -13,12 +13,16 @@ from ecoscope_workflows.serde import (
 
 
 class Groups(TypedDict):
+    widget_name: str
+    widget_kws: dict
     path: str
     filters: CompositeFilter
 
 
 @distributed
 def split_groups(
+    widget_name: Annotated[str, Field()],
+    widget_kws: Annotated[dict, Field()],
     dataframe: Annotated[pa.typing.DataFrame[JsonSerializableDataFrameModel], Field()],
     groupers: Annotated[list[str], Field()],
     cache_path: Annotated[str, Field()],
@@ -29,9 +33,16 @@ def split_groups(
         path=cache_path,
     )
     return [
-        {"path": str(df_url), "filters": nested_hk}
+        {
+            "widget_name": widget_name,
+            "widget_kws": widget_kws,
+            "path": str(df_url),
+            "filters": nested_hk,
+        }
         for nested_hk in groupbykeys_to_hivekeys(dataframe, groupers)
         # {
+        #   "widget_name": "time_density_ecomap",
+        #   "widget_kws": {...},
         #   "path": "gcs://bucket/tmp/job-3456788/tmp.parquet",
         #   "filters": (('animal_name', '=', 'Bo'), ('month', '=', 'January')),
         # }
