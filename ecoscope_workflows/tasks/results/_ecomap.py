@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Annotated, Literal
 
 from pydantic import Field
@@ -7,21 +6,18 @@ from ecoscope_workflows.annotations import AnyGeoDataFrame
 from ecoscope_workflows.decorators import distributed
 
 
-@dataclass
-class LayerDefinition:
-    data: Annotated[
-        AnyGeoDataFrame, Field(description="The geodataframe to visualize.")
-    ]
-    layer_type: Annotated[
-        Literal["Scatterplot", "Path", "Polygon"],
-        Field(description="The type of layer."),
-    ]
-    style_kws: Annotated[dict, Field(description="Style arguments for the layer.")]
-
-
 @distributed
 def draw_ecomap(
-    layers: Annotated[list[LayerDefinition] | LayerDefinition, Field()],
+    geodataframe: Annotated[
+        AnyGeoDataFrame, Field(description="The geodataframe to visualize.")
+    ],
+    data_type: Annotated[
+        Literal["Scatterplot", "Path", "Polygon"],
+        Field(description="The type of visualization."),
+    ],
+    style_kws: Annotated[
+        dict, Field(description="Style arguments for the data visualization.")
+    ],
     tile_layer: Annotated[
         str | None, Field(description="A named tile layer, ie OpenStreetMap.")
     ] = None,
@@ -43,7 +39,9 @@ def draw_ecomap(
     Creates a map based on the provided layer definitions and configuration.
 
     Args:
-    layers (list[LayerDefinition] | LayerDefinition): Layer definitions to draw on the map.
+    geodataframe (geopandas.GeoDataFrame): The geodataframe to visualize.
+    data_type (str): The type of visualization, "Scatterplot", "Path" or "Polygon".
+    style_kws (dict): Style arguments for the data visualization.
     tile_layer (str): A named tile layer, ie OpenStreetMap.
     static (bool): Set to true to disable map pan/zoom.
     title (str): The map title.
@@ -68,16 +66,13 @@ def draw_ecomap(
     if tile_layer is not None:
         m.add_layer(EcoMap.get_named_tile_layer(tile_layer))
 
-    if isinstance(layers, LayerDefinition):
-        layers = [layers]
-    for layer in layers:
-        match layer.layer_type:
-            case "Scatterplot":
-                m.add_scatterplot_layer(layer.data, **layer.style_kws)
-            case "Path":
-                m.add_path_layer(layer.data, **layer.style_kws)
-            case "Polygon":
-                m.add_polygon_layer(layer.data, **layer.style_kws)
+    match data_type:
+        case "Scatterplot":
+            m.add_scatterplot_layer(geodataframe, **style_kws)
+        case "Path":
+            m.add_path_layer(geodataframe, **style_kws)
+        case "Polygon":
+            m.add_polygon_layer(geodataframe, **style_kws)
 
     m.zoom_to_bounds(m.layers)
     return m.to_html()

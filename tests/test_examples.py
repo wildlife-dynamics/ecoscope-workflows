@@ -114,15 +114,14 @@ params = {
           expansion_factor: 1.3  # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=1.3))
           percentiles: [50.0, 60.0, 70.0, 80.0, 90.0, 95.0]  # (list[float], FieldInfo(annotation=NoneType, required=False, default=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0]))
         draw_ecomap:
-          static: False  # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
-          height: 1000  # (<class 'int'>, FieldInfo(annotation=NoneType, required=True))
-          width: 1500  # (<class 'int'>, FieldInfo(annotation=NoneType, required=True))
-          search_control: True  # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
-          title: "Great Map"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True))
-          title_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
-          tile_layers: []  # (list[dict], FieldInfo(annotation=NoneType, required=True))
-          north_arrow_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
-          add_gdf_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
+          data_type: Polygon  # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
+          style_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
+          tile_layer: OpenStreetMap  # (str, FieldInfo(annotation=NoneType, required=False))
+          static: False  # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
+          title: "Great Map"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
+          title_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
+          scale_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
+          north_arrow_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
         """
     )
 }
