@@ -27,7 +27,6 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir "ecoscope==1.7.3" --no-deps
 RUN pip install --no-cache-dir geopandas shapely
 RUN pip install --no-cache-dir pyarrow
 RUN pip install --no-cache-dir earthranger-client
