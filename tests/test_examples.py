@@ -138,8 +138,8 @@ class EndToEndFixture:
 # TODO: package this alongside task somehow
 assert_that_stdout = {
     "time-density.yaml": [
-        lambda out: "webkitallowfullscreen" in out,
-        lambda out: "function geo_json_" in out,
+        lambda out: "jupyter.widget-state+json" in out,
+        lambda out: "ecoscope.mapping.map.EcoMap" in out,
     ]
 }
 
