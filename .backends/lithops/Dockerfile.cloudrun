@@ -39,6 +39,7 @@ RUN pip install --no-cache-dir gcsfs
 RUN pip install --no-cache-dir tomli
 RUN pip install --no-cache-dir "ecoscope-workflows @ git+https://github.com/wildlife-dynamics/ecoscope-workflows.git@split-apply-combine"
 RUN pip install --no-cache-dir -U "ecoscope @ git+https://github.com/wildlife-dynamics/ecoscope.git@db5fe0c502b9425bcfcbb39e9f56ad9a4be85208"
+RUN pip install --no-cache-dir "ecoscope-workflows @ git+https://github.com/wildlife-dynamics/ecoscope-workflows.git@split-apply-combine"
 ##
 
 ENV PYTHONUNBUFFERED TRUE

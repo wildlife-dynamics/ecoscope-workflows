@@ -1,5 +1,4 @@
 import os
-import string
 import time
 
 import lithops
@@ -40,10 +39,10 @@ params = {
     ),
     # synthetic data generator params, these will be different in a real-world application
     "get_subjectgroup_observations": dict(
-        num_fixes=2832,
-        animal_names=[f"{char}o" for char in string.ascii_uppercase],
-        # num_fixes=100,
-        # animal_names=["Ao"],
+        # num_fixes=2832,
+        # animal_names=[f"{char}o" for char in string.ascii_uppercase],
+        num_fixes=100,
+        animal_names=["Ao"],
         start_time="2023-01-01",
         time_interval_minutes=30,
         animal_type="Elephant",
@@ -96,10 +95,10 @@ get_subjectgroup_observations = generate_synthetic_gps_fixes_dataframe
 
 if __name__ == "__main__":
     ECOSCOPE_WORKFLOWS_TMP = os.environ.get("ECOSCOPE_WORKFLOWS_TMP", ".")
+    ECOSCOPE_WORKFLOWS_RESULTS = os.environ.get("ECOSCOPE_WORKFLOWS_RESULTS", ".")
     JOB_ID = os.environ.get("JOB_ID", f"job-{int(time.monotonic())}")
     TMP_PARQUET = os.path.join(ECOSCOPE_WORKFLOWS_TMP, JOB_ID, "tmp.parquet")
-    RESULTS_DIR = os.path.join(ECOSCOPE_WORKFLOWS_TMP, JOB_ID, "results")
-    # RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    RESULTS_DIR = os.path.join(ECOSCOPE_WORKFLOWS_RESULTS, JOB_ID, "results")
 
     # "global" settings
     groupers = set_groupers.replace(validate=True)(**params["set_groupers"])
