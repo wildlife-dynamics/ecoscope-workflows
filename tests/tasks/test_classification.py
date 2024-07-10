@@ -2,7 +2,7 @@ import matplotlib
 import numpy as np
 import pandas as pd
 
-from ecoscope_workflows.tasks.transformation._classification import color_map
+from ecoscope_workflows.tasks.transformation import color_map
 
 
 def test_color_map():

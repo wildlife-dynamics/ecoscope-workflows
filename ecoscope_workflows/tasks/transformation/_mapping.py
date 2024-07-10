@@ -10,6 +10,25 @@ logger = logging.getLogger(__name__)
 
 
 @distributed
+def map_values(
+    df: DataFrame[JsonSerializableDataFrameModel],
+    column_name: Annotated[str, Field(description="The column name to map.")],
+    value_map: Annotated[
+        dict[str, str], Field(default={}, description="A dictionary of values to map.")
+    ],
+    preserve_values: Annotated[
+        bool,
+        Field(default=False, description="Whether to preserve values not in the map."),
+    ],
+) -> DataFrame[JsonSerializableDataFrameModel]:
+    if preserve_values:
+        df[column_name] = df[column_name].map(value_map).fillna(df[column_name])
+    else:
+        df[column_name] = df[column_name].map(value_map)
+    return df
+
+
+@distributed
 def map_columns(
     df: DataFrame[JsonSerializableDataFrameModel],
     drop_columns: Annotated[
@@ -63,5 +82,47 @@ def map_columns(
         if any(col not in df.columns for col in rename_columns):
             raise KeyError(f"Columns {rename_columns} not all found in DataFrame.")
         df = df.rename(columns=rename_columns)
+
+    return df
+
+
+@distributed
+def color_map(
+    df: DataFrame[JsonSerializableDataFrameModel],
+    column_name: Annotated[
+        str, Field(description="The name of the column with categorical values.")
+    ],
+    colormap_name: Annotated[
+        str, Field(default="viridis", description="matplotlib.colors.Colormap")
+    ],
+) -> DataFrame[JsonSerializableDataFrameModel]:
+    """
+    Adds a color column to the dataframe based on the categorical values in the specified column.
+
+    Args:
+    dataframe (pd.DataFrame): The input dataframe.
+    column_name (str): The name of the column with categorical values.
+    colormap_name (str): The name of the matplotlib colormap to use.
+
+    Returns:
+    pd.DataFrame: The dataframe with an additional color column.
+    """
+
+    import matplotlib
+
+    # Get the colormap
+    colormap = matplotlib.colormaps[colormap_name]
+
+    # Get unique categories
+    unique_categories = df[column_name].unique()
+
+    # Create a dictionary to map categories to colors
+    colors = colormap(range(len(unique_categories)))
+    category_colors = {
+        category: colors[i] for i, category in enumerate(unique_categories)
+    }
+
+    # Add the color column to the dataframe
+    df["label"] = df[column_name].map(category_colors)
 
     return df
