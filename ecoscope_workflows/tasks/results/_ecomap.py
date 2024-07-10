@@ -19,12 +19,12 @@ def draw_ecomap(
         dict, Field(description="Style arguments for the data visualization.")
     ],
     tile_layer: Annotated[
-        str | None, Field(description="A named tile layer, ie OpenStreetMap.")
-    ] = None,
+        str, Field(description="A named tile layer, ie OpenStreetMap.")
+    ] = "",
     static: Annotated[
         bool, Field(description="Set to true to disable map pan/zoom.")
     ] = False,
-    title: Annotated[str | None, Field(description="The map title.")] = None,
+    title: Annotated[str, Field(description="The map title.")] = "",
     title_kws: Annotated[
         dict, Field(description="Additional arguments for configuring the Title.")
     ] = {},
@@ -63,7 +63,7 @@ def draw_ecomap(
     m.add_scale_bar(**scale_kws)
     m.add_north_arrow(**north_arrow_kws)
 
-    if tile_layer is not None:
+    if tile_layer:
         m.add_layer(EcoMap.get_named_tile_layer(tile_layer))
 
     match data_type:
