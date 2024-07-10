@@ -32,7 +32,7 @@ class _DataConnection(_Settings):
             pyproject_toml_table_header=(
                 "connections",
                 cls.__ecoscope_connection_type__,
-                name.lower(),
+                name,
             ),
         )
         _cls = type(

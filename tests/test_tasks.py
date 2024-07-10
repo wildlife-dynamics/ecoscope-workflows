@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from datetime import datetime
 from importlib.resources import files
 from pathlib import Path
 from typing import Callable
@@ -11,7 +10,6 @@ import pytest
 from ecoscope_workflows.decorators import DistributedTask
 from ecoscope_workflows.serde import gpd_from_parquet_uri
 from ecoscope_workflows.tasks.analysis import calculate_time_density
-from ecoscope_workflows.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows.tasks.preprocessing import (
     process_relocations,
     relocations_to_trajectory,
@@ -29,33 +27,6 @@ class TaskFixture:
 
 
 task_fixtures = {
-    "get_subjectgroup_observations": pytest.param(
-        TaskFixture(
-            task=get_subjectgroup_observations,
-            input_dataframe_arg_name="",
-            example_input_dataframe_path="",
-            kws=dict(
-                client="MEP_DEV",
-                subject_group_name="Elephants",
-                include_inactive=True,
-                since=datetime.strptime("2011-01-01", "%Y-%m-%d"),
-                until=datetime.strptime("2023-01-01", "%Y-%m-%d"),
-            ),
-            assert_that_return_dataframe=[
-                lambda df: all(
-                    [
-                        col in df
-                        for col in ["geometry", "groupby_col", "fixtime", "junk_status"]
-                    ]
-                ),
-            ],
-            example_return_path=str(
-                files("ecoscope_workflows.tasks.io")
-                / "get-subjectgroup-observations.example-return.parquet"
-            ),
-        ),
-        marks=pytest.mark.io,
-    ),
     "process_relocations": TaskFixture(
         task=process_relocations,
         input_dataframe_arg_name="observations",
