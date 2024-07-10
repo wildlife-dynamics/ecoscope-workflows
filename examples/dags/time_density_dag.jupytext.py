@@ -173,31 +173,39 @@ geodataframe = calculate_time_density_return
 # %%
 # parameters
 
+data_type = ...
+style_kws = ...
+tile_layer = ...
 static = ...
-height = ...
-width = ...
-search_control = ...
 title = ...
 title_kws = ...
-tile_layers = ...
+scale_kws = ...
 north_arrow_kws = ...
-add_gdf_kws = ...
 
 
 # %%
 # the code for Draw Ecomap
 
+'\n    Creates a map based on the provided layer definitions and configuration.\n\n    Args:\n    geodataframe (geopandas.GeoDataFrame): The geodataframe to visualize.\n    data_type (str): The type of visualization, "Scatterplot", "Path" or "Polygon".\n    style_kws (dict): Style arguments for the data visualization.\n    tile_layer (str): A named tile layer, ie OpenStreetMap.\n    static (bool): Set to true to disable map pan/zoom.\n    title (str): The map title.\n    title_kws (dict): Additional arguments for configuring the Title.\n    scale_kws (dict): Additional arguments for configuring the Scale Bar.\n    north_arrow_kws (dict): Additional arguments for configuring the North Arrow.\n\n    Returns:\n    str: A static HTML representation of the map.\n    '
 from ecoscope.mapping import EcoMap
 
-m = EcoMap(static=static, height=height, width=width, search_control=search_control)
-m.add_title(title=title, **title_kws)
-for tl in tile_layers:
-    m.add_tile_layer(**tl)
+m = EcoMap(static=static, default_widgets=False)
+if title:
+    m.add_title(title, **title_kws)
+m.add_scale_bar(**scale_kws)
 m.add_north_arrow(**north_arrow_kws)
-m.add_gdf(geodataframe, **add_gdf_kws)
-m.zoom_to_gdf(geodataframe)
+if tile_layer:
+    m.add_layer(EcoMap.get_named_tile_layer(tile_layer))
+match data_type:
+    case "Scatterplot":
+        m.add_scatterplot_layer(geodataframe, **style_kws)
+    case "Path":
+        m.add_path_layer(geodataframe, **style_kws)
+    case "Polygon":
+        m.add_polygon_layer(geodataframe, **style_kws)
+m.zoom_to_bounds(m.layers)
 
 # %%
 # return value from this section
 
-draw_ecomap_return = m._repr_html_(fill_parent=True)
+draw_ecomap_return = m.to_html()
