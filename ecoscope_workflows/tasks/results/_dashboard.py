@@ -138,6 +138,7 @@ def gather_dashboard(
     ), "All widgets must have the same keys"
     grouper_choices = composite_filters_to_grouper_choices_dict(keys)
     # make sure we didn't lose track of any groupers inflight
+    print("Checking equality of: ", set(groupers), set(grouper_choices.keys()))
     assert set(groupers) == set(
         list(grouper_choices.keys())
     ), "All groupers must be present in the keys"

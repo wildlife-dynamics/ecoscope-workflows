@@ -39,10 +39,10 @@ params = {
     ),
     # synthetic data generator params, these will be different in a real-world application
     "get_subjectgroup_observations": dict(
-        # num_fixes=2832,
+        num_fixes=2832,
         # animal_names=[f"{char}o" for char in string.ascii_uppercase],
-        num_fixes=100,
-        animal_names=["Ao"],
+        # num_fixes=100,
+        animal_names=["Ao", "Bo"],
         start_time="2023-01-01",
         time_interval_minutes=30,
         animal_type="Elephant",
