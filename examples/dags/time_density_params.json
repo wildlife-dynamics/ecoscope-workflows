@@ -160,56 +160,61 @@
     "draw_ecomap": {
         "additionalProperties": false,
         "properties": {
+            "data_type": {
+                "enum": [
+                    "Scatterplot",
+                    "Path",
+                    "Polygon"
+                ],
+                "title": "Data Type",
+                "type": "string",
+                "description": "The type of visualization."
+            },
+            "style_kws": {
+                "title": "Style Kws",
+                "type": "object",
+                "description": "Style arguments for the data visualization."
+            },
+            "tile_layer": {
+                "default": "",
+                "title": "Tile Layer",
+                "type": "string",
+                "description": "A named tile layer, ie OpenStreetMap."
+            },
             "static": {
+                "default": false,
                 "title": "Static",
-                "type": "boolean"
-            },
-            "height": {
-                "title": "Height",
-                "type": "integer"
-            },
-            "width": {
-                "title": "Width",
-                "type": "integer"
-            },
-            "search_control": {
-                "title": "Search Control",
-                "type": "boolean"
+                "type": "boolean",
+                "description": "Set to true to disable map pan/zoom."
             },
             "title": {
+                "default": "",
                 "title": "Title",
-                "type": "string"
+                "type": "string",
+                "description": "The map title."
             },
             "title_kws": {
+                "default": {},
                 "title": "Title Kws",
-                "type": "object"
+                "type": "object",
+                "description": "Additional arguments for configuring the Title."
             },
-            "tile_layers": {
-                "items": {
-                    "type": "object"
-                },
-                "title": "Tile Layers",
-                "type": "array"
+            "scale_kws": {
+                "default": {},
+                "title": "Scale Kws",
+                "type": "object",
+                "description": "Additional arguments for configuring the Scale Bar."
             },
             "north_arrow_kws": {
+                "default": {},
                 "title": "North Arrow Kws",
-                "type": "object"
-            },
-            "add_gdf_kws": {
-                "title": "Add Gdf Kws",
-                "type": "object"
+                "type": "object",
+                "description": "Additional arguments for configuring the North Arrow."
             }
         },
         "required": [
-            "static",
-            "height",
-            "width",
-            "search_control",
-            "title",
-            "title_kws",
-            "tile_layers",
-            "north_arrow_kws",
-            "add_gdf_kws"
+            "data_type",
+            "style_kws"
         ],
         "type": "object"
     }
