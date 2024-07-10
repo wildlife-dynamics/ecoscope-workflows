@@ -17,6 +17,7 @@ from ecoscope_workflows.tasks.preprocessing import (
 )
 from ecoscope_workflows.tasks.results import (
     draw_ecomap,
+    draw_ecoplot,
     gather_dashboard,
     merge_widgets,
 )
@@ -126,9 +127,7 @@ if __name__ == "__main__":
     def log_memory(process: psutil.Process):
         print("Current memory usage: ", process.memory_info().rss / 1e6)
 
-    def create_time_density_ecomap_widget(
-        widget_kws, path, filters
-    ) -> tuple[tuple, str]:
+    def create_time_density_ecomap_widget(widget_kws, path, filters) -> dict:
         process = psutil.Process()
         print("Processing", filters, path)
         log_memory(process)
@@ -175,9 +174,31 @@ if __name__ == "__main__":
             "title": widget_kws["title"],
         }
 
+    def create_x_ecoplot_widget(widget_kws, path, filters) -> dict:
+        df = load_gdf_from_hive_partitioned_parquet(
+            path=path,
+            filters=filters,
+            crs="EPSG:4326",  # sketchy
+        )
+        plot_html = draw_ecoplot(df, **params["draw_ecoplot"])
+        html_path = persist_html_text(
+            plot_html,
+            root_path=os.path.join(
+                RESULTS_DIR,
+                storage_object_key_from_composite_hivekey(filters),
+            ),
+        )
+        return {
+            "widget_type": "ecoplot",
+            "views": {filters: html_path},
+            "title": widget_kws["title"],
+        }
+
     def map_function(widget_name, widget_kws, path, filters) -> tuple[tuple, str]:
         if widget_name == "time_density_ecomap":
             return create_time_density_ecomap_widget(widget_kws, path, filters)
+        elif widget_name == "x_ecoplot_widget":
+            return create_x_ecoplot_widget(widget_kws, path, filters)
         else:
             raise ValueError(f"Unknown widget name '{widget_name}'")
 
