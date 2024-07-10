@@ -1,4 +1,5 @@
 import os
+import string
 import time
 
 import lithops
@@ -16,7 +17,8 @@ from ecoscope_workflows.tasks.preprocessing import (
 )
 from ecoscope_workflows.tasks.results import (
     draw_ecomap,
-    gather_widget,
+    gather_dashboard,
+    merge_widgets,
 )
 from ecoscope_workflows.tasks.transformation import assign_temporal_column
 from ecoscope_workflows.serde import (
@@ -37,12 +39,10 @@ params = {
     ),
     # synthetic data generator params, these will be different in a real-world application
     "get_subjectgroup_observations": dict(
-        # the following two lines result in 104 groups of ~1000 fixes each
-        # for single group testing, comment-out these two lines and uncomment following two
-        # num_fixes=2832 * 2,
-        # animal_names=[f"{char}o" for char in string.ascii_uppercase],
-        num_fixes=100,
-        animal_names=["Ao"],
+        num_fixes=2832,
+        animal_names=[f"{char}o" for char in string.ascii_uppercase],
+        # num_fixes=100,
+        # animal_names=["Ao"],
         start_time="2023-01-01",
         time_interval_minutes=30,
         animal_type="Elephant",
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     # generate parallel collection for map-reduce
     time_density_ecomap_groups = split_groups(
         widget_name="time_density_ecomap",
-        widget_kws={},
+        widget_kws={"title": "Time Density Ecomap"},
         dataframe=df,
         **groupers,
         cache_path=TMP_PARQUET,
@@ -161,29 +161,25 @@ if __name__ == "__main__":
         html_text = draw_ecomap(td, **params["draw_ecomap"])
         log_memory(process)
         print("Persisting ecomap")
-        result = (
-            filters,
-            persist_html_text(
-                html_text,
-                root_path=os.path.join(
-                    RESULTS_DIR,
-                    storage_object_key_from_composite_hivekey(filters),
-                ),
+        html_path = persist_html_text(
+            html_text,
+            root_path=os.path.join(
+                RESULTS_DIR,
+                storage_object_key_from_composite_hivekey(filters),
             ),
         )
         log_memory(process)
-        # todo: use widget_kws to create a widget object
-        return result
+        return {
+            "widget_type": "ecomap",
+            "views": {filters: html_path},
+            "title": widget_kws["title"],
+        }
 
     def map_function(widget_name, widget_kws, path, filters) -> tuple[tuple, str]:
         if widget_name == "time_density_ecomap":
             return create_time_density_ecomap_widget(widget_kws, path, filters)
         else:
             raise ValueError(f"Unknown widget name '{widget_name}'")
-
-    def reduce_function(results: list[tuple[tuple, str]]) -> list[str]:
-        print("Running reducer function")
-        return gather_widget.replace(validate=True)(results, **params["gather_widget"])
 
     # Configure the compute backend (local, cloud, etc.) with a configuration file:
     # https://lithops-cloud.github.io/docs/source/configuration.html#configuration-file
@@ -193,8 +189,10 @@ if __name__ == "__main__":
         map_function=map_function,
         map_iterdata=groups,
     )
-    outputs = fexec.get_result(throw_except=False)
-    # uncomment below for retrying function executor (have not seen the need for this so far)
+    all_widget_views = fexec.get_result(throw_except=False)
+    print("Elapsed", round(time.time() - start), "seconds")
+
+    # uncomment for retrying function executor (have not seen the need for this so far)
     # with RetryingFunctionExecutor(fexec) as executor:
     #     futures = executor.map(
     #         map_function,
@@ -205,8 +203,7 @@ if __name__ == "__main__":
     #     done, pending = executor.wait(futures, throw_except=False)
     #     assert len(pending) == 0
     # outputs = set(f.result() for f in done)
-    elapsed = time.time() - start
-    # dashboard = gather_dashboard(widgets=[time_density_ecomap_widget], **groupers)
-    print(outputs)
-    print("Elapsed", round(elapsed), "seconds")
+    widgets = merge_widgets(all_widget_views)
+    dashboard = gather_dashboard(widgets=widgets, **groupers)
+    print(dashboard)
     fexec.plot()
