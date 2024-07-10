@@ -1,7 +1,7 @@
 import os
 from dataclasses import dataclass
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urlparse, quote
 
 Filter = tuple[str, str, str]
 CompositeFilter = tuple[Filter, ...]
@@ -54,13 +54,21 @@ def persist_html_text(html_text: str, root_path: str) -> str:
 
     # FIXME: the name of the file should be dynamically set to distinguish
     # between different html map outputs for the same workflow
-    dst = os.path.join(root_path, "map.html")
+    dst_write = os.path.join(root_path, "map.html")
     try:
-        with fsspec.open(dst, "w") as f:
+        with fsspec.open(dst_write, "w") as f:
             f.write(html_text)
     except Exception as e:
-        raise ValueError(f"Failed to write HTML to {dst}") from e
-    return dst
+        raise ValueError(f"Failed to write HTML to {dst_write}") from e
+
+    print(f"Parsing write url {dst_write} into read url...")
+    # TODO: redo with structural pattern matching? or a storage class could handle this with a @property
+    if dst_write.startswith("gs://"):
+        dst_read = gs_url_to_https_url(dst_write)
+    else:
+        dst_read = dst_write
+    print(f"Read url: {dst_read}")
+    return dst_read
 
 
 def persist_gdf_to_hive_partitioned_parquet(
@@ -133,3 +141,11 @@ def groupbykeys_to_hivekeys(
         )
         hivekeys.append(composite_hivekey)
     return hivekeys
+
+
+def gs_url_to_https_url(gs_url: str):
+    assert gs_url.startswith("gs://")
+    https_url = gs_url.replace("gs://", "https://storage.googleapis.com/")
+    parts = https_url.split("/")
+    encoded_parts = [quote(part, safe="") for part in parts[4:]]
+    return "/".join(parts[:4] + encoded_parts)
