@@ -1,8 +1,8 @@
 import json
-from typing import Annotated, Generator, TypedDict
+from typing import Annotated, Any, Generator, TypedDict
 from dataclasses import dataclass
 
-from pydantic import Field
+from pydantic import BaseModel, Field, model_serializer
 
 from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.serde import CompositeFilter
@@ -18,16 +18,20 @@ class WidgetBase:
 
 @dataclass
 class Widget(WidgetBase):
-    view: WidgetData
+    id: int
+    data: WidgetData
 
 
 @dataclass
 class GroupedWidget(WidgetBase):
     views: dict[CompositeFilter, WidgetData]
 
-    def get_view(self, key: CompositeFilter) -> Widget:
+    def get_view(self, key: CompositeFilter, id: int) -> Widget:
         return Widget(
-            widget_type=self.widget_type, title=self.title, view=self.views[key]
+            id=id,
+            widget_type=self.widget_type,
+            title=self.title,
+            data=self.views[key],
         )
 
 
@@ -96,14 +100,20 @@ def composite_filters_to_grouper_choices_dict(
 
 
 @dataclass
-class Dashboard:
+class Metadata:
+    title: str
+    description: str
+
+
+class Dashboard(BaseModel):
     groupers: dict[GrouperName, GrouperChoices]
     keys: list[CompositeFilter]
     widgets: list[GroupedWidget]
+    metadata: Metadata = Field(default_factory=dict)
 
     def _get_view(self, key: CompositeFilter) -> list[Widget]:
         # TODO: ungrouped widgets
-        return [w.get_view(key) for w in self.widgets if key in w.views]
+        return [w.get_view(key, id=i) for i, w in enumerate(self.widgets) if key in w.views]
 
     def _iter_views(
         self,
@@ -123,6 +133,14 @@ class Dashboard:
     @property
     def views_json(self) -> dict[str, list[Widget]]:
         return {k: v for k, v in self._iter_views_json()}
+    
+    @model_serializer
+    def ser_model(self) -> dict[str, Any]:
+        return {
+            "filters": self.groupers,
+            "views": self.views_json,
+            "metadata": self.metadata,
+        }
 
 
 @distributed
