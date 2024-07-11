@@ -113,7 +113,9 @@ class Dashboard(BaseModel):
 
     def _get_view(self, key: CompositeFilter) -> list[Widget]:
         # TODO: ungrouped widgets
-        return [w.get_view(key, id=i) for i, w in enumerate(self.widgets) if key in w.views]
+        return [
+            w.get_view(key, id=i) for i, w in enumerate(self.widgets) if key in w.views
+        ]
 
     def _iter_views(
         self,
@@ -133,7 +135,7 @@ class Dashboard(BaseModel):
     @property
     def views_json(self) -> dict[str, list[Widget]]:
         return {k: v for k, v in self._iter_views_json()}
-    
+
     @property
     def filters_json(self):
         return [
@@ -148,7 +150,7 @@ class Dashboard(BaseModel):
             }
             for grouper_name, grouper_choices in self.groupers.items()
         ]
-    
+
     @model_serializer
     def ser_model(self) -> dict[str, Any]:
         return {
@@ -156,7 +158,6 @@ class Dashboard(BaseModel):
             "views": self.views_json,
             "metadata": self.metadata,
             "layout": [],  # this is a placeholder for future use by server
-
         }
 
 
