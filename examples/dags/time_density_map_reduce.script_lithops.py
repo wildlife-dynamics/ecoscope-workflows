@@ -225,5 +225,6 @@ if __name__ == "__main__":
     # outputs = set(f.result() for f in done)
     widgets = merge_widgets(all_widget_views)
     dashboard = gather_dashboard(widgets=widgets, **groupers)
-    print(dashboard)
+    json = dashboard.model_dump_json()
+    print(json)
     fexec.plot()
