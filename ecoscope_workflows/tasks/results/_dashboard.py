@@ -134,12 +134,29 @@ class Dashboard(BaseModel):
     def views_json(self) -> dict[str, list[Widget]]:
         return {k: v for k, v in self._iter_views_json()}
     
+    @property
+    def filters_json(self):
+        return [
+            {
+                "title": grouper_name.title().replace("_", " "),
+                "key": grouper_name,
+                "type": "select",  # FIXME: infer from type of values, or allow specifying
+                "options": [
+                    {"key": choice.title(), "value": choice}
+                    for choice in grouper_choices
+                ],
+            }
+            for grouper_name, grouper_choices in self.groupers.items()
+        ]
+    
     @model_serializer
     def ser_model(self) -> dict[str, Any]:
         return {
-            "filters": self.groupers,
+            "filters": self.filters_json,
             "views": self.views_json,
             "metadata": self.metadata,
+            "layout": [],  # this is a placeholder for future use by server
+
         }
 
 
