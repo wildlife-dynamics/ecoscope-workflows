@@ -101,15 +101,15 @@ def composite_filters_to_grouper_choices_dict(
 
 @dataclass
 class Metadata:
-    title: str
-    description: str
+    title: str = ""
+    description: str = ""
 
 
 class Dashboard(BaseModel):
     groupers: dict[GrouperName, GrouperChoices]
     keys: list[CompositeFilter]
     widgets: list[GroupedWidget]
-    metadata: Metadata = Field(default_factory=dict)
+    metadata: Metadata = Field(default_factory=Metadata)
 
     def _get_view(self, key: CompositeFilter) -> list[Widget]:
         # TODO: ungrouped widgets
