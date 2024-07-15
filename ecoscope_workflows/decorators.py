@@ -118,7 +118,11 @@ class DistributedTask:
                 "and post- call behavior is only modified when `self.validate=True`."
             )
         return (
-            validate_call(func_copy, validate_return=True)(*args, **kwargs)
+            validate_call(
+                func_copy,
+                validate_return=True,
+                config={"arbitrary_types_allowed": True},
+            )(*args, **kwargs)
             if self.validate
             else func_copy(*args, **kwargs)
         )

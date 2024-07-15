@@ -68,6 +68,15 @@ class EarthRangerClientProtocol(Protocol):
         until,
     ) -> None: ...
 
+    def get_patrol_observations_with_patrol_filter(
+        self,
+        since,
+        until,
+        patrol_type,
+        status,
+        include_patrol_details,
+    ) -> None: ...
+
 
 class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
     __ecoscope_connection_type__: ClassVar[str] = "earthranger"

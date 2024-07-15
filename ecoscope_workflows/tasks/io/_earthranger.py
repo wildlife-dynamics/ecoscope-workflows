@@ -5,12 +5,12 @@ import pandas as pd
 import pandera as pa
 from pydantic import Field
 
-from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.annotations import (
     DataFrame,
     EarthRangerClient,
     JsonSerializableDataFrameModel,
 )
+from ecoscope_workflows.decorators import distributed
 
 
 class SubjectGroupObservationsGDFSchema(JsonSerializableDataFrameModel):
@@ -45,4 +45,34 @@ def get_subjectgroup_observations(
         include_inactive=include_inactive,
         since=since,
         until=until,
+    )
+
+
+@distributed(tags=["io"])
+def get_patrol_observations(
+    client: EarthRangerClient,
+    since: Annotated[str, Field(description="Start date")],
+    until: Annotated[str, Field(description="End date")],
+    patrol_type: Annotated[
+        str,
+        Field(default=None, description="Comma-separated list of type of patrol UUID"),
+    ],
+    status: Annotated[
+        str,
+        Field(
+            default=None,
+            description="Comma-separated list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'",
+        ),
+    ],
+    include_patrol_details: Annotated[
+        bool, Field(default=False, description="Include patrol details")
+    ],
+) -> DataFrame[SubjectGroupObservationsGDFSchema]:
+    """Get observations for a patrol type from EarthRanger."""
+    return client.get_patrol_observations_with_patrol_filter(
+        since=since,
+        until=until,
+        patrol_type=patrol_type,
+        status=status,
+        include_patrol_details=include_patrol_details,
     )
