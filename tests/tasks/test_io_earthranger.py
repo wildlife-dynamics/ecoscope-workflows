@@ -33,7 +33,7 @@ def test_get_subject_group_observations():
     cached = gpd.read_parquet(
         str(
             files("ecoscope_workflows.tasks.io")
-            / "get-subjectgroup-observations.example-return.parquet"
+            / "get-subjectgroup-observations.example-return.updated.parquet"
         )
     )
 
