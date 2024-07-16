@@ -1,0 +1,12 @@
+name: patrol_workflow
+cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
+tasks:
+  get_patrol_observations: {}
+  process_relocations:
+    observations: get_patrol_observations
+  relocations_to_trajectory:
+    relocations: process_relocations
+  calculate_time_density:
+    trajectory_gdf: relocations_to_trajectory
+  draw_ecomap:
+    geodataframe: calculate_time_density

@@ -42,7 +42,7 @@ def test_get_patrol_observations():
         since="2011-01-01",
         until="2023-01-01",
         # MEP_Distance_Survey_Patrol
-        patrol_type=["0ef3bf48-b44c-4a4e-a145-7ab2e38c9a57"],
+        patrol_type="0ef3bf48-b44c-4a4e-a145-7ab2e38c9a57",
         status=None,
         include_patrol_details=True,
     )
