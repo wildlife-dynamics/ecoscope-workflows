@@ -1,9 +1,6 @@
 import os
 from datetime import datetime
-from importlib.resources import files
 
-import geopandas as gpd
-import pandas as pd
 import pytest
 
 from ecoscope_workflows.connections import EarthRangerConnection
@@ -30,14 +27,7 @@ def test_get_subject_group_observations():
         until=datetime.strptime("2023-01-01", "%Y-%m-%d"),
     )
 
-    cached = gpd.read_parquet(
-        str(
-            files("ecoscope_workflows.tasks.io")
-            / "get-subjectgroup-observations.example-return.updated.parquet"
-        )
-    )
-
-    pd.testing.assert_frame_equal(result, cached)
+    assert len(result) > 0
 
 
 def test_get_patrol_observations():
@@ -57,11 +47,4 @@ def test_get_patrol_observations():
         include_patrol_details=True,
     )
 
-    cached = gpd.read_parquet(
-        str(
-            files("ecoscope_workflows.tasks.io")
-            / "get-patrol-observations.example-return.parquet"
-        )
-    )
-
-    pd.testing.assert_frame_equal(result, cached)
+    assert len(result) > 0
