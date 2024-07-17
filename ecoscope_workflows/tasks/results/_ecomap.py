@@ -34,6 +34,9 @@ def draw_ecomap(
     north_arrow_kws: Annotated[
         dict, Field(description="Additional arguments for configuring the North Arrow.")
     ] = {},
+    output_path: Annotated[
+        str, Field(description="Path to store the output html file.")
+    ] = "",
 ) -> Annotated[str, Field()]:
     """
     Creates a map based on the provided layer definitions and configuration.
@@ -75,4 +78,4 @@ def draw_ecomap(
             m.add_polygon_layer(geodataframe, **style_kws)
 
     m.zoom_to_bounds(m.layers)
-    return m.to_html()
+    return m.to_html(output_path)

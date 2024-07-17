@@ -20,6 +20,9 @@ def draw_ecoplot(
         dict,
         Field(description="Style arguments passed to plotly.graph_objects.Scatter."),
     ],
+    output_path: Annotated[
+        str, Field(description="Path to store the output html file.")
+    ] = "",
 ) -> Annotated[str, Field()]:
     """
     Generates an EcoPlot from the provided params
@@ -49,13 +52,26 @@ def draw_ecoplot(
         data=[data],
     )
 
-    return plot.to_html(
-        default_height="100%",
-        default_width="100%",
-        config={
-            "autosizable": True,
-            "fillFrame": True,
-            "responsive": True,
-            "displayModeBar": False,
-        },
-    )
+    if output_path:
+        return plot.write_html(
+            file=output_path,
+            default_height="100%",
+            default_width="100%",
+            config={
+                "autosizable": True,
+                "fillFrame": True,
+                "responsive": True,
+                "displayModeBar": False,
+            },
+        )
+    else:
+        return plot.to_html(
+            default_height="100%",
+            default_width="100%",
+            config={
+                "autosizable": True,
+                "fillFrame": True,
+                "responsive": True,
+                "displayModeBar": False,
+            },
+        )
