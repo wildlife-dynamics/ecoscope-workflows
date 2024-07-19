@@ -4,7 +4,6 @@ import yaml
 from ecoscope_workflows.tasks.io import get_patrol_observations
 from ecoscope_workflows.tasks.preprocessing import process_relocations
 from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
-from ecoscope_workflows.tasks.analysis import calculate_time_density
 from ecoscope_workflows.tasks.results import draw_ecomap
 
 if __name__ == "__main__":
@@ -34,13 +33,8 @@ if __name__ == "__main__":
         **params["relocations_to_trajectory"],
     )
 
-    calculate_time_density_return = calculate_time_density.replace(validate=True)(
-        trajectory_gdf=relocations_to_trajectory_return,
-        **params["calculate_time_density"],
-    )
-
     draw_ecomap_return = draw_ecomap.replace(validate=True)(
-        geodataframe=calculate_time_density_return,
+        geodataframe=relocations_to_trajectory_return,
         **params["draw_ecomap"],
     )
 

@@ -6,7 +6,5 @@ tasks:
     observations: get_patrol_observations
   relocations_to_trajectory:
     relocations: process_relocations
-  calculate_time_density:
-    trajectory_gdf: relocations_to_trajectory
   draw_ecomap:
-    geodataframe: calculate_time_density
+    geodataframe: relocations_to_trajectory
