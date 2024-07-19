@@ -78,8 +78,11 @@ def draw_ecomap(
             m.add_polygon_layer(geodataframe, **style_kws)
 
     m.zoom_to_bounds(m.layers)
+    return_result = output_path
     if output_path:
         m.to_html(output_path)
-        return output_path
     else:
-        return m.to_html()
+        return_result = m.to_html()
+
+    # IMPORTANT: EXPLICTLY INCLUDE A RETURN STATEMENT AS AST IS NOT ABLE TO RECOGNIZE IT WITHIN AN IF STATEMENT
+    return return_result

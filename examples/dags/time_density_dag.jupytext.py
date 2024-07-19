@@ -181,6 +181,7 @@ title = ...
 title_kws = ...
 scale_kws = ...
 north_arrow_kws = ...
+output_path = ...
 
 
 # %%
@@ -204,8 +205,13 @@ match data_type:
     case "Polygon":
         m.add_polygon_layer(geodataframe, **style_kws)
 m.zoom_to_bounds(m.layers)
+return_result = output_path
+if output_path:
+    m.to_html(output_path)
+else:
+    return_result = m.to_html()
 
 # %%
 # return value from this section
 
-draw_ecomap_return = m.to_html()
+draw_ecomap_return = return_result
