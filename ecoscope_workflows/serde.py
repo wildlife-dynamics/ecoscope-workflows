@@ -9,7 +9,7 @@ def gpd_from_parquet_uri(uri: str):
     return gpd.read_parquet(uri)
 
 
-def gs_url_to_https_url(gs_url: str):
+def _gs_url_to_https_url(gs_url: str):
     assert gs_url.startswith("gs://")
     https_url = gs_url.replace("gs://", "https://storage.googleapis.com/")
     parts = https_url.split("/")
@@ -17,7 +17,7 @@ def gs_url_to_https_url(gs_url: str):
     return "/".join(parts[:4] + encoded_parts)
 
 
-def persist_text(text: str, root_path: str, filename: str) -> str:
+def _persist_text(text: str, root_path: str, filename: str) -> str:
     import fsspec
 
     aspath = Path(root_path)
@@ -37,7 +37,7 @@ def persist_text(text: str, root_path: str, filename: str) -> str:
     print(f"Parsing write url {dst_write} into read url...")
     # TODO: redo with structural pattern matching? or a storage class could handle this with a @property
     if dst_write.startswith("gs://"):
-        dst_read = gs_url_to_https_url(dst_write)
+        dst_read = _gs_url_to_https_url(dst_write)
     else:
         dst_read = dst_write
     print(f"Read url: {dst_read}")
