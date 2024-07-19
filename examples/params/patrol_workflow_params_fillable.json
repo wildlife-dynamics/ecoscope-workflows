@@ -108,59 +108,6 @@
         ],
         "type": "object"
     },
-    "calculate_time_density": {
-        "additionalProperties": false,
-        "properties": {
-            "pixel_size": {
-                "default": 250.0,
-                "title": "Pixel Size",
-                "type": "number",
-                "description": "Pixel size for raster profile."
-            },
-            "crs": {
-                "default": "ESRI:102022",
-                "title": "Crs",
-                "type": "string"
-            },
-            "nodata_value": {
-                "default": "nan",
-                "title": "Nodata Value",
-                "type": "number"
-            },
-            "band_count": {
-                "default": 1,
-                "title": "Band Count",
-                "type": "integer"
-            },
-            "max_speed_factor": {
-                "default": 1.05,
-                "title": "Max Speed Factor",
-                "type": "number"
-            },
-            "expansion_factor": {
-                "default": 1.3,
-                "title": "Expansion Factor",
-                "type": "number"
-            },
-            "percentiles": {
-                "default": [
-                    50.0,
-                    60.0,
-                    70.0,
-                    80.0,
-                    90.0,
-                    95.0
-                ],
-                "items": {
-                    "type": "number"
-                },
-                "title": "Percentiles",
-                "type": "array"
-            }
-        },
-        "required": [],
-        "type": "object"
-    },
     "draw_ecomap": {
         "additionalProperties": false,
         "properties": {
