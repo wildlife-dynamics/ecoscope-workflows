@@ -145,7 +145,7 @@ def test_resolve_client_from_env(named_mock_env):
         return client
 
     with patch.dict(os.environ, named_mock_env):
-        with patch("ecoscope_workflows.connections.EarthRangerIO", autospec=True):
+        with patch("ecoscope.io.EarthRangerIO", autospec=True):
             client = f(client="mep_dev")
             assert hasattr(client, "get_subjectgroup_observations")
             assert callable(client.get_subjectgroup_observations)
@@ -157,7 +157,7 @@ def test_resolve_client_from_toml(mock_toml_config: Path):
         return client
 
     with patch("ecoscope_workflows.config.PATH", mock_toml_config):
-        with patch("ecoscope_workflows.connections.EarthRangerIO", autospec=True):
+        with patch("ecoscope.io.EarthRangerIO", autospec=True):
             client = f(client="mep_dev")
             assert hasattr(client, "get_subjectgroup_observations")
             assert callable(client.get_subjectgroup_observations)
