@@ -71,7 +71,7 @@ def test_dag_params_jsonschema(spec: SpecFixture):
     dag_compiler = DagCompiler.from_spec(spec=spec.spec)
     params = dag_compiler.get_params_jsonschema()
     jsonschema_fname = _spec_path_to_jsonschema_fname(spec.path)
-    with open(EXAMPLES / "dags" / jsonschema_fname) as f:
+    with open(EXAMPLES / "params" / jsonschema_fname) as f:
         assert params == json.load(f)
 
 
@@ -80,7 +80,7 @@ def test_dag_params_fillable_yaml(spec: SpecFixture):
     yaml_str = dag_compiler.get_params_fillable_yaml()
     yaml = ruamel.yaml.YAML(typ="rt")
     yaml_fname = _spec_path_to_yaml_fname(spec.path)
-    with open(EXAMPLES / "dags" / yaml_fname) as f:
+    with open(EXAMPLES / "params" / yaml_fname) as f:
         assert yaml.load(yaml_str) == yaml.load(f)
 
 
@@ -126,7 +126,56 @@ params = {
           root_path:  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
           filename: "map.html"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of file to persist text to'))
         """
-    )
+    ),
+    "patrol_workflow.yaml": dedent(
+        """\
+get_patrol_observations:
+  client: "mep_dev" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
+  since: "2011-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
+  until: "2023-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
+  patrol_type: "0ef3bf48-b44c-4a4e-a145-7ab2e38c9a57" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default=None, description='Comma-separated list of type of patrol UUID'))
+  include_patrol_details: True # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False, default=False, description='Include patrol details'))
+  status: 'done'
+process_relocations:
+  filter_point_coords: [[180, 90], [0, 0]] # (list[list[float]], FieldInfo(annotation=NoneType, required=True))
+  relocs_columns: [
+      "patrol_id",
+      "patrol_start_time",
+      "patrol_end_time",
+      "patrol_type__display",
+      "groupby_col",
+      "fixtime",
+      "junk_status",
+      "extra__source",
+      "geometry",
+    ] # (list[str], FieldInfo(annotation=NoneType, required=True))
+relocations_to_trajectory:
+  min_length_meters: 0.001 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
+  max_length_meters: 10000 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
+  max_time_secs: 3600 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
+  min_time_secs: 1 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
+  max_speed_kmhr: 120 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
+  min_speed_kmhr: 0.0 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
+calculate_time_density:
+  pixel_size: 250.0 # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=250.0, description='Pixel size for raster profile.'))
+  crs: "ESRI:102022" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default='ESRI:102022'))
+  nodata_value: "nan" # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=nan, metadata=[_PydanticGeneralMetadata(allow_inf_nan=True)]))
+  band_count: 1 # (<class 'int'>, FieldInfo(annotation=NoneType, required=False, default=1))
+  max_speed_factor: 1.05 # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=1.05))
+  expansion_factor: 1.3 # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=1.3))
+  percentiles: [50.0, 60.0, 70.0, 80.0, 90.0, 95.0] # (list[float], FieldInfo(annotation=NoneType, required=False, default=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0]))
+draw_ecomap:
+  data_type: Polygon # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
+  style_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
+  tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
+  static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
+  title: "Patrol Time Density Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
+  title_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
+  scale_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
+  north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
+  output_path: "examples/output/ecoscope_patrol_time_density_map.html" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Path to store the output html file.'))
+        """
+    ),
 }
 
 
@@ -144,7 +193,10 @@ assert_that_stdout = {
         lambda out: "map.html" in out,
         lambda out: "jupyter.widget-state+json" in open(out).read(),
         lambda out: "ecoscope.mapping.map.EcoMap" in open(out).read(),
-    ]
+    ],
+    "patrol_workflow.yaml": [
+        lambda out: "ecoscope_patrol_time_density_map" in out,
+    ],
 }
 
 
@@ -169,7 +221,7 @@ def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
     dc.template = "script-sequential.jinja2"
     dc.testing = True
     dc.mock_tasks = end_to_end.mock_tasks
-    script = dc.generate_dag()
+    script = dc.generate_dag()  # TODO: mock get patrol obs?????????
     tmp = tmp_path / "tmp"
     tmp.mkdir()
     script_outpath = tmp / "script.py"
