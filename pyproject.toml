@@ -22,6 +22,8 @@ classifiers = [
 # keywords = []
 dependencies = [
     "dill",  # for function deep-copies (maybe there's a better way to do this)
+    "fsspec",
+    "lithops",
     "pandera",
     "pydantic",
     "pydantic-settings",

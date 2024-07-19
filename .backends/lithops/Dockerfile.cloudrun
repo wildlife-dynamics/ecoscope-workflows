@@ -1,0 +1,54 @@
+FROM python:3.10.12-slim-bookworm
+
+RUN apt-get update && apt-get install -y \
+        zip \
+        && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --upgrade setuptools six pip \
+    && pip install --no-cache-dir \
+        gunicorn \
+        pika \
+        flask \
+        gevent \
+        redis \
+        requests \
+        PyYAML \
+        kubernetes \
+        cloudpickle \
+        ps-mem \
+        tblib \
+        namegenerator \
+        google-cloud-storage \
+        google-api-python-client \
+        google-auth
+
+##
+RUN apt-get update && apt-get install -y \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir geopandas shapely
+RUN pip install --no-cache-dir pyarrow
+RUN pip install --no-cache-dir earthranger-client
+RUN pip install --no-cache-dir backoff
+RUN pip install --no-cache-dir earthengine-api rasterio
+RUN pip install --no-cache-dir numba scipy
+RUN pip install --no-cache-dir scikit-learn
+RUN pip install --no-cache-dir folium matplotlib selenium mapclassify
+RUN pip install --no-cache-dir gcsfs
+RUN pip install --no-cache-dir tomli
+RUN pip install --no-cache-dir "ecoscope-workflows @ git+https://github.com/wildlife-dynamics/ecoscope-workflows.git@split-apply-combine"
+RUN pip install --no-cache-dir -U "ecoscope @ git+https://github.com/wildlife-dynamics/ecoscope.git@db5fe0c502b9425bcfcbb39e9f56ad9a4be85208"
+RUN pip install --no-cache-dir "ecoscope-workflows @ git+https://github.com/wildlife-dynamics/ecoscope-workflows.git@split-apply-combine"
+##
+
+ENV PYTHONUNBUFFERED TRUE
+
+# Copy Lithops proxy and lib to the container image.
+ENV APP_HOME /lithops
+WORKDIR $APP_HOME
+
+COPY lithops_cloudrun.zip .
+RUN unzip lithops_cloudrun.zip && rm lithops_cloudrun.zip
+
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 1 --timeout 300 lithopsproxy:proxy
