@@ -122,6 +122,7 @@ params = {
           title_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
           scale_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
           north_arrow_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
+          output_path: "" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
         """
     )
 }

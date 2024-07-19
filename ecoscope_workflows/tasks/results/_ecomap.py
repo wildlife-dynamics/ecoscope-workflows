@@ -78,5 +78,8 @@ def draw_ecomap(
             m.add_polygon_layer(geodataframe, **style_kws)
 
     m.zoom_to_bounds(m.layers)
-    html = m.to_html(output_path)
-    return output_path if output_path else html
+    if output_path:
+        m.to_html(output_path)
+        return output_path
+    else:
+        return m.to_html()
