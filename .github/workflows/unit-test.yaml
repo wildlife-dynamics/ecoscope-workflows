@@ -28,6 +28,10 @@ jobs:
           python -m pip install -e ".[test]"
 
       - name: Test with pytest
+        env:
+          EARTHRANGER_SERVER: ${{ secrets.EARTHRANGER_SERVER }}
+          EARTHRANGER_USERNAME: ${{ secrets.EARTHRANGER_USERNAME }}
+          EARTHRANGER_PASSWORD: ${{ secrets.EARTHRANGER_PASSWORD }}
         run: |
           pytest tests -vvv
 
