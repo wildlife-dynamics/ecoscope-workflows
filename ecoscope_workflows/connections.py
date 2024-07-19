@@ -1,7 +1,14 @@
 from abc import ABC, abstractmethod
-from typing import Annotated, ClassVar, Generic, Type, TypeVar
+from typing import (
+    Annotated,
+    ClassVar,
+    Generic,
+    Protocol,
+    Type,
+    TypeVar,
+    runtime_checkable,
+)
 
-from ecoscope.io import EarthRangerIO
 from pydantic import Field, SecretStr
 from pydantic_settings import SettingsConfigDict
 
@@ -50,7 +57,28 @@ class DataConnection(ABC, _DataConnection, Generic[ClientProtocolType]):
         return cls.from_named_connection(name).get_client()
 
 
-class EarthRangerConnection(DataConnection[EarthRangerIO]):
+@runtime_checkable
+class EarthRangerClientProtocol(Protocol):
+    def get_subjectgroup_observations(
+        self,
+        subject_group_name: str,
+        include_subject_details: bool,
+        include_inactive: bool,
+        since,
+        until,
+    ) -> None: ...
+
+    def get_patrol_observations_with_patrol_filter(
+        self,
+        since,
+        until,
+        patrol_type,
+        status,
+        include_patrol_details,
+    ) -> None: ...
+
+
+class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
     __ecoscope_connection_type__: ClassVar[str] = "earthranger"
 
     server: Annotated[str, Field(description="EarthRanger API URL")]
@@ -59,7 +87,9 @@ class EarthRangerConnection(DataConnection[EarthRangerIO]):
     tcp_limit: Annotated[int, Field(description="TCP limit for API requests")]
     sub_page_size: Annotated[int, Field(description="Sub page size for API requests")]
 
-    def get_client(self) -> EarthRangerIO:
+    def get_client(self) -> EarthRangerClientProtocol:
+        from ecoscope.io import EarthRangerIO
+
         return EarthRangerIO(
             server=self.server,
             # TODO: token-based authentication

@@ -2,7 +2,6 @@ from inspect import ismethod
 from typing import Annotated, Any, TypeVar, get_args, get_origin
 
 import pandera as pa
-from ecoscope.io import EarthRangerIO
 from pydantic import GetJsonSchemaHandler
 from pydantic.functional_validators import BeforeValidator
 from pydantic.json_schema import JsonSchemaValue, WithJsonSchema
@@ -10,6 +9,7 @@ from pydantic_core import core_schema as cs
 
 from ecoscope_workflows.connections import (
     DataConnection,
+    EarthRangerClientProtocol,
     EarthRangerConnection,
 )
 
@@ -75,7 +75,7 @@ def connection_from_client(obj) -> DataConnection:
 
 
 EarthRangerClient = Annotated[
-    EarthRangerIO,
+    EarthRangerClientProtocol,
     BeforeValidator(EarthRangerConnection.client_from_named_connection),
     WithJsonSchema(
         {"type": "string", "description": "A named EarthRanger connection."}
