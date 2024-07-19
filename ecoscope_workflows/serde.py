@@ -17,7 +17,7 @@ def gs_url_to_https_url(gs_url: str):
     return "/".join(parts[:4] + encoded_parts)
 
 
-def persist_text(text: str, root_path: str) -> str:
+def persist_text(text: str, root_path: str, filename: str) -> str:
     import fsspec
 
     aspath = Path(root_path)
@@ -27,9 +27,7 @@ def persist_text(text: str, root_path: str) -> str:
         if not aspath.is_absolute():
             root_path = aspath.absolute().as_posix()
 
-    # FIXME: the name of the file should be dynamically set to distinguish
-    # between different html map outputs for the same workflow
-    dst_write = os.path.join(root_path, "map.html")
+    dst_write = os.path.join(root_path, filename)
     try:
         with fsspec.open(dst_write, "w") as f:
             f.write(text)
