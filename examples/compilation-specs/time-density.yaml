@@ -10,3 +10,5 @@ tasks:
     trajectory_gdf: relocations_to_trajectory
   draw_ecomap:
     geodataframe: calculate_time_density
+  persist_text:
+    text: draw_ecomap
