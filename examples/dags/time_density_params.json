@@ -210,6 +210,12 @@
                 "title": "North Arrow Kws",
                 "type": "object",
                 "description": "Additional arguments for configuring the North Arrow."
+            },
+            "output_path": {
+                "default": "",
+                "title": "Output Path",
+                "type": "string",
+                "description": "Path to store the output html file."
             }
         },
         "required": [
