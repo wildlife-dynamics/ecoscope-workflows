@@ -1,12 +1,33 @@
 name: calculate_time_density
 cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
 tasks:
-  get_subjectgroup_observations: {}
-  process_relocations:
-    observations: get_subjectgroup_observations
-  relocations_to_trajectory:
-    relocations: process_relocations
-  calculate_time_density:
-    trajectory_gdf: relocations_to_trajectory
-  draw_ecomap:
-    geodataframe: calculate_time_density
+  get_obs_from_er:
+    name: Get SubjectGroup Observations From EarthRanger
+    uses: ecoscope_workflows.tasks.io.get_subjectgroup_observations
+    from: builtins
+    with: {}
+  process_relocs:
+    name: Process Relocations
+    uses: ecoscope_workflows.tasks.preprocessing.process_relocations
+    from: builtins
+    with:
+      observations: get_obs_from_er.return_value
+  relocs_to_traj:
+    name: Relocations to Trajectory
+    id: relocs_to_traj
+    uses: ecoscope_workflows.tasks.preprocessing.relocations_to_trajectory
+    from: builtins
+    with:
+      relocations: process_relocs.return_value
+  calc_time_density:
+    name: Calculate Time Density
+    uses: ecoscope_workflows.tasks.analysis.calculate_time_density
+    from: builtins
+    with:
+      trajectory_gdf: relocs_to_traj.return_value
+  map_time_density:
+    name: Draw Ecomap
+    uses: ecoscope_workflows.tasks.results.draw_ecomap
+    from: builtins
+    with:
+      geodataframe: calc_time_density.return_value
