@@ -64,7 +64,7 @@ class GroupedWidget(WidgetBase):
 
 
 @distributed
-def merge_widgets(
+def merge_widget_views(
     widgets: Annotated[list[GroupedWidgetDict], Field()],
 ) -> list[GroupedWidget]:
     merged = {}
