@@ -5,7 +5,7 @@ from pydantic import Field
 from ecoscope_workflows.decorators import distributed
 
 
-@distributed(tags=["io"])
+@distributed
 def persist_text(
     text: Annotated[str, Field(description="Text to persist")],
     root_path: Annotated[str, Field(description="Root path to persist text to")],
