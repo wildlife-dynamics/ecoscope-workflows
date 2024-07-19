@@ -6,6 +6,7 @@ from ecoscope_workflows.tasks.preprocessing import process_relocations
 from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
 from ecoscope_workflows.tasks.analysis import calculate_time_density
 from ecoscope_workflows.tasks.results import draw_ecomap
+from ecoscope_workflows.tasks.io import persist_text
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -46,4 +47,9 @@ if __name__ == "__main__":
         **params["draw_ecomap"],
     )
 
-    print(draw_ecomap_return)
+    persist_text_return = persist_text.replace(validate=True)(
+        text=draw_ecomap_return,
+        **params["persist_text"],
+    )
+
+    print(persist_text_return)
