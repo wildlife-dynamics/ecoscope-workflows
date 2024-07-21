@@ -98,12 +98,12 @@ class EndToEndFixture:
 # TODO: package this alongside task somehow
 assert_that_stdout = {
     "time-density.yaml": [
-        lambda out: "map.html" in out,
+        lambda out: "td_map.html" in out,
         lambda out: "jupyter.widget-state+json" in open(out).read(),
         lambda out: "ecoscope.mapping.map.EcoMap" in open(out).read(),
     ],
     "patrol_workflow.yaml": [
-        lambda out: "examples/output/ecoscope_patrol_trajectory_map.html" in out,
+        lambda out: "patrol_traj_map.html" in out,
     ],
 }
 
@@ -137,16 +137,6 @@ def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
     script_outpath = tmp / "script.py"
     with open(script_outpath, mode="w") as f:
         f.write(script)
-
-    yaml = ruamel.yaml.YAML(typ="safe")
-
-    # modify params `persist_text.root_path` to be the tmp directory
-    params_dict = yaml.load(end_to_end.params)
-    params_dict["persist_text"]["root_path"] = str(tmp)
-
-    params_outpath = tmp / "params.yaml"
-    with open(params_outpath, "w") as f:
-        yaml.dump(params_dict, f)
 
     cmd = [
         "python3",

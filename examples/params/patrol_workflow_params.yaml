@@ -34,4 +34,6 @@ draw_ecomap:
   title_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
   scale_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
   north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
-  output_path: "examples/output/ecoscope_patrol_trajectory_map.html" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Path to store the output html file.'))
+persist_text:
+  root_path: "examples/output/" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
+  filename: "patrol_traj_map.html" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of file to persist text to'))

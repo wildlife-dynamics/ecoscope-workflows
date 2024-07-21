@@ -52,7 +52,7 @@ relocs_columns = ...
 # %%
 # the code for Process Relocations
 
-from ecoscope.base import Relocations, RelocsCoordinateFilter
+from ecoscope.base import RelocsCoordinateFilter, Relocations
 
 relocs = Relocations(observations)
 relocs.apply_reloc_filter(
@@ -91,7 +91,8 @@ min_speed_kmhr = ...
 # %%
 # the code for Relocations To Trajectory
 
-from ecoscope.base import Relocations, Trajectory, TrajSegFilter
+from ecoscope.base import Relocations
+from ecoscope.base import Trajectory, TrajSegFilter
 
 traj = Trajectory.from_relocations(Relocations(relocations))
 traj_seg_filter = TrajSegFilter(
@@ -135,7 +136,6 @@ percentiles = ...
 # the code for Calculate Time Density
 
 import tempfile
-
 from ecoscope.analysis.percentile import get_percentile_area
 from ecoscope.analysis.UD import calculate_etd_range
 from ecoscope.io.raster import RasterProfile
@@ -181,7 +181,6 @@ title = ...
 title_kws = ...
 scale_kws = ...
 north_arrow_kws = ...
-output_path = ...
 
 
 # %%
@@ -205,8 +204,35 @@ match data_type:
     case "Polygon":
         m.add_polygon_layer(geodataframe, **style_kws)
 m.zoom_to_bounds(m.layers)
-return_result = output_path
-if output_path:
-    m.to_html(output_path)
-else:
-    return_result = m.to_html()
+
+# %%
+# return value from this section
+
+draw_ecomap_return = m.to_html()
+
+
+# %% [markdown]
+# ## Persist Text
+# %%
+# dependencies assignments
+
+text = draw_ecomap_return
+
+
+# %%
+# parameters
+
+root_path = ...
+filename = ...
+
+
+# %%
+# the code for Persist Text
+
+"Persist text to a file or cloud storage object."
+from ecoscope_workflows.serde import _persist_text
+
+# %%
+# return value from this section
+
+persist_text_return = _persist_text(text, root_path, filename)

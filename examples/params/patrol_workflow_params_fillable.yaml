@@ -1,5 +1,5 @@
 get_patrol_observations:
-  client:   # (<class 'ecoscope.io.earthranger.EarthRangerIO'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
+  client:   # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
   since:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
   until:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
   patrol_type:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default=None, description='Comma-separated list of type of patrol UUID'))
@@ -24,4 +24,6 @@ draw_ecomap:
   title_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Title.'))
   scale_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Scale Bar.'))
   north_arrow_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the North Arrow.'))
-  output_path:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Path to store the output html file.'))
+persist_text:
+  root_path:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
+  filename:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of file to persist text to'))

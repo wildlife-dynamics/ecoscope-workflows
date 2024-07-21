@@ -1,5 +1,5 @@
 get_subjectgroup_observations:
-  client: "MEP_DEV" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
+  client: "mep_dev" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
   subject_group_name: "Elephants" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of EarthRanger Subject'))
   include_inactive: True # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether or not to include inactive subjects'))
   since: "2011-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
@@ -31,7 +31,6 @@ draw_ecomap:
   title_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
   scale_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
   north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
-  output_path: "" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
 persist_text:
-  root_path: # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
-  filename: "map.html" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of file to persist text to'))
+  root_path: "examples/output/" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
+  filename: "td_map.html" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of file to persist text to'))

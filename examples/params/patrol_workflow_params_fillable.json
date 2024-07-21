@@ -161,17 +161,31 @@
                 "title": "North Arrow Kws",
                 "type": "object",
                 "description": "Additional arguments for configuring the North Arrow."
-            },
-            "output_path": {
-                "default": "",
-                "title": "Output Path",
-                "type": "string",
-                "description": "Path to store the output html file."
             }
         },
         "required": [
             "data_type",
             "style_kws"
+        ],
+        "type": "object"
+    },
+    "persist_text": {
+        "additionalProperties": false,
+        "properties": {
+            "root_path": {
+                "title": "Root Path",
+                "type": "string",
+                "description": "Root path to persist text to"
+            },
+            "filename": {
+                "title": "Filename",
+                "type": "string",
+                "description": "Name of file to persist text to"
+            }
+        },
+        "required": [
+            "root_path",
+            "filename"
         ],
         "type": "object"
     }

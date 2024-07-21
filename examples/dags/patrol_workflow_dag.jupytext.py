@@ -132,7 +132,6 @@ title = ...
 title_kws = ...
 scale_kws = ...
 north_arrow_kws = ...
-output_path = ...
 
 
 # %%
@@ -156,13 +155,35 @@ match data_type:
     case "Polygon":
         m.add_polygon_layer(geodataframe, **style_kws)
 m.zoom_to_bounds(m.layers)
-return_result = output_path
-if output_path:
-    m.to_html(output_path)
-else:
-    return_result = m.to_html()
 
 # %%
 # return value from this section
 
-draw_ecomap_return = return_result
+draw_ecomap_return = m.to_html()
+
+
+# %% [markdown]
+# ## Persist Text
+# %%
+# dependencies assignments
+
+text = draw_ecomap_return
+
+
+# %%
+# parameters
+
+root_path = ...
+filename = ...
+
+
+# %%
+# the code for Persist Text
+
+"Persist text to a file or cloud storage object."
+from ecoscope_workflows.serde import _persist_text
+
+# %%
+# return value from this section
+
+persist_text_return = _persist_text(text, root_path, filename)
