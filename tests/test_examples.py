@@ -122,6 +122,9 @@ params = {
           title_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
           scale_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
           north_arrow_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
+        persist_text:
+          root_path:  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
+          filename: "map.html"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of file to persist text to'))
         """
     )
 }
@@ -138,8 +141,9 @@ class EndToEndFixture:
 # TODO: package this alongside task somehow
 assert_that_stdout = {
     "time-density.yaml": [
-        lambda out: "jupyter.widget-state+json" in out,
-        lambda out: "ecoscope.mapping.map.EcoMap" in out,
+        lambda out: "map.html" in out,
+        lambda out: "jupyter.widget-state+json" in open(out).read(),
+        lambda out: "ecoscope.mapping.map.EcoMap" in open(out).read(),
     ]
 }
 
@@ -172,9 +176,15 @@ def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
     with open(script_outpath, mode="w") as f:
         f.write(script)
 
+    yaml = ruamel.yaml.YAML(typ="safe")
+
+    # modify params `persist_text.root_path` to be the tmp directory
+    params_dict = yaml.load(end_to_end.params)
+    params_dict["persist_text"]["root_path"] = str(tmp)
+
     params_outpath = tmp / "params.yaml"
     with open(params_outpath, "w") as f:
-        f.write(end_to_end.params)
+        yaml.dump(params_dict, f)
 
     cmd = [
         "python3",
@@ -187,4 +197,4 @@ def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
     out = subprocess.run(cmd, capture_output=True, text=True)
     assert out.returncode == 0
     for assert_fn in end_to_end.assert_that_stdout:
-        assert assert_fn(out.stdout)
+        assert assert_fn(out.stdout.strip())
