@@ -41,21 +41,15 @@ class WidgetSingleView(WidgetBase):
 
 
 @dataclass
-class WidgetView(WidgetBase):
-    id: int
-    data: WidgetData
-
-
-@dataclass
 class GroupedWidget(WidgetBase):
     views: dict[CompositeFilter, WidgetData]
 
-    def get_view(self, key: CompositeFilter, id: int) -> WidgetView:
-        return WidgetView(
-            id=id,
+    def get_view(self, view: CompositeFilter) -> WidgetSingleView:
+        return WidgetSingleView(
             widget_type=self.widget_type,
             title=self.title,
-            data=self.views[key],
+            view=view,
+            data=self.views[view],
         )
 
     def __ior__(self, other: "GroupedWidget"):

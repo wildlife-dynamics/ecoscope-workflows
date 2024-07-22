@@ -160,19 +160,19 @@ def test_merge_widget_views_multiple_widgets():
     ]
 
 
-# def test_grouped_widget_get_view():
-#     grouped = GroupedWidget(
-#         widget_type="map",
-#         title="A Great Map",
-#         views={
-#             ("month", "=", "january"): "<div>Map jan</div>",
-#             ("month", "=", "february"): "<div>Map feb</div>",
-#         },
-#     )
-#     view = grouped.get_view(("month", "=", "january"), 1)
-#     assert view == WidgetSingleView(
-#         widget_type="map",
-#         title="A Great Map",
-#         view=("month", "=", "january"),
-#         data="<div>Map jan</div>",
-#     )
+def test_grouped_widget_get_view():
+    grouped = GroupedWidget(
+        widget_type="map",
+        title="A Great Map",
+        views={
+            ("month", "=", "january"): "<div>Map jan</div>",
+            ("month", "=", "february"): "<div>Map feb</div>",
+        },
+    )
+    view = grouped.get_view(("month", "=", "january"))
+    assert view == WidgetSingleView(
+        widget_type="map",
+        title="A Great Map",
+        view=("month", "=", "january"),
+        data="<div>Map jan</div>",
+    )
