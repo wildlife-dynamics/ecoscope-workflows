@@ -3,24 +3,23 @@ import re
 import pytest
 
 from ecoscope_workflows.tasks.results import (
-    create_widget_single_view,
+    create_map_widget_single_view,
     merge_widget_views,
 )
 from ecoscope_workflows.tasks.results._widgets import GroupedWidget, WidgetSingleView
 
 
-def test_create_widget_single_view():
-    widget_type = "map"
+def test_create_map_widget_single_view():
     title = "A Great Map"
-    filter = (("month", "=", "january"), ("year", "=", "2022"))
-    data = "<div>Map</div>"
+    view = (("month", "=", "january"), ("year", "=", "2022"))
+    data = "/path/to/precomputed/jan/2022/map.html"
 
-    widget = create_widget_single_view(widget_type, title, filter, data)
+    widget = create_map_widget_single_view(title, data, view)
     assert widget == WidgetSingleView(
-        widget_type=widget_type,
+        widget_type="map",
         title=title,
-        view=filter,
         data=data,
+        view=view,
     )
 
 
@@ -29,16 +28,16 @@ def test_grouped_widget_merge():
         widget_type="map",
         title="A Great Map",
         views={
-            ("month", "=", "january"): "<div>Map jan</div>",
-            ("month", "=", "february"): "<div>Map feb</div>",
+            ("month", "=", "january"): "/path/to/precomputed/jan/map.html",
+            ("month", "=", "february"): "/path/to/precomputed/feb/map.html",
         },
     )
     widget2 = GroupedWidget(
         widget_type="map",
         title="A Great Map",
         views={
-            ("month", "=", "march"): "<div>Map mar</div>",
-            ("month", "=", "april"): "<div>Map apr</div>",
+            ("month", "=", "march"): "/path/to/precomputed/mar/map.html",
+            ("month", "=", "april"): "/path/to/precomputed/apr/map.html",
         },
     )
     widget1 |= widget2
@@ -46,10 +45,10 @@ def test_grouped_widget_merge():
         widget_type="map",
         title="A Great Map",
         views={
-            ("month", "=", "january"): "<div>Map jan</div>",
-            ("month", "=", "february"): "<div>Map feb</div>",
-            ("month", "=", "march"): "<div>Map mar</div>",
-            ("month", "=", "april"): "<div>Map apr</div>",
+            ("month", "=", "january"): "/path/to/precomputed/jan/map.html",
+            ("month", "=", "february"): "/path/to/precomputed/feb/map.html",
+            ("month", "=", "march"): "/path/to/precomputed/mar/map.html",
+            ("month", "=", "april"): "/path/to/precomputed/apr/map.html",
         },
     )
 
@@ -59,16 +58,16 @@ def test_grouped_widget_incompatible_merge_raises():
         widget_type="map",
         title="A Great Map",
         views={
-            ("month", "=", "january"): "<div>Map jan</div>",
-            ("month", "=", "february"): "<div>Map feb</div>",
+            ("month", "=", "january"): "/path/to/precomputed/jan/map.html",
+            ("month", "=", "february"): "/path/to/precomputed/feb/map.html",
         },
     )
     widget2 = GroupedWidget(
         widget_type="map",
         title="A Better Map",
         views={
-            ("month", "=", "march"): "<div>Map mar</div>",
-            ("month", "=", "april"): "<div>Map apr</div>",
+            ("month", "=", "march"): "/path/to/precomputed/mar/map.html",
+            ("month", "=", "april"): "/path/to/precomputed/apr/map.html",
         },
     )
     with pytest.raises(
@@ -86,13 +85,13 @@ def test_merge_widget_views():
         widget_type="map",
         title="A Great Map",
         view=("month", "=", "january"),
-        data="<div>Map jan</div>",
+        data="/path/to/precomputed/jan/map.html",
     )
     view2 = WidgetSingleView(
         widget_type="map",
         title="A Great Map",
         view=("month", "=", "february"),
-        data="<div>Map feb</div>",
+        data="/path/to/precomputed/feb/map.html",
     )
     merged = merge_widget_views([view1, view2])
     assert merged == [
@@ -100,8 +99,8 @@ def test_merge_widget_views():
             widget_type="map",
             title="A Great Map",
             views={
-                ("month", "=", "january"): "<div>Map jan</div>",
-                ("month", "=", "february"): "<div>Map feb</div>",
+                ("month", "=", "january"): "/path/to/precomputed/jan/map.html",
+                ("month", "=", "february"): "/path/to/precomputed/feb/map.html",
             },
         ),
     ]
@@ -112,25 +111,25 @@ def test_merge_widget_views_multiple_widgets():
         widget_type="map",
         title="A Great Map",
         view=("month", "=", "january"),
-        data="<div>Map jan</div>",
+        data="/path/to/precomputed/jan/map.html",
     )
     widget1_view2 = WidgetSingleView(
         widget_type="map",
         title="A Great Map",
         view=("month", "=", "february"),
-        data="<div>Map feb</div>",
+        data="/path/to/precomputed/feb/map.html",
     )
     widget2_view1 = WidgetSingleView(
         widget_type="plot",
         title="Super Cool Plot",
         view=("month", "=", "january"),
-        data="<div>Plot jan</div>",
+        data="/path/to/precomputed/jan/plot.html",
     )
     widget2_view2 = WidgetSingleView(
         widget_type="plot",
         title="Super Cool Plot",
         view=("month", "=", "february"),
-        data="<div>Plot feb</div>",
+        data="/path/to/precomputed/feb/plot.html",
     )
     merged = merge_widget_views(
         [
@@ -145,16 +144,16 @@ def test_merge_widget_views_multiple_widgets():
             widget_type="map",
             title="A Great Map",
             views={
-                ("month", "=", "january"): "<div>Map jan</div>",
-                ("month", "=", "february"): "<div>Map feb</div>",
+                ("month", "=", "january"): "/path/to/precomputed/jan/map.html",
+                ("month", "=", "february"): "/path/to/precomputed/feb/map.html",
             },
         ),
         GroupedWidget(
             widget_type="plot",
             title="Super Cool Plot",
             views={
-                ("month", "=", "january"): "<div>Plot jan</div>",
-                ("month", "=", "february"): "<div>Plot feb</div>",
+                ("month", "=", "january"): "/path/to/precomputed/jan/plot.html",
+                ("month", "=", "february"): "/path/to/precomputed/feb/plot.html",
             },
         ),
     ]
@@ -165,8 +164,8 @@ def test_grouped_widget_get_view():
         widget_type="map",
         title="A Great Map",
         views={
-            ("month", "=", "january"): "<div>Map jan</div>",
-            ("month", "=", "february"): "<div>Map feb</div>",
+            ("month", "=", "january"): "/path/to/precomputed/jan/map.html",
+            ("month", "=", "february"): "/path/to/precomputed/feb/map.html",
         },
     )
     view = grouped.get_view(("month", "=", "january"))
@@ -174,5 +173,5 @@ def test_grouped_widget_get_view():
         widget_type="map",
         title="A Great Map",
         view=("month", "=", "january"),
-        data="<div>Map jan</div>",
+        data="/path/to/precomputed/jan/map.html",
     )

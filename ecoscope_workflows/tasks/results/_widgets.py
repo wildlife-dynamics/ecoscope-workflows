@@ -9,24 +9,19 @@ from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.serde import CompositeFilter
 
 WidgetTypes = Literal["plot", "map", "text", "single_value"]
-WidgetData: TypeAlias = Path | Url | str | int | float  # any other types?
 
+PrecomputedHTMLWidgetData: TypeAlias = Path | Url
+TextWidgetData: TypeAlias = str
+SingleValueWidgetData: TypeAlias = int | float
 
-WIDGET_TYPES_ALLOWABLE_DATA: dict[str, tuple] = {
-    # if a plot or a map is a `str`, it's not intended to be a str of raw
-    # html content, but rather a string that can be parsed to a Path or URL.
-    # this would happen if we pass a str value and run the create widget task
-    # _without_ validate=True, and therefore the value is not parsed.
-    "plot": (str, Path, Url),
-    "map": (str, Path, Url),
-    "text": (str,),
-    "single_value": (int, float),
-}
+WidgetData: TypeAlias = (
+    PrecomputedHTMLWidgetData | TextWidgetData | SingleValueWidgetData
+)
 
 
 @dataclass
 class WidgetBase:
-    widget_type: str
+    widget_type: WidgetTypes
     title: str
 
 
@@ -54,9 +49,7 @@ class GroupedWidget(WidgetBase):
         return (self.widget_type, self.title)
 
     def __ior__(self, other: "GroupedWidget"):
-        """Implements the in-place or operator, i.e. `|=`,
-        which is used to merge two GroupedWidgets.
-        """
+        """Implements the in-place or operator, i.e. `|=`, used to merge two GroupedWidgets."""
         if self.merge_key != other.merge_key:
             raise ValueError(
                 "Cannot merge GroupedWidgets with different merge keys: "
@@ -67,20 +60,69 @@ class GroupedWidget(WidgetBase):
 
 
 @distributed
-def create_widget_single_view(
-    widget_type: Annotated[WidgetTypes, Field(description="The type of widget.")],
-    title: str,
-    view: CompositeFilter,
-    data: WidgetData,
-) -> Annotated[WidgetSingleView, Field()]:
-    # maybe there's a way to express the relationships expressed by WIDGET_TYPES_ALLOWABLE_DATA
-    # in the function signature directly? a BaseModel could do this easily, but in general I've
-    # been trying to avoid nested arguments for clarity. but pushing this assert to the signature
-    # would allow us to more easily do static checks on inputs, rather than failing at runtime if
-    # there is a mismatch. for now this will do but this is somethign to keep in mind,
-    assert isinstance(data, WIDGET_TYPES_ALLOWABLE_DATA[widget_type])
+def create_map_widget_single_view(
+    title: Annotated[str, Field(description="The title of the widget")],
+    data: Annotated[
+        PrecomputedHTMLWidgetData, Field(description="Path to precomputed HTML")
+    ],
+    view: Annotated[
+        CompositeFilter, Field(description="If grouped, the view of the widget")
+    ],
+) -> WidgetSingleView:
     return WidgetSingleView(
-        widget_type=widget_type,
+        widget_type="map",
+        title=title,
+        view=view,
+        data=data,
+    )
+
+
+@distributed
+def create_plot_widget_single_view(
+    title: Annotated[str, Field(description="The title of the widget")],
+    data: Annotated[
+        PrecomputedHTMLWidgetData, Field(description="Path to precomputed HTML")
+    ],
+    view: Annotated[
+        CompositeFilter, Field(description="If grouped, the view of the widget")
+    ],
+) -> WidgetSingleView:
+    return WidgetSingleView(
+        widget_type="plot",
+        title=title,
+        view=view,
+        data=data,
+    )
+
+
+@distributed
+def create_text_widget_single_view(
+    title: Annotated[str, Field(description="The title of the widget")],
+    data: Annotated[TextWidgetData, Field(description="Text to display.")],
+    view: Annotated[
+        CompositeFilter, Field(description="If grouped, the view of the widget")
+    ],
+) -> WidgetSingleView:
+    return WidgetSingleView(
+        widget_type="text",
+        title=title,
+        view=view,
+        data=data,
+    )
+
+
+@distributed
+def create_single_value_widget_single_view(
+    title: Annotated[str, Field(description="The title of the widget")],
+    data: Annotated[
+        PrecomputedHTMLWidgetData, Field(description="Path to precomputed HTML")
+    ],
+    view: Annotated[
+        CompositeFilter, Field(description="If grouped, the view of the widget")
+    ],
+) -> WidgetSingleView:
+    return WidgetSingleView(
+        widget_type="single_value",
         title=title,
         view=view,
         data=data,
