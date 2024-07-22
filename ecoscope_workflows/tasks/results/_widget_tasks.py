@@ -96,7 +96,7 @@ def merge_widget_views(
 ) -> Annotated[list[GroupedWidget], Field(description="The merged widgets")]:
     from ecoscope_workflows.tasks.results._widget_types import GroupedWidget
 
-    _widgets = [
+    as_grouped_widgets = [
         GroupedWidget(
             widget_type=w.widget_type,
             title=w.title,
@@ -105,9 +105,9 @@ def merge_widget_views(
         for w in widgets
     ]
     merged: dict[tuple[str, str], GroupedWidget] = {}
-    for w in _widgets:
-        if w.merge_key not in merged:
-            merged[w.merge_key] = w
+    for gw in as_grouped_widgets:
+        if gw.merge_key not in merged:
+            merged[gw.merge_key] = gw
         else:
-            merged[w.merge_key] |= w
+            merged[gw.merge_key] |= gw
     return list(merged.values())
