@@ -9,7 +9,10 @@ from ecoscope_workflows.tasks.results import (
     create_single_value_widget_single_view,
     merge_widget_views,
 )
-from ecoscope_workflows.tasks.results._widgets import GroupedWidget, WidgetSingleView
+from ecoscope_workflows.tasks.results._widget_tasks import (
+    GroupedWidget,
+    WidgetSingleView,
+)
 
 
 def test_create_map_widget_single_view():
