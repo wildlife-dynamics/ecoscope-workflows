@@ -29,10 +29,15 @@ class WidgetBase:
     widget_type: str
     title: str
 
+    @property
+    def merge_key(self):
+        return (self.widget_type, self.title)
+
 
 @dataclass
 class WidgetSingleView(WidgetBase):
-    views: dict[CompositeFilter, WidgetData]
+    view: CompositeFilter
+    data: WidgetData
 
 
 @dataclass
@@ -70,7 +75,8 @@ def create_widget_single_view(
     return WidgetSingleView(
         widget_type=widget_type,
         title=title,
-        views={view: data},
+        view=view,
+        data=data,
     )
 
 
@@ -82,13 +88,23 @@ def _merge_views(w1: GroupedWidget, w2: GroupedWidget):
 
 @distributed
 def merge_widget_views(
-    widgets: Annotated[list[GroupedWidget], Field()],
+    widgets: Annotated[list[WidgetSingleView], Field()],
 ) -> list[GroupedWidget]:
+    # cast all WidgetSingleViews to GroupedWidgets with a single view,
+    # which makes merging easier
+    _widgets = [
+        GroupedWidget(
+            widget_type=w.widget_type,
+            title=w.title,
+            views={w.view: w.data},
+        )
+        for w in widgets
+    ]
+    # then merge all views with the same merge key
     merged: dict[tuple[str, str], GroupedWidget] = {}
-    for w in widgets:
-        key = (w.widget_type, w.title)
-        if key not in merged:
-            merged[key] = w
+    for w in _widgets:
+        if w.merge_key not in merged:
+            merged[w.merge_key] = w
         else:
-            merged[key].views = _merge_views(merged[key], w)
+            merged[w.merge_key].views = _merge_views(merged[w.merge_key], w)
     return [GroupedWidget(**asdict(w)) for w in list(merged.values())]

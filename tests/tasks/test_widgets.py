@@ -15,7 +15,8 @@ def test_create_widget_single_view():
     assert widget == WidgetSingleView(
         widget_type=widget_type,
         title=title,
-        views={filter: data},
+        view=filter,
+        data=data,
     )
 
 
@@ -23,12 +24,14 @@ def test_merge_widget_views():
     view1 = WidgetSingleView(
         widget_type="map",
         title="A Great Map",
-        views={("month", "=", "january"): "<div>Map jan</div>"},
+        view=("month", "=", "january"),
+        data="<div>Map jan</div>",
     )
     view2 = WidgetSingleView(
         widget_type="map",
         title="A Great Map",
-        views={("month", "=", "february"): "<div>Map feb</div>"},
+        view=("month", "=", "february"),
+        data="<div>Map feb</div>",
     )
     merged = merge_widget_views([view1, view2])
     assert merged == [
@@ -47,22 +50,26 @@ def test_merge_widget_views_multiple_widgets():
     widget1_view1 = WidgetSingleView(
         widget_type="map",
         title="A Great Map",
-        views={("month", "=", "january"): "<div>Map jan</div>"},
+        view=("month", "=", "january"),
+        data="<div>Map jan</div>",
     )
     widget1_view2 = WidgetSingleView(
         widget_type="map",
         title="A Great Map",
-        views={("month", "=", "february"): "<div>Map feb</div>"},
+        view=("month", "=", "february"),
+        data="<div>Map feb</div>",
     )
     widget2_view1 = WidgetSingleView(
         widget_type="plot",
         title="Super Cool Plot",
-        views={("month", "=", "january"): "<div>Plot jan</div>"},
+        view=("month", "=", "january"),
+        data="<div>Plot jan</div>",
     )
     widget2_view2 = WidgetSingleView(
         widget_type="plot",
         title="Super Cool Plot",
-        views={("month", "=", "february"): "<div>Plot feb</div>"},
+        view=("month", "=", "february"),
+        data="<div>Plot feb</div>",
     )
     merged = merge_widget_views(
         [
