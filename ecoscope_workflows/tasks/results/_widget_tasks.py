@@ -1,62 +1,15 @@
-from typing import Annotated, TypeAlias, Literal
-from dataclasses import dataclass
-from pathlib import Path
+from typing import Annotated
 
 from pydantic import Field
-from pydantic_core import Url
 
 from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.serde import CompositeFilter
-
-WidgetTypes = Literal["plot", "map", "text", "single_value"]
-
-PrecomputedHTMLWidgetData: TypeAlias = Path | Url
-TextWidgetData: TypeAlias = str
-SingleValueWidgetData: TypeAlias = int | float
-
-WidgetData: TypeAlias = (
-    PrecomputedHTMLWidgetData | TextWidgetData | SingleValueWidgetData
+from ecoscope_workflows.tasks.results._widget_types import (
+    GroupedWidget,
+    PrecomputedHTMLWidgetData,
+    TextWidgetData,
+    WidgetSingleView,
 )
-
-
-@dataclass
-class WidgetBase:
-    widget_type: WidgetTypes
-    title: str
-
-
-@dataclass
-class WidgetSingleView(WidgetBase):
-    data: WidgetData
-    view: CompositeFilter | None = None
-
-
-@dataclass
-class GroupedWidget(WidgetBase):
-    views: dict[CompositeFilter | None, WidgetData]
-
-    def get_view(self, view: CompositeFilter | None) -> WidgetSingleView:
-        return WidgetSingleView(
-            widget_type=self.widget_type,
-            title=self.title,
-            view=view,
-            data=self.views[view],
-        )
-
-    @property
-    def merge_key(self):
-        """If two GroupedWidgets have the same merge key, they can be merged."""
-        return (self.widget_type, self.title)
-
-    def __ior__(self, other: "GroupedWidget"):
-        """Implements the in-place or operator, i.e. `|=`, used to merge two GroupedWidgets."""
-        if self.merge_key != other.merge_key:
-            raise ValueError(
-                "Cannot merge GroupedWidgets with different merge keys: "
-                f"{self.merge_key} != {other.merge_key}"
-            )
-        self.views.update(other.views)
-        return self
 
 
 @distributed
@@ -68,7 +21,9 @@ def create_map_widget_single_view(
     view: Annotated[
         CompositeFilter | None, Field(description="If grouped, the view of the widget")
     ] = None,
-) -> WidgetSingleView:
+) -> Annotated[WidgetSingleView, Field(description="The widget")]:
+    from ecoscope_workflows.tasks.results._widget_types import WidgetSingleView
+
     return WidgetSingleView(
         widget_type="map",
         title=title,
@@ -86,7 +41,9 @@ def create_plot_widget_single_view(
     view: Annotated[
         CompositeFilter | None, Field(description="If grouped, the view of the widget")
     ] = None,
-) -> WidgetSingleView:
+) -> Annotated[WidgetSingleView, Field(description="The widget")]:
+    from ecoscope_workflows.tasks.results._widget_types import WidgetSingleView
+
     return WidgetSingleView(
         widget_type="plot",
         title=title,
@@ -102,7 +59,9 @@ def create_text_widget_single_view(
     view: Annotated[
         CompositeFilter | None, Field(description="If grouped, the view of the widget")
     ] = None,
-) -> WidgetSingleView:
+) -> Annotated[WidgetSingleView, Field(description="The widget")]:
+    from ecoscope_workflows.tasks.results._widget_types import WidgetSingleView
+
     return WidgetSingleView(
         widget_type="text",
         title=title,
@@ -120,7 +79,9 @@ def create_single_value_widget_single_view(
     view: Annotated[
         CompositeFilter | None, Field(description="If grouped, the view of the widget")
     ] = None,
-) -> WidgetSingleView:
+) -> Annotated[WidgetSingleView, Field(description="The widget")]:
+    from ecoscope_workflows.tasks.results._widget_types import WidgetSingleView
+
     return WidgetSingleView(
         widget_type="single_value",
         title=title,
@@ -132,9 +93,9 @@ def create_single_value_widget_single_view(
 @distributed
 def merge_widget_views(
     widgets: Annotated[list[WidgetSingleView], Field()],
-) -> list[GroupedWidget]:
-    # cast all WidgetSingleViews to GroupedWidgets with a single view,
-    # which makes merging easier
+) -> Annotated[list[GroupedWidget], Field(description="The merged widgets")]:
+    from ecoscope_workflows.tasks.results._widget_types import GroupedWidget
+
     _widgets = [
         GroupedWidget(
             widget_type=w.widget_type,
@@ -143,7 +104,6 @@ def merge_widget_views(
         )
         for w in widgets
     ]
-    # then merge all views with the same merge key
     merged: dict[tuple[str, str], GroupedWidget] = {}
     for w in _widgets:
         if w.merge_key not in merged:

@@ -187,3 +187,31 @@ from ecoscope_workflows.serde import _persist_text
 # return value from this section
 
 persist_text_return = _persist_text(text, root_path, filename)
+
+
+# %% [markdown]
+# ## Create Map Widget Single View
+# %%
+# dependencies assignments
+
+data = persist_text_return
+
+
+# %%
+# parameters
+
+title = ...
+view = ...
+
+
+# %%
+# the code for Create Map Widget Single View
+
+from ecoscope_workflows.tasks.results._widget_types import WidgetSingleView
+
+# %%
+# return value from this section
+
+create_map_widget_single_view_return = WidgetSingleView(
+    widget_type="map", title=title, view=view, data=data
+)

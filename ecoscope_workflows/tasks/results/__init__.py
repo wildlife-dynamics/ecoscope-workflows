@@ -1,6 +1,6 @@
 from ._ecomap import draw_ecomap
 from ._ecoplot import draw_ecoplot
-from ._widgets import (
+from ._widget_tasks import (
     create_map_widget_single_view,
     create_plot_widget_single_view,
     create_text_widget_single_view,
