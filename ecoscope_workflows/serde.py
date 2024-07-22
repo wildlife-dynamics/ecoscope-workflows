@@ -1,8 +1,11 @@
 import os
 from pathlib import Path
 from urllib.parse import urlparse, quote
+from typing import Literal, TypeAlias
 
-Filter = tuple[str, str, str]
+IndexName: TypeAlias = str
+IndexValue: TypeAlias = str
+Filter = tuple[IndexName, Literal["="], IndexValue]
 CompositeFilter = tuple[Filter, ...]
 
 
