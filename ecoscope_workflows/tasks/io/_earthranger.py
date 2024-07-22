@@ -25,6 +25,14 @@ class SubjectGroupObservationsGDFSchema(JsonSerializableDataFrameModel):
     # TODO: can we be any more specific about the `extra__` field expectations?
 
 
+class EventGDFSchema(JsonSerializableDataFrameModel):
+    geometry: pa.typing.Series[Any] = (
+        pa.Field()
+    )  # see note in tasks/time_density re: geometry typing
+    id: pa.typing.Series[str] = pa.Field()
+    event_type: pa.typing.Series[str] = pa.Field()
+
+
 @distributed(tags=["io"])
 def get_subjectgroup_observations(
     client: EarthRangerClient,
@@ -75,4 +83,30 @@ def get_patrol_observations(
         patrol_type=patrol_type,
         status=status,
         include_patrol_details=include_patrol_details,
+    )
+
+
+@distributed(tags=["io"])
+def get_patrol_events(
+    client: EarthRangerClient,
+    since: Annotated[str, Field(description="Start date")],
+    until: Annotated[str, Field(description="End date")],
+    patrol_type: Annotated[
+        str,
+        Field(default=None, description="Comma-separated list of type of patrol UUID"),
+    ],
+    status: Annotated[
+        str,
+        Field(
+            default=None,
+            description="Comma-separated list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'",
+        ),
+    ],
+) -> DataFrame[EventGDFSchema]:
+    """Get events from patrols."""
+    return client.get_patrol_events(
+        since=since,
+        until=until,
+        patrol_type=patrol_type,
+        status=status,
     )
