@@ -6,6 +6,7 @@ from ecoscope_workflows.tasks.preprocessing import process_relocations
 from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
+from ecoscope_workflows.tasks.results import create_map_widget_single_view
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -44,4 +45,11 @@ if __name__ == "__main__":
         **params["persist_text"],
     )
 
-    print(persist_text_return)
+    create_map_widget_single_view_return = create_map_widget_single_view.replace(
+        validate=True
+    )(
+        data=persist_text_return,
+        **params["create_map_widget_single_view"],
+    )
+
+    print(create_map_widget_single_view_return)
