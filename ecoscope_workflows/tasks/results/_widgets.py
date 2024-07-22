@@ -1,5 +1,5 @@
 from typing import Annotated, TypeAlias, Literal
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from pathlib import Path
 
 from pydantic import Field
@@ -107,4 +107,4 @@ def merge_widget_views(
             merged[w.merge_key] = w
         else:
             merged[w.merge_key].views = _merge_views(merged[w.merge_key], w)
-    return [GroupedWidget(**asdict(w)) for w in list(merged.values())]
+    return list(merged.values())
