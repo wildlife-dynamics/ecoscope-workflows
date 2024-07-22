@@ -34,3 +34,5 @@ draw_ecomap:
 persist_text:
   root_path: "examples/output/" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
   filename: "td_map.html" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of file to persist text to'))
+create_map_widget_single_view:
+  title: "Great Map"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))

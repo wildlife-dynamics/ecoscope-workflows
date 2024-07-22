@@ -99,11 +99,11 @@ class EndToEndFixture:
 assert_that_stdout = {
     "time-density.yaml": [
         lambda out: "td_map.html" in out,
-        lambda out: "jupyter.widget-state+json" in open(out).read(),
-        lambda out: "ecoscope.mapping.map.EcoMap" in open(out).read(),
+        lambda out: "widget_type='map', title='Patrol Trajectory Map'," in out,
     ],
     "patrol_workflow.yaml": [
         lambda out: "patrol_traj_map.html" in out,
+        lambda out: "widget_type='map', title='Patrol Trajectory Map'" in out,
     ],
 }
 
