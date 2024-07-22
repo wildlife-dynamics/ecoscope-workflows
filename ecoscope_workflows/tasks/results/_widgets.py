@@ -29,10 +29,6 @@ class WidgetBase:
     widget_type: str
     title: str
 
-    @property
-    def merge_key(self):
-        return (self.widget_type, self.title)
-
 
 @dataclass
 class WidgetSingleView(WidgetBase):
@@ -51,6 +47,11 @@ class GroupedWidget(WidgetBase):
             view=view,
             data=self.views[view],
         )
+
+    @property
+    def merge_key(self):
+        """If two GroupedWidgets have the same merge key, they can be merged."""
+        return (self.widget_type, self.title)
 
     def __ior__(self, other: "GroupedWidget"):
         """Implements the in-place or operator, i.e. `|=`,
