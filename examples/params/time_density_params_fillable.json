@@ -217,5 +217,25 @@
             "style_kws"
         ],
         "type": "object"
+    },
+    "persist_text": {
+        "additionalProperties": false,
+        "properties": {
+            "root_path": {
+                "title": "Root Path",
+                "type": "string",
+                "description": "Root path to persist text to"
+            },
+            "filename": {
+                "title": "Filename",
+                "type": "string",
+                "description": "Name of file to persist text to"
+            }
+        },
+        "required": [
+            "root_path",
+            "filename"
+        ],
+        "type": "object"
     }
 }
