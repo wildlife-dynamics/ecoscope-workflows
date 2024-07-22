@@ -35,6 +35,25 @@ class WidgetSingleView(WidgetBase):
     views: dict[CompositeFilter, WidgetData]
 
 
+@dataclass
+class WidgetView(WidgetBase):
+    id: int
+    data: WidgetData
+
+
+@dataclass
+class GroupedWidget(WidgetBase):
+    views: dict[CompositeFilter, WidgetData]
+
+    def get_view(self, key: CompositeFilter, id: int) -> WidgetView:
+        return WidgetView(
+            id=id,
+            widget_type=self.widget_type,
+            title=self.title,
+            data=self.views[key],
+        )
+
+
 @distributed
 def create_widget_single_view(
     widget_type: Annotated[WidgetTypes, Field(description="The type of widget.")],
@@ -53,25 +72,6 @@ def create_widget_single_view(
         title=title,
         views={view: data},
     )
-
-
-@dataclass
-class Widget(WidgetBase):
-    id: int
-    data: WidgetData
-
-
-@dataclass
-class GroupedWidget(WidgetBase):
-    views: dict[CompositeFilter, WidgetData]
-
-    def get_view(self, key: CompositeFilter, id: int) -> Widget:
-        return Widget(
-            id=id,
-            widget_type=self.widget_type,
-            title=self.title,
-            data=self.views[key],
-        )
 
 
 def _merge_views(w1: GroupedWidget, w2: GroupedWidget):
