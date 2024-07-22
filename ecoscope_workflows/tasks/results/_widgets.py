@@ -27,15 +27,15 @@ class WidgetBase:
 
 @dataclass
 class WidgetSingleView(WidgetBase):
-    view: CompositeFilter
     data: WidgetData
+    view: CompositeFilter | None = None
 
 
 @dataclass
 class GroupedWidget(WidgetBase):
-    views: dict[CompositeFilter, WidgetData]
+    views: dict[CompositeFilter | None, WidgetData]
 
-    def get_view(self, view: CompositeFilter) -> WidgetSingleView:
+    def get_view(self, view: CompositeFilter | None) -> WidgetSingleView:
         return WidgetSingleView(
             widget_type=self.widget_type,
             title=self.title,
@@ -66,8 +66,8 @@ def create_map_widget_single_view(
         PrecomputedHTMLWidgetData, Field(description="Path to precomputed HTML")
     ],
     view: Annotated[
-        CompositeFilter, Field(description="If grouped, the view of the widget")
-    ],
+        CompositeFilter | None, Field(description="If grouped, the view of the widget")
+    ] = None,
 ) -> WidgetSingleView:
     return WidgetSingleView(
         widget_type="map",
@@ -84,8 +84,8 @@ def create_plot_widget_single_view(
         PrecomputedHTMLWidgetData, Field(description="Path to precomputed HTML")
     ],
     view: Annotated[
-        CompositeFilter, Field(description="If grouped, the view of the widget")
-    ],
+        CompositeFilter | None, Field(description="If grouped, the view of the widget")
+    ] = None,
 ) -> WidgetSingleView:
     return WidgetSingleView(
         widget_type="plot",
@@ -100,8 +100,8 @@ def create_text_widget_single_view(
     title: Annotated[str, Field(description="The title of the widget")],
     data: Annotated[TextWidgetData, Field(description="Text to display.")],
     view: Annotated[
-        CompositeFilter, Field(description="If grouped, the view of the widget")
-    ],
+        CompositeFilter | None, Field(description="If grouped, the view of the widget")
+    ] = None,
 ) -> WidgetSingleView:
     return WidgetSingleView(
         widget_type="text",
@@ -118,8 +118,8 @@ def create_single_value_widget_single_view(
         PrecomputedHTMLWidgetData, Field(description="Path to precomputed HTML")
     ],
     view: Annotated[
-        CompositeFilter, Field(description="If grouped, the view of the widget")
-    ],
+        CompositeFilter | None, Field(description="If grouped, the view of the widget")
+    ] = None,
 ) -> WidgetSingleView:
     return WidgetSingleView(
         widget_type="single_value",

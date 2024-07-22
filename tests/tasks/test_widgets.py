@@ -4,6 +4,9 @@ import pytest
 
 from ecoscope_workflows.tasks.results import (
     create_map_widget_single_view,
+    create_plot_widget_single_view,
+    create_text_widget_single_view,
+    create_single_value_widget_single_view,
     merge_widget_views,
 )
 from ecoscope_workflows.tasks.results._widgets import GroupedWidget, WidgetSingleView
@@ -17,6 +20,48 @@ def test_create_map_widget_single_view():
     widget = create_map_widget_single_view(title, data, view)
     assert widget == WidgetSingleView(
         widget_type="map",
+        title=title,
+        data=data,
+        view=view,
+    )
+
+
+def test_create_plot_widget_single_view():
+    title = "A Great Plot"
+    view = (("month", "=", "january"), ("year", "=", "2022"))
+    data = "/path/to/precomputed/jan/2022/plot.html"
+
+    widget = create_plot_widget_single_view(title, data, view)
+    assert widget == WidgetSingleView(
+        widget_type="plot",
+        title=title,
+        data=data,
+        view=view,
+    )
+
+
+def test_create_text_widget_single_view():
+    title = "A Great Text"
+    view = (("month", "=", "january"), ("year", "=", "2022"))
+    data = "This is some text."
+
+    widget = create_text_widget_single_view(title, data, view)
+    assert widget == WidgetSingleView(
+        widget_type="text",
+        title=title,
+        data=data,
+        view=view,
+    )
+
+
+def test_create_single_value_widget_single_view():
+    title = "A Great Value"
+    view = (("month", "=", "january"), ("year", "=", "2022"))
+    data = 123.45
+
+    widget = create_single_value_widget_single_view(title, data, view)
+    assert widget == WidgetSingleView(
+        widget_type="single_value",
         title=title,
         data=data,
         view=view,
