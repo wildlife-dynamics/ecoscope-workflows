@@ -44,26 +44,26 @@ def test_merge_widget_views():
 
 
 def test_merge_widget_views_multiple_widgets():
-    widget1_view1 = {
-        "widget_type": "map",
-        "title": "A Great Map",
-        "views": {("month", "=", "january"): "<div>Map jan</div>"},
-    }
-    widget1_view2 = {
-        "widget_type": "map",
-        "title": "A Great Map",
-        "views": {("month", "=", "february"): "<div>Map feb</div>"},
-    }
-    widget2_view1 = {
-        "widget_type": "plot",
-        "title": "Super Cool Plot",
-        "views": {("month", "=", "january"): "<div>Plot jan</div>"},
-    }
-    widget2_view2 = {
-        "widget_type": "plot",
-        "title": "Super Cool Plot",
-        "views": {("month", "=", "february"): "<div>Plot feb</div>"},
-    }
+    widget1_view1 = WidgetSingleView(
+        widget_type="map",
+        title="A Great Map",
+        views={("month", "=", "january"): "<div>Map jan</div>"},
+    )
+    widget1_view2 = WidgetSingleView(
+        widget_type="map",
+        title="A Great Map",
+        views={("month", "=", "february"): "<div>Map feb</div>"},
+    )
+    widget2_view1 = WidgetSingleView(
+        widget_type="plot",
+        title="Super Cool Plot",
+        views={("month", "=", "january"): "<div>Plot jan</div>"},
+    )
+    widget2_view2 = WidgetSingleView(
+        widget_type="plot",
+        title="Super Cool Plot",
+        views={("month", "=", "february"): "<div>Plot feb</div>"},
+    )
     merged = merge_widget_views(
         [
             widget1_view1,
