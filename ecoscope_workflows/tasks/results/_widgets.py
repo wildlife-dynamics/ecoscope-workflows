@@ -58,6 +58,18 @@ class GroupedWidget(WidgetBase):
             data=self.views[key],
         )
 
+    def __ior__(self, other: "GroupedWidget"):
+        """Implements the in-place or operator, i.e. `|=`,
+        which is used to merge two GroupedWidgets.
+        """
+        if self.merge_key != other.merge_key:
+            raise ValueError(
+                "Cannot merge GroupedWidgets with different merge keys: "
+                f"{self.merge_key} != {other.merge_key}"
+            )
+        self.views.update(other.views)
+        return self
+
 
 @distributed
 def create_widget_single_view(
@@ -80,12 +92,6 @@ def create_widget_single_view(
     )
 
 
-def _merge_views(w1: GroupedWidget, w2: GroupedWidget):
-    merged_views = w1.views.copy()
-    merged_views.update(w2.views)  # allows overwriting but that should be ok?
-    return merged_views
-
-
 @distributed
 def merge_widget_views(
     widgets: Annotated[list[WidgetSingleView], Field()],
@@ -106,5 +112,5 @@ def merge_widget_views(
         if w.merge_key not in merged:
             merged[w.merge_key] = w
         else:
-            merged[w.merge_key].views = _merge_views(merged[w.merge_key], w)
+            merged[w.merge_key] |= w
     return list(merged.values())
