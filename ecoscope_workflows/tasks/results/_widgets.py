@@ -1,5 +1,5 @@
-from typing import Annotated, TypeAlias, TypedDict, Literal
-from dataclasses import dataclass
+from typing import Annotated, TypeAlias, Literal
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from pydantic import Field
@@ -31,14 +31,7 @@ class WidgetBase:
 
 
 @dataclass
-class Widget(WidgetBase):
-    id: int
-    data: WidgetData
-
-
-class GroupedWidgetDict(TypedDict):
-    widget_type: str
-    title: str
+class WidgetSingleView(WidgetBase):
     views: dict[CompositeFilter, WidgetData]
 
 
@@ -48,24 +41,24 @@ def create_widget_single_view(
     title: str,
     view: CompositeFilter,
     data: WidgetData,
-) -> Annotated[GroupedWidgetDict, Field()]:
+) -> Annotated[WidgetSingleView, Field()]:
     # maybe there's a way to express the relationships expressed by WIDGET_TYPES_ALLOWABLE_DATA
     # in the function signature directly? a BaseModel could do this easily, but in general I've
     # been trying to avoid nested arguments for clarity. but pushing this assert to the signature
     # would allow us to more easily do static checks on inputs, rather than failing at runtime if
     # there is a mismatch. for now this will do but this is somethign to keep in mind,
     assert isinstance(data, WIDGET_TYPES_ALLOWABLE_DATA[widget_type])
-    return {
-        "widget_type": widget_type,
-        "title": title,
-        "views": {view: data},
-    }
+    return WidgetSingleView(
+        widget_type=widget_type,
+        title=title,
+        views={view: data},
+    )
 
 
-def _merge_views(w1: GroupedWidgetDict, w2: GroupedWidgetDict):
-    merged_views = w1["views"].copy()
-    merged_views.update(w2["views"])  # allows overwriting but that should be ok?
-    return merged_views
+@dataclass
+class Widget(WidgetBase):
+    id: int
+    data: WidgetData
 
 
 @dataclass
@@ -81,15 +74,21 @@ class GroupedWidget(WidgetBase):
         )
 
 
+def _merge_views(w1: GroupedWidget, w2: GroupedWidget):
+    merged_views = w1.views.copy()
+    merged_views.update(w2.views)  # allows overwriting but that should be ok?
+    return merged_views
+
+
 @distributed
 def merge_widget_views(
-    widgets: Annotated[list[GroupedWidgetDict], Field()],
+    widgets: Annotated[list[GroupedWidget], Field()],
 ) -> list[GroupedWidget]:
-    merged = {}
+    merged: dict[tuple[str, str], GroupedWidget] = {}
     for w in widgets:
-        key = (w["widget_type"], w["title"])
+        key = (w.widget_type, w.title)
         if key not in merged:
-            merged[key] = w.copy()
+            merged[key] = w
         else:
-            merged[key]["views"] = _merge_views(merged[key], w)
-    return [GroupedWidget(**w) for w in list(merged.values())]
+            merged[key].views = _merge_views(merged[key], w)
+    return [GroupedWidget(**asdict(w)) for w in list(merged.values())]
