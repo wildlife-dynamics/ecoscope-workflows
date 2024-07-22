@@ -1,12 +1,27 @@
 from typing import Annotated, TypeAlias, TypedDict, Literal
 from dataclasses import dataclass
+from pathlib import Path
 
-from pydantic import Field, HttpUrl
+from pydantic import Field
+from pydantic_core import Url
 
 from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.serde import CompositeFilter
 
-WidgetData: TypeAlias = HttpUrl | str | int  # any other types?
+WidgetTypes = Literal["plot", "map", "text", "single_value"]
+WidgetData: TypeAlias = Path | Url | str | int | float  # any other types?
+
+
+WIDGET_TYPES_ALLOWABLE_DATA: dict[str, tuple] = {
+    # if a plot or a map is a `str`, it's not intended to be a str of raw
+    # html content, but rather a string that can be parsed to a Path or URL.
+    # this would happen if we pass a str value and run the create widget task
+    # _without_ validate=True, and therefore the value is not parsed.
+    "plot": (str, Path, Url),
+    "map": (str, Path, Url),
+    "text": (str,),
+    "single_value": (int, float),
+}
 
 
 @dataclass
@@ -27,16 +42,19 @@ class GroupedWidgetDict(TypedDict):
     views: dict[CompositeFilter, WidgetData]
 
 
-WidgetTypes = Literal["plot", "map", "text", "single_value"]
-
-
 @distributed
 def create_widget_single_view(
     widget_type: Annotated[WidgetTypes, Field(description="The type of widget.")],
     title: str,
     view: CompositeFilter,
-    data: str,
+    data: WidgetData,
 ) -> Annotated[GroupedWidgetDict, Field()]:
+    # maybe there's a way to express the relationships expressed by WIDGET_TYPES_ALLOWABLE_DATA
+    # in the function signature directly? a BaseModel could do this easily, but in general I've
+    # been trying to avoid nested arguments for clarity. but pushing this assert to the signature
+    # would allow us to more easily do static checks on inputs, rather than failing at runtime if
+    # there is a mismatch. for now this will do but this is somethign to keep in mind,
+    assert isinstance(data, WIDGET_TYPES_ALLOWABLE_DATA[widget_type])
     return {
         "widget_type": widget_type,
         "title": title,
