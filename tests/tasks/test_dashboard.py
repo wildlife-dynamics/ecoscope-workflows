@@ -54,8 +54,8 @@ def test_gather_dashboard(single_filter_dashboard: DashboardFixture):
     assert_dashboards_equal(dashboard, expected_dashboard)
 
 
-def test__get_view(single_filter_dashboard: Dashboard):
-    dashboard = single_filter_dashboard
+def test__get_view(single_filter_dashboard: DashboardFixture):
+    _, dashboard = single_filter_dashboard
     assert dashboard._get_view((("month", "=", "january"),)) == [
         EmumeratedWidgetView(
             id=0,
@@ -86,8 +86,8 @@ def test__get_view(single_filter_dashboard: Dashboard):
     ]
 
 
-def test_model_dump_views(single_filter_dashboard: Dashboard):
-    dashboard = single_filter_dashboard
+def test_model_dump_views(single_filter_dashboard: DashboardFixture):
+    _, dashboard = single_filter_dashboard
     assert dashboard.model_dump()["views"] == {
         '{"month": "january"}': [
             {
@@ -120,8 +120,8 @@ def test_model_dump_views(single_filter_dashboard: Dashboard):
     }
 
 
-def test_model_dump_filters(single_filter_dashboard: Dashboard):
-    dashboard = single_filter_dashboard
+def test_model_dump_filters(single_filter_dashboard: DashboardFixture):
+    _, dashboard = single_filter_dashboard
     assert dashboard.model_dump()["filters"] == {
         "schema": {
             "type": "object",
@@ -143,7 +143,7 @@ def test_model_dump_filters(single_filter_dashboard: Dashboard):
 
 
 @pytest.fixture
-def two_filter_dashboard():
+def two_filter_dashboard() -> DashboardFixture:
     great_map = GroupedWidget(
         widget_type="map",
         title="A Great Map",
@@ -158,18 +158,20 @@ def two_filter_dashboard():
             ): "/path/to/jan/2023/map.html",
         },
     )
-    return Dashboard(
+    widgets = [great_map]
+    dashboard = Dashboard(
         groupers={"month": ["jan"], "year": ["2022", "2023"]},
         keys=[
             (("month", "=", "jan"), ("year", "=", "2022")),
             (("month", "=", "jan"), ("year", "=", "2023")),
         ],
-        widgets=[great_map],
+        widgets=widgets,
     )
+    return widgets, dashboard
 
 
-def test__get_view_two_part_key(two_filter_dashboard: Dashboard):
-    dashboard = two_filter_dashboard
+def test__get_view_two_part_key(two_filter_dashboard: DashboardFixture):
+    _, dashboard = two_filter_dashboard
     assert dashboard._get_view((("month", "=", "jan"), ("year", "=", "2022"))) == [
         EmumeratedWidgetView(
             id=0,
@@ -188,8 +190,8 @@ def test__get_view_two_part_key(two_filter_dashboard: Dashboard):
     ]
 
 
-def test_model_dump_views_two_filter(two_filter_dashboard: Dashboard):
-    dashboard = two_filter_dashboard
+def test_model_dump_views_two_filter(two_filter_dashboard: DashboardFixture):
+    _, dashboard = two_filter_dashboard
     assert dashboard.model_dump()["views"] == {
         '{"month": "jan", "year": "2022"}': [
             {
@@ -210,8 +212,8 @@ def test_model_dump_views_two_filter(two_filter_dashboard: Dashboard):
     }
 
 
-def test_model_dump_filters_two_filter(two_filter_dashboard: Dashboard):
-    dashboard = two_filter_dashboard
+def test_model_dump_filters_two_filter(two_filter_dashboard: DashboardFixture):
+    _, dashboard = two_filter_dashboard
     assert dashboard.model_dump()["filters"] == {
         "schema": {
             "type": "object",
@@ -242,7 +244,7 @@ def test_model_dump_filters_two_filter(two_filter_dashboard: Dashboard):
 
 
 @pytest.fixture
-def three_filter_dashboard():
+def three_filter_dashboard() -> DashboardFixture:
     great_map = GroupedWidget(
         widget_type="map",
         title="A Great Map",
@@ -259,18 +261,20 @@ def three_filter_dashboard():
             ): "/path/to/jan/2022/zo/map.html",
         },
     )
-    return Dashboard(
+    widgets = [great_map]
+    dashboard = Dashboard(
         groupers={"month": ["jan"], "year": ["2022"], "subject_name": ["jo", "zo"]},
         keys=[
             (("month", "=", "jan"), ("year", "=", "2022"), ("subject_name", "=", "jo")),
             (("month", "=", "jan"), ("year", "=", "2022"), ("subject_name", "=", "zo")),
         ],
-        widgets=[great_map],
+        widgets=widgets,
     )
+    return widgets, dashboard
 
 
-def test__get_view_three_part_key(three_filter_dashboard: Dashboard):
-    dashboard = three_filter_dashboard
+def test__get_view_three_part_key(three_filter_dashboard: DashboardFixture):
+    _, dashboard = three_filter_dashboard
     assert dashboard._get_view(
         (("month", "=", "jan"), ("year", "=", "2022"), ("subject_name", "=", "jo"))
     ) == [
@@ -293,8 +297,8 @@ def test__get_view_three_part_key(three_filter_dashboard: Dashboard):
     ]
 
 
-def test_model_dump_views_three_filter(three_filter_dashboard: Dashboard):
-    dashboard = three_filter_dashboard
+def test_model_dump_views_three_filter(three_filter_dashboard: DashboardFixture):
+    _, dashboard = three_filter_dashboard
     assert dashboard.model_dump()["views"] == {
         # Note sort_keys=True in `json.dumps` in _iter_views_json method of Dashboard
         # results in the json keys being ordered differently than the keys in the tuple
@@ -317,8 +321,8 @@ def test_model_dump_views_three_filter(three_filter_dashboard: Dashboard):
     }
 
 
-def test_model_dump_filters_three_filter(three_filter_dashboard: Dashboard):
-    dashboard = three_filter_dashboard
+def test_model_dump_filters_three_filter(three_filter_dashboard: DashboardFixture):
+    _, dashboard = three_filter_dashboard
     assert dashboard.model_dump()["filters"] == {
         "schema": {
             "type": "object",
@@ -358,7 +362,7 @@ def test_model_dump_filters_three_filter(three_filter_dashboard: Dashboard):
 
 
 @pytest.fixture
-def dashboard_with_none_views():
+def dashboard_with_none_views() -> DashboardFixture:
     great_map = GroupedWidget(
         widget_type="map",
         title="A Great Map",
@@ -374,18 +378,20 @@ def dashboard_with_none_views():
             None: "/path/to/precomputed/single/plot.html",
         },
     )
-    return Dashboard(
+    widgets = [great_map, none_view_plot]
+    dashboard = Dashboard(
         groupers={"month": ["january", "february"]},
         keys=[
             (("month", "=", "january"),),
             (("month", "=", "february"),),
         ],
-        widgets=[great_map, none_view_plot],
+        widgets=widgets,
     )
+    return widgets, dashboard
 
 
-def test__get_view_with_none_views(dashboard_with_none_views: Dashboard):
-    dashboard = dashboard_with_none_views
+def test__get_view_with_none_views(dashboard_with_none_views: DashboardFixture):
+    _, dashboard = dashboard_with_none_views
     assert dashboard._get_view((("month", "=", "january"),)) == [
         EmumeratedWidgetView(
             id=0,
@@ -416,8 +422,8 @@ def test__get_view_with_none_views(dashboard_with_none_views: Dashboard):
     ]
 
 
-def test_model_dump_views_with_none_views(dashboard_with_none_views: Dashboard):
-    dashboard = dashboard_with_none_views
+def test_model_dump_views_with_none_views(dashboard_with_none_views: DashboardFixture):
+    _, dashboard = dashboard_with_none_views
     assert dashboard.model_dump()["views"] == {
         '{"month": "january"}': [
             {
@@ -450,8 +456,10 @@ def test_model_dump_views_with_none_views(dashboard_with_none_views: Dashboard):
     }
 
 
-def test_model_dump_filters_with_none_views(dashboard_with_none_views: Dashboard):
-    dashboard = dashboard_with_none_views
+def test_model_dump_filters_with_none_views(
+    dashboard_with_none_views: DashboardFixture,
+):
+    _, dashboard = dashboard_with_none_views
     assert dashboard.model_dump()["filters"] == {
         "schema": {
             "type": "object",
