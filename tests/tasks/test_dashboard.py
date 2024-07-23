@@ -188,6 +188,37 @@ def test_model_dump_views_two_filter(two_filter_dashboard: Dashboard):
     }
 
 
+def test_model_dump_filters_two_filter(two_filter_dashboard: Dashboard):
+    dashboard = two_filter_dashboard
+    assert dashboard.model_dump()["filters"] == {
+        "schema": {
+            "type": "object",
+            "properties": {
+                "month": {
+                    "type": "string",
+                    "enum": ["jan"],
+                    "enumNames": ["Jan"],
+                    "default": "jan",
+                },
+                "year": {
+                    "type": "string",
+                    "enum": ["2022", "2023"],
+                    "enumNames": ["2022", "2023"],
+                    "default": "2022",
+                },
+            },
+            "uiSchema": {
+                "month": {
+                    "ui:title": "Month",
+                },
+                "year": {
+                    "ui:title": "Year",
+                },
+            },
+        }
+    }
+
+
 @pytest.fixture
 def three_filter_dashboard():
     great_map = GroupedWidget(
@@ -261,6 +292,46 @@ def test_model_dump_views_three_filter(three_filter_dashboard: Dashboard):
                 "data": "/path/to/jan/2022/zo/map.html",
             },
         ],
+    }
+
+
+def test_model_dump_filters_three_filter(three_filter_dashboard: Dashboard):
+    dashboard = three_filter_dashboard
+    assert dashboard.model_dump()["filters"] == {
+        "schema": {
+            "type": "object",
+            "properties": {
+                "month": {
+                    "type": "string",
+                    "enum": ["jan"],
+                    "enumNames": ["Jan"],
+                    "default": "jan",
+                },
+                "year": {
+                    "type": "string",
+                    "enum": ["2022"],
+                    "enumNames": ["2022"],
+                    "default": "2022",
+                },
+                "subject_name": {
+                    "type": "string",
+                    "enum": ["jo", "zo"],
+                    "enumNames": ["Jo", "Zo"],
+                    "default": "jo",
+                },
+            },
+            "uiSchema": {
+                "month": {
+                    "ui:title": "Month",
+                },
+                "year": {
+                    "ui:title": "Year",
+                },
+                "subject_name": {
+                    "ui:title": "Subject Name",
+                },
+            },
+        }
     }
 
 
@@ -354,4 +425,26 @@ def test_model_dump_views_with_none_views(dashboard_with_none_views: Dashboard):
                 "data": "/path/to/precomputed/single/plot.html",
             },
         ],
+    }
+
+
+def test_model_dump_filters_with_none_views(dashboard_with_none_views: Dashboard):
+    dashboard = dashboard_with_none_views
+    assert dashboard.model_dump()["filters"] == {
+        "schema": {
+            "type": "object",
+            "properties": {
+                "month": {
+                    "type": "string",
+                    "enum": ["january", "february"],
+                    "enumNames": ["January", "February"],
+                    "default": "january",
+                },
+            },
+            "uiSchema": {
+                "month": {
+                    "ui:title": "Month",
+                },
+            },
+        }
     }
