@@ -13,7 +13,7 @@ GrouperChoices: TypeAlias = list[str]
 
 
 @dataclass
-class EmumeratedWidget:
+class EmumeratedWidgetView:
     id: int
     widget_type: str
     title: str
@@ -32,33 +32,36 @@ class Dashboard(BaseModel):
     widgets: list[GroupedWidget]
     metadata: Metadata = Field(default_factory=Metadata)
 
-    def _get_view(self, view: CompositeFilter) -> list[EmumeratedWidget]:
+    def _get_view(self, view: CompositeFilter) -> list[EmumeratedWidgetView]:
         # TODO: ungrouped widgets
         return [
-            EmumeratedWidget(id=i, **asdict(w.get_view(view)))
+            EmumeratedWidgetView(
+                id=i,
+                **{k: v for k, v in asdict(w.get_view(view)).items() if k != "view"},
+            )
             for i, w in enumerate(self.widgets)
             if view in w.views
         ]
 
     def _iter_views(
         self,
-    ) -> Generator[tuple[CompositeFilter, list[EmumeratedWidget]], None, None]:
+    ) -> Generator[tuple[CompositeFilter, list[EmumeratedWidgetView]], None, None]:
         for k in self.keys:
             yield k, self._get_view(k)
 
     def _iter_views_json(
         self,
-    ) -> Generator[tuple[str, list[EmumeratedWidget]], None, None]:
+    ) -> Generator[tuple[str, list[EmumeratedWidgetView]], None, None]:
         for k in self.keys:
             asdict = {attr: value for attr, _, value in k}
             yield json.dumps(asdict, sort_keys=True), self._get_view(k)
 
     @property
-    def views(self) -> dict[CompositeFilter, list[EmumeratedWidget]]:
+    def views(self) -> dict[CompositeFilter, list[EmumeratedWidgetView]]:
         return {k: v for k, v in self._iter_views()}
 
     @property
-    def views_json(self) -> dict[str, list[EmumeratedWidget]]:
+    def views_json(self) -> dict[str, list[EmumeratedWidgetView]]:
         return {k: v for k, v in self._iter_views_json()}
 
     @property
@@ -106,11 +109,12 @@ def composite_filters_to_grouper_choices_dict(
     """
     choices: dict[GrouperName, GrouperChoices] = {}
     for k in keys:
-        for filter, _, value in k:
-            if filter not in choices:
-                choices[filter] = []
-            if value not in choices[filter]:
-                choices[filter].append(value)
+        if k is not None:
+            for filter, _, value in k:
+                if filter not in choices:
+                    choices[filter] = []
+                if value not in choices[filter]:
+                    choices[filter].append(value)
 
     for filter in choices:
         # TODO: sort by logical order for the type of grouper (e.g. month names, not alphabetically)
@@ -121,15 +125,15 @@ def composite_filters_to_grouper_choices_dict(
 
 @distributed
 def gather_dashboard(
-    widgets: Annotated[list[dict], Field()],
+    grouped_widgets: Annotated[list[GroupedWidget], Field()],
     groupers: Annotated[list, Field()],
 ):
-    grouped_widgets = [GroupedWidget(**w) for w in widgets]
     keys = list(grouped_widgets[0].views)
-    # TODO: ungrouped widgets (i think this would be just (None, None) keys or something)
     assert all(
         keys == list(w.views) for w in grouped_widgets
-    ), "All widgets must have the same keys"
+    ), (
+        "All widgets must have the same keys"
+    )  # FIXME: This isn't true for ungrouped widgets
     grouper_choices = composite_filters_to_grouper_choices_dict(keys)
     # make sure we didn't lose track of any groupers inflight
     assert set(groupers) == set(
