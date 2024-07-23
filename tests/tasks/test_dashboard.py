@@ -96,3 +96,50 @@ def test_dashboard__get_view_two_part_key():
             data="/path/to/jan/2023/map.html",
         ),
     ]
+
+
+def test_dashboard__get_view_three_part_key():
+    great_map = GroupedWidget(
+        widget_type="map",
+        title="A Great Map",
+        views={
+            (
+                ("month", "=", "jan"),
+                ("year", "=", "2022"),
+                ("subject_name", "=", "jo"),
+            ): "/path/to/jan/2022/jo/map.html",
+            (
+                ("month", "=", "jan"),
+                ("year", "=", "2022"),
+                ("subject_name", "=", "zo"),
+            ): "/path/to/jan/2022/zo/map.html",
+        },
+    )
+    dashboard = Dashboard(
+        groupers={"month": ["jan"], "year": ["2022"], "subject_name": ["jo", "zo"]},
+        keys=[
+            (("month", "=", "jan"), ("year", "=", "2022"), ("subject_name", "=", "jo")),
+            (("month", "=", "jan"), ("year", "=", "2022"), ("subject_name", "=", "zo")),
+        ],
+        widgets=[great_map],
+    )
+    assert dashboard._get_view(
+        (("month", "=", "jan"), ("year", "=", "2022"), ("subject_name", "=", "jo"))
+    ) == [
+        EmumeratedWidgetView(
+            id=0,
+            widget_type="map",
+            title="A Great Map",
+            data="/path/to/jan/2022/jo/map.html",
+        ),
+    ]
+    assert dashboard._get_view(
+        (("month", "=", "jan"), ("year", "=", "2022"), ("subject_name", "=", "zo"))
+    ) == [
+        EmumeratedWidgetView(
+            id=0,
+            widget_type="map",
+            title="A Great Map",
+            data="/path/to/jan/2022/zo/map.html",
+        ),
+    ]
