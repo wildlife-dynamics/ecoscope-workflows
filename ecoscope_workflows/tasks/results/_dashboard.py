@@ -19,6 +19,13 @@ from ecoscope_workflows.tasks.results._widget_types import (
 
 @dataclass
 class EmumeratedWidgetView:
+    """A widget view with an enumerated integer `id` for use in a dashboard.
+    Dashboards require a unique integer identifier for each widget, to affiliate
+    layout information with the widget. Unlike a `WidgetSingleView`, this class
+    does not contain a `view` field because the dashboard is responsible for
+    knowing which view to display.
+    """
+
     id: int
     widget_type: str
     title: str
@@ -36,6 +43,8 @@ class EmumeratedWidgetView:
 
 @dataclass
 class Metadata:
+    """Descriptive metadata for the dashboard."""
+
     title: str = ""
     description: str = ""
 
