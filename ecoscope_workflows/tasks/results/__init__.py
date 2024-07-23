@@ -1,3 +1,4 @@
+from ._dashboard import gather_dashboard
 from ._ecomap import draw_ecomap
 from ._ecoplot import draw_ecoplot
 from ._widget_tasks import (
@@ -16,4 +17,5 @@ __all__ = [
     "merge_widget_views",
     "draw_ecomap",
     "draw_ecoplot",
+    "gather_dashboard",
 ]
