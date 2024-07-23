@@ -55,3 +55,44 @@ def test_dashboard__get_view():
             data="/path/to/precomputed/feb/plot.html",
         ),
     ]
+
+
+def test_dashboard__get_view_two_part_key():
+    great_map = GroupedWidget(
+        widget_type="map",
+        title="A Great Map",
+        views={
+            (
+                ("month", "=", "jan"),
+                ("year", "=", "2022"),
+            ): "/path/to/jan/2022/map.html",
+            (
+                ("month", "=", "jan"),
+                ("year", "=", "2023"),
+            ): "/path/to/jan/2023/map.html",
+        },
+    )
+    dashboard = Dashboard(
+        groupers={"month": ["jan"], "year": ["2022", "2023"]},
+        keys=[
+            (("month", "=", "jan"), ("year", "=", "2022")),
+            (("month", "=", "jan"), ("year", "=", "2023")),
+        ],
+        widgets=[great_map],
+    )
+    assert dashboard._get_view((("month", "=", "jan"), ("year", "=", "2022"))) == [
+        EmumeratedWidgetView(
+            id=0,
+            widget_type="map",
+            title="A Great Map",
+            data="/path/to/jan/2022/map.html",
+        ),
+    ]
+    assert dashboard._get_view((("month", "=", "jan"), ("year", "=", "2023"))) == [
+        EmumeratedWidgetView(
+            id=0,
+            widget_type="map",
+            title="A Great Map",
+            data="/path/to/jan/2023/map.html",
+        ),
+    ]
