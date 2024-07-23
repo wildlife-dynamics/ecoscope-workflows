@@ -64,36 +64,36 @@ def test__get_view(single_filter_dashboard: Dashboard):
     ]
 
 
-def test_views_json(single_filter_dashboard: Dashboard):
+def test_model_dump_views(single_filter_dashboard: Dashboard):
     dashboard = single_filter_dashboard
-    assert dashboard.views_json == {
+    assert dashboard.model_dump()["views"] == {
         '{"month": "january"}': [
-            EmumeratedWidgetView(
-                id=0,
-                widget_type="map",
-                title="A Great Map",
-                data="/path/to/precomputed/jan/map.html",
-            ),
-            EmumeratedWidgetView(
-                id=1,
-                widget_type="plot",
-                title="A Cool Plot",
-                data="/path/to/precomputed/jan/plot.html",
-            ),
+            {
+                "id": 0,
+                "widget_type": "map",
+                "title": "A Great Map",
+                "data": "/path/to/precomputed/jan/map.html",
+            },
+            {
+                "id": 1,
+                "widget_type": "plot",
+                "title": "A Cool Plot",
+                "data": "/path/to/precomputed/jan/plot.html",
+            },
         ],
         '{"month": "february"}': [
-            EmumeratedWidgetView(
-                id=0,
-                widget_type="map",
-                title="A Great Map",
-                data="/path/to/precomputed/feb/map.html",
-            ),
-            EmumeratedWidgetView(
-                id=1,
-                widget_type="plot",
-                title="A Cool Plot",
-                data="/path/to/precomputed/feb/plot.html",
-            ),
+            {
+                "id": 0,
+                "widget_type": "map",
+                "title": "A Great Map",
+                "data": "/path/to/precomputed/feb/map.html",
+            },
+            {
+                "id": 1,
+                "widget_type": "plot",
+                "title": "A Cool Plot",
+                "data": "/path/to/precomputed/feb/plot.html",
+            },
         ],
     }
 
