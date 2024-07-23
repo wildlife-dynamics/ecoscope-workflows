@@ -208,15 +208,25 @@ def gather_dashboard(
     grouped_widgets: Annotated[list[GroupedWidget], Field()],
     groupers: Annotated[list, Field()],
 ) -> Annotated[Dashboard, Field()]:
-    keys = list(grouped_widgets[0].views)
-    assert all(
-        keys == list(w.views) for w in grouped_widgets
-    ), (
-        "All widgets must have the same keys"
-    )  # FIXME: This isn't true for ungrouped widgets
-    grouper_choices = composite_filters_to_grouper_choices_dict(keys)
+    for gw in grouped_widgets:
+        keys_sample = list(gw.views)
+        if keys_sample != [None]:
+            # we want to get a representative set of keys for the grouped
+            # wigets, so we break after the first one that has keys. This
+            # logic prevents the case where the first widget(s) in the list
+            # are ungrouped and their keys are thus not representative.
+            break
+    for gw in grouped_widgets:
+        if list(gw.views) != [None]:
+            # now make sure all grouped widgets have the same keys.
+            assert (
+                list(gw.views) == keys_sample
+            ), "All grouped widgets must have the same keys"
+    grouper_choices = composite_filters_to_grouper_choices_dict(keys_sample)
     # make sure we didn't lose track of any groupers inflight
     assert set(groupers) == set(
         list(grouper_choices.keys())
     ), "All groupers must be present in the keys"
-    return Dashboard(groupers=grouper_choices, keys=keys, widgets=grouped_widgets)
+    return Dashboard(
+        groupers=grouper_choices, keys=keys_sample, widgets=grouped_widgets
+    )

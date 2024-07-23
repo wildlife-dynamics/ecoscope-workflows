@@ -408,6 +408,15 @@ def dashboard_with_none_views() -> DashboardFixture:
     return widgets, dashboard
 
 
+def test_gather_dashboard_with_none_views(dashboard_with_none_views: DashboardFixture):
+    grouped_widgets, expected_dashboard = dashboard_with_none_views
+    dashboard: Dashboard = gather_dashboard(
+        grouped_widgets=grouped_widgets,
+        groupers=["month"],
+    )
+    assert_dashboards_equal(dashboard, expected_dashboard)
+
+
 def test__get_view_with_none_views(dashboard_with_none_views: DashboardFixture):
     _, dashboard = dashboard_with_none_views
     assert dashboard._get_view((("month", "=", "january"),)) == [
