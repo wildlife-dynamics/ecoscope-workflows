@@ -1,8 +1,70 @@
+import pytest
+
 from ecoscope_workflows.tasks.results._dashboard import Dashboard, EmumeratedWidgetView
 from ecoscope_workflows.tasks.results._widget_types import GroupedWidget
 
 
-def test__get_view():
+@pytest.fixture
+def single_filter_dashboard():
+    great_map = GroupedWidget(
+        widget_type="map",
+        title="A Great Map",
+        views={
+            (("month", "=", "january"),): "/path/to/precomputed/jan/map.html",
+            (("month", "=", "february"),): "/path/to/precomputed/feb/map.html",
+        },
+    )
+    cool_plot = GroupedWidget(
+        widget_type="plot",
+        title="A Cool Plot",
+        views={
+            (("month", "=", "january"),): "/path/to/precomputed/jan/plot.html",
+            (("month", "=", "february"),): "/path/to/precomputed/feb/plot.html",
+        },
+    )
+    return Dashboard(
+        groupers={"month": ["january", "february"]},
+        keys=[
+            (("month", "=", "january"),),
+            (("month", "=", "february"),),
+        ],
+        widgets=[great_map, cool_plot],
+    )
+
+
+def test__get_view(single_filter_dashboard: Dashboard):
+    dashboard = single_filter_dashboard
+    assert dashboard._get_view((("month", "=", "january"),)) == [
+        EmumeratedWidgetView(
+            id=0,
+            widget_type="map",
+            title="A Great Map",
+            data="/path/to/precomputed/jan/map.html",
+        ),
+        EmumeratedWidgetView(
+            id=1,
+            widget_type="plot",
+            title="A Cool Plot",
+            data="/path/to/precomputed/jan/plot.html",
+        ),
+    ]
+    assert dashboard._get_view((("month", "=", "february"),)) == [
+        EmumeratedWidgetView(
+            id=0,
+            widget_type="map",
+            title="A Great Map",
+            data="/path/to/precomputed/feb/map.html",
+        ),
+        EmumeratedWidgetView(
+            id=1,
+            widget_type="plot",
+            title="A Cool Plot",
+            data="/path/to/precomputed/feb/plot.html",
+        ),
+    ]
+
+
+def test_views_json():
     great_map = GroupedWidget(
         widget_type="map",
         title="A Great Map",
