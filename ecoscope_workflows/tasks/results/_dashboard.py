@@ -207,7 +207,7 @@ def composite_filters_to_grouper_choices_dict(
 def gather_dashboard(
     grouped_widgets: Annotated[list[GroupedWidget], Field()],
     groupers: Annotated[list, Field()],
-):
+) -> Annotated[Dashboard, Field()]:
     keys = list(grouped_widgets[0].views)
     assert all(
         keys == list(w.views) for w in grouped_widgets

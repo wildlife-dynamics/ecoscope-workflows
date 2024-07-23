@@ -1,11 +1,12 @@
 import pytest
 
+from ecoscope_workflows.tasks.results import gather_dashboard
 from ecoscope_workflows.tasks.results._dashboard import Dashboard, EmumeratedWidgetView
 from ecoscope_workflows.tasks.results._widget_types import GroupedWidget
 
 
 @pytest.fixture
-def single_filter_dashboard():
+def single_filter_dashboard_grouped_widgets():
     great_map = GroupedWidget(
         widget_type="map",
         title="A Great Map",
@@ -22,14 +23,38 @@ def single_filter_dashboard():
             (("month", "=", "february"),): "/path/to/precomputed/feb/plot.html",
         },
     )
+    return [great_map, cool_plot]
+
+
+@pytest.fixture
+def single_filter_dashboard(single_filter_dashboard_grouped_widgets):
     return Dashboard(
         groupers={"month": ["january", "february"]},
         keys=[
             (("month", "=", "january"),),
             (("month", "=", "february"),),
         ],
-        widgets=[great_map, cool_plot],
+        widgets=single_filter_dashboard_grouped_widgets,
     )
+
+
+def test_gather_dashboard(
+    single_filter_dashboard_grouped_widgets: list[GroupedWidget],
+    single_filter_dashboard: Dashboard,
+):
+    expected = single_filter_dashboard
+    dashboard: Dashboard = gather_dashboard(
+        grouped_widgets=single_filter_dashboard_grouped_widgets,
+        groupers=["month"],
+    )
+    assert dashboard.groupers.keys() == expected.groupers.keys()
+    # Does it matter if the order of the grouper values is different?
+    assert (
+        list(dashboard.groupers.values()).sort()
+        == list(expected.groupers.values()).sort()
+    )
+    assert dashboard.keys == expected.keys
+    assert dashboard.widgets == expected.widgets
 
 
 def test__get_view(single_filter_dashboard: Dashboard):
