@@ -98,7 +98,8 @@ def test_model_dump_views(single_filter_dashboard: Dashboard):
     }
 
 
-def test__get_view_two_part_key():
+@pytest.fixture
+def two_filter_dashboard():
     great_map = GroupedWidget(
         widget_type="map",
         title="A Great Map",
@@ -113,7 +114,7 @@ def test__get_view_two_part_key():
             ): "/path/to/jan/2023/map.html",
         },
     )
-    dashboard = Dashboard(
+    return Dashboard(
         groupers={"month": ["jan"], "year": ["2022", "2023"]},
         keys=[
             (("month", "=", "jan"), ("year", "=", "2022")),
@@ -121,6 +122,10 @@ def test__get_view_two_part_key():
         ],
         widgets=[great_map],
     )
+
+
+def test__get_view_two_part_key(two_filter_dashboard: Dashboard):
+    dashboard = two_filter_dashboard
     assert dashboard._get_view((("month", "=", "jan"), ("year", "=", "2022"))) == [
         EmumeratedWidgetView(
             id=0,
@@ -137,6 +142,28 @@ def test__get_view_two_part_key():
             data="/path/to/jan/2023/map.html",
         ),
     ]
+
+
+def test_model_dump_views_two_filter(two_filter_dashboard: Dashboard):
+    dashboard = two_filter_dashboard
+    assert dashboard.model_dump()["views"] == {
+        '{"month": "jan", "year": "2022"}': [
+            {
+                "id": 0,
+                "widget_type": "map",
+                "title": "A Great Map",
+                "data": "/path/to/jan/2022/map.html",
+            },
+        ],
+        '{"month": "jan", "year": "2023"}': [
+            {
+                "id": 0,
+                "widget_type": "map",
+                "title": "A Great Map",
+                "data": "/path/to/jan/2023/map.html",
+            },
+        ],
+    }
 
 
 def test__get_view_three_part_key():
