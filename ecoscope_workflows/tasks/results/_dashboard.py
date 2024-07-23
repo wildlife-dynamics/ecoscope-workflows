@@ -41,6 +41,72 @@ class EmumeratedWidgetView:
         )
 
 
+class _RJSFFilterProperty(BaseModel):
+    """Model representing the properties of a React JSON Schema Form filter.
+    This model is used to generate the `properties` field for a filter schema in a dashboard.
+
+    Args:
+        _type: The type of the filter property.
+        _enum: The possible values for the filter property.
+        _enumNames: The human-readable names for the possible values.
+        _default: The default value for the filter property
+    """
+
+    _type: str
+    _enum: list[str]
+    _enumNames: list[str]
+    _default: str
+
+
+class _RJSFFilterUiSchema(BaseModel):
+    """Model representing the UI schema of a React JSON Schema Form filter.
+    This model is used to generate the `uiSchema` field for a filter schema in a dashboard.
+
+    Args:
+        _title: The title of the filter.
+        _help: The help text for the filter.
+    """
+
+    _title: str
+    # FIXME: allow specifying help text
+    # _help: str
+
+    @model_serializer
+    def ser_model(self) -> dict[str, Any]:
+        return {
+            "ui:title": self._title,
+            # FIXME: allow specifying help text
+            # "ui:help": self._help,
+        }
+
+
+class _RJSFFilter(BaseModel):
+    """Model representing a React JSON Schema Form filter."""
+
+    _property: _RJSFFilterProperty
+    _uiSchema: _RJSFFilterUiSchema
+
+
+class ReactJSONSchemaFormFilters(BaseModel):
+    options: dict[str, _RJSFFilter]
+
+    @property
+    def _schema(self):
+        return {
+            "type": "object",
+            "properties": {
+                opt: rjsf._property.model_dump() for opt, rjsf in self.options.items()
+            },
+            "uiSchema": {
+                opt: rjsf._uiSchema.model_dump() for opt, rjsf in self.options.items()
+            },
+        }
+
+    @model_serializer
+    def ser_model(self) -> dict[str, Any]:
+        return {"schema": self._schema}
+
+
 @dataclass
 class Metadata:
     """Descriptive metadata for the dashboard."""
@@ -73,24 +139,30 @@ class Dashboard(BaseModel):
         return {k: v for k, v in self._iter_views_json()}
 
     @property
-    def filters_json(self):
-        return [
-            {
-                "title": grouper_name.title().replace("_", " "),
-                "key": grouper_name,
-                "type": "select",  # FIXME: infer from type of values, or allow specifying
-                "options": [
-                    {"key": choice.title(), "value": choice}
-                    for choice in grouper_choices
-                ],
+    def rjsf_filters_json(self) -> ReactJSONSchemaFormFilters:
+        return ReactJSONSchemaFormFilters(
+            options={
+                grouper_name: _RJSFFilter(
+                    _property=_RJSFFilterProperty(
+                        _type="string",
+                        _enum=grouper_choices,
+                        _enumNames=[choice.title() for choice in grouper_choices],
+                        _default=grouper_choices[0],
+                    ),
+                    _uiSchema=_RJSFFilterUiSchema(
+                        _title=grouper_name.title().replace("_", " "),
+                        # FIXME: allow specifying help text
+                        # _help=f"Select a {grouper_name} to filter by.",
+                    ),
+                )
+                for grouper_name, grouper_choices in self.groupers.items()
             }
-            for grouper_name, grouper_choices in self.groupers.items()
-        ]
+        )
 
     @model_serializer
     def ser_model(self) -> dict[str, Any]:
         return {
-            "filters": self.filters_json,
+            "filters": self.rjsf_filters_json.model_dump(),
             "views": self.views_json,
             "metadata": self.metadata,
             "layout": [],  # this is a placeholder for future use by server
