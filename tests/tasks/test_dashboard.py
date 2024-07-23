@@ -2,7 +2,7 @@ from ecoscope_workflows.tasks.results._dashboard import Dashboard, EmumeratedWid
 from ecoscope_workflows.tasks.results._widget_types import GroupedWidget
 
 
-def test_dashboard__get_view():
+def test__get_view():
     great_map = GroupedWidget(
         widget_type="map",
         title="A Great Map",
@@ -57,7 +57,7 @@ def test_dashboard__get_view():
     ]
 
 
-def test_dashboard__get_view_two_part_key():
+def test__get_view_two_part_key():
     great_map = GroupedWidget(
         widget_type="map",
         title="A Great Map",
@@ -98,7 +98,7 @@ def test_dashboard__get_view_two_part_key():
     ]
 
 
-def test_dashboard__get_view_three_part_key():
+def test__get_view_three_part_key():
     great_map = GroupedWidget(
         widget_type="map",
         title="A Great Map",
@@ -145,7 +145,7 @@ def test_dashboard__get_view_three_part_key():
     ]
 
 
-def test_dashboard__get_view_with_none_views():
+def test__get_view_with_none_views():
     great_map = GroupedWidget(
         widget_type="map",
         title="A Great Map",
