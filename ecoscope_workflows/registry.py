@@ -3,13 +3,12 @@ entry points. This design is heavily inspired by the `fsspec` package's `registr
 to which we owe a debt of gratitude.
 """
 
-import ast
 import types
 from dataclasses import dataclass
 from enum import Enum
 from importlib import import_module
 from importlib.metadata import entry_points
-from inspect import getmembers, getsource, ismodule
+from inspect import getmembers, ismodule
 from typing import Annotated, Any, Generator, get_args
 
 import ruamel.yaml
@@ -19,7 +18,6 @@ from pydantic import (
     Field,
     FieldSerializationInfo,
     TypeAdapter,
-    computed_field,
     field_serializer,
 )
 from pydantic.functional_validators import AfterValidator
@@ -210,31 +208,6 @@ class KnownTask(BaseModel):
         ):
             params += line
         return params
-
-    @property
-    def _ast_parsed_function_def(self) -> ast.FunctionDef:
-        source = getsource(self.task)
-        module = ast.parse(source)
-        function_def = module.body[0]
-        assert isinstance(function_def, ast.FunctionDef)
-        return function_def
-
-    @computed_field
-    def source_body(self) -> str:
-        return "\n".join(
-            ast.unparse(stmt)
-            for stmt in self._ast_parsed_function_def.body
-            if not isinstance(stmt, ast.Return)
-        )
-
-    @computed_field
-    def source_return(self) -> str:
-        return_stmt = [
-            stmt
-            for stmt in self._ast_parsed_function_def.body
-            if isinstance(stmt, ast.Return)
-        ][0]
-        return ast.unparse(return_stmt).replace("return ", "")
 
 
 _known_tasks = collect_task_entries()  # internal, mutable
