@@ -34,12 +34,17 @@ class WidgetSingleView(WidgetBase):
 class GroupedWidget(WidgetBase):
     views: dict[CompositeFilter | None, WidgetData]
 
-    def get_view(self, view: CompositeFilter | None) -> WidgetSingleView:
+    def get_view(self, view: CompositeFilter) -> WidgetSingleView:
+        """Get the view for a specific CompositeFilter. If the widget has only
+        a single (ungrouped) view, then that single view is returned regardless
+        of which `view` is requested.
+        """
+        _view = view if not list(self.views) == [None] else None
         return WidgetSingleView(
             widget_type=self.widget_type,
             title=self.title,
             view=view,
-            data=self.views[view],
+            data=self.views[_view],
         )
 
     @property

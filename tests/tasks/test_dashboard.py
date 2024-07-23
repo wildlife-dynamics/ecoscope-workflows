@@ -143,3 +143,57 @@ def test_dashboard__get_view_three_part_key():
             data="/path/to/jan/2022/zo/map.html",
         ),
     ]
+
+
+def test_dashboard__get_view_with_none_views():
+    great_map = GroupedWidget(
+        widget_type="map",
+        title="A Great Map",
+        views={
+            (("month", "=", "january"),): "/path/to/precomputed/jan/map.html",
+            (("month", "=", "february"),): "/path/to/precomputed/feb/map.html",
+        },
+    )
+    none_view_plot = GroupedWidget(
+        widget_type="plot",
+        title="A plot with only one view and no groupers",
+        views={
+            None: "/path/to/precomputed/single/plot.html",
+        },
+    )
+    dashboard = Dashboard(
+        groupers={"month": ["january", "february"]},
+        keys=[
+            (("month", "=", "january"),),
+            (("month", "=", "february"),),
+        ],
+        widgets=[great_map, none_view_plot],
+    )
+    assert dashboard._get_view((("month", "=", "january"),)) == [
+        EmumeratedWidgetView(
+            id=0,
+            widget_type="map",
+            title="A Great Map",
+            data="/path/to/precomputed/jan/map.html",
+        ),
+        EmumeratedWidgetView(
+            id=1,
+            widget_type="plot",
+            title="A plot with only one view and no groupers",
+            data="/path/to/precomputed/single/plot.html",
+        ),
+    ]
+    assert dashboard._get_view((("month", "=", "february"),)) == [
+        EmumeratedWidgetView(
+            id=0,
+            widget_type="map",
+            title="A Great Map",
+            data="/path/to/precomputed/feb/map.html",
+        ),
+        EmumeratedWidgetView(
+            id=1,
+            widget_type="plot",
+            title="A plot with only one view and no groupers",
+            data="/path/to/precomputed/single/plot.html",
+        ),
+    ]

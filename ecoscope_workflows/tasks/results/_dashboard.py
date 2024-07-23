@@ -60,7 +60,6 @@ class Dashboard(BaseModel):
         return [
             EmumeratedWidgetView.from_single_view(id=i, view=w.get_view(view))
             for i, w in enumerate(self.widgets)
-            if view in w.views
         ]
 
     def _iter_views(
