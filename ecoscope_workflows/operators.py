@@ -19,7 +19,3 @@ class OperatorKws(BaseModel):
     container_resources: dict[str, Any] = Field(
         default_factory=default_container_resources
     )
-
-
-class KubernetesPodOperator(OperatorKws):
-    name: str | None = None  # This is the *pod* name
