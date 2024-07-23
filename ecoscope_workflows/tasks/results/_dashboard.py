@@ -52,10 +52,10 @@ class _RJSFFilterProperty(BaseModel):
         _default: The default value for the filter property
     """
 
-    _type: str
-    _enum: list[str]
-    _enumNames: list[str]
-    _default: str
+    type: str
+    enum: list[str]
+    enumNames: list[str]
+    default: str
 
 
 class _RJSFFilterUiSchema(BaseModel):
@@ -67,15 +67,15 @@ class _RJSFFilterUiSchema(BaseModel):
         _help: The help text for the filter.
     """
 
-    _title: str
-    # FIXME: allow specifying help text
+    title: str
+    # TODO: allow specifying help text
     # _help: str
 
     @model_serializer
     def ser_model(self) -> dict[str, Any]:
         return {
-            "ui:title": self._title,
-            # FIXME: allow specifying help text
+            "ui:title": self.title,
+            # TODO: allow specifying help text
             # "ui:help": self._help,
         }
 
@@ -83,8 +83,8 @@ class _RJSFFilterUiSchema(BaseModel):
 class _RJSFFilter(BaseModel):
     """Model representing a React JSON Schema Form filter."""
 
-    _property: _RJSFFilterProperty
-    _uiSchema: _RJSFFilterUiSchema
+    property: _RJSFFilterProperty
+    uiSchema: _RJSFFilterUiSchema
 
 
 class ReactJSONSchemaFormFilters(BaseModel):
@@ -95,10 +95,10 @@ class ReactJSONSchemaFormFilters(BaseModel):
         return {
             "type": "object",
             "properties": {
-                opt: rjsf._property.model_dump() for opt, rjsf in self.options.items()
+                opt: rjsf.property.model_dump() for opt, rjsf in self.options.items()
             },
             "uiSchema": {
-                opt: rjsf._uiSchema.model_dump() for opt, rjsf in self.options.items()
+                opt: rjsf.uiSchema.model_dump() for opt, rjsf in self.options.items()
             },
         }
 
@@ -143,15 +143,15 @@ class Dashboard(BaseModel):
         return ReactJSONSchemaFormFilters(
             options={
                 grouper_name: _RJSFFilter(
-                    _property=_RJSFFilterProperty(
-                        _type="string",
-                        _enum=grouper_choices,
-                        _enumNames=[choice.title() for choice in grouper_choices],
-                        _default=grouper_choices[0],
+                    property=_RJSFFilterProperty(
+                        type="string",
+                        enum=grouper_choices,
+                        enumNames=[choice.title() for choice in grouper_choices],
+                        default=grouper_choices[0],
                     ),
-                    _uiSchema=_RJSFFilterUiSchema(
-                        _title=grouper_name.title().replace("_", " "),
-                        # FIXME: allow specifying help text
+                    uiSchema=_RJSFFilterUiSchema(
+                        title=grouper_name.title().replace("_", " "),
+                        # TODO: allow specifying help text
                         # _help=f"Select a {grouper_name} to filter by.",
                     ),
                 )

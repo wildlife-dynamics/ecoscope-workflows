@@ -98,6 +98,28 @@ def test_model_dump_views(single_filter_dashboard: Dashboard):
     }
 
 
+def test_model_dump_filters(single_filter_dashboard: Dashboard):
+    dashboard = single_filter_dashboard
+    assert dashboard.model_dump()["filters"] == {
+        "schema": {
+            "type": "object",
+            "properties": {
+                "month": {
+                    "type": "string",
+                    "enum": ["january", "february"],
+                    "enumNames": ["January", "February"],
+                    "default": "january",
+                },
+            },
+            "uiSchema": {
+                "month": {
+                    "ui:title": "Month",
+                },
+            },
+        }
+    }
+
+
 @pytest.fixture
 def two_filter_dashboard():
     great_map = GroupedWidget(
