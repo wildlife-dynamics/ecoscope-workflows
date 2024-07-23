@@ -201,12 +201,13 @@ class KnownTask(BaseModel):
         return yaml_str
 
     def parameters_notebook(self, omit_args: list[str] | None = None) -> str:
-        params = ""
+        params = "dict(\n"
         for line in self._iter_parameters_annotation(
-            fmt="{arg} = ...\n",
+            fmt="    {arg}=...,\n",
             omit_args=omit_args,
         ):
             params += line
+        params += ")"
         return params
 
 
