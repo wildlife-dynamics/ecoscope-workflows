@@ -56,7 +56,6 @@ class Dashboard(BaseModel):
     metadata: Metadata = Field(default_factory=Metadata)
 
     def _get_view(self, view: CompositeFilter) -> list[EmumeratedWidgetView]:
-        # TODO: ungrouped widgets
         return [
             EmumeratedWidgetView.from_single_view(id=i, view=w.get_view(view))
             for i, w in enumerate(self.widgets)
