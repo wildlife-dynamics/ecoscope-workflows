@@ -242,7 +242,8 @@ def test_model_dump_views_three_filter(three_filter_dashboard: Dashboard):
     }
 
 
-def test__get_view_with_none_views():
+@pytest.fixture
+def dashboard_with_none_views():
     great_map = GroupedWidget(
         widget_type="map",
         title="A Great Map",
@@ -258,7 +259,7 @@ def test__get_view_with_none_views():
             None: "/path/to/precomputed/single/plot.html",
         },
     )
-    dashboard = Dashboard(
+    return Dashboard(
         groupers={"month": ["january", "february"]},
         keys=[
             (("month", "=", "january"),),
@@ -266,6 +267,10 @@ def test__get_view_with_none_views():
         ],
         widgets=[great_map, none_view_plot],
     )
+
+
+def test__get_view_with_none_views(dashboard_with_none_views: Dashboard):
+    dashboard = dashboard_with_none_views
     assert dashboard._get_view((("month", "=", "january"),)) == [
         EmumeratedWidgetView(
             id=0,
@@ -294,3 +299,37 @@ def test__get_view_with_none_views():
             data="/path/to/precomputed/single/plot.html",
         ),
     ]
+
+
+def test_model_dump_views_with_none_views(dashboard_with_none_views: Dashboard):
+    dashboard = dashboard_with_none_views
+    assert dashboard.model_dump()["views"] == {
+        '{"month": "january"}': [
+            {
+                "id": 0,
+                "widget_type": "map",
+                "title": "A Great Map",
+                "data": "/path/to/precomputed/jan/map.html",
+            },
+            {
+                "id": 1,
+                "widget_type": "plot",
+                "title": "A plot with only one view and no groupers",
+                "data": "/path/to/precomputed/single/plot.html",
+            },
+        ],
+        '{"month": "february"}': [
+            {
+                "id": 0,
+                "widget_type": "map",
+                "title": "A Great Map",
+                "data": "/path/to/precomputed/feb/map.html",
+            },
+            {
+                "id": 1,
+                "widget_type": "plot",
+                "title": "A plot with only one view and no groupers",
+                "data": "/path/to/precomputed/single/plot.html",
+            },
+        ],
+    }
