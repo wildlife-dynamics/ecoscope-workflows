@@ -1,12 +1,16 @@
 import json
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from typing import Annotated, Any, Generator, TypeAlias
 
 from pydantic import BaseModel, Field, model_serializer
 
 from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.serde import CompositeFilter
-from ecoscope_workflows.tasks.results._widget_types import GroupedWidget, WidgetData
+from ecoscope_workflows.tasks.results._widget_types import (
+    GroupedWidget,
+    WidgetData,
+    WidgetSingleView,
+)
 
 GrouperName: TypeAlias = str
 GrouperChoices: TypeAlias = list[str]
@@ -18,6 +22,15 @@ class EmumeratedWidgetView:
     widget_type: str
     title: str
     data: WidgetData
+
+    @classmethod
+    def from_single_view(cls, id: int, view: WidgetSingleView):
+        return cls(
+            id=id,
+            widget_type=view.widget_type,
+            title=view.title,
+            data=view.data,
+        )
 
 
 @dataclass
@@ -35,10 +48,7 @@ class Dashboard(BaseModel):
     def _get_view(self, view: CompositeFilter) -> list[EmumeratedWidgetView]:
         # TODO: ungrouped widgets
         return [
-            EmumeratedWidgetView(
-                id=i,
-                **{k: v for k, v in asdict(w.get_view(view)).items() if k != "view"},
-            )
+            EmumeratedWidgetView.from_single_view(id=i, view=w.get_view(view))
             for i, w in enumerate(self.widgets)
             if view in w.views
         ]
