@@ -223,3 +223,79 @@ def test_grouped_widget_get_view():
         view=("month", "=", "january"),
         data="/path/to/precomputed/jan/map.html",
     )
+
+
+def test_grouped_widget_get_view_none():
+    none_view = GroupedWidget(
+        widget_type="map",
+        title="A map with only one view and no groupers",
+        views={
+            None: "/path/to/precomputed/single/map.html",
+        },
+    )
+    view = none_view.get_view(None)
+    assert view == WidgetSingleView(
+        widget_type="map",
+        title="A map with only one view and no groupers",
+        view=None,
+        data="/path/to/precomputed/single/map.html",
+    )
+
+
+def test_merge_widget_views_multiple_widgets_with_none_views():
+    widget1_view1 = WidgetSingleView(
+        widget_type="map",
+        title="A Great Map",
+        view=("month", "=", "january"),
+        data="/path/to/precomputed/jan/map.html",
+    )
+    widget1_view2 = WidgetSingleView(
+        widget_type="map",
+        title="A Great Map",
+        view=("month", "=", "february"),
+        data="/path/to/precomputed/feb/map.html",
+    )
+    widget2_only_view = WidgetSingleView(
+        widget_type="map",
+        title="A map with only one view and no groupers",
+        view=None,
+        data="/path/to/precomputed/single/map.html",
+    )
+    widget3_only_view = WidgetSingleView(
+        widget_type="plot",
+        title="A plot with only one view and no groupers",
+        view=None,
+        data="/path/to/precomputed/single/plot.html",
+    )
+    merged = merge_widget_views(
+        [
+            widget1_view1,
+            widget1_view2,
+            widget2_only_view,
+            widget3_only_view,
+        ]
+    )
+    assert merged == [
+        GroupedWidget(
+            widget_type="map",
+            title="A Great Map",
+            views={
+                ("month", "=", "january"): "/path/to/precomputed/jan/map.html",
+                ("month", "=", "february"): "/path/to/precomputed/feb/map.html",
+            },
+        ),
+        GroupedWidget(
+            widget_type="map",
+            title="A map with only one view and no groupers",
+            views={
+                None: "/path/to/precomputed/single/map.html",
+            },
+        ),
+        GroupedWidget(
+            widget_type="plot",
+            title="A plot with only one view and no groupers",
+            views={
+                None: "/path/to/precomputed/single/plot.html",
+            },
+        ),
+    ]
