@@ -4,9 +4,19 @@ from ecoscope_workflows.tasks.results import gather_dashboard
 from ecoscope_workflows.tasks.results._dashboard import Dashboard, EmumeratedWidgetView
 from ecoscope_workflows.tasks.results._widget_types import GroupedWidget
 
+DashboardFixture = tuple[list[GroupedWidget], Dashboard]
+
+
+def assert_dashboards_equal(d1: Dashboard, d2: Dashboard):
+    assert d1.groupers.keys() == d2.groupers.keys()
+    # Does it matter if the order of the grouper values is different?
+    assert list(d1.groupers.values()).sort() == list(d2.groupers.values()).sort()
+    assert d1.keys == d2.keys
+    assert d1.widgets == d2.widgets
+
 
 @pytest.fixture
-def single_filter_dashboard_grouped_widgets():
+def single_filter_dashboard() -> DashboardFixture:
     great_map = GroupedWidget(
         widget_type="map",
         title="A Great Map",
@@ -23,38 +33,25 @@ def single_filter_dashboard_grouped_widgets():
             (("month", "=", "february"),): "/path/to/precomputed/feb/plot.html",
         },
     )
-    return [great_map, cool_plot]
-
-
-@pytest.fixture
-def single_filter_dashboard(single_filter_dashboard_grouped_widgets):
-    return Dashboard(
+    widgets = [great_map, cool_plot]
+    dashboard = Dashboard(
         groupers={"month": ["january", "february"]},
         keys=[
             (("month", "=", "january"),),
             (("month", "=", "february"),),
         ],
-        widgets=single_filter_dashboard_grouped_widgets,
+        widgets=[great_map, cool_plot],
     )
+    return widgets, dashboard
 
 
-def test_gather_dashboard(
-    single_filter_dashboard_grouped_widgets: list[GroupedWidget],
-    single_filter_dashboard: Dashboard,
-):
-    expected = single_filter_dashboard
+def test_gather_dashboard(single_filter_dashboard: DashboardFixture):
+    grouped_widgets, expected_dashboard = single_filter_dashboard
     dashboard: Dashboard = gather_dashboard(
-        grouped_widgets=single_filter_dashboard_grouped_widgets,
+        grouped_widgets=grouped_widgets,
         groupers=["month"],
     )
-    assert dashboard.groupers.keys() == expected.groupers.keys()
-    # Does it matter if the order of the grouper values is different?
-    assert (
-        list(dashboard.groupers.values()).sort()
-        == list(expected.groupers.values()).sort()
-    )
-    assert dashboard.keys == expected.keys
-    assert dashboard.widgets == expected.widgets
+    assert_dashboards_equal(dashboard, expected_dashboard)
 
 
 def test__get_view(single_filter_dashboard: Dashboard):
