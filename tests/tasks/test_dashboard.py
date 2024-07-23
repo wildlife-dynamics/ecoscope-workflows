@@ -166,7 +166,8 @@ def test_model_dump_views_two_filter(two_filter_dashboard: Dashboard):
     }
 
 
-def test__get_view_three_part_key():
+@pytest.fixture
+def three_filter_dashboard():
     great_map = GroupedWidget(
         widget_type="map",
         title="A Great Map",
@@ -183,7 +184,7 @@ def test__get_view_three_part_key():
             ): "/path/to/jan/2022/zo/map.html",
         },
     )
-    dashboard = Dashboard(
+    return Dashboard(
         groupers={"month": ["jan"], "year": ["2022"], "subject_name": ["jo", "zo"]},
         keys=[
             (("month", "=", "jan"), ("year", "=", "2022"), ("subject_name", "=", "jo")),
@@ -191,6 +192,10 @@ def test__get_view_three_part_key():
         ],
         widgets=[great_map],
     )
+
+
+def test__get_view_three_part_key(three_filter_dashboard: Dashboard):
+    dashboard = three_filter_dashboard
     assert dashboard._get_view(
         (("month", "=", "jan"), ("year", "=", "2022"), ("subject_name", "=", "jo"))
     ) == [
@@ -211,6 +216,30 @@ def test__get_view_three_part_key():
             data="/path/to/jan/2022/zo/map.html",
         ),
     ]
+
+
+def test_model_dump_views_three_filter(three_filter_dashboard: Dashboard):
+    dashboard = three_filter_dashboard
+    assert dashboard.model_dump()["views"] == {
+        # Note sort_keys=True in `json.dumps` in _iter_views_json method of Dashboard
+        # results in the json keys being ordered differently than the keys in the tuple
+        '{"month": "jan", "subject_name": "jo", "year": "2022"}': [
+            {
+                "id": 0,
+                "widget_type": "map",
+                "title": "A Great Map",
+                "data": "/path/to/jan/2022/jo/map.html",
+            },
+        ],
+        '{"month": "jan", "subject_name": "zo", "year": "2022"}': [
+            {
+                "id": 0,
+                "widget_type": "map",
+                "title": "A Great Map",
+                "data": "/path/to/jan/2022/zo/map.html",
+            },
+        ],
+    }
 
 
 def test__get_view_with_none_views():
