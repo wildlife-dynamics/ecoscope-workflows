@@ -133,8 +133,6 @@ def merge_widget_views(
     Returns:
         The merged widgets.
     """
-    # TODO: Ungrouped widgets.
-
     as_grouped_widgets = [
         GroupedWidget(
             widget_type=w.widget_type,
