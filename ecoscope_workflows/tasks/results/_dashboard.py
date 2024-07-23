@@ -1,19 +1,20 @@
 import json
 from dataclasses import dataclass
-from typing import Annotated, Any, Generator, TypeAlias
+from typing import Annotated, Any, Generator
 
 from pydantic import BaseModel, Field, model_serializer
 
 from ecoscope_workflows.decorators import distributed
-from ecoscope_workflows.serde import CompositeFilter
+from ecoscope_workflows.serde import (
+    CompositeFilter,
+    IndexName,
+    IndexValue,
+)
 from ecoscope_workflows.tasks.results._widget_types import (
     GroupedWidget,
     WidgetData,
     WidgetSingleView,
 )
-
-GrouperName: TypeAlias = str
-GrouperChoices: TypeAlias = list[str]
 
 
 @dataclass
@@ -40,7 +41,7 @@ class Metadata:
 
 
 class Dashboard(BaseModel):
-    groupers: dict[GrouperName, GrouperChoices]
+    groupers: dict[IndexName, list[IndexValue]]
     keys: list[CompositeFilter]
     widgets: list[GroupedWidget]
     metadata: Metadata = Field(default_factory=Metadata)
@@ -101,7 +102,7 @@ class Dashboard(BaseModel):
 
 def composite_filters_to_grouper_choices_dict(
     keys: list[CompositeFilter | None],
-) -> dict[GrouperName, GrouperChoices]:
+) -> dict[IndexName, list[IndexValue]]:
     """Converts a list of composite filters to a dict of grouper choices.
     For example:
     ```
@@ -117,7 +118,7 @@ def composite_filters_to_grouper_choices_dict(
     {'animal_name': ['Ao', 'Bo'], 'month': ['February', 'January']}
     ```
     """
-    choices: dict[GrouperName, GrouperChoices] = {}
+    choices: dict[IndexName, list[IndexValue]] = {}
     for k in keys:
         if k is not None:
             for filter, _, value in k:
