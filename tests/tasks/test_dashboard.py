@@ -41,9 +41,17 @@ def test_dashboard__get_view():
             data="/path/to/precomputed/jan/plot.html",
         ),
     ]
-    # assert dashboard._get_view([("a", "a2")]) == [
-    #     EmumeratedWidget(id=2, widget_type="GroupedWidget", title="a2", data=WidgetData()),
-    # ]
-    # assert dashboard._get_view([("b", "b2")]) == [
-    #     EmumeratedWidget(id=3, widget_type="GroupedWidget", title="b2", data=WidgetData()),
-    # ]
+    assert dashboard._get_view((("month", "=", "february"),)) == [
+        EmumeratedWidgetView(
+            id=0,
+            widget_type="map",
+            title="A Great Map",
+            data="/path/to/precomputed/feb/map.html",
+        ),
+        EmumeratedWidgetView(
+            id=1,
+            widget_type="plot",
+            title="A Cool Plot",
+            data="/path/to/precomputed/feb/plot.html",
+        ),
+    ]
