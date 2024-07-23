@@ -170,6 +170,15 @@ def two_filter_dashboard() -> DashboardFixture:
     return widgets, dashboard
 
 
+def test_gather_dashboard_two_filter(two_filter_dashboard: DashboardFixture):
+    grouped_widgets, expected_dashboard = two_filter_dashboard
+    dashboard: Dashboard = gather_dashboard(
+        grouped_widgets=grouped_widgets,
+        groupers=["month", "year"],
+    )
+    assert_dashboards_equal(dashboard, expected_dashboard)
+
+
 def test__get_view_two_part_key(two_filter_dashboard: DashboardFixture):
     _, dashboard = two_filter_dashboard
     assert dashboard._get_view((("month", "=", "jan"), ("year", "=", "2022"))) == [
@@ -271,6 +280,15 @@ def three_filter_dashboard() -> DashboardFixture:
         widgets=widgets,
     )
     return widgets, dashboard
+
+
+def test_gather_dashboard_three_filter(three_filter_dashboard: DashboardFixture):
+    grouped_widgets, expected_dashboard = three_filter_dashboard
+    dashboard: Dashboard = gather_dashboard(
+        grouped_widgets=grouped_widgets,
+        groupers=["month", "year", "subject_name"],
+    )
+    assert_dashboards_equal(dashboard, expected_dashboard)
 
 
 def test__get_view_three_part_key(three_filter_dashboard: DashboardFixture):
