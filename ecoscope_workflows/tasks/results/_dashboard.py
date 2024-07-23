@@ -62,22 +62,12 @@ class Dashboard(BaseModel):
             for i, w in enumerate(self.widgets)
         ]
 
-    def _iter_views(
-        self,
-    ) -> Generator[tuple[CompositeFilter, list[EmumeratedWidgetView]], None, None]:
-        for k in self.keys:
-            yield k, self._get_view(k)
-
     def _iter_views_json(
         self,
     ) -> Generator[tuple[str, list[EmumeratedWidgetView]], None, None]:
         for k in self.keys:
             asdict = {attr: value for attr, _, value in k}
             yield json.dumps(asdict, sort_keys=True), self._get_view(k)
-
-    @property
-    def views(self) -> dict[CompositeFilter, list[EmumeratedWidgetView]]:
-        return {k: v for k, v in self._iter_views()}
 
     @property
     def views_json(self) -> dict[str, list[EmumeratedWidgetView]]:
