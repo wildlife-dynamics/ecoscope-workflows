@@ -7,6 +7,7 @@ from ecoscope_workflows.serde import CompositeFilter
 from ecoscope_workflows.tasks.results._widget_types import (
     GroupedWidget,
     PrecomputedHTMLWidgetData,
+    SingleValueWidgetData,
     TextWidgetData,
     WidgetSingleView,
 )
@@ -22,8 +23,16 @@ def create_map_widget_single_view(
         CompositeFilter | None, Field(description="If grouped, the view of the widget")
     ] = None,
 ) -> Annotated[WidgetSingleView, Field(description="The widget")]:
-    from ecoscope_workflows.tasks.results._widget_types import WidgetSingleView
+    """Create a map widget with a single view.
 
+    Args:
+        title: The title of the widget.
+        data: Path to precomputed HTML.
+        view: If grouped, the view of the widget.
+
+    Returns:
+        The widget.
+    """
     return WidgetSingleView(
         widget_type="map",
         title=title,
@@ -42,8 +51,16 @@ def create_plot_widget_single_view(
         CompositeFilter | None, Field(description="If grouped, the view of the widget")
     ] = None,
 ) -> Annotated[WidgetSingleView, Field(description="The widget")]:
-    from ecoscope_workflows.tasks.results._widget_types import WidgetSingleView
+    """Create a plot widget with a single view.
 
+    Args:
+        title: The title of the widget.
+        data: Path to precomputed HTML.
+        view: If grouped, the view of the widget.
+
+    Returns:
+        The widget.
+    """
     return WidgetSingleView(
         widget_type="plot",
         title=title,
@@ -60,8 +77,16 @@ def create_text_widget_single_view(
         CompositeFilter | None, Field(description="If grouped, the view of the widget")
     ] = None,
 ) -> Annotated[WidgetSingleView, Field(description="The widget")]:
-    from ecoscope_workflows.tasks.results._widget_types import WidgetSingleView
+    """Create a text widget with a single view.
 
+    Args:
+        title: The title of the widget.
+        data: Text to display.
+        view: If grouped, the view of the widget.
+
+    Returns:
+        The widget.
+    """
     return WidgetSingleView(
         widget_type="text",
         title=title,
@@ -73,15 +98,21 @@ def create_text_widget_single_view(
 @distributed
 def create_single_value_widget_single_view(
     title: Annotated[str, Field(description="The title of the widget")],
-    data: Annotated[
-        PrecomputedHTMLWidgetData, Field(description="Path to precomputed HTML")
-    ],
+    data: Annotated[SingleValueWidgetData, Field(description="Value to display.")],
     view: Annotated[
         CompositeFilter | None, Field(description="If grouped, the view of the widget")
     ] = None,
 ) -> Annotated[WidgetSingleView, Field(description="The widget")]:
-    from ecoscope_workflows.tasks.results._widget_types import WidgetSingleView
+    """Create a single value widget with a single view.
 
+    Args:
+        title: The title of the widget.
+        data: Path to precomputed HTML.
+        view: If grouped, the view of the widget.
+
+    Returns:
+        The widget.
+    """
     return WidgetSingleView(
         widget_type="single_value",
         title=title,
@@ -94,7 +125,15 @@ def create_single_value_widget_single_view(
 def merge_widget_views(
     widgets: Annotated[list[WidgetSingleView], Field()],
 ) -> Annotated[list[GroupedWidget], Field(description="The merged widgets")]:
-    from ecoscope_workflows.tasks.results._widget_types import GroupedWidget
+    """Merge widgets with the same `title` and `widget_type`.
+
+    Args:
+        widgets: The widgets to merge.
+
+    Returns:
+        The merged widgets.
+    """
+    # TODO: Ungrouped widgets.
 
     as_grouped_widgets = [
         GroupedWidget(
