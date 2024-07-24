@@ -18,16 +18,20 @@
                 "description": "End date"
             },
             "patrol_type": {
-                "default": null,
+                "items": {
+                    "type": "string"
+                },
                 "title": "Patrol Type",
-                "type": "string",
-                "description": "Comma-separated list of type of patrol UUID"
+                "type": "array",
+                "description": "list of UUID of patrol types"
             },
             "status": {
-                "default": null,
+                "items": {
+                    "type": "string"
+                },
                 "title": "Status",
-                "type": "string",
-                "description": "Comma-separated list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"
+                "type": "array",
+                "description": "list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"
             },
             "include_patrol_details": {
                 "default": false,
@@ -39,7 +43,9 @@
         "required": [
             "client",
             "since",
-            "until"
+            "until",
+            "patrol_type",
+            "status"
         ],
         "type": "object"
     },
@@ -208,22 +214,28 @@
                 "description": "End date"
             },
             "patrol_type": {
-                "default": null,
+                "items": {
+                    "type": "string"
+                },
                 "title": "Patrol Type",
-                "type": "string",
-                "description": "Comma-separated list of type of patrol UUID"
+                "type": "array",
+                "description": "list of UUID of patrol types"
             },
             "status": {
-                "default": null,
+                "items": {
+                    "type": "string"
+                },
                 "title": "Status",
-                "type": "string",
-                "description": "Comma-separated list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"
+                "type": "array",
+                "description": "list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"
             }
         },
         "required": [
             "client",
             "since",
-            "until"
+            "until",
+            "patrol_type",
+            "status"
         ],
         "type": "object"
     },

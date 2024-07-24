@@ -60,14 +60,13 @@ def get_patrol_observations(
     since: Annotated[str, Field(description="Start date")],
     until: Annotated[str, Field(description="End date")],
     patrol_type: Annotated[
-        str,
-        Field(default=None, description="Comma-separated list of type of patrol UUID"),
+        list[str],
+        Field(description="list of UUID of patrol types"),
     ],
     status: Annotated[
-        str,
+        list[str],
         Field(
-            default=None,
-            description="Comma-separated list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'",
+            description="list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'",
         ),
     ],
     include_patrol_details: Annotated[
@@ -90,14 +89,13 @@ def get_patrol_events(
     since: Annotated[str, Field(description="Start date")],
     until: Annotated[str, Field(description="End date")],
     patrol_type: Annotated[
-        str,
-        Field(default=None, description="Comma-separated list of type of patrol UUID"),
+        list[str],
+        Field(description="list of UUID of patrol types"),
     ],
     status: Annotated[
-        str,
+        list[str],
         Field(
-            default=None,
-            description="Comma-separated list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'",
+            description="list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'",
         ),
     ],
 ) -> DataFrame[EventGDFSchema]:
