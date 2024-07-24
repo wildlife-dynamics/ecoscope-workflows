@@ -543,6 +543,24 @@ def test_gather_dashboard_with_all_none_views(
     assert dashboard == expected_dashboard
 
 
+def test__get_view_with_all_none_views(dashboard_with_all_none_views: DashboardFixture):
+    _, dashboard = dashboard_with_all_none_views
+    assert dashboard._get_view(None) == [
+        EmumeratedWidgetView(
+            id=0,
+            widget_type="map",
+            title="A map with only one view and no groupers",
+            data="/path/to/precomputed/single/map.html",
+        ),
+        EmumeratedWidgetView(
+            id=1,
+            widget_type="plot",
+            title="A plot with only one view and no groupers",
+            data="/path/to/precomputed/single/plot.html",
+        ),
+    ]
+
+
 def test_model_dump_views_with_all_none_views(
     dashboard_with_all_none_views: DashboardFixture,
 ):
