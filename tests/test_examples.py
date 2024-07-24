@@ -98,6 +98,7 @@ class EndToEndFixture:
 # TODO: package this alongside task somehow
 assert_that_stdout = {
     "time-density.yaml": [
+        lambda out: "A dashboard for visualizing a time density map." in out,
         lambda out: "td_map.html" in out,
         lambda out: "widget_type='map', title='Great Map'," in out,
     ],
