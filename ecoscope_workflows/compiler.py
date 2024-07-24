@@ -19,8 +19,8 @@ TEMPLATES = pathlib.Path(__file__).parent / "templates"
 class TaskInstance(BaseModel):
     known_task_name: str  # TODO: validate is valid key in known_tasks
     arg_dependencies: dict = Field(default_factory=dict)
-    arg_prevalidators: dict = Field(default_factory=dict)
-    return_postvalidator: Callable | None = None
+    # arg_prevalidators: dict = Field(default_factory=dict)
+    # return_postvalidator: Callable | None = None
 
     @computed_field  # type: ignore[misc]
     @property
@@ -60,22 +60,15 @@ class Spec(BaseModel):
     @computed_field  # type: ignore[misc]
     @property
     def tasks(self) -> list[TaskInstance]:
-        tasks = []
-        for task_name in self.workflow:
-            arg_dependencies: dict[str, str] = {}
-            # if the value of the task is None, the task has no dependencies
-            if self.workflow[task_name]:
-                # if the value is a dict, then then that dict's k:v pairs are the
-                # arg on the task mapped to the dependency to deserialize it from
-                for arg, dep in self.workflow[task_name].items():
-                    arg_dependencies |= {arg: f"{dep}_return"}
-            tasks.append(
-                TaskInstance(
-                    known_task_name=task_name,
-                    arg_dependencies=arg_dependencies,
-                )
+        return [
+            TaskInstance(
+                known_task_name=task_name,
+                arg_dependencies={
+                    arg: f"{dep}_return" for arg, dep in task_args.items()
+                },
             )
-        return tasks
+            for task_name, task_args in self.workflow.items()
+        ]
 
 
 class DagCompiler(BaseModel):
