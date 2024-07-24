@@ -26,9 +26,7 @@ class SubjectGroupObservationsGDFSchema(JsonSerializableDataFrameModel):
 
 
 class EventGDFSchema(JsonSerializableDataFrameModel):
-    geometry: pa.typing.Series[Any] = (
-        pa.Field()
-    )  # see note in tasks/time_density re: geometry typing
+    geometry: pa.typing.Series[Any] = pa.Field()
     id: pa.typing.Series[str] = pa.Field()
     event_type: pa.typing.Series[str] = pa.Field()
 
