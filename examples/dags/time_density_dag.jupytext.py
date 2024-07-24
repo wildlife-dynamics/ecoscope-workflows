@@ -14,6 +14,7 @@ from ecoscope_workflows.tasks.analysis import calculate_time_density
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
+from ecoscope_workflows.tasks.results import gather_dashboard
 
 # %% [markdown]
 # ## Get Subjectgroup Observations
@@ -158,4 +159,23 @@ create_map_widget_single_view_params = dict(
 create_map_widget_single_view_return = create_map_widget_single_view(
     data=persist_text_return,
     **create_map_widget_single_view_params,
+)
+# %% [markdown]
+# ## Gather Dashboard
+
+# %%
+# parameters
+
+gather_dashboard_params = dict(
+    title=...,
+    description=...,
+    groupers=...,
+)
+
+# %%
+# call the task
+
+gather_dashboard_return = gather_dashboard(
+    widgets=create_map_widget_single_view_return,
+    **gather_dashboard_params,
 )
