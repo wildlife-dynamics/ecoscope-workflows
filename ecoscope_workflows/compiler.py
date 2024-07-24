@@ -1,4 +1,3 @@
-import copy
 import functools
 import pathlib
 import subprocess
@@ -19,15 +18,6 @@ from ecoscope_workflows.annotations import is_subscripted_pandera_dataframe
 
 
 TEMPLATES = pathlib.Path(__file__).parent / "templates"
-
-
-class TasksSpec(BaseModel):
-    tasks: dict[str, dict[str, str]]
-    # TODO: pydantic validator for `self.tasks`, as follows:
-    #  - all outer dict keys must be registered `known_tasks`
-    #  - all inner dict keys must be argument names on the known task they are nested under
-    #  - all inner dict values must be names of other known tasks in the spec
-    #  - there cannot be any cycle errors
 
 
 class TaskInstance(BaseModel):
@@ -72,25 +62,28 @@ def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
 class Spec(BaseModel):
     name: str  # TODO: needs to be a valid python identifier
     cache_root: str  # e.g. "gcs://my-bucket/dag-runs/cache/"
-    tasks: list[TaskInstance]
+    workflow: dict[str, dict[str, str]]
+    # TODO: pydantic validator for `self.workflow`, as follows:
+    #  - all outer dict keys must be registered `known_tasks`
+    #  - all inner dict keys must be argument names on the known task they are nested under
+    #  - all inner dict values must be names of other known tasks in the spec
+    #  - there cannot be any cycle errors
 
     # TODO: on __init__ (or in cached_property), sort tasks
     # topologically so we know what order to invoke them in dag
 
-    @classmethod
-    def from_spec_file(cls, spec: dict) -> "Spec":
-        non_task_kws = copy.deepcopy(spec)
-        del non_task_kws["tasks"]
-        tasks_spec = TasksSpec(**spec)
+    @computed_field  # type: ignore[misc]
+    @property
+    def tasks(self) -> list[TaskInstance]:
         tasks = []
-        for task_name in tasks_spec.tasks:
+        for task_name in self.workflow:
             arg_dependencies: dict[str, str] = {}
             arg_prevalidators: dict[str, Callable] = {}
             # if the value of the task is None, the task has no dependencies
-            if tasks_spec.tasks[task_name]:
+            if self.workflow[task_name]:
                 # if the value is a dict, then then that dict's k:v pairs are the
                 # arg on the task mapped to the dependency to deserialize it from
-                for arg, dep in tasks_spec.tasks[task_name].items():
+                for arg, dep in self.workflow[task_name].items():
                     arg_dependencies |= {arg: f"{dep}_return"}
                     # now we have to figure out how to deserialize this arg when passed
                     # FIXME: this factoring seems sub-optimal; ideally we only introspect the
@@ -112,7 +105,7 @@ class Spec(BaseModel):
                     arg_prevalidators=arg_prevalidators,
                 )
             )
-        return cls(tasks=tasks, **non_task_kws)
+        return tasks
 
 
 class DagCompiler(BaseModel):

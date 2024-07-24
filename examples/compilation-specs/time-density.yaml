@@ -1,6 +1,6 @@
 name: calculate_time_density
 cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
-tasks:
+workflow:
   get_subjectgroup_observations: {}
   process_relocations:
     observations: get_subjectgroup_observations

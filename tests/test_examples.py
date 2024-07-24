@@ -61,7 +61,7 @@ def spec_fixture(request: pytest.FixtureRequest) -> SpecFixture:
     ],
 )
 def test_generate_dag(spec_fixture: SpecFixture, template: TemplateName):
-    spec = Spec.from_spec_file(spec=spec_fixture.spec)
+    spec = Spec(**spec_fixture.spec)
     dag_compiler = DagCompiler(spec=spec)
     dag_compiler.template = template
     dag_str = dag_compiler.generate_dag()
@@ -71,7 +71,7 @@ def test_generate_dag(spec_fixture: SpecFixture, template: TemplateName):
 
 
 def test_dag_params_jsonschema(spec_fixture: SpecFixture):
-    spec = Spec.from_spec_file(spec=spec_fixture.spec)
+    spec = Spec(**spec_fixture.spec)
     dag_compiler = DagCompiler(spec=spec)
     params = dag_compiler.get_params_jsonschema()
     jsonschema_fname = _spec_path_to_jsonschema_fname(spec_fixture.path)
@@ -80,7 +80,7 @@ def test_dag_params_jsonschema(spec_fixture: SpecFixture):
 
 
 def test_dag_params_fillable_yaml(spec_fixture: SpecFixture):
-    spec = Spec.from_spec_file(spec=spec_fixture.spec)
+    spec = Spec(**spec_fixture.spec)
     dag_compiler = DagCompiler(spec=spec)
     yaml_str = dag_compiler.get_params_fillable_yaml()
     yaml = ruamel.yaml.YAML(typ="rt")
@@ -121,7 +121,7 @@ def end_to_end(spec_fixture: SpecFixture) -> EndToEndFixture:
         ),
         mock_tasks=[
             task
-            for task in spec_fixture.spec["tasks"]
+            for task in spec_fixture.spec["workflow"]
             # mock tasks that require io
             # TODO: this could also be a default for the compiler in --testing mode!
             if TaskTag.io in known_tasks[task].tags
@@ -131,7 +131,7 @@ def end_to_end(spec_fixture: SpecFixture) -> EndToEndFixture:
 
 
 def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
-    spec = Spec.from_spec_file(spec=end_to_end.spec_fixture.spec)
+    spec = Spec(**end_to_end.spec_fixture.spec)
     dc = DagCompiler(spec=spec)
     dc.template = "script-sequential.jinja2"
     dc.testing = True

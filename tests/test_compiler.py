@@ -20,7 +20,7 @@ def spec_dict() -> dict:
         """\
         name: calculate_time_density
         cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
-        tasks:
+        workflow:
             get_subjectgroup_observations: {}
             process_relocations:
                 observations: get_subjectgroup_observations
@@ -30,6 +30,6 @@ def spec_dict() -> dict:
 
 
 def test_dag_compiler_from_spec(spec_dict: dict):
-    spec = Spec.from_spec_file(spec=spec_dict)
+    spec = Spec(**spec_dict)
     dc = DagCompiler(spec=spec)
     assert isinstance(dc.spec.tasks[0], TaskInstance)

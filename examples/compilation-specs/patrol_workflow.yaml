@@ -1,6 +1,6 @@
 name: patrol_workflow
 cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
-tasks:
+workflow:
   get_patrol_observations: {}
   process_relocations:
     observations: get_patrol_observations
