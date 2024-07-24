@@ -34,4 +34,4 @@ def spec_dict() -> dict:
 def test_dag_compiler_from_spec(spec_dict: dict):
     spec = Spec(**spec_dict)
     dc = DagCompiler(spec=spec)
-    assert isinstance(dc.spec.tasks[0], TaskInstance)
+    assert isinstance(dc.spec.workflow[0], TaskInstance)
