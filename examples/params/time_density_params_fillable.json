@@ -284,5 +284,172 @@
             "title"
         ],
         "type": "object"
+    },
+    "gather_dashboard": {
+        "$defs": {
+            "GroupedWidget": {
+                "properties": {
+                    "widget_type": {
+                        "enum": [
+                            "plot",
+                            "map",
+                            "text",
+                            "single_value"
+                        ],
+                        "title": "Widget Type",
+                        "type": "string"
+                    },
+                    "title": {
+                        "title": "Title",
+                        "type": "string"
+                    },
+                    "views": {
+                        "additionalProperties": {
+                            "anyOf": [
+                                {
+                                    "format": "path",
+                                    "type": "string"
+                                },
+                                {
+                                    "format": "uri",
+                                    "minLength": 1,
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
+                        },
+                        "title": "Views",
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "widget_type",
+                    "title",
+                    "views"
+                ],
+                "title": "GroupedWidget",
+                "type": "object"
+            },
+            "WidgetSingleView": {
+                "properties": {
+                    "widget_type": {
+                        "enum": [
+                            "plot",
+                            "map",
+                            "text",
+                            "single_value"
+                        ],
+                        "title": "Widget Type",
+                        "type": "string"
+                    },
+                    "title": {
+                        "title": "Title",
+                        "type": "string"
+                    },
+                    "data": {
+                        "anyOf": [
+                            {
+                                "format": "path",
+                                "type": "string"
+                            },
+                            {
+                                "format": "uri",
+                                "minLength": 1,
+                                "type": "string"
+                            },
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "number"
+                            }
+                        ],
+                        "title": "Data"
+                    },
+                    "view": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "maxItems": 3,
+                                    "minItems": 3,
+                                    "prefixItems": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "const": "=",
+                                            "enum": [
+                                                "="
+                                            ],
+                                            "type": "string"
+                                        },
+                                        {
+                                            "type": "string"
+                                        }
+                                    ],
+                                    "type": "array"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "View"
+                    }
+                },
+                "required": [
+                    "widget_type",
+                    "title",
+                    "data"
+                ],
+                "title": "WidgetSingleView",
+                "type": "object"
+            }
+        },
+        "additionalProperties": false,
+        "properties": {
+            "title": {
+                "title": "Title",
+                "type": "string",
+                "description": "The title of the dashboard"
+            },
+            "description": {
+                "title": "Description",
+                "type": "string",
+                "description": "The description of the dashboard"
+            },
+            "groupers": {
+                "anyOf": [
+                    {
+                        "items": {},
+                        "type": "array"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Groupers",
+                "description": "            A list of groupers that are used to group the widgets.\n            If all widgets are ungrouped, this field defaults to `None`.\n            "
+            }
+        },
+        "required": [
+            "title",
+            "description"
+        ],
+        "type": "object"
     }
 }
