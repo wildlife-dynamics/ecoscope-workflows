@@ -563,3 +563,10 @@ def test_model_dump_views_with_all_none_views(
             },
         ],
     }
+
+
+def test_model_dump_filters_with_all_none_views(
+    dashboard_with_all_none_views: DashboardFixture,
+):
+    _, dashboard = dashboard_with_all_none_views
+    assert dashboard.model_dump()["filters"] is None
