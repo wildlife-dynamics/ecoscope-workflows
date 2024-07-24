@@ -72,7 +72,7 @@ def get_patrol_observations(
     ],
     include_patrol_details: Annotated[
         bool, Field(default=False, description="Include patrol details")
-    ],
+    ] = False,
 ) -> DataFrame[SubjectGroupObservationsGDFSchema]:
     """Get observations for a patrol type from EarthRanger."""
     return client.get_patrol_observations_with_patrol_filter(

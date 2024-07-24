@@ -31,21 +31,3 @@ def apply_reloc_filter_envelope(
         )
 
     return df[df["geometry"].apply(apply_reloc_filter)]
-
-    # relocs = Relocations(df)f.apply(lambda row: apply_reloc_filter(row["id"]))
-    # relocs.apply_reloc_filter(
-    #     RelocsCoordinateFilter(filter_point_coords=filter_point_coords),
-    #     inplace=True,
-    # )
-
-    # df.loc[
-    #     (frame["geometry"].x < fix_filter.min_x)
-    #     | (frame["geometry"].x > fix_filter.max_x)
-    #     | (frame["geometry"].y < fix_filter.min_y)
-    #     | (frame["geometry"].y > fix_filter.max_y)
-    #     | (frame["geometry"].isin(fix_filter.filter_point_coords)),
-    #     "junk_status",
-    # ] = True
-
-    # relocs.remove_filtered(inplace=True)
-    # return relocs
