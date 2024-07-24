@@ -123,32 +123,18 @@ def create_single_value_widget_single_view(
 
 
 @distributed
-def single_view_widget_to_grouped_widget(
-    widget: Annotated[WidgetSingleView, Field(description="The widget")],
-) -> Annotated[GroupedWidget, Field(description="The grouped widget")]:
-    """Convert a single view widget to a grouped widget with a single view.
-
-    Args:
-        widget: The single view widget.
-
-    Returns:
-        The grouped widget with a single view.
-    """
-    return GroupedWidget.from_single_view(widget)
-
-
-@distributed
-def merge_grouped_widget_views(
-    grouped_widgets: Annotated[list[GroupedWidget], Field()],
+def merge_widget_views(
+    widgets: Annotated[list[WidgetSingleView], Field()],
 ) -> Annotated[list[GroupedWidget], Field(description="The merged widgets")]:
     """Merge widgets with the same `title` and `widget_type`.
 
     Args:
-        grouped_widgets: The widgets to merge.
+        widgets: The widgets to merge.
 
     Returns:
         The merged grouped widgets.
     """
+    grouped_widgets = [GroupedWidget.from_single_view(w) for w in widgets]
     merged: dict[GroupedWidgetMergeKey, GroupedWidget] = {}
     for gw in grouped_widgets:
         if gw.merge_key not in merged:

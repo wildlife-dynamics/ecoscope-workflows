@@ -5,8 +5,7 @@ from ._widget_tasks import (
     create_plot_widget_single_view,
     create_text_widget_single_view,
     create_single_value_widget_single_view,
-    merge_grouped_widget_views,
-    single_view_widget_to_grouped_widget,
+    merge_widget_views,
 )
 
 __all__ = [
@@ -16,6 +15,5 @@ __all__ = [
     "create_single_value_widget_single_view",
     "draw_ecomap",
     "draw_ecoplot",
-    "merge_grouped_widget_views",
-    "single_view_widget_to_grouped_widget",
+    "merge_widget_views",
 ]
