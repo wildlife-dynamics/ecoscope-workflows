@@ -47,6 +47,6 @@ get_patrol_events:
       "0ef3bf48-b44c-4a4e-a145-7ab2e38c9a57",
     ] # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default=None, description='Comma-separated list of type of patrol UUID'))
   status: ["active", "done"]
-apply_reloc_filter_envelope:
+apply_envelope_reloc_filter:
   max_y: 0.0 # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=90.0))
   filter_point_coords: [[180, 90], [0, 0]] # (list[list[float]], FieldInfo(annotation=NoneType, required=True))
