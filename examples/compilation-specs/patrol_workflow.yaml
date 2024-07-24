@@ -12,3 +12,5 @@ tasks:
     text: draw_ecomap
   create_map_widget_single_view:
     data: persist_text
+  gather_dashboard:
+    widgets: create_map_widget_single_view

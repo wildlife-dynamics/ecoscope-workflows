@@ -50,7 +50,7 @@ def single_filter_dashboard() -> DashboardFixture:
 def test_gather_dashboard(single_filter_dashboard: DashboardFixture):
     grouped_widgets, expected_dashboard = single_filter_dashboard
     dashboard: Dashboard = gather_dashboard(
-        grouped_widgets=grouped_widgets,
+        widgets=grouped_widgets,
         groupers=["month"],
     )
     assert_dashboards_equal(dashboard, expected_dashboard)
@@ -175,7 +175,7 @@ def two_filter_dashboard() -> DashboardFixture:
 def test_gather_dashboard_two_filter(two_filter_dashboard: DashboardFixture):
     grouped_widgets, expected_dashboard = two_filter_dashboard
     dashboard: Dashboard = gather_dashboard(
-        grouped_widgets=grouped_widgets,
+        widgets=grouped_widgets,
         groupers=["month", "year"],
     )
     assert_dashboards_equal(dashboard, expected_dashboard)
@@ -287,7 +287,7 @@ def three_filter_dashboard() -> DashboardFixture:
 def test_gather_dashboard_three_filter(three_filter_dashboard: DashboardFixture):
     grouped_widgets, expected_dashboard = three_filter_dashboard
     dashboard: Dashboard = gather_dashboard(
-        grouped_widgets=grouped_widgets,
+        widgets=grouped_widgets,
         groupers=["month", "year", "subject_name"],
     )
     assert_dashboards_equal(dashboard, expected_dashboard)
@@ -413,7 +413,7 @@ def dashboard_with_none_views() -> DashboardFixture:
 def test_gather_dashboard_with_none_views(dashboard_with_none_views: DashboardFixture):
     grouped_widgets, expected_dashboard = dashboard_with_none_views
     dashboard: Dashboard = gather_dashboard(
-        grouped_widgets=grouped_widgets,
+        widgets=grouped_widgets,
         groupers=["month"],
     )
     assert_dashboards_equal(dashboard, expected_dashboard)
@@ -535,7 +535,7 @@ def test_gather_dashboard_with_all_none_views(
 ):
     grouped_widgets, expected_dashboard = dashboard_with_all_none_views
     dashboard: Dashboard = gather_dashboard(
-        grouped_widgets=grouped_widgets,
+        widgets=grouped_widgets,
         groupers=None,
     )
     # We don't need to use the custom `assert_dashboards_equal` function here

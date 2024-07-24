@@ -167,9 +167,14 @@ def composite_filters_to_grouper_choices_dict(
 
 @distributed
 def gather_dashboard(
-    grouped_widgets: Annotated[
-        list[GroupedWidget],
-        Field(description="A list of grouped widgets"),
+    widgets: Annotated[
+        list[GroupedWidget] | WidgetSingleView,
+        Field(
+            description="""\
+            A list of grouped widgets (for a dashboard with multiple widgets),
+            or a single grouped widget (for a dashboard with a single widget).
+            """,
+        ),
     ],
     groupers: Annotated[
         list | None,
@@ -181,6 +186,11 @@ def gather_dashboard(
         ),
     ],
 ) -> Annotated[Dashboard, Field()]:
+    grouped_widgets = (
+        [GroupedWidget.from_single_view(widgets)]
+        if isinstance(widgets, WidgetSingleView)
+        else widgets
+    )
     if groupers:
         for gw in grouped_widgets:
             keys_sample = list(gw.views)
