@@ -5,6 +5,12 @@ from typing import Annotated, Any, Generator
 from pydantic import BaseModel, Field, model_serializer
 
 from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.jsonschema import (
+    ReactJSONSchemaFormFilters,
+    RJSFFilter,
+    RJSFFilterProperty,
+    RJSFFilterUiSchema,
+)
 from ecoscope_workflows.serde import (
     CompositeFilter,
     IndexName,
@@ -39,72 +45,6 @@ class EmumeratedWidgetView:
             title=view.title,
             data=view.data,
         )
-
-
-class _RJSFFilterProperty(BaseModel):
-    """Model representing the properties of a React JSON Schema Form filter.
-    This model is used to generate the `properties` field for a filter schema in a dashboard.
-
-    Args:
-        _type: The type of the filter property.
-        _enum: The possible values for the filter property.
-        _enumNames: The human-readable names for the possible values.
-        _default: The default value for the filter property
-    """
-
-    type: str
-    enum: list[str]
-    enumNames: list[str]
-    default: str
-
-
-class _RJSFFilterUiSchema(BaseModel):
-    """Model representing the UI schema of a React JSON Schema Form filter.
-    This model is used to generate the `uiSchema` field for a filter schema in a dashboard.
-
-    Args:
-        _title: The title of the filter.
-        _help: The help text for the filter.
-    """
-
-    title: str
-    # TODO: allow specifying help text
-    # _help: str
-
-    @model_serializer
-    def ser_model(self) -> dict[str, Any]:
-        return {
-            "ui:title": self.title,
-            # TODO: allow specifying help text
-            # "ui:help": self._help,
-        }
-
-
-class _RJSFFilter(BaseModel):
-    """Model representing a React JSON Schema Form filter."""
-
-    property: _RJSFFilterProperty
-    uiSchema: _RJSFFilterUiSchema
-
-
-class ReactJSONSchemaFormFilters(BaseModel):
-    options: dict[str, _RJSFFilter]
-
-    @property
-    def _schema(self):
-        return {
-            "type": "object",
-            "properties": {
-                opt: rjsf.property.model_dump() for opt, rjsf in self.options.items()
-            },
-            "uiSchema": {
-                opt: rjsf.uiSchema.model_dump() for opt, rjsf in self.options.items()
-            },
-        }
-
-    @model_serializer
-    def ser_model(self) -> dict[str, Any]:
-        return {"schema": self._schema}
 
 
 @dataclass
@@ -161,14 +101,14 @@ class Dashboard(BaseModel):
         return (
             ReactJSONSchemaFormFilters(
                 options={
-                    grouper_name: _RJSFFilter(
-                        property=_RJSFFilterProperty(
+                    grouper_name: RJSFFilter(
+                        property=RJSFFilterProperty(
                             type="string",
                             enum=grouper_choices,
                             enumNames=[choice.title() for choice in grouper_choices],
                             default=grouper_choices[0],
                         ),
-                        uiSchema=_RJSFFilterUiSchema(
+                        uiSchema=RJSFFilterUiSchema(
                             title=grouper_name.title().replace("_", " "),
                             # TODO: allow specifying help text
                             # _help=f"Select a {grouper_name} to filter by.",
