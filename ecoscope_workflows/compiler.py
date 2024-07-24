@@ -8,6 +8,7 @@ from pydantic import (
     BaseModel,
     Field,
     computed_field,
+    field_serializer,
 )
 
 from ecoscope_workflows.registry import KnownTask, known_tasks
@@ -17,10 +18,10 @@ TEMPLATES = pathlib.Path(__file__).parent / "templates"
 
 
 class TaskInstance(BaseModel):
-    known_task_name: str  # TODO: validate is valid key in known_tasks
-    arg_dependencies: dict = Field(default_factory=dict)
-    # arg_prevalidators: dict = Field(default_factory=dict)
-    # return_postvalidator: Callable | None = None
+    known_task_name: str = Field(
+        alias="task"
+    )  # TODO: validate is valid key in known_tasks
+    arg_dependencies: dict = Field(default_factory=dict, alias="with")
 
     @computed_field  # type: ignore[misc]
     @property
@@ -28,6 +29,12 @@ class TaskInstance(BaseModel):
         kt = known_tasks[self.known_task_name]
         assert self.known_task_name == kt.function
         return kt
+
+    @field_serializer("arg_dependencies")
+    def serialize_arg_deps(self, deps: dict, _info):
+        # TODO: require `.return_value` suffix on all return values
+        # TODO: require deps to be wrapped in ${} for for clarity
+        return {arg: f"{dep}_return" for arg, dep in deps.items()}
 
 
 def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
@@ -47,7 +54,7 @@ def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
 class Spec(BaseModel):
     name: str  # TODO: needs to be a valid python identifier
     cache_root: str  # e.g. "gcs://my-bucket/dag-runs/cache/"
-    workflow: dict[str, dict[str, str]]
+    workflow: list[TaskInstance]
     # TODO: pydantic validator for `self.workflow`, as follows:
     #  - all outer dict keys must be registered `known_tasks`
     #  - all inner dict keys must be argument names on the known task they are nested under
@@ -60,15 +67,7 @@ class Spec(BaseModel):
     @computed_field  # type: ignore[misc]
     @property
     def tasks(self) -> list[TaskInstance]:
-        return [
-            TaskInstance(
-                known_task_name=task_name,
-                arg_dependencies={
-                    arg: f"{dep}_return" for arg, dep in task_args.items()
-                },
-            )
-            for task_name, task_args in self.workflow.items()
-        ]
+        return self.workflow
 
 
 class DagCompiler(BaseModel):

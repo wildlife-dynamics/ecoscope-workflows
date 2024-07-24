@@ -21,9 +21,11 @@ def spec_dict() -> dict:
         name: calculate_time_density
         cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
         workflow:
-            get_subjectgroup_observations: {}
-            process_relocations:
-                observations: get_subjectgroup_observations
+          - task: get_subjectgroup_observations
+            with: {}
+          - task: process_relocations
+            with:
+              observations: get_subjectgroup_observations
         """
     )
     return yaml.safe_load(spec_str)
