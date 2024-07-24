@@ -129,7 +129,7 @@ def merge_widget_views(
     """Merge widgets with the same `title` and `widget_type`.
 
     Args:
-        grouped_widgets: The widgets to merge.
+        widgets: The widgets to merge.
 
     Returns:
         The merged grouped widgets.
