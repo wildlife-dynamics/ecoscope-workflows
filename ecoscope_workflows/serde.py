@@ -1,12 +1,6 @@
 import os
 from pathlib import Path
 from urllib.parse import urlparse, quote
-from typing import Literal, TypeAlias
-
-IndexName: TypeAlias = str
-IndexValue: TypeAlias = str
-Filter = tuple[IndexName, Literal["="], IndexValue]
-CompositeFilter = tuple[Filter, ...]
 
 
 def gpd_from_parquet_uri(uri: str):

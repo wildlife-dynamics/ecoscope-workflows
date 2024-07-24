@@ -3,7 +3,7 @@ from typing import Annotated
 from pydantic import Field
 
 from ecoscope_workflows.decorators import distributed
-from ecoscope_workflows.serde import CompositeFilter
+from ecoscope_workflows.indexes import CompositeFilter
 from ecoscope_workflows.tasks.results._widget_types import (
     GroupedWidget,
     GroupedWidgetMergeKey,

@@ -11,7 +11,7 @@ from ecoscope_workflows.jsonschema import (
     RJSFFilterProperty,
     RJSFFilterUiSchema,
 )
-from ecoscope_workflows.serde import (
+from ecoscope_workflows.indexes import (
     CompositeFilter,
     IndexName,
     IndexValue,
