@@ -124,7 +124,10 @@ def create_single_value_widget_single_view(
 
 @distributed
 def merge_widget_views(
-    widgets: Annotated[list[WidgetSingleView], Field()],
+    widgets: Annotated[
+        list[WidgetSingleView],
+        Field(description="The widgets to merge"),
+    ],
 ) -> Annotated[list[GroupedWidget], Field(description="The merged widgets")]:
     """Merge widgets with the same `title` and `widget_type`.
 
