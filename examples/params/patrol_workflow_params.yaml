@@ -39,3 +39,6 @@ persist_text:
   filename: "patrol_traj_map.html" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of file to persist text to'))
 create_map_widget_single_view:
   title: "Patrol Trajectory Map"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+gather_dashboard:
+  title: "Patrol Trajectory Dashboard"
+  description: "A dashboard for visualizing patrol trajectories."

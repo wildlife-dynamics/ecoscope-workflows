@@ -50,6 +50,8 @@ def single_filter_dashboard() -> DashboardFixture:
 def test_gather_dashboard(single_filter_dashboard: DashboardFixture):
     grouped_widgets, expected_dashboard = single_filter_dashboard
     dashboard: Dashboard = gather_dashboard(
+        title="A Great Dashboard",
+        description="A dashboard with a map and a plot",
         widgets=grouped_widgets,
         groupers=["month"],
     )
@@ -175,6 +177,8 @@ def two_filter_dashboard() -> DashboardFixture:
 def test_gather_dashboard_two_filter(two_filter_dashboard: DashboardFixture):
     grouped_widgets, expected_dashboard = two_filter_dashboard
     dashboard: Dashboard = gather_dashboard(
+        title="A Great Dashboard",
+        description="A dashboard with a map",
         widgets=grouped_widgets,
         groupers=["month", "year"],
     )
@@ -287,6 +291,8 @@ def three_filter_dashboard() -> DashboardFixture:
 def test_gather_dashboard_three_filter(three_filter_dashboard: DashboardFixture):
     grouped_widgets, expected_dashboard = three_filter_dashboard
     dashboard: Dashboard = gather_dashboard(
+        title="A Great Dashboard",
+        description="A dashboard with a map",
         widgets=grouped_widgets,
         groupers=["month", "year", "subject_name"],
     )
@@ -413,6 +419,8 @@ def dashboard_with_none_views() -> DashboardFixture:
 def test_gather_dashboard_with_none_views(dashboard_with_none_views: DashboardFixture):
     grouped_widgets, expected_dashboard = dashboard_with_none_views
     dashboard: Dashboard = gather_dashboard(
+        title="A Great Dashboard",
+        description="A dashboard with a map and a plot",
         widgets=grouped_widgets,
         groupers=["month"],
     )
@@ -535,6 +543,8 @@ def test_gather_dashboard_with_all_none_views(
 ):
     grouped_widgets, expected_dashboard = dashboard_with_all_none_views
     dashboard: Dashboard = gather_dashboard(
+        title=expected_dashboard.metadata.title,
+        description=expected_dashboard.metadata.description,
         widgets=grouped_widgets,
         groupers=None,
     )

@@ -167,6 +167,8 @@ def composite_filters_to_grouper_choices_dict(
 
 @distributed
 def gather_dashboard(
+    title: Annotated[str, Field(description="The title of the dashboard")],
+    description: Annotated[str, Field(description="The description of the dashboard")],
     widgets: Annotated[
         list[GroupedWidget] | WidgetSingleView,
         Field(
@@ -215,4 +217,5 @@ def gather_dashboard(
         widgets=grouped_widgets,
         groupers=(grouper_choices if groupers else None),
         keys=(keys_sample if groupers else None),
+        metadata=Metadata(title=title, description=description),
     )
