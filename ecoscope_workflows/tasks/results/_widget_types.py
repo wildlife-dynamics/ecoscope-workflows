@@ -16,6 +16,7 @@ SingleValueWidgetData: TypeAlias = int | float
 WidgetData: TypeAlias = (
     PrecomputedHTMLWidgetData | TextWidgetData | SingleValueWidgetData
 )
+GroupedWidgetMergeKey: TypeAlias = tuple[str, str]
 
 
 @dataclass
@@ -34,6 +35,17 @@ class WidgetSingleView(WidgetBase):
 class GroupedWidget(WidgetBase):
     views: dict[CompositeFilter | None, WidgetData]
 
+    @classmethod
+    def from_single_view(cls, view: WidgetSingleView) -> "GroupedWidget":
+        """Construct a GroupedWidget from a WidgetSingleView.
+        The resulting GroupedWidget will have a single view.
+        """
+        return cls(
+            widget_type=view.widget_type,
+            title=view.title,
+            views={view.view: view.data},
+        )
+
     def get_view(self, view: CompositeFilter | None) -> WidgetSingleView:
         """Get the view for a specific CompositeFilter. If the widget has only
         a single (ungrouped) view, then that single view is returned regardless
@@ -48,11 +60,11 @@ class GroupedWidget(WidgetBase):
         )
 
     @property
-    def merge_key(self):
+    def merge_key(self) -> GroupedWidgetMergeKey:
         """If two GroupedWidgets have the same merge key, they can be merged."""
         return (self.widget_type, self.title)
 
-    def __ior__(self, other: "GroupedWidget"):
+    def __ior__(self, other: "GroupedWidget") -> "GroupedWidget":
         """Implements the in-place or operator, i.e. `|=`, used to merge two GroupedWidgets."""
         if self.merge_key != other.merge_key:
             raise ValueError(

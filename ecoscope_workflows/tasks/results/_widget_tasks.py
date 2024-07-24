@@ -6,6 +6,7 @@ from ecoscope_workflows.decorators import distributed
 from ecoscope_workflows.serde import CompositeFilter
 from ecoscope_workflows.tasks.results._widget_types import (
     GroupedWidget,
+    GroupedWidgetMergeKey,
     PrecomputedHTMLWidgetData,
     SingleValueWidgetData,
     TextWidgetData,
@@ -122,27 +123,34 @@ def create_single_value_widget_single_view(
 
 
 @distributed
-def merge_widget_views(
-    widgets: Annotated[list[WidgetSingleView], Field()],
+def single_view_widget_to_grouped_widget(
+    widget: Annotated[WidgetSingleView, Field(description="The widget")],
+) -> Annotated[GroupedWidget, Field(description="The grouped widget")]:
+    """Convert a single view widget to a grouped widget with a single view.
+
+    Args:
+        widget: The single view widget.
+
+    Returns:
+        The grouped widget with a single view.
+    """
+    return GroupedWidget.from_single_view(widget)
+
+
+@distributed
+def merge_grouped_widget_views(
+    grouped_widgets: Annotated[list[GroupedWidget], Field()],
 ) -> Annotated[list[GroupedWidget], Field(description="The merged widgets")]:
     """Merge widgets with the same `title` and `widget_type`.
 
     Args:
-        widgets: The widgets to merge.
+        grouped_widgets: The widgets to merge.
 
     Returns:
-        The merged widgets.
+        The merged grouped widgets.
     """
-    as_grouped_widgets = [
-        GroupedWidget(
-            widget_type=w.widget_type,
-            title=w.title,
-            views={w.view: w.data},
-        )
-        for w in widgets
-    ]
-    merged: dict[tuple[str, str], GroupedWidget] = {}
-    for gw in as_grouped_widgets:
+    merged: dict[GroupedWidgetMergeKey, GroupedWidget] = {}
+    for gw in grouped_widgets:
         if gw.merge_key not in merged:
             merged[gw.merge_key] = gw
         else:

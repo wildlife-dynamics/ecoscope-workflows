@@ -7,7 +7,8 @@ from ecoscope_workflows.tasks.results import (
     create_plot_widget_single_view,
     create_text_widget_single_view,
     create_single_value_widget_single_view,
-    merge_widget_views,
+    merge_grouped_widget_views,
+    single_view_widget_to_grouped_widget,
 )
 from ecoscope_workflows.tasks.results._widget_tasks import (
     GroupedWidget,
@@ -128,7 +129,24 @@ def test_grouped_widget_incompatible_merge_raises():
         widget1 |= widget2
 
 
-def test_merge_widget_views():
+def test_single_view_widget_to_grouped_widget():
+    widget = WidgetSingleView(
+        widget_type="map",
+        title="A Great Map",
+        view=("month", "=", "january"),
+        data="/path/to/precomputed/jan/map.html",
+    )
+    grouped = single_view_widget_to_grouped_widget(widget)
+    assert grouped == GroupedWidget(
+        widget_type="map",
+        title="A Great Map",
+        views={
+            ("month", "=", "january"): "/path/to/precomputed/jan/map.html",
+        },
+    )
+
+
+def test_merge_grouped_widget_views():
     view1 = WidgetSingleView(
         widget_type="map",
         title="A Great Map",
@@ -141,7 +159,12 @@ def test_merge_widget_views():
         view=("month", "=", "february"),
         data="/path/to/precomputed/feb/map.html",
     )
-    merged = merge_widget_views([view1, view2])
+    merged = merge_grouped_widget_views(
+        [
+            single_view_widget_to_grouped_widget(view1),
+            single_view_widget_to_grouped_widget(view2),
+        ]
+    )
     assert merged == [
         GroupedWidget(
             widget_type="map",
@@ -154,7 +177,7 @@ def test_merge_widget_views():
     ]
 
 
-def test_merge_widget_views_multiple_widgets():
+def test_merge_grouped_widget_views_multiple_widgets():
     widget1_view1 = WidgetSingleView(
         widget_type="map",
         title="A Great Map",
@@ -179,12 +202,12 @@ def test_merge_widget_views_multiple_widgets():
         view=("month", "=", "february"),
         data="/path/to/precomputed/feb/plot.html",
     )
-    merged = merge_widget_views(
+    merged = merge_grouped_widget_views(
         [
-            widget1_view1,
-            widget1_view2,
-            widget2_view1,
-            widget2_view2,
+            single_view_widget_to_grouped_widget(widget1_view1),
+            single_view_widget_to_grouped_widget(widget1_view2),
+            single_view_widget_to_grouped_widget(widget2_view1),
+            single_view_widget_to_grouped_widget(widget2_view2),
         ]
     )
     assert merged == [
@@ -242,7 +265,7 @@ def test_grouped_widget_get_view_none():
     )
 
 
-def test_merge_widget_views_multiple_widgets_with_none_views():
+def test_merge_grouped_widget_views_multiple_widgets_with_none_views():
     widget1_view1 = WidgetSingleView(
         widget_type="map",
         title="A Great Map",
@@ -267,12 +290,12 @@ def test_merge_widget_views_multiple_widgets_with_none_views():
         view=None,
         data="/path/to/precomputed/single/plot.html",
     )
-    merged = merge_widget_views(
+    merged = merge_grouped_widget_views(
         [
-            widget1_view1,
-            widget1_view2,
-            widget2_only_view,
-            widget3_only_view,
+            single_view_widget_to_grouped_widget(widget1_view1),
+            single_view_widget_to_grouped_widget(widget1_view2),
+            single_view_widget_to_grouped_widget(widget2_only_view),
+            single_view_widget_to_grouped_widget(widget3_only_view),
         ]
     )
     assert merged == [
