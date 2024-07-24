@@ -1,8 +1,8 @@
 import os
 import sys
 from pathlib import Path
-from unittest.mock import patch
 from textwrap import dedent
+from unittest.mock import patch
 
 import pytest
 from pydantic import SecretStr, ValidationError, validate_call
@@ -146,7 +146,7 @@ def test_resolve_client_from_env(named_mock_env):
 
     with patch.dict(os.environ, named_mock_env):
         with patch("ecoscope.io.EarthRangerIO", autospec=True):
-            client = f(client="MEP_DEV")
+            client = f(client="mep_dev")
             assert hasattr(client, "get_subjectgroup_observations")
             assert callable(client.get_subjectgroup_observations)
 

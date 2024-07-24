@@ -1,40 +1,40 @@
 # ruff: noqa: E402
 
 # %% [markdown]
-# # Calculate Time Density
+# # Patrol Workflow
 # TODO: top level description
 
 # %% [markdown]
 # ## Imports
 
-from ecoscope_workflows.tasks.io import get_subjectgroup_observations
+from ecoscope_workflows.tasks.io import get_patrol_observations
 from ecoscope_workflows.tasks.preprocessing import process_relocations
 from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
-from ecoscope_workflows.tasks.analysis import calculate_time_density
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
 from ecoscope_workflows.tasks.results import gather_dashboard
 
 # %% [markdown]
-# ## Get Subjectgroup Observations
+# ## Get Patrol Observations
 
 # %%
 # parameters
 
-get_subjectgroup_observations_params = dict(
+get_patrol_observations_params = dict(
     client=...,
-    subject_group_name=...,
-    include_inactive=...,
     since=...,
     until=...,
+    patrol_type=...,
+    status=...,
+    include_patrol_details=...,
 )
 
 # %%
 # call the task
 
-get_subjectgroup_observations_return = get_subjectgroup_observations(
-    **get_subjectgroup_observations_params,
+get_patrol_observations_return = get_patrol_observations(
+    **get_patrol_observations_params,
 )
 
 # %% [markdown]
@@ -52,7 +52,7 @@ process_relocations_params = dict(
 # call the task
 
 process_relocations_return = process_relocations(
-    observations=get_subjectgroup_observations_return,
+    observations=get_patrol_observations_return,
     **process_relocations_params,
 )
 # %% [markdown]
@@ -78,29 +78,6 @@ relocations_to_trajectory_return = relocations_to_trajectory(
     **relocations_to_trajectory_params,
 )
 # %% [markdown]
-# ## Calculate Time Density
-
-# %%
-# parameters
-
-calculate_time_density_params = dict(
-    pixel_size=...,
-    crs=...,
-    nodata_value=...,
-    band_count=...,
-    max_speed_factor=...,
-    expansion_factor=...,
-    percentiles=...,
-)
-
-# %%
-# call the task
-
-calculate_time_density_return = calculate_time_density(
-    trajectory_gdf=relocations_to_trajectory_return,
-    **calculate_time_density_params,
-)
-# %% [markdown]
 # ## Draw Ecomap
 
 # %%
@@ -121,7 +98,7 @@ draw_ecomap_params = dict(
 # call the task
 
 draw_ecomap_return = draw_ecomap(
-    geodataframe=calculate_time_density_return,
+    geodataframe=relocations_to_trajectory_return,
     **draw_ecomap_params,
 )
 # %% [markdown]

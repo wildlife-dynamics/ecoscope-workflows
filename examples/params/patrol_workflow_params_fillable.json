@@ -1,0 +1,406 @@
+{
+    "get_patrol_observations": {
+        "additionalProperties": false,
+        "properties": {
+            "client": {
+                "description": "A named EarthRanger connection.",
+                "title": "Client",
+                "type": "string"
+            },
+            "since": {
+                "title": "Since",
+                "type": "string",
+                "description": "Start date"
+            },
+            "until": {
+                "title": "Until",
+                "type": "string",
+                "description": "End date"
+            },
+            "patrol_type": {
+                "default": null,
+                "title": "Patrol Type",
+                "type": "string",
+                "description": "Comma-separated list of type of patrol UUID"
+            },
+            "status": {
+                "default": null,
+                "title": "Status",
+                "type": "string",
+                "description": "Comma-separated list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"
+            },
+            "include_patrol_details": {
+                "default": false,
+                "title": "Include Patrol Details",
+                "type": "boolean",
+                "description": "Include patrol details"
+            }
+        },
+        "required": [
+            "client",
+            "since",
+            "until"
+        ],
+        "type": "object"
+    },
+    "process_relocations": {
+        "additionalProperties": false,
+        "properties": {
+            "filter_point_coords": {
+                "items": {
+                    "items": {
+                        "type": "number"
+                    },
+                    "type": "array"
+                },
+                "title": "Filter Point Coords",
+                "type": "array"
+            },
+            "relocs_columns": {
+                "items": {
+                    "type": "string"
+                },
+                "title": "Relocs Columns",
+                "type": "array"
+            }
+        },
+        "required": [
+            "filter_point_coords",
+            "relocs_columns"
+        ],
+        "type": "object"
+    },
+    "relocations_to_trajectory": {
+        "additionalProperties": false,
+        "properties": {
+            "min_length_meters": {
+                "title": "Min Length Meters",
+                "type": "number"
+            },
+            "max_length_meters": {
+                "title": "Max Length Meters",
+                "type": "number"
+            },
+            "max_time_secs": {
+                "title": "Max Time Secs",
+                "type": "number"
+            },
+            "min_time_secs": {
+                "title": "Min Time Secs",
+                "type": "number"
+            },
+            "max_speed_kmhr": {
+                "title": "Max Speed Kmhr",
+                "type": "number"
+            },
+            "min_speed_kmhr": {
+                "title": "Min Speed Kmhr",
+                "type": "number"
+            }
+        },
+        "required": [
+            "min_length_meters",
+            "max_length_meters",
+            "max_time_secs",
+            "min_time_secs",
+            "max_speed_kmhr",
+            "min_speed_kmhr"
+        ],
+        "type": "object"
+    },
+    "draw_ecomap": {
+        "additionalProperties": false,
+        "properties": {
+            "data_type": {
+                "enum": [
+                    "Scatterplot",
+                    "Path",
+                    "Polygon"
+                ],
+                "title": "Data Type",
+                "type": "string",
+                "description": "The type of visualization."
+            },
+            "style_kws": {
+                "title": "Style Kws",
+                "type": "object",
+                "description": "Style arguments for the data visualization."
+            },
+            "tile_layer": {
+                "default": "",
+                "title": "Tile Layer",
+                "type": "string",
+                "description": "A named tile layer, ie OpenStreetMap."
+            },
+            "static": {
+                "default": false,
+                "title": "Static",
+                "type": "boolean",
+                "description": "Set to true to disable map pan/zoom."
+            },
+            "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string",
+                "description": "The map title."
+            },
+            "title_kws": {
+                "default": {},
+                "title": "Title Kws",
+                "type": "object",
+                "description": "Additional arguments for configuring the Title."
+            },
+            "scale_kws": {
+                "default": {},
+                "title": "Scale Kws",
+                "type": "object",
+                "description": "Additional arguments for configuring the Scale Bar."
+            },
+            "north_arrow_kws": {
+                "default": {},
+                "title": "North Arrow Kws",
+                "type": "object",
+                "description": "Additional arguments for configuring the North Arrow."
+            }
+        },
+        "required": [
+            "data_type",
+            "style_kws"
+        ],
+        "type": "object"
+    },
+    "persist_text": {
+        "additionalProperties": false,
+        "properties": {
+            "root_path": {
+                "title": "Root Path",
+                "type": "string",
+                "description": "Root path to persist text to"
+            },
+            "filename": {
+                "title": "Filename",
+                "type": "string",
+                "description": "Name of file to persist text to"
+            }
+        },
+        "required": [
+            "root_path",
+            "filename"
+        ],
+        "type": "object"
+    },
+    "create_map_widget_single_view": {
+        "additionalProperties": false,
+        "properties": {
+            "title": {
+                "title": "Title",
+                "type": "string",
+                "description": "The title of the widget"
+            },
+            "view": {
+                "anyOf": [
+                    {
+                        "items": {
+                            "maxItems": 3,
+                            "minItems": 3,
+                            "prefixItems": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "const": "=",
+                                    "enum": [
+                                        "="
+                                    ],
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "string"
+                                }
+                            ],
+                            "type": "array"
+                        },
+                        "type": "array"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "View",
+                "description": "If grouped, the view of the widget"
+            }
+        },
+        "required": [
+            "title"
+        ],
+        "type": "object"
+    },
+    "gather_dashboard": {
+        "$defs": {
+            "GroupedWidget": {
+                "properties": {
+                    "widget_type": {
+                        "enum": [
+                            "plot",
+                            "map",
+                            "text",
+                            "single_value"
+                        ],
+                        "title": "Widget Type",
+                        "type": "string"
+                    },
+                    "title": {
+                        "title": "Title",
+                        "type": "string"
+                    },
+                    "views": {
+                        "additionalProperties": {
+                            "anyOf": [
+                                {
+                                    "format": "path",
+                                    "type": "string"
+                                },
+                                {
+                                    "format": "uri",
+                                    "minLength": 1,
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
+                        },
+                        "title": "Views",
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "widget_type",
+                    "title",
+                    "views"
+                ],
+                "title": "GroupedWidget",
+                "type": "object"
+            },
+            "WidgetSingleView": {
+                "properties": {
+                    "widget_type": {
+                        "enum": [
+                            "plot",
+                            "map",
+                            "text",
+                            "single_value"
+                        ],
+                        "title": "Widget Type",
+                        "type": "string"
+                    },
+                    "title": {
+                        "title": "Title",
+                        "type": "string"
+                    },
+                    "data": {
+                        "anyOf": [
+                            {
+                                "format": "path",
+                                "type": "string"
+                            },
+                            {
+                                "format": "uri",
+                                "minLength": 1,
+                                "type": "string"
+                            },
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "number"
+                            }
+                        ],
+                        "title": "Data"
+                    },
+                    "view": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "maxItems": 3,
+                                    "minItems": 3,
+                                    "prefixItems": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "const": "=",
+                                            "enum": [
+                                                "="
+                                            ],
+                                            "type": "string"
+                                        },
+                                        {
+                                            "type": "string"
+                                        }
+                                    ],
+                                    "type": "array"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "View"
+                    }
+                },
+                "required": [
+                    "widget_type",
+                    "title",
+                    "data"
+                ],
+                "title": "WidgetSingleView",
+                "type": "object"
+            }
+        },
+        "additionalProperties": false,
+        "properties": {
+            "title": {
+                "title": "Title",
+                "type": "string",
+                "description": "The title of the dashboard"
+            },
+            "description": {
+                "title": "Description",
+                "type": "string",
+                "description": "The description of the dashboard"
+            },
+            "groupers": {
+                "anyOf": [
+                    {
+                        "items": {},
+                        "type": "array"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Groupers",
+                "description": "            A list of groupers that are used to group the widgets.\n            If all widgets are ungrouped, this field defaults to `None`.\n            "
+            }
+        },
+        "required": [
+            "title",
+            "description"
+        ],
+        "type": "object"
+    }
+}

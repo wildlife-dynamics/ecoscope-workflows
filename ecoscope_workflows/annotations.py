@@ -2,10 +2,10 @@ from inspect import ismethod
 from typing import Annotated, Any, TypeVar, get_args, get_origin
 
 import pandera as pa
-from pydantic_core import core_schema as cs
 from pydantic import GetJsonSchemaHandler
 from pydantic.functional_validators import BeforeValidator
 from pydantic.json_schema import JsonSchemaValue, WithJsonSchema
+from pydantic_core import core_schema as cs
 
 from ecoscope_workflows.connections import (
     DataConnection,

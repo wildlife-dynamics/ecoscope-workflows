@@ -1,10 +1,9 @@
 import argparse
 import yaml
 
-from ecoscope_workflows.tasks.io import get_subjectgroup_observations
+from ecoscope_workflows.tasks.io import get_patrol_observations
 from ecoscope_workflows.tasks.preprocessing import process_relocations
 from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
-from ecoscope_workflows.tasks.analysis import calculate_time_density
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
@@ -12,7 +11,7 @@ from ecoscope_workflows.tasks.results import gather_dashboard
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    g = parser.add_argument_group("calculate_time_density")
+    g = parser.add_argument_group("patrol_workflow")
     g.add_argument(
         "--config-file",
         dest="config_file",
@@ -23,14 +22,12 @@ if __name__ == "__main__":
     params = yaml.safe_load(args.config_file)
     # FIXME: first pass assumes tasks are already in topological order
 
-    get_subjectgroup_observations_return = get_subjectgroup_observations.replace(
-        validate=True
-    )(
-        **params["get_subjectgroup_observations"],
+    get_patrol_observations_return = get_patrol_observations.replace(validate=True)(
+        **params["get_patrol_observations"],
     )
 
     process_relocations_return = process_relocations.replace(validate=True)(
-        observations=get_subjectgroup_observations_return,
+        observations=get_patrol_observations_return,
         **params["process_relocations"],
     )
 
@@ -39,13 +36,8 @@ if __name__ == "__main__":
         **params["relocations_to_trajectory"],
     )
 
-    calculate_time_density_return = calculate_time_density.replace(validate=True)(
-        trajectory_gdf=relocations_to_trajectory_return,
-        **params["calculate_time_density"],
-    )
-
     draw_ecomap_return = draw_ecomap.replace(validate=True)(
-        geodataframe=calculate_time_density_return,
+        geodataframe=relocations_to_trajectory_return,
         **params["draw_ecomap"],
     )
 
