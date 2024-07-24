@@ -183,10 +183,10 @@ def gather_dashboard(
         Field(
             description="""\
             A list of groupers that are used to group the widgets.
-            If all widgets are ungrouped, this field is `None`.
+            If all widgets are ungrouped, this field defaults to `None`.
             """
         ),
-    ],
+    ] = None,
 ) -> Annotated[Dashboard, Field()]:
     grouped_widgets = (
         [GroupedWidget.from_single_view(widgets)]
