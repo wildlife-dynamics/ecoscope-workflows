@@ -6,6 +6,8 @@ from ecoscope_workflows.tasks.preprocessing import process_relocations
 from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
+from ecoscope_workflows.tasks.io import get_patrol_events
+from ecoscope_workflows.tasks.transformation import apply_reloc_filter_envelope
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -44,4 +46,15 @@ if __name__ == "__main__":
         **params["persist_text"],
     )
 
-    print(persist_text_return)
+    get_patrol_events_return = get_patrol_events.replace(validate=True)(
+        **params["get_patrol_events"],
+    )
+
+    apply_reloc_filter_envelope_return = apply_reloc_filter_envelope.replace(
+        validate=True
+    )(
+        df=get_patrol_events_return,
+        **params["apply_reloc_filter_envelope"],
+    )
+
+    print(apply_reloc_filter_envelope_return)

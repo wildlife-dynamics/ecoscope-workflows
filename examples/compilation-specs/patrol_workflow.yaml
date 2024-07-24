@@ -13,5 +13,5 @@ tasks:
     text: draw_ecomap
   # patrol events
   get_patrol_events: {}
-  apply_reloc_filter:
+  apply_reloc_filter_envelope:
     df: get_patrol_events

@@ -27,3 +27,15 @@ draw_ecomap:
 persist_text:
   root_path:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
   filename:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of file to persist text to'))
+get_patrol_events:
+  client:   # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
+  since:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
+  until:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
+  patrol_type:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default=None, description='Comma-separated list of type of patrol UUID'))
+  status:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default=None, description="Comma-separated list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"))
+apply_reloc_filter_envelope:
+  min_x:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=-180.0))
+  max_x:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=180.0))
+  min_y:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=-90.0))
+  max_y:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=90.0))
+  filter_point_coords:   # (list[list[float]], FieldInfo(annotation=NoneType, required=False, default=[[0.0, 0.0]]))
