@@ -4,32 +4,36 @@
 # # {{ name.title().replace("_", " ") }}
 # TODO: top level description
 
-{% for t in tasks -%}
+# %% [markdown]
+# ## Imports
 
+{% for t in tasks -%}
+{{ t.known_task.importable_reference.statement }}
+{% if loop.last %}
+{% endif -%}
+{% endfor -%}
+
+
+{% for t in tasks -%}
 # %% [markdown]
 # ## {{ t.known_task.importable_reference.function.title().replace("_", " ") }}
-
-{%- if t.arg_dependencies %}
-# %%
-# dependencies assignments
-
-{% for arg in t.arg_dependencies %}{{ arg }} = {{ t.arg_dependencies[arg] }}{% endfor %}
-{% endif %}
 
 # %%
 # parameters
 
-{{ t.known_task.importable_reference.params_notebook }}
+{{ t.known_task.importable_reference.function }}_params = {{ t.known_task.importable_reference.params_notebook }}
 
 # %%
-# the code for {{ t.known_task.importable_reference.function.title().replace("_", " ") }}
+# call the task
 
-{{ t.known_task.source_body }}
+{{ t.known_task.importable_reference.function }}_return = {{ t.known_task.importable_reference.function }}(
+{%- if t.arg_dependencies %}
+    {% for arg in t.arg_dependencies %}{{ arg }}={{ t.arg_dependencies[arg] }},{% endfor %}
+    **{{ t.known_task.importable_reference.function }}_params,
+)
+{% else %}**{{ t.known_task.importable_reference.function }}_params,
+)
 
-# %%
-# return value from this section
-
-{{ t.known_task.importable_reference.function }}_return = {{ t.known_task.source_return }}
-
+{% endif -%}
 
 {% endfor %}
