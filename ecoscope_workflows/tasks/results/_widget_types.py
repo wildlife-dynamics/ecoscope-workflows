@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pydantic_core import Url
 
-from ecoscope_workflows.serde import CompositeFilter
+from ecoscope_workflows.indexes import CompositeFilter
 
 
 WidgetTypes = Literal["plot", "map", "text", "single_value"]
