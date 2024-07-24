@@ -116,12 +116,24 @@ class Metadata:
 
 
 class Dashboard(BaseModel):
-    groupers: dict[IndexName, list[IndexValue]]
-    keys: list[CompositeFilter]
+    """A dashboard composed of grouped widgets. Widgets without groupers are
+    represented by a single view with a `None` key. See `GroupedWidget` for more.
+
+    Args:
+        widgets: A list of grouped widgets.
+        groupers: A dictionary of groupers and their possible values.
+            If all widgets are ungrouped, this field is `None`.
+        keys: A list of composite filters that represent the possible views for the grouped widgets.
+            If all widgets are ungrouped, this field is `None`.
+        metadata: Descriptive metadata for the dashboard.
+    """
+
     widgets: list[GroupedWidget]
+    groupers: dict[IndexName, list[IndexValue]] | None = None
+    keys: list[CompositeFilter] | None = None
     metadata: Metadata = Field(default_factory=Metadata)
 
-    def _get_view(self, view: CompositeFilter) -> list[EmumeratedWidgetView]:
+    def _get_view(self, view: CompositeFilter | None) -> list[EmumeratedWidgetView]:
         return [
             EmumeratedWidgetView.from_single_view(id=i, view=w.get_view(view))
             for i, w in enumerate(self.widgets)
@@ -130,6 +142,12 @@ class Dashboard(BaseModel):
     def _iter_views_json(
         self,
     ) -> Generator[tuple[str, list[EmumeratedWidgetView]], None, None]:
+        if not self.keys:
+            # if there is no grouping for any widgets, there is only one view
+            # so yield it back as a single view with an empty key
+            yield json.dumps({}), self._get_view(None)
+            # and then stop iterating
+            return
         for k in self.keys:
             asdict = {attr: value for attr, _, value in k}
             yield json.dumps(asdict, sort_keys=True), self._get_view(k)
@@ -139,30 +157,34 @@ class Dashboard(BaseModel):
         return {k: v for k, v in self._iter_views_json()}
 
     @property
-    def rjsf_filters_json(self) -> ReactJSONSchemaFormFilters:
-        return ReactJSONSchemaFormFilters(
-            options={
-                grouper_name: _RJSFFilter(
-                    property=_RJSFFilterProperty(
-                        type="string",
-                        enum=grouper_choices,
-                        enumNames=[choice.title() for choice in grouper_choices],
-                        default=grouper_choices[0],
-                    ),
-                    uiSchema=_RJSFFilterUiSchema(
-                        title=grouper_name.title().replace("_", " "),
-                        # TODO: allow specifying help text
-                        # _help=f"Select a {grouper_name} to filter by.",
-                    ),
-                )
-                for grouper_name, grouper_choices in self.groupers.items()
-            }
+    def rjsf_filters_json(self) -> ReactJSONSchemaFormFilters | None:
+        return (
+            ReactJSONSchemaFormFilters(
+                options={
+                    grouper_name: _RJSFFilter(
+                        property=_RJSFFilterProperty(
+                            type="string",
+                            enum=grouper_choices,
+                            enumNames=[choice.title() for choice in grouper_choices],
+                            default=grouper_choices[0],
+                        ),
+                        uiSchema=_RJSFFilterUiSchema(
+                            title=grouper_name.title().replace("_", " "),
+                            # TODO: allow specifying help text
+                            # _help=f"Select a {grouper_name} to filter by.",
+                        ),
+                    )
+                    for grouper_name, grouper_choices in self.groupers.items()
+                }
+            ).model_dump()
+            if self.groupers is not None
+            else None
         )
 
     @model_serializer
     def ser_model(self) -> dict[str, Any]:
         return {
-            "filters": self.rjsf_filters_json.model_dump(),
+            "filters": self.rjsf_filters_json,
             "views": self.views_json,
             "metadata": self.metadata,
             "layout": [],  # this is a placeholder for future use by server
@@ -205,28 +227,42 @@ def composite_filters_to_grouper_choices_dict(
 
 @distributed
 def gather_dashboard(
-    grouped_widgets: Annotated[list[GroupedWidget], Field()],
-    groupers: Annotated[list, Field()],
+    grouped_widgets: Annotated[
+        list[GroupedWidget],
+        Field(description="A list of grouped widgets"),
+    ],
+    groupers: Annotated[
+        list | None,
+        Field(
+            description="""\
+            A list of groupers that are used to group the widgets.
+            If all widgets are ungrouped, this field is `None`.
+            """
+        ),
+    ],
 ) -> Annotated[Dashboard, Field()]:
-    for gw in grouped_widgets:
-        keys_sample = list(gw.views)
-        if keys_sample != [None]:
-            # we want to get a representative set of keys for the grouped
-            # wigets, so we break after the first one that has keys. This
-            # logic prevents the case where the first widget(s) in the list
-            # are ungrouped and their keys are thus not representative.
-            break
-    for gw in grouped_widgets:
-        if list(gw.views) != [None]:
-            # now make sure all grouped widgets have the same keys.
-            assert (
-                list(gw.views) == keys_sample
-            ), "All grouped widgets must have the same keys"
-    grouper_choices = composite_filters_to_grouper_choices_dict(keys_sample)
-    # make sure we didn't lose track of any groupers inflight
-    assert set(groupers) == set(
-        list(grouper_choices.keys())
-    ), "All groupers must be present in the keys"
+    if groupers:
+        for gw in grouped_widgets:
+            keys_sample = list(gw.views)
+            if keys_sample != [None]:
+                # we want to get a representative set of keys for the grouped
+                # widgets, so we break after the first one that has keys. This
+                # logic prevents the case where the first widget(s) in the list
+                # are ungrouped and their keys are thus not representative.
+                break
+        for gw in grouped_widgets:
+            if list(gw.views) != [None]:
+                # now make sure all grouped widgets have the same keys.
+                assert (
+                    list(gw.views) == keys_sample
+                ), "All grouped widgets must have the same keys"
+        grouper_choices = composite_filters_to_grouper_choices_dict(keys_sample)
+        # make sure we didn't lose track of any groupers inflight
+        assert set(groupers) == set(
+            list(grouper_choices.keys())
+        ), "All groupers must be present in the keys"
     return Dashboard(
-        groupers=grouper_choices, keys=keys_sample, widgets=grouped_widgets
+        widgets=grouped_widgets,
+        groupers=(grouper_choices if groupers else None),
+        keys=(keys_sample if groupers else None),
     )

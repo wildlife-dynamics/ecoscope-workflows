@@ -8,6 +8,8 @@ DashboardFixture = tuple[list[GroupedWidget], Dashboard]
 
 
 def assert_dashboards_equal(d1: Dashboard, d2: Dashboard):
+    assert d1.groupers
+    assert d2.groupers
     assert d1.groupers.keys() == d2.groupers.keys()
     # Does it matter if the order of the grouper values is different?
     assert list(d1.groupers.values()).sort() == list(d2.groupers.values()).sort()
@@ -504,4 +506,60 @@ def test_model_dump_filters_with_none_views(
                 },
             },
         }
+    }
+
+
+@pytest.fixture
+def dashboard_with_all_none_views() -> DashboardFixture:
+    none_view_map = GroupedWidget(
+        widget_type="map",
+        title="A map with only one view and no groupers",
+        views={
+            None: "/path/to/precomputed/single/map.html",
+        },
+    )
+    none_view_plot = GroupedWidget(
+        widget_type="plot",
+        title="A plot with only one view and no groupers",
+        views={
+            None: "/path/to/precomputed/single/plot.html",
+        },
+    )
+    widgets = [none_view_map, none_view_plot]
+    dashboard = Dashboard(widgets=widgets)
+    return widgets, dashboard
+
+
+def test_gather_dashboard_with_all_none_views(
+    dashboard_with_all_none_views: DashboardFixture,
+):
+    grouped_widgets, expected_dashboard = dashboard_with_all_none_views
+    dashboard: Dashboard = gather_dashboard(
+        grouped_widgets=grouped_widgets,
+        groupers=None,
+    )
+    # We don't need to use the custom `assert_dashboards_equal` function here
+    # because there are no groupers or keys (with sorting concerns) to compare
+    assert dashboard == expected_dashboard
+
+
+def test_model_dump_views_with_all_none_views(
+    dashboard_with_all_none_views: DashboardFixture,
+):
+    _, dashboard = dashboard_with_all_none_views
+    assert dashboard.model_dump()["views"] == {
+        "{}": [
+            {
+                "id": 0,
+                "widget_type": "map",
+                "title": "A map with only one view and no groupers",
+                "data": "/path/to/precomputed/single/map.html",
+            },
+            {
+                "id": 1,
+                "widget_type": "plot",
+                "title": "A plot with only one view and no groupers",
+                "data": "/path/to/precomputed/single/plot.html",
+            },
+        ],
     }
