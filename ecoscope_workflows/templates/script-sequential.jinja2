@@ -12,14 +12,14 @@ import warnings  # 🧪
 from ecoscope_workflows.testing import create_distributed_task_magicmock  # 🧪
 {% endif %}
 
-{% for t in tasks -%}
+{% for t in spec.tasks -%}
 {{ t.known_task.importable_reference.statement }}
 {% if loop.last %}
 {% endif -%}
 {% endfor -%}
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    g = parser.add_argument_group("{{ name }}")
+    g = parser.add_argument_group("{{ spec.name }}")
     g.add_argument(
         "--config-file",
         dest="config_file",
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     warnings.warn("This test script should not be used in production!")  # 🧪
     {% endif %}
     # FIXME: first pass assumes tasks are already in topological order
-    {% for t in tasks %}
+    {% for t in spec.tasks %}
     {{ t.known_task.importable_reference.function }}_return = {{ t.known_task.importable_reference.function }}.replace(validate=True)(
     {%- if t.arg_dependencies %}
         {% for arg in t.arg_dependencies %}{{ arg }}={{ t.arg_dependencies[arg] }},{% endfor %}

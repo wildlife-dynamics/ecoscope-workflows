@@ -1,20 +1,20 @@
 # ruff: noqa: E402
 
 # %% [markdown]
-# # {{ name.title().replace("_", " ") }}
+# # {{ spec.name.title().replace("_", " ") }}
 # TODO: top level description
 
 # %% [markdown]
 # ## Imports
 
-{% for t in tasks -%}
+{% for t in spec.tasks -%}
 {{ t.known_task.importable_reference.statement }}
 {% if loop.last %}
 {% endif -%}
 {% endfor -%}
 
 
-{% for t in tasks -%}
+{% for t in spec.tasks -%}
 # %% [markdown]
 # ## {{ t.known_task.importable_reference.function.title().replace("_", " ") }}
 

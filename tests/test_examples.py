@@ -7,7 +7,7 @@ from typing import Callable, Literal
 import pytest
 import ruamel.yaml
 
-from ecoscope_workflows.compiler import DagCompiler
+from ecoscope_workflows.compiler import DagCompiler, Spec
 from ecoscope_workflows.registry import TaskTag, known_tasks
 
 EXAMPLES = Path(__file__).parent.parent / "examples"
@@ -45,7 +45,7 @@ class SpecFixture:
     ],
     ids=[path.name for path in EXAMPLES.joinpath("compilation-specs").iterdir()],
 )
-def spec(request: pytest.FixtureRequest) -> SpecFixture:
+def spec_fixture(request: pytest.FixtureRequest) -> SpecFixture:
     example_spec_path: Path = request.param
     yaml = ruamel.yaml.YAML(typ="safe")
     with open(example_spec_path) as f:
@@ -58,31 +58,33 @@ def spec(request: pytest.FixtureRequest) -> SpecFixture:
     [
         "jupytext.jinja2",
         "script-sequential.jinja2",
-        # TODO: "airflow-kubernetes.jinja2",
     ],
 )
-def test_generate_dag(spec: SpecFixture, template: TemplateName):
-    dag_compiler = DagCompiler.from_spec(spec=spec.spec)
+def test_generate_dag(spec_fixture: SpecFixture, template: TemplateName):
+    spec = Spec.from_spec_file(spec=spec_fixture.spec)
+    dag_compiler = DagCompiler(spec=spec)
     dag_compiler.template = template
     dag_str = dag_compiler.generate_dag()
-    script_fname = _spec_path_to_dag_fname(path=spec.path, template=template)
+    script_fname = _spec_path_to_dag_fname(path=spec_fixture.path, template=template)
     with open(EXAMPLES / "dags" / script_fname) as f:
         assert dag_str == f.read()
 
 
-def test_dag_params_jsonschema(spec: SpecFixture):
-    dag_compiler = DagCompiler.from_spec(spec=spec.spec)
+def test_dag_params_jsonschema(spec_fixture: SpecFixture):
+    spec = Spec.from_spec_file(spec=spec_fixture.spec)
+    dag_compiler = DagCompiler(spec=spec)
     params = dag_compiler.get_params_jsonschema()
-    jsonschema_fname = _spec_path_to_jsonschema_fname(spec.path)
+    jsonschema_fname = _spec_path_to_jsonschema_fname(spec_fixture.path)
     with open(EXAMPLES / "params" / jsonschema_fname) as f:
         assert params == json.load(f)
 
 
-def test_dag_params_fillable_yaml(spec: SpecFixture):
-    dag_compiler = DagCompiler.from_spec(spec=spec.spec)
+def test_dag_params_fillable_yaml(spec_fixture: SpecFixture):
+    spec = Spec.from_spec_file(spec=spec_fixture.spec)
+    dag_compiler = DagCompiler(spec=spec)
     yaml_str = dag_compiler.get_params_fillable_yaml()
     yaml = ruamel.yaml.YAML(typ="rt")
-    yaml_fname = _spec_path_to_yaml_fname(spec.path)
+    yaml_fname = _spec_path_to_yaml_fname(spec_fixture.path)
     with open(EXAMPLES / "params" / yaml_fname) as f:
         assert yaml.load(yaml_str) == yaml.load(f)
 
@@ -111,25 +113,26 @@ assert_that_stdout = {
 
 
 @pytest.fixture
-def end_to_end(spec: SpecFixture) -> EndToEndFixture:
+def end_to_end(spec_fixture: SpecFixture) -> EndToEndFixture:
     return EndToEndFixture(
-        spec_fixture=spec,
+        spec_fixture=spec_fixture,
         param_path=EXAMPLES.joinpath(
-            "params", _spec_path_to_param_fname(path=spec.path)
+            "params", _spec_path_to_param_fname(path=spec_fixture.path)
         ),
         mock_tasks=[
             task
-            for task in spec.spec["tasks"]
+            for task in spec_fixture.spec["tasks"]
             # mock tasks that require io
             # TODO: this could also be a default for the compiler in --testing mode!
             if TaskTag.io in known_tasks[task].tags
         ],
-        assert_that_stdout=assert_that_stdout[spec.path.name],
+        assert_that_stdout=assert_that_stdout[spec_fixture.path.name],
     )
 
 
 def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
-    dc = DagCompiler.from_spec(spec=end_to_end.spec_fixture.spec)
+    spec = Spec.from_spec_file(spec=end_to_end.spec_fixture.spec)
+    dc = DagCompiler(spec=spec)
     dc.template = "script-sequential.jinja2"
     dc.testing = True
     dc.mock_tasks = end_to_end.mock_tasks

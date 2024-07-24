@@ -69,23 +69,16 @@ def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
     return wrapper
 
 
-class DagCompiler(BaseModel):
+class Spec(BaseModel):
     name: str  # TODO: needs to be a valid python identifier
-    tasks: list[TaskInstance]
     cache_root: str  # e.g. "gcs://my-bucket/dag-runs/cache/"
+    tasks: list[TaskInstance]
 
-    # jinja kwargs; TODO: nest in separate model
-    template: str = "airflow-kubernetes.jinja2"
-    template_dir: pathlib.Path = TEMPLATES
-
-    # compilation settings
-    testing: bool = False
-    mock_tasks: list[str] = Field(default_factory=list)
     # TODO: on __init__ (or in cached_property), sort tasks
     # topologically so we know what order to invoke them in dag
 
     @classmethod
-    def from_spec(cls, spec: dict) -> "DagCompiler":
+    def from_spec_file(cls, spec: dict) -> "Spec":
         non_task_kws = copy.deepcopy(spec)
         del non_task_kws["tasks"]
         tasks_spec = TasksSpec(**spec)
@@ -121,6 +114,18 @@ class DagCompiler(BaseModel):
             )
         return cls(tasks=tasks, **non_task_kws)
 
+
+class DagCompiler(BaseModel):
+    spec: Spec
+
+    # jinja kwargs; TODO: nest in separate model
+    template: str = "airflow-kubernetes.jinja2"
+    template_dir: pathlib.Path = TEMPLATES
+
+    # compilation settings
+    testing: bool = False
+    mock_tasks: list[str] = Field(default_factory=list)
+
     @property
     def dag_config(self) -> dict:
         if self.mock_tasks and not self.testing:
@@ -141,19 +146,19 @@ class DagCompiler(BaseModel):
         # for a given task arg, if it is dependent on another task's return value,
         # we don't need to include it in the `dag_params_schema`,
         # because we don't need it to be passed as a parameter by the user.
-        return ["return"] + [arg for t in self.tasks for arg in t.arg_dependencies]
+        return ["return"] + [arg for t in self.spec.tasks for arg in t.arg_dependencies]
 
     def get_params_jsonschema(self) -> dict[str, dict]:
         return {
             t.known_task_name: t.known_task.parameters_jsonschema(
                 omit_args=self._omit_args
             )
-            for t in self.tasks
+            for t in self.spec.tasks
         }
 
     def get_params_fillable_yaml(self) -> str:
         yaml_str = ""
-        for t in self.tasks:
+        for t in self.spec.tasks:
             yaml_str += t.known_task.parameters_annotation_yaml_str(
                 omit_args=self._omit_args
             )
