@@ -7,14 +7,14 @@
 # %% [markdown]
 # ## Imports
 
-{% for t in spec.tasks -%}
+{% for t in spec.workflow -%}
 {{ t.known_task.importable_reference.statement }}
 {% if loop.last %}
 {% endif -%}
 {% endfor -%}
 
 
-{% for t in spec.tasks -%}
+{% for t in spec.workflow -%}
 # %% [markdown]
 # ## {{ t.known_task.importable_reference.function.title().replace("_", " ") }}
 

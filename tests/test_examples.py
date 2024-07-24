@@ -121,7 +121,7 @@ def end_to_end(spec_fixture: SpecFixture) -> EndToEndFixture:
         ),
         mock_tasks=[
             task
-            for task in spec_fixture.spec["workflow"]
+            for task in [t["task"] for t in spec_fixture.spec["workflow"]]
             # mock tasks that require io
             # TODO: this could also be a default for the compiler in --testing mode!
             if TaskTag.io in known_tasks[task].tags

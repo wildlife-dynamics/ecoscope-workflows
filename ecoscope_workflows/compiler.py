@@ -64,11 +64,6 @@ class Spec(BaseModel):
     # TODO: on __init__ (or in cached_property), sort tasks
     # topologically so we know what order to invoke them in dag
 
-    @computed_field  # type: ignore[misc]
-    @property
-    def tasks(self) -> list[TaskInstance]:
-        return self.workflow
-
 
 class DagCompiler(BaseModel):
     spec: Spec
@@ -101,19 +96,21 @@ class DagCompiler(BaseModel):
         # for a given task arg, if it is dependent on another task's return value,
         # we don't need to include it in the `dag_params_schema`,
         # because we don't need it to be passed as a parameter by the user.
-        return ["return"] + [arg for t in self.spec.tasks for arg in t.arg_dependencies]
+        return ["return"] + [
+            arg for t in self.spec.workflow for arg in t.arg_dependencies
+        ]
 
     def get_params_jsonschema(self) -> dict[str, dict]:
         return {
             t.known_task_name: t.known_task.parameters_jsonschema(
                 omit_args=self._omit_args
             )
-            for t in self.spec.tasks
+            for t in self.spec.workflow
         }
 
     def get_params_fillable_yaml(self) -> str:
         yaml_str = ""
-        for t in self.spec.tasks:
+        for t in self.spec.workflow:
             yaml_str += t.known_task.parameters_annotation_yaml_str(
                 omit_args=self._omit_args
             )
