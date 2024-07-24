@@ -74,11 +74,6 @@ class DagCompiler(BaseModel):
     tasks: list[TaskInstance]
     cache_root: str  # e.g. "gcs://my-bucket/dag-runs/cache/"
 
-    # @dag kwargs; TODO: nest in separate model
-    schedule: str | None = None  # TODO: Literal of valid strings
-    start_date: str = "datetime(2021, 12, 1)"
-    catchup: bool = False
-
     # jinja kwargs; TODO: nest in separate model
     template: str = "airflow-kubernetes.jinja2"
     template_dir: pathlib.Path = TEMPLATES
