@@ -111,9 +111,21 @@ class Spec(_ForbidExtra):
 
     @model_validator(mode="after")
     def check_task_ids_unique(self) -> "Spec":
-        all_ids = [task_instance.id for task_instance in self.workflow]
-        if len(all_ids) != len(set(all_ids)):
-            raise ValueError("All task instance `id`s must be unique.")
+        all_ids = {
+            task_instance.name: task_instance.id for task_instance in self.workflow
+        }
+        if len(all_ids.values()) != len(set(all_ids.values())):
+            id_keyed_dict: dict[str, list[str]] = {id: [] for id in all_ids.values()}
+            for name, id in all_ids.items():
+                id_keyed_dict[id].append(name)
+            dupes = {id: names for id, names in id_keyed_dict.items() if len(names) > 1}
+            dupes_fmt_string = "; ".join(
+                f"{id=} is shared by {names}" for id, names in dupes.items()
+            )
+            raise ValueError(
+                "All task instance `id`s must be unique in the workflow. "
+                f"Found duplicate ids: {dupes_fmt_string}"
+            )
         return self
 
     # TODO: pydantic validator for `self.workflow`, as follows:

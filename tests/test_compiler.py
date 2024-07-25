@@ -1,3 +1,4 @@
+import re
 from textwrap import dedent
 
 import pytest
@@ -109,9 +110,11 @@ def test_ids_must_be_unique():
             task: process_relocations
         """
     )
-    with pytest.raises(
-        ValidationError, match="All task instance `id`s must be unique."
-    ):
+    expected_error_text = re.escape(
+        "All task instance `id`s must be unique in the workflow. Found duplicate ids: "
+        "id='obs' is shared by ['Get Subjectgroup Observations', 'Process Relocations']"
+    )
+    with pytest.raises(ValidationError, match=expected_error_text):
         _ = Spec(**yaml.safe_load(s))
 
 
