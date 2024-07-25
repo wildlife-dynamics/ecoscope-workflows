@@ -239,7 +239,7 @@
         ],
         "type": "object"
     },
-    "apply_envelope_reloc_filter": {
+    "apply_reloc_coord_filter": {
         "additionalProperties": false,
         "properties": {
             "min_x": {
