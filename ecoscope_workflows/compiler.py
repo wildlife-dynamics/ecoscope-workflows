@@ -137,7 +137,9 @@ class Spec(_ForbidExtra):
         """
     )
     cache_root: str  # e.g. "gcs://my-bucket/dag-runs/cache/"
-    workflow: list[TaskInstance]
+    workflow: list[TaskInstance] = Field(
+        description="A list of task instances that define the workflow.",
+    )
 
     @model_validator(mode="after")
     def check_task_ids_unique(self) -> "Spec":
