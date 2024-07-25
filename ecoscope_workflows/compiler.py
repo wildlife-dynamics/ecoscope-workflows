@@ -33,13 +33,17 @@ def _parse_variable(s: str):
     return drop_curlies.split(".")[0]
 
 
-def _is_valid_task_instance_id(s: str):
+def _is_not_reserved(s: str):
     if not s.isidentifier():
         raise ValueError(f"`{s}` is not a valid python identifier.")
     if keyword.iskeyword(s):
         raise ValueError(f"`{s}` is a python keyword.")
     if s in dir(builtins):
         raise ValueError(f"`{s}` is a built-in python function.")
+    return s
+
+
+def _is_valid_task_instance_id(s: str):
     if s in known_tasks:
         raise ValueError(f"`{s}` is a registered known task name.")
     if len(s) > 32:
@@ -53,11 +57,25 @@ def _is_known_task_name(s: str):
     return s
 
 
+def _is_valid_spec_name(s: str):
+    if len(s) > 64:
+        raise ValueError(f"`{s}` is too long; max length is 64 characters.")
+    return s
+
+
 # TODO: structural Variable options `[*]` etc. for iterables
 Variable = Annotated[str, AfterValidator(_parse_variable)]
-TaskInstanceId = Annotated[str, AfterValidator(_is_valid_task_instance_id)]
+TaskInstanceId = Annotated[
+    str,
+    AfterValidator(_is_not_reserved),
+    AfterValidator(_is_valid_task_instance_id),
+]
 KnownTaskName = Annotated[str, AfterValidator(_is_known_task_name)]
 KnownTaskArgName: TypeAlias = str
+
+SpecName = Annotated[
+    str, AfterValidator(_is_not_reserved), AfterValidator(_is_valid_spec_name)
+]
 
 
 class TaskInstance(_ForbidExtra):
@@ -111,7 +129,13 @@ def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
 
 
 class Spec(_ForbidExtra):
-    name: str  # TODO: needs to be a valid python identifier
+    name: SpecName = Field(
+        description="""\
+        A unique name for this workflow. This will be used as the name of the compiled DAG.
+        It should be a valid python identifier and cannot collide with any: Python identifiers,
+        Python keywords, or Python builtins. The maximum length is 64 chars.
+        """
+    )
     cache_root: str  # e.g. "gcs://my-bucket/dag-runs/cache/"
     workflow: list[TaskInstance]
 

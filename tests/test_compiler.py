@@ -76,8 +76,8 @@ def test_extra_forbid_raises():
         ),
         ("draw_ecomap", "`draw_ecomap` is a registered known task name."),
         (
-            "this_id_is_more_than_32_characers_long",
-            "`this_id_is_more_than_32_characers_long` is too long; max length is 32 characters.",
+            "this_id_is_more_than_32_characters_long",
+            "`this_id_is_more_than_32_characters_long` is too long; max length is 32 characters.",
         ),
     ],
 )
@@ -186,3 +186,36 @@ def test_arg_deps_must_be_valid_id_of_another_task(
             ),
         ):
             _ = Spec(**yaml.safe_load(s))
+
+
+@pytest.mark.parametrize(
+    "invalid_name, raises_match",
+    [
+        (
+            "1calc_time_density",
+            "`1calc_time_density` is not a valid python identifier.",
+        ),
+        ("return", "`return` is a python keyword."),
+        ("map", "`map` is a built-in python function."),
+        (
+            "this_name_is_more_than_64_characters_long_which_is_really_quite_long_indeed",
+            re.escape(
+                "`this_name_is_more_than_64_characters_long_which_is_really_quite_long_indeed` "
+                "is too long; max length is 32 characters."
+            ),
+        ),
+    ],
+)
+def test_invaild_spec_name_raises(invalid_name: str, raises_match: str):
+    s = dedent(
+        f"""\
+        name: {invalid_name}
+        cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+        """
+    )
+    with pytest.raises(ValidationError, match=raises_match):
+        _ = Spec(**yaml.safe_load(s))
