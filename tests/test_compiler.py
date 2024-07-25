@@ -69,7 +69,11 @@ def test_extra_forbid_raises():
         ("print", "`print` is a built-in python function."),
         ("map", "`map` is a built-in python function."),
         ("list", "`list` is a built-in python function."),
-        # TODO: collision with known task names
+        (
+            "get_subjectgroup_observations",
+            "`get_subjectgroup_observations` is a registered known task name.",
+        ),
+        ("draw_ecomap", "`draw_ecomap` is a registered known task name."),
     ],
 )
 def test_invalid_id_raises(invalid_id: str, raises_match: str):

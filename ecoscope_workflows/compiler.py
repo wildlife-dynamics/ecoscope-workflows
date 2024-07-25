@@ -40,6 +40,8 @@ def _is_valid_task_instance_id(s: str):
         raise ValueError(f"`{s}` is a python keyword.")
     if s in dir(builtins):
         raise ValueError(f"`{s}` is a built-in python function.")
+    if s in known_tasks:
+        raise ValueError(f"`{s}` is a registered known task name.")
     return s
 
 
@@ -50,8 +52,7 @@ def _is_known_task_name(s: str):
 
 
 Variable = Annotated[str, AfterValidator(_parse_variable)]
-# TODO: does not collide with any other task instance id and does not collide
-# with any known task name
+# TODO: does not collide with any other task instance id
 TaskInstanceId = Annotated[str, AfterValidator(_is_valid_task_instance_id)]
 KnownTaskName = Annotated[str, AfterValidator(_is_known_task_name)]
 
