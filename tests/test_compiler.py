@@ -219,3 +219,54 @@ def test_invaild_spec_name_raises(invalid_name: str, raises_match: str):
     )
     with pytest.raises(ValidationError, match=raises_match):
         _ = Spec(**yaml.safe_load(s))
+
+
+def test_mode_default():
+    s = dedent(
+        """\
+        name: calculate_time_density
+        cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+        """
+    )
+    spec = Spec(**yaml.safe_load(s))
+    assert spec.workflow[0].mode == "call"
+
+
+@pytest.mark.parametrize(
+    "mode, valid_mode",
+    [
+        ("call", True),
+        ("map", True),
+        ("Call", False),
+        ("maptuple", False),
+        ("flatmap", False),
+        ("flatmaptuple", False),
+    ],
+)
+def test_set_mode(mode: str, valid_mode: bool):
+    s = dedent(
+        f"""\
+        name: calculate_time_density
+        cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+            mode: {mode}
+        """
+    )
+    if valid_mode:
+        spec = Spec(**yaml.safe_load(s))
+        assert spec.workflow[0].mode == mode
+    else:
+        with pytest.raises(
+            ValidationError,
+            match=re.escape(
+                f"Input should be 'call' or 'map' [type=literal_error, input_value='{mode}',"
+            ),
+        ):
+            _ = Spec(**yaml.safe_load(s))

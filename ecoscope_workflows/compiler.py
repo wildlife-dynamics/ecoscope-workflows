@@ -3,7 +3,7 @@ import functools
 import keyword
 import pathlib
 import subprocess
-from typing import Annotated, Callable, TypeAlias
+from typing import Annotated, Callable, Literal, TypeAlias
 
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
@@ -92,6 +92,15 @@ class TaskInstance(_ForbidExtra):
         """
     )
     known_task_name: KnownTaskName = Field(alias="task")
+    mode: Literal["call", "map"] = Field(
+        default="call",
+        description="""\
+        The mode in which this task will be executed. In `call` mode, the task will be
+        called directly. In `map` mode, the task will be called in parallel for each
+        element of an iterable. The iterable is the return value of the task specified
+        in the `with` field.
+        """,
+    )
     arg_dependencies: dict[KnownTaskArgName, Variable] = Field(
         default_factory=dict, alias="with"
     )
