@@ -6,6 +6,7 @@ from typing import Callable
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
     BaseModel,
+    ConfigDict,
     Field,
     computed_field,
     field_serializer,
@@ -17,7 +18,11 @@ from ecoscope_workflows.registry import KnownTask, known_tasks
 TEMPLATES = pathlib.Path(__file__).parent / "templates"
 
 
-class TaskInstance(BaseModel):
+class _ForbidExtra(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+
+class TaskInstance(_ForbidExtra):
     known_task_name: str = Field(
         alias="task"
     )  # TODO: validate is valid key in known_tasks
@@ -51,7 +56,7 @@ def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
     return wrapper
 
 
-class Spec(BaseModel):
+class Spec(_ForbidExtra):
     name: str  # TODO: needs to be a valid python identifier
     cache_root: str  # e.g. "gcs://my-bucket/dag-runs/cache/"
     workflow: list[TaskInstance]
