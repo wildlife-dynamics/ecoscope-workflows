@@ -63,8 +63,11 @@ class TaskInstance(_ForbidExtra):
     name: str
     id: TaskInstanceId = Field(
         description="""\
-        Unique identifier for this task instance.
-        This should be a valid python identifier.
+        Unique identifier for this task instance. This will be used as the name to which
+        the result of this task is assigned in the compiled DAG. As such, it should be a
+        valid python identifier and it cannot collide with any: Python keywords, Python
+        builtins, or any registered known task names. It must also be unique within the
+        context of all task instance `id`s in the workflow.
         """
     )
     known_task_name: KnownTaskName = Field(alias="task")
