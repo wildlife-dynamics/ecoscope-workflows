@@ -54,12 +54,7 @@ def _is_known_task_name(s: str):
     return s
 
 
-def _is_known_task_arg_name(s: str):
-    if not s.isidentifier():
-        raise ValueError(f"`{s}` is not a valid python identifier.")
-    return s
-
-
+# TODO: structural Variable options `[*]` etc. for iterables
 Variable = Annotated[str, AfterValidator(_parse_variable)]
 TaskInstanceId = Annotated[str, AfterValidator(_is_valid_task_instance_id)]
 KnownTaskName = Annotated[str, AfterValidator(_is_known_task_name)]
@@ -91,7 +86,7 @@ class TaskInstance(_ForbidExtra):
         assert self.known_task_name == kt.function
         return kt
 
-    # TODO: this requires parsing known task parameter names at registration time
+    # TODO: this requires parsing known task parameter names at registration time (or in DistributedTask)
     # @model_validator(mode="after")
     # def check_known_task_arg_names(self) -> "TaskInstance":
     #     for arg in self.arg_dependencies:
@@ -144,6 +139,18 @@ class Spec(_ForbidExtra):
                 "All task instance `id`s must be unique in the workflow. "
                 f"Found duplicate ids: {dupes_fmt_string}"
             )
+        return self
+
+    @model_validator(mode="after")
+    def check_all_arg_deps_are_ids_of_other_tasks(self) -> "Spec":
+        all_ids = [task_instance.id for task_instance in self.workflow]
+        for task_instance in self.workflow:
+            for dep in task_instance.arg_dependencies.values():
+                if dep not in all_ids:
+                    raise ValueError(
+                        f"Task `{task_instance.name}` has an arg dependency `{dep}` that is "
+                        f"not a valid task id. Valid task ids for this workflow are: {all_ids}"
+                    )
         return self
 
     # TODO: pydantic validator for `self.workflow`, as follows:

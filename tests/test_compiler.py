@@ -146,3 +146,43 @@ def test_invalid_known_task_name_raises(task: str, valid_known_task_name: bool):
             ValidationError, match=f"`{task}` is not a registered known task name."
         ):
             _ = Spec(**yaml.safe_load(s))
+
+
+@pytest.mark.parametrize(
+    "arg_dep_id, valid_id_of_another_task",
+    [
+        ("obs", True),
+        ("get_subjectgroup_observations", False),
+    ],
+)
+def test_arg_deps_must_be_valid_id_of_another_task(
+    arg_dep_id: str,
+    valid_id_of_another_task: bool,
+):
+    s = dedent(
+        f"""\
+        name: calculate_time_density
+        cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            with:
+                observations: ${{{{ {arg_dep_id}.return }}}}
+        """
+    )
+    if valid_id_of_another_task:
+        spec = Spec(**yaml.safe_load(s))
+        assert spec.workflow[1].arg_dependencies == {"observations": arg_dep_id}
+    else:
+        with pytest.raises(
+            ValidationError,
+            match=re.escape(
+                f"Task `Process Relocations` has an arg dependency `{arg_dep_id}` that is "
+                "not a valid task id. Valid task ids for this workflow are: ['obs', 'relocs']",
+            ),
+        ):
+            _ = Spec(**yaml.safe_load(s))
