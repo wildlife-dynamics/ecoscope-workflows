@@ -3,7 +3,7 @@ import functools
 import keyword
 import pathlib
 import subprocess
-from typing import Annotated, Callable
+from typing import Annotated, Callable, TypeAlias
 
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
@@ -54,9 +54,16 @@ def _is_known_task_name(s: str):
     return s
 
 
+def _is_known_task_arg_name(s: str):
+    if not s.isidentifier():
+        raise ValueError(f"`{s}` is not a valid python identifier.")
+    return s
+
+
 Variable = Annotated[str, AfterValidator(_parse_variable)]
 TaskInstanceId = Annotated[str, AfterValidator(_is_valid_task_instance_id)]
 KnownTaskName = Annotated[str, AfterValidator(_is_known_task_name)]
+KnownTaskArgName: TypeAlias = str
 
 
 class TaskInstance(_ForbidExtra):
@@ -73,7 +80,9 @@ class TaskInstance(_ForbidExtra):
         """
     )
     known_task_name: KnownTaskName = Field(alias="task")
-    arg_dependencies: dict[str, Variable] = Field(default_factory=dict, alias="with")
+    arg_dependencies: dict[KnownTaskArgName, Variable] = Field(
+        default_factory=dict, alias="with"
+    )
 
     @computed_field  # type: ignore[misc]
     @property
@@ -81,6 +90,16 @@ class TaskInstance(_ForbidExtra):
         kt = known_tasks[self.known_task_name]
         assert self.known_task_name == kt.function
         return kt
+
+    # TODO: this requires parsing known task parameter names at registration time
+    # @model_validator(mode="after")
+    # def check_known_task_arg_names(self) -> "TaskInstance":
+    #     for arg in self.arg_dependencies:
+    #         if arg not in self.known_task.parameters:
+    #             raise ValueError(
+    #                 f"`{arg}` is not a valid argument name for task `{self.known_task_name}`."
+    #             )
+    #     return self
 
     @field_serializer("arg_dependencies")
     def serialize_arg_deps(self, deps: dict, _info):
@@ -128,7 +147,6 @@ class Spec(_ForbidExtra):
         return self
 
     # TODO: pydantic validator for `self.workflow`, as follows:
-    #  - all inner dict keys must be argument names on the known task they are nested under
     #  - all inner dict values must be names of other known tasks in the spec
     #  - there cannot be any cycle errors
 
