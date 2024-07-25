@@ -26,7 +26,7 @@ def spec_dict() -> dict:
             with: {}
           - task: process_relocations
             with:
-              observations: get_subjectgroup_observations
+              observations: ${{ get_subjectgroup_observations.return }}
         """
     )
     return yaml.safe_load(spec_str)
@@ -50,7 +50,7 @@ def malformed_spec_dict() -> dict:
           - task: get_subjectgroup_observations
             with: {}
           - task: process_relocations
-            observations: get_subjectgroup_observations
+            observations: ${{ get_subjectgroup_observations }}
         """
     )
     return yaml.safe_load(spec_str)

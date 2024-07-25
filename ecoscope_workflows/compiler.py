@@ -1,7 +1,7 @@
 import functools
 import pathlib
 import subprocess
-from typing import Callable
+from typing import Annotated, Callable
 
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
@@ -11,6 +11,7 @@ from pydantic import (
     computed_field,
     field_serializer,
 )
+from pydantic.functional_validators import BeforeValidator
 
 from ecoscope_workflows.registry import KnownTask, known_tasks
 
@@ -22,11 +23,22 @@ class _ForbidExtra(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
+def _parse_variable(s: str):
+    assert s.startswith("${{") and s.endswith("}}")
+    drop_curlies = s.replace("${{", "").replace("}}", "").strip()
+    assert drop_curlies.count(".") == 1
+    assert drop_curlies.endswith(".return")  # TODO: add other options, like [*]
+    return drop_curlies.split(".")[0]
+
+
+Variable = Annotated[str, BeforeValidator(_parse_variable)]
+
+
 class TaskInstance(_ForbidExtra):
     known_task_name: str = Field(
         alias="task"
     )  # TODO: validate is valid key in known_tasks
-    arg_dependencies: dict = Field(default_factory=dict, alias="with")
+    arg_dependencies: dict[str, Variable] = Field(default_factory=dict, alias="with")
 
     @computed_field  # type: ignore[misc]
     @property

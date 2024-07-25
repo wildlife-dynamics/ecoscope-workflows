@@ -5,22 +5,22 @@ workflow:
     with: {}
   - task: process_relocations
     with:
-      observations: get_subjectgroup_observations
+      observations: ${{ get_subjectgroup_observations.return }}
   - task: relocations_to_trajectory
     with:
-      relocations: process_relocations
+      relocations: ${{ process_relocations.return }}
   - task: calculate_time_density
     with:
-      trajectory_gdf: relocations_to_trajectory
+      trajectory_gdf: ${{ relocations_to_trajectory.return }}
   - task: draw_ecomap
     with:
-      geodataframe: calculate_time_density
+      geodataframe: ${{ calculate_time_density.return }}
   - task: persist_text
     with:
-      text: draw_ecomap
+      text: ${{ draw_ecomap.return }}
   - task: create_map_widget_single_view
     with:
-      data: persist_text
+      data: ${{ persist_text.return }}
   - task: gather_dashboard
     with:
-      widgets: create_map_widget_single_view
+      widgets: ${{ create_map_widget_single_view.return }}
