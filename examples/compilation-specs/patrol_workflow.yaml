@@ -1,24 +1,31 @@
 name: patrol_workflow
 cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
 workflow:
-  - task: get_patrol_observations
+  - name: Get Patrol Observations from EarthRanger
+    task: get_patrol_observations
     with: {}
-  - task: process_relocations
+  - name: Transform Observations to Relocations
+    task: process_relocations
     with:
       # TODO: Based on an `id`, not the `task`, which we might need to reuse
       observations: ${{ get_patrol_observations.return }}
-  - task: relocations_to_trajectory
+  - name: Transform Relocations to Trajectories
+    task: relocations_to_trajectory
     with:
       relocations: ${{ process_relocations.return }}
-  - task: draw_ecomap
+  - name: Draw Ecomap from Trajectories
+    task: draw_ecomap
     with:
       geodataframe: ${{ relocations_to_trajectory.return }}
-  - task: persist_text
+  - name: Persist Ecomap as Text
+    task: persist_text
     with:
       text: ${{ draw_ecomap.return }}
-  - task: create_map_widget_single_view
+  - name: Create Map Widget for Patrols
+    task: create_map_widget_single_view
     with:
       data: ${{ persist_text.return }}
-  - task: gather_dashboard
+  - name: Create Dashboard with Patrol Map Widget
+    task: gather_dashboard
     with:
       widgets: ${{ create_map_widget_single_view.return }}

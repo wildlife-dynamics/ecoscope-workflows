@@ -35,6 +35,7 @@ Variable = Annotated[str, BeforeValidator(_parse_variable)]
 
 
 class TaskInstance(_ForbidExtra):
+    name: str
     known_task_name: str = Field(
         alias="task"
     )  # TODO: validate is valid key in known_tasks
