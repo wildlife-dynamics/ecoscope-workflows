@@ -201,7 +201,7 @@ def test_arg_deps_must_be_valid_id_of_another_task(
             "this_name_is_more_than_64_characters_long_which_is_really_quite_long_indeed",
             re.escape(
                 "`this_name_is_more_than_64_characters_long_which_is_really_quite_long_indeed` "
-                "is too long; max length is 32 characters."
+                "is too long; max length is 64 characters."
             ),
         ),
     ],
