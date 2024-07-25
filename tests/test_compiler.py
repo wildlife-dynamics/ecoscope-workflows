@@ -22,9 +22,13 @@ def spec_dict() -> dict:
         name: calculate_time_density
         cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
         workflow:
-          - task: get_subjectgroup_observations
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
             with: {}
-          - task: process_relocations
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
             with:
               observations: ${{ get_subjectgroup_observations.return }}
         """
@@ -47,9 +51,13 @@ def malformed_spec_dict() -> dict:
         name: calculate_time_density
         cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
         workflow:
-          - task: get_subjectgroup_observations
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
             with: {}
-          - task: process_relocations
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
             observations: ${{ get_subjectgroup_observations }}
         """
     )
