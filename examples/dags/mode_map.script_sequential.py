@@ -1,4 +1,6 @@
 import argparse
+from functools import partial
+
 import yaml
 
 from ecoscope_workflows.tasks.io import get_subjectgroup_observations
@@ -27,9 +29,8 @@ if __name__ == "__main__":
         **params["split"],
     )
 
-    ecomap = draw_ecomap.replace(validate=True)(
-        geodataframe=split,
-        **params["ecomap"],
-    )
+    ecomaps_partial = partial(draw_ecomap.replace(validate=True), **params["ecomaps"])
+    ecomaps_mapped_iterable = map(ecomaps_partial, split)
+    ecomaps = list(ecomaps_mapped_iterable)
 
-    print(ecomap)
+    print(ecomaps)
