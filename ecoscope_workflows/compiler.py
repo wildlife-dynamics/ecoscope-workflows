@@ -42,6 +42,8 @@ def _is_valid_task_instance_id(s: str):
         raise ValueError(f"`{s}` is a built-in python function.")
     if s in known_tasks:
         raise ValueError(f"`{s}` is a registered known task name.")
+    if len(s) > 32:
+        raise ValueError(f"`{s}` is too long; max length is 32 characters.")
     return s
 
 
@@ -67,7 +69,7 @@ class TaskInstance(_ForbidExtra):
         the result of this task is assigned in the compiled DAG. As such, it should be a
         valid python identifier and it cannot collide with any: Python keywords, Python
         builtins, or any registered known task names. It must also be unique within the
-        context of all task instance `id`s in the workflow.
+        context of all task instance `id`s in the workflow. The maximum length is 32 chars.
         """
     )
     known_task_name: KnownTaskName = Field(alias="task")

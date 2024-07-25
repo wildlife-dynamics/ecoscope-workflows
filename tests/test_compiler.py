@@ -74,6 +74,10 @@ def test_extra_forbid_raises():
             "`get_subjectgroup_observations` is a registered known task name.",
         ),
         ("draw_ecomap", "`draw_ecomap` is a registered known task name."),
+        (
+            "this_id_is_more_than_32_characers_long",
+            "`this_id_is_more_than_32_characers_long` is too long; max length is 32 characters.",
+        ),
     ],
 )
 def test_invalid_id_raises(invalid_id: str, raises_match: str):
