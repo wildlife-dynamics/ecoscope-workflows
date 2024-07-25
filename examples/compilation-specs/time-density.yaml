@@ -2,33 +2,41 @@ name: calculate_time_density
 cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
 workflow:
   - name: Get SubjectGroup Observations from EarthRanger
+    id: obs
     task: get_subjectgroup_observations
     with: {}
   - name: Transform Observations to Relocations
+    id: reloc
     task: process_relocations
     with:
       observations: ${{ get_subjectgroup_observations.return }}
   - name: Transform Relocations to Trajectories
+    id: traj
     task: relocations_to_trajectory
     with:
       relocations: ${{ process_relocations.return }}
   - name: Calculate Time Density from Trajectory
+    id: td
     task: calculate_time_density
     with:
       trajectory_gdf: ${{ relocations_to_trajectory.return }}
   - name: Draw Ecomap from Time Density
+    id: td_ecomap
     task: draw_ecomap
     with:
       geodataframe: ${{ calculate_time_density.return }}
   - name: Persist Ecomap as Text
+    id: td_ecomap_html_url
     task: persist_text
     with:
       text: ${{ draw_ecomap.return }}
   - name: Create Time Density Map Widget
+    id: td_map_widget
     task: create_map_widget_single_view
     with:
       data: ${{ persist_text.return }}
   - name: Create Dashboard with Time Density Map Widget
+    id: td_dashboard
     task: gather_dashboard
     with:
       widgets: ${{ create_map_widget_single_view.return }}

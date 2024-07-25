@@ -1,4 +1,6 @@
+import builtins
 import functools
+import keyword
 import pathlib
 import subprocess
 from typing import Annotated, Callable
@@ -11,7 +13,7 @@ from pydantic import (
     computed_field,
     field_serializer,
 )
-from pydantic.functional_validators import BeforeValidator
+from pydantic.functional_validators import AfterValidator
 
 from ecoscope_workflows.registry import KnownTask, known_tasks
 
@@ -31,11 +33,32 @@ def _parse_variable(s: str):
     return drop_curlies.split(".")[0]
 
 
-Variable = Annotated[str, BeforeValidator(_parse_variable)]
+def _is_valid_task_instance_id(s: str):
+    if not s.isidentifier():
+        raise ValueError(f"`{s}` is not a valid python identifier.")
+    if keyword.iskeyword(s):
+        raise ValueError(f"`{s}` is a python keyword.")
+    if s in dir(builtins):
+        raise ValueError(f"`{s}` is a built-in python function.")
+    return s
+
+
+Variable = Annotated[str, AfterValidator(_parse_variable)]
+# TODO: does not collide with any other task instance id and does not collide
+# with any known task name
+TaskInstanceId = Annotated[str, AfterValidator(_is_valid_task_instance_id)]
 
 
 class TaskInstance(_ForbidExtra):
+    """A task instance in a workflow."""
+
     name: str
+    id: TaskInstanceId = Field(
+        description="""\
+        Unique identifier for this task instance.
+        This should be a valid python identifier.
+        """
+    )
     known_task_name: str = Field(
         alias="task"
     )  # TODO: validate is valid key in known_tasks
