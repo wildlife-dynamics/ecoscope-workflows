@@ -11,7 +11,6 @@ from pydantic import (
     ConfigDict,
     Field,
     computed_field,
-    field_serializer,
     model_validator,
 )
 from pydantic.functional_validators import AfterValidator
@@ -95,12 +94,6 @@ class TaskInstance(_ForbidExtra):
     #                 f"`{arg}` is not a valid argument name for task `{self.known_task_name}`."
     #             )
     #     return self
-
-    @field_serializer("arg_dependencies")
-    def serialize_arg_deps(self, deps: dict, _info):
-        # TODO: require `.return_value` suffix on all return values
-        # TODO: require deps to be wrapped in ${} for for clarity
-        return {arg: f"{dep}_return" for arg, dep in deps.items()}
 
 
 def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:

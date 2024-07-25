@@ -21,12 +21,12 @@
 # %%
 # parameters
 
-{{ t.known_task.importable_reference.function }}_params = {{ t.known_task.importable_reference.params_notebook }}
+{{ t.id }}_params = {{ t.known_task.importable_reference.params_notebook }}
 
 # %%
 # call the task
 
-{{ t.known_task.importable_reference.function }}_return = {{ t.known_task.importable_reference.function }}(
+{{ t.id }} = {{ t.known_task.importable_reference.function }}(
 {%- if t.arg_dependencies %}
     {% for arg in t.arg_dependencies %}{{ arg }}={{ t.arg_dependencies[arg] }},{% endfor %}
     **{{ t.known_task.importable_reference.function }}_params,

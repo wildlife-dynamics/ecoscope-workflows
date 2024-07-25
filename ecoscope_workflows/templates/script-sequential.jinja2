@@ -33,15 +33,15 @@ if __name__ == "__main__":
     {% endif %}
     # FIXME: first pass assumes tasks are already in topological order
     {% for t in spec.workflow %}
-    {{ t.known_task.importable_reference.function }}_return = {{ t.known_task.importable_reference.function }}.replace(validate=True)(
+    {{ t.id }} = {{ t.known_task.importable_reference.function }}.replace(validate=True)(
     {%- if t.arg_dependencies %}
         {% for arg in t.arg_dependencies %}{{ arg }}={{ t.arg_dependencies[arg] }},{% endfor %}
-        **params["{{ t.known_task_name }}"],
+        **params["{{ t.id }}"],
     )
-    {% else %}**params["{{ t.known_task_name }}"],
+    {% else %}**params["{{ t.id }}"],
     )
     {% endif -%}
     {% if loop.last %}
-    print({{ t.known_task.importable_reference.function }}_return)
+    print({{ t.id }})
     {% endif %}
     {% endfor -%}
