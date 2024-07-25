@@ -146,10 +146,6 @@ class Spec(_ForbidExtra):
                     )
         return self
 
-    # TODO: pydantic validator for `self.workflow`, as follows:
-    #  - all inner dict values must be names of other known tasks in the spec
-    #  - there cannot be any cycle errors
-
     # TODO: on __init__ (or in cached_property), sort tasks
     # topologically so we know what order to invoke them in dag
 
