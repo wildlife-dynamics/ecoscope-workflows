@@ -22,7 +22,7 @@ from ecoscope_workflows.tasks.results import gather_dashboard
 # %%
 # parameters
 
-get_subjectgroup_observations_params = dict(
+obs_params = dict(
     client=...,
     subject_group_name=...,
     include_inactive=...,
@@ -33,8 +33,8 @@ get_subjectgroup_observations_params = dict(
 # %%
 # call the task
 
-get_subjectgroup_observations_return = get_subjectgroup_observations(
-    **get_subjectgroup_observations_params,
+obs = get_subjectgroup_observations(
+    **obs_params,
 )
 
 # %% [markdown]
@@ -43,7 +43,7 @@ get_subjectgroup_observations_return = get_subjectgroup_observations(
 # %%
 # parameters
 
-process_relocations_params = dict(
+reloc_params = dict(
     filter_point_coords=...,
     relocs_columns=...,
 )
@@ -51,9 +51,9 @@ process_relocations_params = dict(
 # %%
 # call the task
 
-process_relocations_return = process_relocations(
-    observations=get_subjectgroup_observations_return,
-    **process_relocations_params,
+reloc = process_relocations(
+    observations=obs,
+    **reloc_params,
 )
 # %% [markdown]
 # ## Relocations To Trajectory
@@ -61,7 +61,7 @@ process_relocations_return = process_relocations(
 # %%
 # parameters
 
-relocations_to_trajectory_params = dict(
+traj_params = dict(
     min_length_meters=...,
     max_length_meters=...,
     max_time_secs=...,
@@ -73,9 +73,9 @@ relocations_to_trajectory_params = dict(
 # %%
 # call the task
 
-relocations_to_trajectory_return = relocations_to_trajectory(
-    relocations=process_relocations_return,
-    **relocations_to_trajectory_params,
+traj = relocations_to_trajectory(
+    relocations=reloc,
+    **traj_params,
 )
 # %% [markdown]
 # ## Calculate Time Density
@@ -83,7 +83,7 @@ relocations_to_trajectory_return = relocations_to_trajectory(
 # %%
 # parameters
 
-calculate_time_density_params = dict(
+td_params = dict(
     pixel_size=...,
     crs=...,
     nodata_value=...,
@@ -96,9 +96,9 @@ calculate_time_density_params = dict(
 # %%
 # call the task
 
-calculate_time_density_return = calculate_time_density(
-    trajectory_gdf=relocations_to_trajectory_return,
-    **calculate_time_density_params,
+td = calculate_time_density(
+    trajectory_gdf=traj,
+    **td_params,
 )
 # %% [markdown]
 # ## Draw Ecomap
@@ -106,7 +106,7 @@ calculate_time_density_return = calculate_time_density(
 # %%
 # parameters
 
-draw_ecomap_params = dict(
+td_ecomap_params = dict(
     data_type=...,
     style_kws=...,
     tile_layer=...,
@@ -120,9 +120,9 @@ draw_ecomap_params = dict(
 # %%
 # call the task
 
-draw_ecomap_return = draw_ecomap(
-    geodataframe=calculate_time_density_return,
-    **draw_ecomap_params,
+td_ecomap = draw_ecomap(
+    geodataframe=td,
+    **td_ecomap_params,
 )
 # %% [markdown]
 # ## Persist Text
@@ -130,7 +130,7 @@ draw_ecomap_return = draw_ecomap(
 # %%
 # parameters
 
-persist_text_params = dict(
+td_ecomap_html_url_params = dict(
     root_path=...,
     filename=...,
 )
@@ -138,9 +138,9 @@ persist_text_params = dict(
 # %%
 # call the task
 
-persist_text_return = persist_text(
-    text=draw_ecomap_return,
-    **persist_text_params,
+td_ecomap_html_url = persist_text(
+    text=td_ecomap,
+    **td_ecomap_html_url_params,
 )
 # %% [markdown]
 # ## Create Map Widget Single View
@@ -148,7 +148,7 @@ persist_text_return = persist_text(
 # %%
 # parameters
 
-create_map_widget_single_view_params = dict(
+td_map_widget_params = dict(
     title=...,
     view=...,
 )
@@ -156,9 +156,9 @@ create_map_widget_single_view_params = dict(
 # %%
 # call the task
 
-create_map_widget_single_view_return = create_map_widget_single_view(
-    data=persist_text_return,
-    **create_map_widget_single_view_params,
+td_map_widget = create_map_widget_single_view(
+    data=td_ecomap_html_url,
+    **td_map_widget_params,
 )
 # %% [markdown]
 # ## Gather Dashboard
@@ -166,7 +166,7 @@ create_map_widget_single_view_return = create_map_widget_single_view(
 # %%
 # parameters
 
-gather_dashboard_params = dict(
+td_dashboard_params = dict(
     title=...,
     description=...,
     groupers=...,
@@ -175,7 +175,7 @@ gather_dashboard_params = dict(
 # %%
 # call the task
 
-gather_dashboard_return = gather_dashboard(
-    widgets=create_map_widget_single_view_return,
-    **gather_dashboard_params,
+td_dashboard = gather_dashboard(
+    widgets=td_map_widget,
+    **td_dashboard_params,
 )

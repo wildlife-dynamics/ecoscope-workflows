@@ -29,9 +29,9 @@
 {{ t.id }} = {{ t.known_task.importable_reference.function }}(
 {%- if t.arg_dependencies %}
     {% for arg in t.arg_dependencies %}{{ arg }}={{ t.arg_dependencies[arg] }},{% endfor %}
-    **{{ t.known_task.importable_reference.function }}_params,
+    **{{ t.id }}_params,
 )
-{% else %}**{{ t.known_task.importable_reference.function }}_params,
+{% else %}**{{ t.id }}_params,
 )
 
 {% endif -%}

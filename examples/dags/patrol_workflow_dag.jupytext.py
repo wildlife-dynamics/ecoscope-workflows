@@ -21,7 +21,7 @@ from ecoscope_workflows.tasks.results import gather_dashboard
 # %%
 # parameters
 
-get_patrol_observations_params = dict(
+patrol_obs_params = dict(
     client=...,
     since=...,
     until=...,
@@ -33,8 +33,8 @@ get_patrol_observations_params = dict(
 # %%
 # call the task
 
-get_patrol_observations_return = get_patrol_observations(
-    **get_patrol_observations_params,
+patrol_obs = get_patrol_observations(
+    **patrol_obs_params,
 )
 
 # %% [markdown]
@@ -43,7 +43,7 @@ get_patrol_observations_return = get_patrol_observations(
 # %%
 # parameters
 
-process_relocations_params = dict(
+patrol_reloc_params = dict(
     filter_point_coords=...,
     relocs_columns=...,
 )
@@ -51,9 +51,9 @@ process_relocations_params = dict(
 # %%
 # call the task
 
-process_relocations_return = process_relocations(
-    observations=get_patrol_observations_return,
-    **process_relocations_params,
+patrol_reloc = process_relocations(
+    observations=patrol_obs,
+    **patrol_reloc_params,
 )
 # %% [markdown]
 # ## Relocations To Trajectory
@@ -61,7 +61,7 @@ process_relocations_return = process_relocations(
 # %%
 # parameters
 
-relocations_to_trajectory_params = dict(
+patrol_traj_params = dict(
     min_length_meters=...,
     max_length_meters=...,
     max_time_secs=...,
@@ -73,9 +73,9 @@ relocations_to_trajectory_params = dict(
 # %%
 # call the task
 
-relocations_to_trajectory_return = relocations_to_trajectory(
-    relocations=process_relocations_return,
-    **relocations_to_trajectory_params,
+patrol_traj = relocations_to_trajectory(
+    relocations=patrol_reloc,
+    **patrol_traj_params,
 )
 # %% [markdown]
 # ## Draw Ecomap
@@ -83,7 +83,7 @@ relocations_to_trajectory_return = relocations_to_trajectory(
 # %%
 # parameters
 
-draw_ecomap_params = dict(
+patrol_ecomap_params = dict(
     data_type=...,
     style_kws=...,
     tile_layer=...,
@@ -97,9 +97,9 @@ draw_ecomap_params = dict(
 # %%
 # call the task
 
-draw_ecomap_return = draw_ecomap(
-    geodataframe=relocations_to_trajectory_return,
-    **draw_ecomap_params,
+patrol_ecomap = draw_ecomap(
+    geodataframe=patrol_traj,
+    **patrol_ecomap_params,
 )
 # %% [markdown]
 # ## Persist Text
@@ -107,7 +107,7 @@ draw_ecomap_return = draw_ecomap(
 # %%
 # parameters
 
-persist_text_params = dict(
+patrol_ecomap_html_url_params = dict(
     root_path=...,
     filename=...,
 )
@@ -115,9 +115,9 @@ persist_text_params = dict(
 # %%
 # call the task
 
-persist_text_return = persist_text(
-    text=draw_ecomap_return,
-    **persist_text_params,
+patrol_ecomap_html_url = persist_text(
+    text=patrol_ecomap,
+    **patrol_ecomap_html_url_params,
 )
 # %% [markdown]
 # ## Create Map Widget Single View
@@ -125,7 +125,7 @@ persist_text_return = persist_text(
 # %%
 # parameters
 
-create_map_widget_single_view_params = dict(
+patrol_map_widget_params = dict(
     title=...,
     view=...,
 )
@@ -133,9 +133,9 @@ create_map_widget_single_view_params = dict(
 # %%
 # call the task
 
-create_map_widget_single_view_return = create_map_widget_single_view(
-    data=persist_text_return,
-    **create_map_widget_single_view_params,
+patrol_map_widget = create_map_widget_single_view(
+    data=patrol_ecomap_html_url,
+    **patrol_map_widget_params,
 )
 # %% [markdown]
 # ## Gather Dashboard
@@ -143,7 +143,7 @@ create_map_widget_single_view_return = create_map_widget_single_view(
 # %%
 # parameters
 
-gather_dashboard_params = dict(
+patrol_dashboard_params = dict(
     title=...,
     description=...,
     groupers=...,
@@ -152,7 +152,7 @@ gather_dashboard_params = dict(
 # %%
 # call the task
 
-gather_dashboard_return = gather_dashboard(
-    widgets=create_map_widget_single_view_return,
-    **gather_dashboard_params,
+patrol_dashboard = gather_dashboard(
+    widgets=patrol_map_widget,
+    **patrol_dashboard_params,
 )
