@@ -1,5 +1,5 @@
 {
-    "get_subjectgroup_observations": {
+    "obs": {
         "additionalProperties": false,
         "properties": {
             "client": {
@@ -39,7 +39,7 @@
         ],
         "type": "object"
     },
-    "process_relocations": {
+    "reloc": {
         "additionalProperties": false,
         "properties": {
             "filter_point_coords": {
@@ -66,7 +66,7 @@
         ],
         "type": "object"
     },
-    "relocations_to_trajectory": {
+    "traj": {
         "additionalProperties": false,
         "properties": {
             "min_length_meters": {
@@ -104,7 +104,7 @@
         ],
         "type": "object"
     },
-    "calculate_time_density": {
+    "td": {
         "additionalProperties": false,
         "properties": {
             "pixel_size": {
@@ -157,7 +157,7 @@
         "required": [],
         "type": "object"
     },
-    "draw_ecomap": {
+    "td_ecomap": {
         "additionalProperties": false,
         "properties": {
             "data_type": {
@@ -218,7 +218,7 @@
         ],
         "type": "object"
     },
-    "persist_text": {
+    "td_ecomap_html_url": {
         "additionalProperties": false,
         "properties": {
             "root_path": {
@@ -238,7 +238,7 @@
         ],
         "type": "object"
     },
-    "create_map_widget_single_view": {
+    "td_map_widget": {
         "additionalProperties": false,
         "properties": {
             "title": {
@@ -285,7 +285,7 @@
         ],
         "type": "object"
     },
-    "gather_dashboard": {
+    "td_dashboard": {
         "$defs": {
             "GroupedWidget": {
                 "properties": {

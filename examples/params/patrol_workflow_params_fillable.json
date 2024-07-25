@@ -1,5 +1,5 @@
 {
-    "get_patrol_observations": {
+    "patrol_obs": {
         "additionalProperties": false,
         "properties": {
             "client": {
@@ -43,7 +43,7 @@
         ],
         "type": "object"
     },
-    "process_relocations": {
+    "patrol_reloc": {
         "additionalProperties": false,
         "properties": {
             "filter_point_coords": {
@@ -70,7 +70,7 @@
         ],
         "type": "object"
     },
-    "relocations_to_trajectory": {
+    "patrol_traj": {
         "additionalProperties": false,
         "properties": {
             "min_length_meters": {
@@ -108,7 +108,7 @@
         ],
         "type": "object"
     },
-    "draw_ecomap": {
+    "patrol_ecomap": {
         "additionalProperties": false,
         "properties": {
             "data_type": {
@@ -169,7 +169,7 @@
         ],
         "type": "object"
     },
-    "persist_text": {
+    "patrol_ecomap_html_url": {
         "additionalProperties": false,
         "properties": {
             "root_path": {
@@ -189,7 +189,7 @@
         ],
         "type": "object"
     },
-    "create_map_widget_single_view": {
+    "patrol_map_widget": {
         "additionalProperties": false,
         "properties": {
             "title": {
@@ -236,7 +236,7 @@
         ],
         "type": "object"
     },
-    "gather_dashboard": {
+    "patrol_dashboard": {
         "$defs": {
             "GroupedWidget": {
                 "properties": {

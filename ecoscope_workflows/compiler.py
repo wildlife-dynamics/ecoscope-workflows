@@ -191,9 +191,7 @@ class DagCompiler(BaseModel):
 
     def get_params_jsonschema(self) -> dict[str, dict]:
         return {
-            t.known_task_name: t.known_task.parameters_jsonschema(
-                omit_args=self._omit_args
-            )
+            t.id: t.known_task.parameters_jsonschema(omit_args=self._omit_args)
             for t in self.spec.workflow
         }
 
@@ -201,7 +199,9 @@ class DagCompiler(BaseModel):
         yaml_str = ""
         for t in self.spec.workflow:
             yaml_str += t.known_task.parameters_annotation_yaml_str(
-                omit_args=self._omit_args
+                title=t.id,
+                description=f"# Parameters for '{t.name}' using task `{t.known_task_name}`.",
+                omit_args=self._omit_args,
             )
         return yaml_str
 

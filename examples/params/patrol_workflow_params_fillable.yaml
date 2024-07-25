@@ -1,21 +1,28 @@
-get_patrol_observations:
+# Parameters for 'Get Patrol Observations from EarthRanger' using task `get_patrol_observations`.
+patrol_obs:
   client:   # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
   since:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
   until:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
   patrol_type:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default=None, description='Comma-separated list of type of patrol UUID'))
   status:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default=None, description="Comma-separated list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"))
   include_patrol_details:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False, default=False, description='Include patrol details'))
-process_relocations:
+
+# Parameters for 'Transform Observations to Relocations' using task `process_relocations`.
+patrol_reloc:
   filter_point_coords:   # (list[list[float]], FieldInfo(annotation=NoneType, required=True))
   relocs_columns:   # (list[str], FieldInfo(annotation=NoneType, required=True))
-relocations_to_trajectory:
+
+# Parameters for 'Transform Relocations to Trajectories' using task `relocations_to_trajectory`.
+patrol_traj:
   min_length_meters:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
   max_length_meters:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
   max_time_secs:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
   min_time_secs:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
   max_speed_kmhr:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
   min_speed_kmhr:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
-draw_ecomap:
+
+# Parameters for 'Draw Ecomap from Trajectories' using task `draw_ecomap`.
+patrol_ecomap:
   data_type:   # (typing.Literal['Scatterplot', 'Path', 'Polygon'], FieldInfo(annotation=NoneType, required=True, description='The type of visualization.'))
   style_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the data visualization.'))
   tile_layer:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A named tile layer, ie OpenStreetMap.'))
@@ -24,13 +31,19 @@ draw_ecomap:
   title_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Title.'))
   scale_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Scale Bar.'))
   north_arrow_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the North Arrow.'))
-persist_text:
+
+# Parameters for 'Persist Ecomap as Text' using task `persist_text`.
+patrol_ecomap_html_url:
   root_path:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
   filename:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of file to persist text to'))
-create_map_widget_single_view:
+
+# Parameters for 'Create Map Widget for Patrols' using task `create_map_widget_single_view`.
+patrol_map_widget:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
   view:   # (tuple[tuple[str, typing.Literal['='], str], ...] | None, FieldInfo(annotation=NoneType, required=True, description='If grouped, the view of the widget'))
-gather_dashboard:
+
+# Parameters for 'Create Dashboard with Patrol Map Widget' using task `gather_dashboard`.
+patrol_dashboard:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the dashboard'))
   description:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The description of the dashboard'))
   groupers:   # (list | None, FieldInfo(annotation=NoneType, required=True, description='            A list of groupers that are used to group the widgets.\n            If all widgets are ungrouped, this field defaults to `None`.\n            '))
