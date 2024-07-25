@@ -30,7 +30,7 @@ def test_dag_compiler_from_spec():
             id: relocs
             task: process_relocations
             with:
-              observations: ${{ get_subjectgroup_observations.return }}
+              observations: ${{ obs.return }}
         """
     )
     spec = Spec(**yaml.safe_load(s))
