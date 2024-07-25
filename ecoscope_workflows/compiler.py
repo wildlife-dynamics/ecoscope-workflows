@@ -55,7 +55,6 @@ def _is_known_task_name(s: str):
 
 
 Variable = Annotated[str, AfterValidator(_parse_variable)]
-# TODO: does not collide with any other task instance id
 TaskInstanceId = Annotated[str, AfterValidator(_is_valid_task_instance_id)]
 KnownTaskName = Annotated[str, AfterValidator(_is_known_task_name)]
 
