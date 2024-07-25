@@ -58,16 +58,30 @@ def test_extra_forbid_raises():
         _ = Spec(**yaml.safe_load(s))
 
 
-# def test_invalid_id_raises():
-#     s = dedent(
-#         # this workflow has an extra key, `observations` in the second task
-#         # this is a mistake, as this should be nested under a `with` block
-#         """\
-#         name: calculate_time_density
-#         cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
-#         workflow:
-#           - name: Get Subjectgroup Observations
-#             id: obs
-#             task: get_subjectgroup_observations
-#         """
-#     )
+@pytest.mark.parametrize(
+    "invalid_id, raises_match",
+    [
+        ("1obs", "`1obs` is not a valid python identifier."),
+        ("obs-1", "`obs-1` is not a valid python identifier."),
+        ("obs 1", "`obs 1` is not a valid python identifier."),
+        ("with", "`with` is a python keyword."),
+        ("return", "`return` is a python keyword."),
+        ("print", "`print` is a built-in python function."),
+        ("map", "`map` is a built-in python function."),
+        ("list", "`list` is a built-in python function."),
+        # TODO: collision with known task names
+    ],
+)
+def test_invalid_id_raises(invalid_id: str, raises_match: str):
+    s = dedent(
+        f"""\
+        name: calculate_time_density
+        cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: {invalid_id}
+            task: get_subjectgroup_observations
+        """
+    )
+    with pytest.raises(ValidationError, match=raises_match):
+        _ = Spec(**yaml.safe_load(s))
