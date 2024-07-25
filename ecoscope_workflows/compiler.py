@@ -117,7 +117,6 @@ class Spec(_ForbidExtra):
         return self
 
     # TODO: pydantic validator for `self.workflow`, as follows:
-    #  - all outer dict keys must be registered `known_tasks`
     #  - all inner dict keys must be argument names on the known task they are nested under
     #  - all inner dict values must be names of other known tasks in the spec
     #  - there cannot be any cycle errors
