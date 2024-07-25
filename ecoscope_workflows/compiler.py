@@ -112,6 +112,15 @@ class TaskInstance(_ForbidExtra):
         assert self.known_task_name == kt.function
         return kt
 
+    @computed_field  # type: ignore[misc]
+    @property
+    def map_iterable(self) -> str | None:
+        if self.mode == "map":
+            # TODO: validation for the idea that there can only be one
+            # dependency for a map task at this point (and use of [*] etc.)
+            return list(self.arg_dependencies.values())[0]
+        return None
+
     # TODO: this requires parsing known task parameter names at registration time (or in DistributedTask)
     # @model_validator(mode="after")
     # def check_known_task_arg_names(self) -> "TaskInstance":

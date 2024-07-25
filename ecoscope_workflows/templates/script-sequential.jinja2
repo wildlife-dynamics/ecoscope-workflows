@@ -6,6 +6,7 @@ that they would not be included (or would be different) in the production versio
 {% endif -%}
 
 import argparse
+from functools import partial
 import yaml
 {%- if testing %}
 import warnings  # 🧪
@@ -34,6 +35,7 @@ if __name__ == "__main__":
     # FIXME: first pass assumes tasks are already in topological order
     {% for t in spec.workflow %}
 
+    {% if t.mode == "call" %}
     {{ t.id }} = {{ t.known_task.importable_reference.function }}.replace(validate=True)(
     {%- if t.arg_dependencies %}
         {% for arg in t.arg_dependencies %}{{ arg }}={{ t.arg_dependencies[arg] }},{% endfor %}
@@ -41,6 +43,11 @@ if __name__ == "__main__":
     )
     {% else %}**params["{{ t.id }}"],
     )
+    {% endif -%}
+    {% elif t.mode == "map" %}
+    {{ t.id }}_partial = partial({{ t.known_task.importable_reference.function }}.replace(validate=True), **params["{{ t.id }}"])
+    {{ t.id }}_mapped_iterable = map({{ t.id }}_partial, {{ t.map_iterable }})
+    {{ t.id }} = list({{ t.id}}_mapped_iterable)
     {% endif -%}
     {% if loop.last %}
     print({{ t.id }})

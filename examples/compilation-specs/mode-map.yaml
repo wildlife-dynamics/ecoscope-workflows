@@ -10,7 +10,7 @@ workflow:
     with:
       df: ${{ obs.return }}
   - name: Creat EcoMap For Every Group
-    id: ecomap
+    id: ecomaps
     task: draw_ecomap
     mode: map
     with:

@@ -1,6 +1,5 @@
 import argparse
 from functools import partial
-
 import yaml
 
 from ecoscope_workflows.tasks.io import get_subjectgroup_observations
