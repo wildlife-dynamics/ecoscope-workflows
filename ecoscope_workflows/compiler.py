@@ -12,6 +12,7 @@ from pydantic import (
     Field,
     computed_field,
     field_serializer,
+    model_validator,
 )
 from pydantic.functional_validators import AfterValidator
 
@@ -107,6 +108,14 @@ class Spec(_ForbidExtra):
     name: str  # TODO: needs to be a valid python identifier
     cache_root: str  # e.g. "gcs://my-bucket/dag-runs/cache/"
     workflow: list[TaskInstance]
+
+    @model_validator(mode="after")
+    def check_task_ids_unique(self) -> "Spec":
+        all_ids = [task_instance.id for task_instance in self.workflow]
+        if len(all_ids) != len(set(all_ids)):
+            raise ValueError("All task instance `id`s must be unique.")
+        return self
+
     # TODO: pydantic validator for `self.workflow`, as follows:
     #  - all outer dict keys must be registered `known_tasks`
     #  - all inner dict keys must be argument names on the known task they are nested under

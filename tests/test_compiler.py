@@ -95,6 +95,26 @@ def test_invalid_id_raises(invalid_id: str, raises_match: str):
         _ = Spec(**yaml.safe_load(s))
 
 
+def test_ids_must_be_unique():
+    s = dedent(
+        """\
+        name: calculate_time_density
+        cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+          - name: Process Relocations
+            id: obs
+            task: process_relocations
+        """
+    )
+    with pytest.raises(
+        ValidationError, match="All task instance `id`s must be unique."
+    ):
+        _ = Spec(**yaml.safe_load(s))
+
+
 @pytest.mark.parametrize(
     "task, valid_known_task_name",
     [
