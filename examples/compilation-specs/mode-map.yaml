@@ -1,0 +1,17 @@
+name: map_example
+cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
+workflow:
+  - name: Load Observations
+    id: obs
+    task: get_subjectgroup_observations
+  - name: Split Observations
+    id: split
+    task: split_groups
+    with:
+      df: ${{ obs.return }}
+  - name: Creat EcoMap For Every Group
+    id: ecomap
+    task: draw_ecomap
+    mode: map
+    with:
+      geodataframe: ${{ split.return }}

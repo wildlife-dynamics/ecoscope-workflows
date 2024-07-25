@@ -33,6 +33,7 @@ if __name__ == "__main__":
     {% endif %}
     # FIXME: first pass assumes tasks are already in topological order
     {% for t in spec.workflow %}
+
     {{ t.id }} = {{ t.known_task.importable_reference.function }}.replace(validate=True)(
     {%- if t.arg_dependencies %}
         {% for arg in t.arg_dependencies %}{{ arg }}={{ t.arg_dependencies[arg] }},{% endfor %}
