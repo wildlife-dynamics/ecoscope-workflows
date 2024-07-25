@@ -85,3 +85,33 @@ def test_invalid_id_raises(invalid_id: str, raises_match: str):
     )
     with pytest.raises(ValidationError, match=raises_match):
         _ = Spec(**yaml.safe_load(s))
+
+
+@pytest.mark.parametrize(
+    "task, valid_known_task_name",
+    [
+        ("get_subjectgroup_observations", True),
+        ("fetch_subject_obs", False),
+        ("process_relocations", True),
+        ("preproc_relocs", False),
+    ],
+)
+def test_invalid_known_task_name_raises(task: str, valid_known_task_name: bool):
+    s = dedent(
+        f"""\
+        name: calculate_time_density
+        cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: {task}
+        """
+    )
+    if valid_known_task_name:
+        spec = Spec(**yaml.safe_load(s))
+        assert spec.workflow[0].known_task == known_tasks[task]
+    else:
+        with pytest.raises(
+            ValidationError, match=f"`{task}` is not a registered known task name."
+        ):
+            _ = Spec(**yaml.safe_load(s))

@@ -43,10 +43,17 @@ def _is_valid_task_instance_id(s: str):
     return s
 
 
+def _is_known_task_name(s: str):
+    if s not in known_tasks:
+        raise ValueError(f"`{s}` is not a registered known task name.")
+    return s
+
+
 Variable = Annotated[str, AfterValidator(_parse_variable)]
 # TODO: does not collide with any other task instance id and does not collide
 # with any known task name
 TaskInstanceId = Annotated[str, AfterValidator(_is_valid_task_instance_id)]
+KnownTaskName = Annotated[str, AfterValidator(_is_known_task_name)]
 
 
 class TaskInstance(_ForbidExtra):
@@ -59,9 +66,7 @@ class TaskInstance(_ForbidExtra):
         This should be a valid python identifier.
         """
     )
-    known_task_name: str = Field(
-        alias="task"
-    )  # TODO: validate is valid key in known_tasks
+    known_task_name: KnownTaskName = Field(alias="task")
     arg_dependencies: dict[str, Variable] = Field(default_factory=dict, alias="with")
 
     @computed_field  # type: ignore[misc]
