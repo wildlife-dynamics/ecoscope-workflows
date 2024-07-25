@@ -4,7 +4,6 @@ workflow:
   - name: Get SubjectGroup Observations from EarthRanger
     id: obs
     task: get_subjectgroup_observations
-    with: {}
   - name: Transform Observations to Relocations
     id: reloc
     task: process_relocations

@@ -4,7 +4,6 @@ workflow:
   - name: Get Patrol Observations from EarthRanger
     id: patrol_obs
     task: get_patrol_observations
-    with: {}
   - name: Transform Observations to Relocations
     id: patrol_reloc
     task: process_relocations

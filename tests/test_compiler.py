@@ -25,7 +25,6 @@ def test_dag_compiler_from_spec():
           - name: Get Subjectgroup Observations
             id: obs
             task: get_subjectgroup_observations
-            with: {}
           - name: Process Relocations
             id: relocs
             task: process_relocations
@@ -49,7 +48,6 @@ def test_extra_forbid_raises():
           - name: Get Subjectgroup Observations
             id: obs
             task: get_subjectgroup_observations
-            with: {}
           - name: Process Relocations
             id: relocs
             task: process_relocations
@@ -58,3 +56,18 @@ def test_extra_forbid_raises():
     )
     with pytest.raises(ValidationError):
         _ = Spec(**yaml.safe_load(s))
+
+
+# def test_invalid_id_raises():
+#     s = dedent(
+#         # this workflow has an extra key, `observations` in the second task
+#         # this is a mistake, as this should be nested under a `with` block
+#         """\
+#         name: calculate_time_density
+#         cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
+#         workflow:
+#           - name: Get Subjectgroup Observations
+#             id: obs
+#             task: get_subjectgroup_observations
+#         """
+#     )
