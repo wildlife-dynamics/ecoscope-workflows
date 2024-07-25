@@ -10,7 +10,8 @@ from ecoscope_workflows.registry import KnownTask, known_tasks
 
 def test_task_instance_known_task_parsing():
     task_name = "get_subjectgroup_observations"
-    ti = TaskInstance(known_task_name=task_name)
+    kws = {"name": "Get Subjectgroup Observations", "id": "obs"}
+    ti = TaskInstance(task=task_name, **kws)
     assert isinstance(ti.known_task, KnownTask)
     assert ti.known_task == known_tasks[task_name]
 
