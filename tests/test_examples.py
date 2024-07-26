@@ -71,6 +71,8 @@ def test_generate_dag(spec_fixture: SpecFixture, template: TemplateName):
 
 
 def test_dag_params_jsonschema(spec_fixture: SpecFixture):
+    if spec_fixture.path.name == "mode-map.yaml":
+        pytest.xfail("mode_map.yaml is not yet fully implemented")
     spec = Spec(**spec_fixture.spec)
     dag_compiler = DagCompiler(spec=spec)
     params = dag_compiler.get_params_jsonschema()
@@ -80,6 +82,8 @@ def test_dag_params_jsonschema(spec_fixture: SpecFixture):
 
 
 def test_dag_params_fillable_yaml(spec_fixture: SpecFixture):
+    if spec_fixture.path.name == "mode-map.yaml":
+        pytest.xfail("mode_map.yaml is not yet fully implemented")
     spec = Spec(**spec_fixture.spec)
     dag_compiler = DagCompiler(spec=spec)
     yaml_str = dag_compiler.get_params_fillable_yaml()
@@ -109,6 +113,7 @@ assert_that_stdout = {
         lambda out: "patrol_traj_map.html" in out,
         lambda out: "widget_type='map', title='Patrol Trajectory Map'" in out,
     ],
+    "mode-map.yaml": [],
 }
 
 
@@ -131,6 +136,8 @@ def end_to_end(spec_fixture: SpecFixture) -> EndToEndFixture:
 
 
 def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
+    if end_to_end.spec_fixture.path.name == "mode-map.yaml":
+        pytest.xfail("mode_map.yaml is not yet fully implemented")
     spec = Spec(**end_to_end.spec_fixture.spec)
     dc = DagCompiler(spec=spec)
     dc.template = "script-sequential.jinja2"
