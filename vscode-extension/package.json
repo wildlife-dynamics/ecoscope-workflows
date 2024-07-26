@@ -1,0 +1,24 @@
+{
+    "name": "yaml-validator",
+    "publisher": "your-publisher-name",
+    "displayName": "YAML Validator",
+    "description": "Validates YAML files using Pydantic models",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.60.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onLanguage:yaml"
+    ],
+    "main": "./extension/extension.js",
+    "scripts": {
+        "package": "vsce package"
+    },
+    "dependencies": {
+        "vscode": "^1.1.34",
+        "vscode-languageclient": "^9.0.1"
+    }
+}
