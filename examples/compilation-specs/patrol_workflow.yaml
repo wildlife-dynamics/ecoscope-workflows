@@ -16,25 +16,20 @@ workflow:
     with:
       relocations: ${{ patrol_reloc.return }}
   - name: Draw Ecomap from Trajectories
-    id: patrol_ecomap
+    id: patrol_traj_ecomap
     task: draw_ecomap
     with:
       geodataframe: ${{ patrol_traj.return }}
-  - name: Persist Ecomap as Text
-    id: patrol_ecomap_html_url
+  - name: Persist Patrol Trajectories Ecomap as Text
+    id: patrol_traj_ecomap_html_url
     task: persist_text
     with:
-      text: ${{ patrol_ecomap.return }}
-  - name: Create Map Widget for Patrols
-    id: patrol_map_widget
+      text: ${{ patrol_traj_ecomap.return }}
+  - name: Create Map Widget for Patrols Trajectories
+    id: patrol_traj_map_widget
     task: create_map_widget_single_view
     with:
-      data: ${{ patrol_ecomap_html_url.return }}
-  - name: Create Dashboard with Patrol Map Widget
-    id: patrol_dashboard
-    task: gather_dashboard
-    with:
-      widgets: ${{ patrol_map_widget.return }}
+      data: ${{ patrol_traj_ecomap_html_url.return }}
 
   # patrol events
   - name: Get Patrol Events from EarthRanger
@@ -45,3 +40,27 @@ workflow:
     task: apply_reloc_coord_filter
     with:
       df: ${{ patrol_events.return }}
+  - name: Draw Ecomap for Patrols Events
+    id: patrol_events_ecomap
+    task: draw_ecomap
+    with:
+      geodataframe: ${{ filter_patrol_events.return }}
+  - name: Persist Patrols Ecomap as Text
+    id: patrol_events_ecomap_html_url
+    task: persist_text
+    with:
+      text: ${{ patrol_events_ecomap.return }}
+  - name: Create Map Widget for Patrol Events
+    id: patrol_events_map_widget
+    task: create_map_widget_single_view
+    with:
+      data: ${{ patrol_events_map_widget.return }}
+
+  # dashboard
+  - name: Create Dashboard with Patrol Map Widgets
+    id: patrol_dashboard
+    task: gather_dashboard
+    with:
+      widgets:
+        - ${{ patrol_traj_map_widget.return }}
+        - ${{ patrol_events_map_widget.return }}

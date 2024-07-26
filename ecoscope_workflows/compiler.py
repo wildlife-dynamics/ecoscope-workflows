@@ -101,7 +101,7 @@ class TaskInstance(_ForbidExtra):
         in the `with` field.
         """,
     )
-    arg_dependencies: dict[KnownTaskArgName, Variable] = Field(
+    arg_dependencies: dict[KnownTaskArgName, Variable | list[Variable]] = Field(
         default_factory=dict, alias="with"
     )
 
@@ -116,9 +116,15 @@ class TaskInstance(_ForbidExtra):
     @property
     def map_iterable(self) -> str | None:
         if self.mode == "map":
-            # TODO: validation for the idea that there can only be one
+            # TODO: better validation for the idea that there can only be one
             # dependency for a map task at this point (and use of [*] etc.)
-            return list(self.arg_dependencies.values())[0]
+            # FIXME: fix this hacky mypy workaround while working on arg dep arrays
+            val = list(self.arg_dependencies.values())[0]
+            if isinstance(val, list):
+                raise ValueError(
+                    "In `map` mode, the value an arg in the `with` block cannot be an array."
+                )
+            return val
         return None
 
     # TODO: this requires parsing known task parameter names at registration time (or in DistributedTask)
