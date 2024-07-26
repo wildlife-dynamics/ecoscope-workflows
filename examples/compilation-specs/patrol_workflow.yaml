@@ -1,6 +1,7 @@
 name: patrol_workflow
 cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
 workflow:
+  # patrol observations
   - name: Get Patrol Observations from EarthRanger
     id: patrol_obs
     task: get_patrol_observations
@@ -34,3 +35,13 @@ workflow:
     task: gather_dashboard
     with:
       widgets: ${{ patrol_map_widget.return }}
+
+  # patrol events
+  - name: Get Patrol Events from EarthRanger
+    id: patrol_events
+    task: get_patrol_events
+  - name: Apply Relocation Coordinate Filter
+    id: filter_patrol_events
+    task: apply_reloc_coord_filter
+    with:
+      df: ${{ patrol_events.return }}

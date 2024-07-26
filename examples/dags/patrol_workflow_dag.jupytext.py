@@ -14,6 +14,8 @@ from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
 from ecoscope_workflows.tasks.results import gather_dashboard
+from ecoscope_workflows.tasks.io import get_patrol_events
+from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
 
 # %% [markdown]
 # ## Get Patrol Observations
@@ -155,4 +157,46 @@ patrol_dashboard_params = dict(
 patrol_dashboard = gather_dashboard(
     widgets=patrol_map_widget,
     **patrol_dashboard_params,
+)
+# %% [markdown]
+# ## Get Patrol Events
+
+# %%
+# parameters
+
+patrol_events_params = dict(
+    client=...,
+    since=...,
+    until=...,
+    patrol_type=...,
+    status=...,
+)
+
+# %%
+# call the task
+
+patrol_events = get_patrol_events(
+    **patrol_events_params,
+)
+
+# %% [markdown]
+# ## Apply Reloc Coord Filter
+
+# %%
+# parameters
+
+filter_patrol_events_params = dict(
+    min_x=...,
+    max_x=...,
+    min_y=...,
+    max_y=...,
+    filter_point_coords=...,
+)
+
+# %%
+# call the task
+
+filter_patrol_events = apply_reloc_coord_filter(
+    df=patrol_events,
+    **filter_patrol_events_params,
 )

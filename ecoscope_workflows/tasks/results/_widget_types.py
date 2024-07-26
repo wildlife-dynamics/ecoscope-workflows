@@ -47,16 +47,14 @@ class GroupedWidget(WidgetBase):
         )
 
     def get_view(self, view: CompositeFilter | None) -> WidgetSingleView:
-        """Get the view for a specific CompositeFilter. If the widget has only
-        a single (ungrouped) view, then that single view is returned regardless
-        of which `view` is requested.
-        """
-        _view = view if not list(self.views) == [None] else None
+        """Get a WidgetSingleView for a specific view."""
+        if view not in self.views:
+            raise ValueError(f"Requested {view=} not found in {self.views=}")
         return WidgetSingleView(
             widget_type=self.widget_type,
             title=self.title,
             view=view,
-            data=self.views[_view],
+            data=self.views[view],
         )
 
     @property

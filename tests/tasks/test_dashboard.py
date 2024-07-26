@@ -1,7 +1,10 @@
 import pytest
 
 from ecoscope_workflows.tasks.results import gather_dashboard
-from ecoscope_workflows.tasks.results._dashboard import Dashboard, EmumeratedWidgetView
+from ecoscope_workflows.tasks.results._dashboard import (
+    Dashboard,
+    EmumeratedWidgetSingleView,
+)
 from ecoscope_workflows.tasks.results._widget_types import GroupedWidget
 
 DashboardFixture = tuple[list[GroupedWidget], Dashboard]
@@ -61,13 +64,13 @@ def test_gather_dashboard(single_filter_dashboard: DashboardFixture):
 def test__get_view(single_filter_dashboard: DashboardFixture):
     _, dashboard = single_filter_dashboard
     assert dashboard._get_view((("month", "=", "january"),)) == [
-        EmumeratedWidgetView(
+        EmumeratedWidgetSingleView(
             id=0,
             widget_type="map",
             title="A Great Map",
             data="/path/to/precomputed/jan/map.html",
         ),
-        EmumeratedWidgetView(
+        EmumeratedWidgetSingleView(
             id=1,
             widget_type="plot",
             title="A Cool Plot",
@@ -75,13 +78,13 @@ def test__get_view(single_filter_dashboard: DashboardFixture):
         ),
     ]
     assert dashboard._get_view((("month", "=", "february"),)) == [
-        EmumeratedWidgetView(
+        EmumeratedWidgetSingleView(
             id=0,
             widget_type="map",
             title="A Great Map",
             data="/path/to/precomputed/feb/map.html",
         ),
-        EmumeratedWidgetView(
+        EmumeratedWidgetSingleView(
             id=1,
             widget_type="plot",
             title="A Cool Plot",
@@ -188,7 +191,7 @@ def test_gather_dashboard_two_filter(two_filter_dashboard: DashboardFixture):
 def test__get_view_two_part_key(two_filter_dashboard: DashboardFixture):
     _, dashboard = two_filter_dashboard
     assert dashboard._get_view((("month", "=", "jan"), ("year", "=", "2022"))) == [
-        EmumeratedWidgetView(
+        EmumeratedWidgetSingleView(
             id=0,
             widget_type="map",
             title="A Great Map",
@@ -196,7 +199,7 @@ def test__get_view_two_part_key(two_filter_dashboard: DashboardFixture):
         ),
     ]
     assert dashboard._get_view((("month", "=", "jan"), ("year", "=", "2023"))) == [
-        EmumeratedWidgetView(
+        EmumeratedWidgetSingleView(
             id=0,
             widget_type="map",
             title="A Great Map",
@@ -304,7 +307,7 @@ def test__get_view_three_part_key(three_filter_dashboard: DashboardFixture):
     assert dashboard._get_view(
         (("month", "=", "jan"), ("year", "=", "2022"), ("subject_name", "=", "jo"))
     ) == [
-        EmumeratedWidgetView(
+        EmumeratedWidgetSingleView(
             id=0,
             widget_type="map",
             title="A Great Map",
@@ -314,7 +317,7 @@ def test__get_view_three_part_key(three_filter_dashboard: DashboardFixture):
     assert dashboard._get_view(
         (("month", "=", "jan"), ("year", "=", "2022"), ("subject_name", "=", "zo"))
     ) == [
-        EmumeratedWidgetView(
+        EmumeratedWidgetSingleView(
             id=0,
             widget_type="map",
             title="A Great Map",
@@ -430,13 +433,13 @@ def test_gather_dashboard_with_none_views(dashboard_with_none_views: DashboardFi
 def test__get_view_with_none_views(dashboard_with_none_views: DashboardFixture):
     _, dashboard = dashboard_with_none_views
     assert dashboard._get_view((("month", "=", "january"),)) == [
-        EmumeratedWidgetView(
+        EmumeratedWidgetSingleView(
             id=0,
             widget_type="map",
             title="A Great Map",
             data="/path/to/precomputed/jan/map.html",
         ),
-        EmumeratedWidgetView(
+        EmumeratedWidgetSingleView(
             id=1,
             widget_type="plot",
             title="A plot with only one view and no groupers",
@@ -444,13 +447,13 @@ def test__get_view_with_none_views(dashboard_with_none_views: DashboardFixture):
         ),
     ]
     assert dashboard._get_view((("month", "=", "february"),)) == [
-        EmumeratedWidgetView(
+        EmumeratedWidgetSingleView(
             id=0,
             widget_type="map",
             title="A Great Map",
             data="/path/to/precomputed/feb/map.html",
         ),
-        EmumeratedWidgetView(
+        EmumeratedWidgetSingleView(
             id=1,
             widget_type="plot",
             title="A plot with only one view and no groupers",
@@ -556,13 +559,13 @@ def test_gather_dashboard_with_all_none_views(
 def test__get_view_with_all_none_views(dashboard_with_all_none_views: DashboardFixture):
     _, dashboard = dashboard_with_all_none_views
     assert dashboard._get_view(None) == [
-        EmumeratedWidgetView(
+        EmumeratedWidgetSingleView(
             id=0,
             widget_type="map",
             title="A map with only one view and no groupers",
             data="/path/to/precomputed/single/map.html",
         ),
-        EmumeratedWidgetView(
+        EmumeratedWidgetSingleView(
             id=1,
             widget_type="plot",
             title="A plot with only one view and no groupers",
