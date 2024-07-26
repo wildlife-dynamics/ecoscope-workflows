@@ -237,5 +237,52 @@
             "filename"
         ],
         "type": "object"
+    },
+    "create_map_widget_single_view": {
+        "additionalProperties": false,
+        "properties": {
+            "title": {
+                "title": "Title",
+                "type": "string",
+                "description": "The title of the widget"
+            },
+            "view": {
+                "anyOf": [
+                    {
+                        "items": {
+                            "maxItems": 3,
+                            "minItems": 3,
+                            "prefixItems": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "const": "=",
+                                    "enum": [
+                                        "="
+                                    ],
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "string"
+                                }
+                            ],
+                            "type": "array"
+                        },
+                        "type": "array"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "View",
+                "description": "If grouped, the view of the widget"
+            }
+        },
+        "required": [
+            "title"
+        ],
+        "type": "object"
     }
 }

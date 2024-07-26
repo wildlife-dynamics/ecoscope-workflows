@@ -11,6 +11,8 @@ tasks:
     geodataframe: relocations_to_trajectory
   persist_text:
     text: draw_ecomap
+  create_map_widget_single_view:
+    data: persist_text
   # patrol events
   get_patrol_events: {}
   apply_reloc_coord_filter:

@@ -12,6 +12,7 @@ from ecoscope_workflows.tasks.preprocessing import process_relocations
 from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
+from ecoscope_workflows.tasks.results import create_map_widget_single_view
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
 
@@ -118,6 +119,24 @@ persist_text_params = dict(
 persist_text_return = persist_text(
     text=draw_ecomap_return,
     **persist_text_params,
+)
+# %% [markdown]
+# ## Create Map Widget Single View
+
+# %%
+# parameters
+
+create_map_widget_single_view_params = dict(
+    title=...,
+    view=...,
+)
+
+# %%
+# call the task
+
+create_map_widget_single_view_return = create_map_widget_single_view(
+    data=persist_text_return,
+    **create_map_widget_single_view_params,
 )
 # %% [markdown]
 # ## Get Patrol Events
