@@ -20,11 +20,12 @@ from ecoscope_workflows.tasks.results._widget_types import (
     GroupedWidget,
     WidgetData,
     WidgetSingleView,
+    WidgetBase,
 )
 
 
 @dataclass
-class EmumeratedWidgetView:
+class EmumeratedWidgetSingleView(WidgetBase):
     """A widget view with an enumerated integer `id` for use in a dashboard.
     Dashboards require a unique integer identifier for each widget, to affiliate
     layout information with the widget. Unlike a `WidgetSingleView`, this class
@@ -33,8 +34,6 @@ class EmumeratedWidgetView:
     """
 
     id: int
-    widget_type: str
-    title: str
     data: WidgetData
 
     @classmethod
@@ -73,15 +72,17 @@ class Dashboard(BaseModel):
     keys: list[CompositeFilter] | None = None
     metadata: Metadata = Field(default_factory=Metadata)
 
-    def _get_view(self, view: CompositeFilter | None) -> list[EmumeratedWidgetView]:
+    def _get_view(
+        self, view: CompositeFilter | None
+    ) -> list[EmumeratedWidgetSingleView]:
         return [
-            EmumeratedWidgetView.from_single_view(id=i, view=w.get_view(view))
+            EmumeratedWidgetSingleView.from_single_view(id=i, view=w.get_view(view))
             for i, w in enumerate(self.widgets)
         ]
 
     def _iter_views_json(
         self,
-    ) -> Generator[tuple[str, list[EmumeratedWidgetView]], None, None]:
+    ) -> Generator[tuple[str, list[EmumeratedWidgetSingleView]], None, None]:
         if not self.keys:
             # if there is no grouping for any widgets, there is only one view
             # so yield it back as a single view with an empty key
@@ -93,7 +94,7 @@ class Dashboard(BaseModel):
             yield json.dumps(asdict, sort_keys=True), self._get_view(k)
 
     @property
-    def views_json(self) -> dict[str, list[EmumeratedWidgetView]]:
+    def views_json(self) -> dict[str, list[EmumeratedWidgetSingleView]]:
         return {k: v for k, v in self._iter_views_json()}
 
     @property
