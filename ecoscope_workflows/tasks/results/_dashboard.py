@@ -75,6 +75,13 @@ class Dashboard(BaseModel):
     def _get_view(
         self, view: CompositeFilter | None
     ) -> list[EmumeratedWidgetSingleView]:
+        """Get the overal view for the dashboard, by fetching that view for each widget.
+        and returning a list of `EmumeratedWidgetSingleView` instances for that view.
+        If the dashboard contains a mix of grouped and ungrouped widgets, the ungrouped
+        widgets will not have a view for the requested CompositeFilter, so in that case
+        request `None` (i.e. the static view) for that widget, even if the requested view
+        is a CompositeFilter.
+        """
         return [
             EmumeratedWidgetSingleView.from_single_view(
                 id=i,
@@ -94,6 +101,10 @@ class Dashboard(BaseModel):
     def _iter_views_json(
         self,
     ) -> Generator[tuple[str, list[EmumeratedWidgetSingleView]], None, None]:
+        """Iterate over all possible views for the dashboard, yielding key:value pairs for each,
+        in which the keys are a JSON-stringified representation of the views key, and the values
+        are JSON-serializable dictionaries of the widget view.
+        """
         if not self.keys:
             # if there is no grouping for any widgets, there is only one view
             # so yield it back as a single view with an empty key
@@ -106,10 +117,14 @@ class Dashboard(BaseModel):
 
     @property
     def views_json(self) -> dict[str, list[EmumeratedWidgetSingleView]]:
+        """A JSON-serializable dictionary for all possible views of the dashboard,
+        keyed by JSON-stringified representations of the views keys.
+        """
         return {k: v for k, v in self._iter_views_json()}
 
     @property
     def rjsf_filters_json(self) -> ReactJSONSchemaFormFilters | None:
+        """The JSON-serializable representation of the React JSON Schema Form filters."""
         return (
             ReactJSONSchemaFormFilters(
                 options={
@@ -135,6 +150,7 @@ class Dashboard(BaseModel):
 
     @model_serializer
     def ser_model(self) -> dict[str, Any]:
+        """The method called by `.model_dump()` to serialize the model to a dictionary."""
         return {
             "filters": self.rjsf_filters_json,
             "views": self.views_json,
