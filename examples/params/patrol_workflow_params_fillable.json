@@ -18,16 +18,20 @@
                 "description": "End date"
             },
             "patrol_type": {
-                "default": null,
+                "items": {
+                    "type": "string"
+                },
                 "title": "Patrol Type",
-                "type": "string",
-                "description": "Comma-separated list of type of patrol UUID"
+                "type": "array",
+                "description": "list of UUID of patrol types"
             },
             "status": {
-                "default": null,
+                "items": {
+                    "type": "string"
+                },
                 "title": "Status",
-                "type": "string",
-                "description": "Comma-separated list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"
+                "type": "array",
+                "description": "list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"
             },
             "include_patrol_details": {
                 "default": false,
@@ -39,7 +43,9 @@
         "required": [
             "client",
             "since",
-            "until"
+            "until",
+            "patrol_type",
+            "status"
         ],
         "type": "object"
     },
@@ -401,6 +407,93 @@
             "title",
             "description"
         ],
+        "type": "object"
+    },
+    "get_patrol_events": {
+        "additionalProperties": false,
+        "properties": {
+            "client": {
+                "description": "A named EarthRanger connection.",
+                "title": "Client",
+                "type": "string"
+            },
+            "since": {
+                "title": "Since",
+                "type": "string",
+                "description": "Start date"
+            },
+            "until": {
+                "title": "Until",
+                "type": "string",
+                "description": "End date"
+            },
+            "patrol_type": {
+                "items": {
+                    "type": "string"
+                },
+                "title": "Patrol Type",
+                "type": "array",
+                "description": "list of UUID of patrol types"
+            },
+            "status": {
+                "items": {
+                    "type": "string"
+                },
+                "title": "Status",
+                "type": "array",
+                "description": "list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"
+            }
+        },
+        "required": [
+            "client",
+            "since",
+            "until",
+            "patrol_type",
+            "status"
+        ],
+        "type": "object"
+    },
+    "apply_reloc_coord_filter": {
+        "additionalProperties": false,
+        "properties": {
+            "min_x": {
+                "default": -180.0,
+                "title": "Min X",
+                "type": "number"
+            },
+            "max_x": {
+                "default": 180.0,
+                "title": "Max X",
+                "type": "number"
+            },
+            "min_y": {
+                "default": -90.0,
+                "title": "Min Y",
+                "type": "number"
+            },
+            "max_y": {
+                "default": 90.0,
+                "title": "Max Y",
+                "type": "number"
+            },
+            "filter_point_coords": {
+                "default": [
+                    [
+                        0.0,
+                        0.0
+                    ]
+                ],
+                "items": {
+                    "items": {
+                        "type": "number"
+                    },
+                    "type": "array"
+                },
+                "title": "Filter Point Coords",
+                "type": "array"
+            }
+        },
+        "required": [],
         "type": "object"
     }
 }
