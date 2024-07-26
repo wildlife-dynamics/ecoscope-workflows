@@ -76,7 +76,18 @@ class Dashboard(BaseModel):
         self, view: CompositeFilter | None
     ) -> list[EmumeratedWidgetSingleView]:
         return [
-            EmumeratedWidgetSingleView.from_single_view(id=i, view=w.get_view(view))
+            EmumeratedWidgetSingleView.from_single_view(
+                id=i,
+                view=w.get_view(
+                    (
+                        # if the requested view is a CompositeFilter, and the widget has
+                        # that CompositeFilter in its views, return that view. But if dashboard
+                        # has a mix of grouped and ungrouped widgets, the ungrouped widgets will
+                        # not have a view for the CompositeFilter, so in that case request `None`.
+                        view if not list(w.views) == [None] else None
+                    )
+                ),
+            )
             for i, w in enumerate(self.widgets)
         ]
 
