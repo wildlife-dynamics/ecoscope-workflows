@@ -7,6 +7,9 @@
 # %% [markdown]
 # ## Imports
 
+{% if spec.requires_map_exra_imports -%}
+from functools import partial
+{% endif -%}
 {% for t in spec.workflow -%}
 {{ t.known_task.importable_reference.statement }}
 {% if loop.last %}
@@ -25,7 +28,7 @@
 
 # %%
 # call the task
-
+{% if t.mode == "call" %}
 {{ t.id }} = {{ t.known_task.importable_reference.function }}(
 {%- if t.arg_dependencies %}
     {% for arg in t.arg_dependencies %}{{ arg }}={{ t.arg_dependencies[arg] }},{% endfor %}
@@ -34,6 +37,11 @@
 {% else %}**{{ t.id }}_params,
 )
 
+{% endif -%}
+{% elif t.mode == "map" %}
+{{ t.id }}_partial = partial({{ t.known_task.importable_reference.function }}, **{{ t.id }}_params)
+{{ t.id }}_mapped_iterable = map({{ t.id }}_partial, {{ t.map_iterable }})
+{{ t.id }} = list({{ t.id}}_mapped_iterable)
 {% endif -%}
 
 {% endfor %}
