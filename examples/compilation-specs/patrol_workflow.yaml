@@ -1,6 +1,7 @@
 name: patrol_workflow
 cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
 tasks:
+  # patrol observations
   get_patrol_observations: {}
   process_relocations:
     observations: get_patrol_observations
@@ -12,3 +13,7 @@ tasks:
     text: draw_ecomap
   create_map_widget_single_view:
     data: persist_text
+  # patrol events
+  get_patrol_events: {}
+  apply_reloc_coord_filter:
+    df: get_patrol_events

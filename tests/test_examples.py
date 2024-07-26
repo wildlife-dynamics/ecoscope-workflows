@@ -104,6 +104,7 @@ assert_that_stdout = {
     "patrol_workflow.yaml": [
         lambda out: "patrol_traj_map.html" in out,
         lambda out: "widget_type='map', title='Patrol Trajectory Map'" in out,
+        lambda out: "geometry" in out,
     ],
 }
 

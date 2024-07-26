@@ -3,28 +3,38 @@ from typing import Annotated
 
 from pydantic import Field
 
-from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
+from ecoscope_workflows.annotations import AnyGeoDataFrameSchema, DataFrame
 from ecoscope_workflows.decorators import distributed
 
 logger = logging.getLogger(__name__)
 
 
 @distributed
-def filter_dataframe(
-    df: DataFrame[JsonSerializableDataFrameModel],
-    expr: Annotated[str, Field(description="The boolean expr to filter a dataframe.")],
-) -> DataFrame[JsonSerializableDataFrameModel]:
-    """
-    Filter a DataFrame based on a boolean expression. To be safe, we only allow numexpr as the query engine for now.
+def apply_reloc_coord_filter(
+    df: DataFrame[AnyGeoDataFrameSchema],
+    min_x: Annotated[float, Field(default=-180.0)] = -180.0,
+    max_x: Annotated[float, Field(default=180.0)] = 180.0,
+    min_y: Annotated[float, Field(default=-90.0)] = -90.0,
+    max_y: Annotated[float, Field(default=90.0)] = 90.0,
+    filter_point_coords: Annotated[list[list[float]], Field(default=[[0.0, 0.0]])] = [
+        [0.0, 0.0]
+    ],
+) -> DataFrame[AnyGeoDataFrameSchema]:
+    import geopandas
+    import shapely
 
-    Args:
-        df (DataFrame[JsonSerializableDataFrameModel]): The DataFrame to be filtered.
-        expr (str): The boolean expression to filter the DataFrame.
+    # TODO: move it to ecoscope core
+    filter_point_coords = geopandas.GeoSeries(
+        shapely.geometry.Point(coord) for coord in filter_point_coords
+    )
 
-    Returns:
-        DataFrame[JsonSerializableDataFrameModel]: The filtered DataFrame.
+    def envelope_reloc_filter(geometry) -> DataFrame[AnyGeoDataFrameSchema]:
+        return (
+            geometry.x > min_x
+            and geometry.x < max_x
+            and geometry.y > min_y
+            and geometry.y < max_y
+            and geometry not in filter_point_coords
+        )
 
-    """
-    logger.info("Performing query on a dataframe. expr: %s", expr)
-    df = df.query(expr, engine="numexpr")
-    return df
+    return df[df["geometry"].apply(envelope_reloc_filter)].reset_index(drop=True)

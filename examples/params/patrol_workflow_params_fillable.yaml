@@ -2,8 +2,8 @@ get_patrol_observations:
   client:   # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
   since:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
   until:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
-  patrol_type:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default=None, description='Comma-separated list of type of patrol UUID'))
-  status:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default=None, description="Comma-separated list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"))
+  patrol_type:   # (list[str], FieldInfo(annotation=NoneType, required=True, description='list of UUID of patrol types'))
+  status:   # (list[str], FieldInfo(annotation=NoneType, required=True, description="list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"))
   include_patrol_details:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False, default=False, description='Include patrol details'))
 process_relocations:
   filter_point_coords:   # (list[list[float]], FieldInfo(annotation=NoneType, required=True))
@@ -30,3 +30,15 @@ persist_text:
 create_map_widget_single_view:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
   view:   # (tuple[tuple[str, typing.Literal['='], str], ...] | None, FieldInfo(annotation=NoneType, required=True, description='If grouped, the view of the widget'))
+get_patrol_events:
+  client:   # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
+  since:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
+  until:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
+  patrol_type:   # (list[str], FieldInfo(annotation=NoneType, required=True, description='list of UUID of patrol types'))
+  status:   # (list[str], FieldInfo(annotation=NoneType, required=True, description="list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"))
+apply_reloc_coord_filter:
+  min_x:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=-180.0))
+  max_x:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=180.0))
+  min_y:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=-90.0))
+  max_y:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=90.0))
+  filter_point_coords:   # (list[list[float]], FieldInfo(annotation=NoneType, required=False, default=[[0.0, 0.0]]))
