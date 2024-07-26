@@ -12,7 +12,7 @@ from ecoscope_workflows.registry import TaskTag, known_tasks
 
 EXAMPLES = Path(__file__).parent.parent / "examples"
 
-TemplateName = Literal["script-sequential.jinja2", "airflow-kubernetes.jinja2"]
+TemplateName = Literal["script-sequential.jinja2", "jupytext.jinja2"]
 
 
 def _spec_path_to_dag_fname(path: Path, template: TemplateName) -> str:
