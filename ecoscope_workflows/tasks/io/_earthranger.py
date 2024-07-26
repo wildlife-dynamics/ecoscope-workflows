@@ -26,9 +26,7 @@ class SubjectGroupObservationsGDFSchema(JsonSerializableDataFrameModel):
 
 
 class EventGDFSchema(JsonSerializableDataFrameModel):
-    geometry: pa.typing.Series[Any] = (
-        pa.Field()
-    )  # see note in tasks/time_density re: geometry typing
+    geometry: pa.typing.Series[Any] = pa.Field()
     id: pa.typing.Series[str] = pa.Field()
     event_type: pa.typing.Series[str] = pa.Field()
 
@@ -62,19 +60,18 @@ def get_patrol_observations(
     since: Annotated[str, Field(description="Start date")],
     until: Annotated[str, Field(description="End date")],
     patrol_type: Annotated[
-        str,
-        Field(default=None, description="Comma-separated list of type of patrol UUID"),
+        list[str],
+        Field(description="list of UUID of patrol types"),
     ],
     status: Annotated[
-        str,
+        list[str],
         Field(
-            default=None,
-            description="Comma-separated list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'",
+            description="list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'",
         ),
     ],
     include_patrol_details: Annotated[
         bool, Field(default=False, description="Include patrol details")
-    ],
+    ] = False,
 ) -> DataFrame[SubjectGroupObservationsGDFSchema]:
     """Get observations for a patrol type from EarthRanger."""
     return client.get_patrol_observations_with_patrol_filter(
@@ -92,14 +89,13 @@ def get_patrol_events(
     since: Annotated[str, Field(description="Start date")],
     until: Annotated[str, Field(description="End date")],
     patrol_type: Annotated[
-        str,
-        Field(default=None, description="Comma-separated list of type of patrol UUID"),
+        list[str],
+        Field(description="list of UUID of patrol types"),
     ],
     status: Annotated[
-        str,
+        list[str],
         Field(
-            default=None,
-            description="Comma-separated list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'",
+            description="list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'",
         ),
     ],
 ) -> DataFrame[EventGDFSchema]:

@@ -2,9 +2,9 @@ get_patrol_observations:
   client: "mep_dev" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
   since: "2011-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
   until: "2023-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
-  patrol_type: "0ef3bf48-b44c-4a4e-a145-7ab2e38c9a57" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default=None, description='Comma-separated list of type of patrol UUID'))
+  patrol_type: ["0ef3bf48-b44c-4a4e-a145-7ab2e38c9a57"] # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default=None, description='Comma-separated list of type of patrol UUID'))
   include_patrol_details: True # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False, default=False, description='Include patrol details'))
-  status: "done"
+  status: ["done"]
 process_relocations:
   filter_point_coords: [[180, 90], [0, 0]] # (list[list[float]], FieldInfo(annotation=NoneType, required=True))
   relocs_columns: [
@@ -37,3 +37,16 @@ draw_ecomap:
 persist_text:
   root_path: "examples/output/" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
   filename: "patrol_traj_map.html" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of file to persist text to'))
+get_patrol_events:
+  client: "mep_dev" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
+  since: "2011-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
+  until: "2023-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
+  patrol_type: [
+      "804c75f0-ed55-4bf5-b6fc-1aaf166bcf84",
+      "fde19413-cb55-443e-9be6-d10e4a48c668",
+      "0ef3bf48-b44c-4a4e-a145-7ab2e38c9a57",
+    ] # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default=None, description='Comma-separated list of type of patrol UUID'))
+  status: ["active", "done"]
+apply_reloc_coord_filter:
+  max_y: 0.0 # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=90.0))
+  filter_point_coords: [[180, 90], [0, 0]] # (list[list[float]], FieldInfo(annotation=NoneType, required=True))

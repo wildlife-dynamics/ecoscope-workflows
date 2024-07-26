@@ -103,7 +103,7 @@ assert_that_stdout = {
         lambda out: "ecoscope.mapping.map.EcoMap" in open(out).read(),
     ],
     "patrol_workflow.yaml": [
-        lambda out: "patrol_traj_map.html" in out,
+        lambda out: "geometry" in out,
     ],
 }
 

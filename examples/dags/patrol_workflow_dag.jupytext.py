@@ -12,6 +12,8 @@ from ecoscope_workflows.tasks.preprocessing import process_relocations
 from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
+from ecoscope_workflows.tasks.io import get_patrol_events
+from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
 
 # %% [markdown]
 # ## Get Patrol Observations
@@ -116,4 +118,46 @@ persist_text_params = dict(
 persist_text_return = persist_text(
     text=draw_ecomap_return,
     **persist_text_params,
+)
+# %% [markdown]
+# ## Get Patrol Events
+
+# %%
+# parameters
+
+get_patrol_events_params = dict(
+    client=...,
+    since=...,
+    until=...,
+    patrol_type=...,
+    status=...,
+)
+
+# %%
+# call the task
+
+get_patrol_events_return = get_patrol_events(
+    **get_patrol_events_params,
+)
+
+# %% [markdown]
+# ## Apply Reloc Coord Filter
+
+# %%
+# parameters
+
+apply_reloc_coord_filter_params = dict(
+    min_x=...,
+    max_x=...,
+    min_y=...,
+    max_y=...,
+    filter_point_coords=...,
+)
+
+# %%
+# call the task
+
+apply_reloc_coord_filter_return = apply_reloc_coord_filter(
+    df=get_patrol_events_return,
+    **apply_reloc_coord_filter_params,
 )
