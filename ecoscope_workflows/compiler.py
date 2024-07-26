@@ -190,6 +190,13 @@ class Spec(_ForbidExtra):
                     )
         return self
 
+    @computed_field  # type: ignore[misc]
+    @property
+    def requires_map_exra_imports(self) -> bool:
+        if any(t.mode == "map" for t in self.workflow):
+            return True
+        return False
+
     # TODO: on __init__ (or in cached_property), sort tasks
     # topologically so we know what order to invoke them in dag
 
