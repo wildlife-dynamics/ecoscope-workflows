@@ -7,6 +7,7 @@ from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
+from ecoscope_workflows.tasks.results import gather_dashboard
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
 
@@ -52,6 +53,11 @@ if __name__ == "__main__":
     )(
         data=persist_text_return,
         **params["create_map_widget_single_view"],
+    )
+
+    gather_dashboard_return = gather_dashboard.replace(validate=True)(
+        widgets=create_map_widget_single_view_return,
+        **params["gather_dashboard"],
     )
 
     get_patrol_events_return = get_patrol_events.replace(validate=True)(

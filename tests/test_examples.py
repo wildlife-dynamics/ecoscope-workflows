@@ -98,10 +98,17 @@ class EndToEndFixture:
 # TODO: package this alongside task somehow
 assert_that_stdout = {
     "time-density.yaml": [
+        lambda out: "A dashboard for visualizing a time density map." in out,
         lambda out: "td_map.html" in out,
         lambda out: "widget_type='map', title='Great Map'," in out,
     ],
     "patrol_workflow.yaml": [
+        # FIXME: See note below; we need to be able to pass an array of values to an aggregator
+        # task (e.g. gather_dashboard) but we will need
+        # https://github.com/wildlife-dynamics/ecoscope-workflows/pull/90 to make this possible
+        # lambda out: "A dashboard for visualizing patrol trajectories." in out,
+        # lambda out: "patrol_traj_map.html" in out,
+        # lambda out: "widget_type='map', title='Patrol Trajectory Map'" in out,
         # NOTE: Below commented-out asserts pass prior to merge of
         # https://github.com/wildlife-dynamics/ecoscope-workflows/pull/99,
         # but following that merge, the output of the script (e.g. e.g. what is printed to stdout)

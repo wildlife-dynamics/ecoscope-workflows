@@ -13,6 +13,8 @@ tasks:
     text: draw_ecomap
   create_map_widget_single_view:
     data: persist_text
+  gather_dashboard:
+    widgets: create_map_widget_single_view
   # patrol events
   get_patrol_events: {}
   apply_reloc_coord_filter:

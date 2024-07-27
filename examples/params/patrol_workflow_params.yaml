@@ -39,6 +39,9 @@ persist_text:
   filename: "patrol_traj_map.html" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of file to persist text to'))
 create_map_widget_single_view:
   title: "Patrol Trajectory Map"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+gather_dashboard:
+  title: "Patrol Trajectory Dashboard"
+  description: "A dashboard for visualizing patrol trajectories."
 get_patrol_events:
   client: "mep_dev" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
   since: "2011-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
