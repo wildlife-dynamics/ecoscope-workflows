@@ -203,7 +203,7 @@ class Spec(_ForbidExtra):
                 for d in dep_list:
                     if d not in all_ids:
                         raise ValueError(
-                            f"Task `{task_instance.name}` has an arg dependency `{dep}` that is "
+                            f"Task `{task_instance.name}` has an arg dependency `{d}` that is "
                             f"not a valid task id. Valid task ids for this workflow are: {all_ids}"
                         )
         return self

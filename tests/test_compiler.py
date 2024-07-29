@@ -189,6 +189,55 @@ def test_arg_deps_must_be_valid_id_of_another_task(
 
 
 @pytest.mark.parametrize(
+    "arg_dep_ids, all_valid_ids_of_another_task",
+    [
+        # correct because both are valid ids of another task
+        (["map_widget", "plot_widget"], True),
+        # incorrect because `draw_ecoplot` is not a valid id of another task, but
+        # rather a known task name for another task (a subtle but important typo)
+        (["map_widget", "draw_ecoplot"], False),
+    ],
+)
+def test_all_arg_deps_array_members_must_be_valid_id_of_another_task(
+    arg_dep_ids: list[str],
+    all_valid_ids_of_another_task: bool,
+):
+    s = dedent(
+        f"""\
+        name: create_dashboard
+        cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
+        workflow:
+          - name: Create Map Widget Single View
+            id: map_widget
+            task: draw_ecomap
+          - name: Create Plot Widget Single View
+            id: plot_widget
+            task: draw_ecoplot
+          - name: Gather Dashboard
+            id: dashboard
+            task: gather_dashboard
+            with:
+              widgets:
+                - ${{{{ {arg_dep_ids[0]}.return }}}}
+                - ${{{{ {arg_dep_ids[1]}.return }}}}
+        """
+    )
+    if all_valid_ids_of_another_task:
+        spec = Spec(**yaml.safe_load(s))
+        assert spec.workflow[2].arg_dependencies == {"widgets": arg_dep_ids}
+    else:
+        with pytest.raises(
+            ValidationError,
+            match=re.escape(
+                f"Task `Gather Dashboard` has an arg dependency `{arg_dep_ids[1]}` that is not a "
+                "valid task id. Valid task ids for this workflow are: "
+                "['map_widget', 'plot_widget', 'dashboard']",
+            ),
+        ):
+            _ = Spec(**yaml.safe_load(s))
+
+
+@pytest.mark.parametrize(
     "invalid_name, raises_match",
     [
         (
