@@ -145,9 +145,17 @@ def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
     def wrapper(*args, **kwargs):
         unformatted = returns_str_func(*args, **kwargs)
         # https://github.com/astral-sh/ruff/issues/8401#issuecomment-1788806462
-        cmd = ["ruff", "format", "-"]
-        formatted = subprocess.check_output(cmd, input=unformatted, encoding="utf-8")
-        return formatted
+        formatted = subprocess.check_output(
+            ["ruff", "format", "-s", "-"],
+            input=unformatted,
+            encoding="utf-8",
+        )
+        linted = subprocess.check_output(
+            ["ruff", "check", "--fix", "-s", "-"],
+            input=formatted,
+            encoding="utf-8",
+        )
+        return linted
 
     return wrapper
 
