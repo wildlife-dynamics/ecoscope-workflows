@@ -51,11 +51,6 @@ patrol_traj_ecomap_html_url:
 patrol_traj_map_widget:
   title: "Patrol Trajectory Map"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
 
-# Parameters for 'Create Dashboard with Patrol Map Widget' using task `gather_dashboard`.
-patrol_dashboard:
-  title: "Patrol Trajectory Dashboard"
-  description: "A dashboard for visualizing patrol trajectories."
-
 # Parameters for 'Get Patrol Events from EarthRanger' using task `get_patrol_events`.
 patrol_events:
   client: "mep_dev" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
@@ -92,3 +87,8 @@ patrol_events_ecomap_html_url:
 # Parameters for 'Create Map Widget for Patrol Events' using task `create_map_widget_single_view`.
 patrol_events_map_widget:
   title: "Patrol Events Map"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Create Dashboard with Patrol Map Widget' using task `gather_dashboard`.
+patrol_dashboard:
+  title: "Patrol Trajectory Dashboard"
+  description: "A dashboard for visualizing patrol trajectories."

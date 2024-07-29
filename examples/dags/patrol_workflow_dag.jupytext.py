@@ -13,9 +13,9 @@ from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
-from ecoscope_workflows.tasks.results import gather_dashboard
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
+from ecoscope_workflows.tasks.results import gather_dashboard
 
 # %% [markdown]
 # ## Get Patrol Observations
@@ -140,25 +140,6 @@ patrol_traj_map_widget = create_map_widget_single_view(
     **patrol_traj_map_widget_params,
 )
 # %% [markdown]
-# ## Gather Dashboard
-
-# %%
-# parameters
-
-patrol_dashboard_params = dict(
-    title=...,
-    description=...,
-    groupers=...,
-)
-
-# %%
-# call the task
-
-patrol_dashboard = gather_dashboard(
-    widgets=patrol_traj_map_widget,
-    **patrol_dashboard_params,
-)
-# %% [markdown]
 # ## Get Patrol Events
 
 # %%
@@ -259,4 +240,23 @@ patrol_events_map_widget_params = dict(
 patrol_events_map_widget = create_map_widget_single_view(
     data=patrol_events_ecomap_html_url,
     **patrol_events_map_widget_params,
+)
+# %% [markdown]
+# ## Gather Dashboard
+
+# %%
+# parameters
+
+patrol_dashboard_params = dict(
+    title=...,
+    description=...,
+    groupers=...,
+)
+
+# %%
+# call the task
+
+patrol_dashboard = gather_dashboard(
+    widgets=patrol_traj_map_widget,
+    **patrol_dashboard_params,
 )

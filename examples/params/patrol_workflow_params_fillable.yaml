@@ -42,12 +42,6 @@ patrol_traj_map_widget:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
   view:   # (tuple[tuple[str, typing.Literal['='], str], ...] | None, FieldInfo(annotation=NoneType, required=True, description='If grouped, the view of the widget'))
 
-# Parameters for 'Create Dashboard with Patrol Map Widgets' using task `gather_dashboard`.
-patrol_dashboard:
-  title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the dashboard'))
-  description:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The description of the dashboard'))
-  groupers:   # (list | None, FieldInfo(annotation=NoneType, required=True, description='            A list of groupers that are used to group the widgets.\n            If all widgets are ungrouped, this field defaults to `None`.\n            '))
-
 # Parameters for 'Get Patrol Events from EarthRanger' using task `get_patrol_events`.
 patrol_events:
   client:   # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
@@ -84,3 +78,9 @@ patrol_events_ecomap_html_url:
 patrol_events_map_widget:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
   view:   # (tuple[tuple[str, typing.Literal['='], str], ...] | None, FieldInfo(annotation=NoneType, required=True, description='If grouped, the view of the widget'))
+
+# Parameters for 'Create Dashboard with Patrol Map Widgets' using task `gather_dashboard`.
+patrol_dashboard:
+  title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the dashboard'))
+  description:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The description of the dashboard'))
+  groupers:   # (list | None, FieldInfo(annotation=NoneType, required=True, description='            A list of groupers that are used to group the widgets.\n            If all widgets are ungrouped, this field defaults to `None`.\n            '))
