@@ -423,13 +423,11 @@
         "properties": {
             "title": {
                 "title": "Title",
-                "type": "string",
-                "description": "The title of the dashboard"
+                "type": "string"
             },
             "description": {
                 "title": "Description",
-                "type": "string",
-                "description": "The description of the dashboard"
+                "type": "string"
             },
             "groupers": {
                 "anyOf": [
@@ -442,8 +440,7 @@
                     }
                 ],
                 "default": null,
-                "title": "Groupers",
-                "description": "            A list of groupers that are used to group the widgets.\n            If all widgets are ungrouped, this field defaults to `None`.\n            "
+                "title": "Groupers"
             }
         },
         "required": [
