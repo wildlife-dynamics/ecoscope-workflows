@@ -91,4 +91,4 @@ patrol_events_map_widget:
 # Parameters for 'Create Dashboard with Patrol Map Widget' using task `gather_dashboard`.
 patrol_dashboard:
   title: "Patrol Trajectory Dashboard"
-  description: "A dashboard for visualizing patrol trajectories."
+  description: "A dashboard for visualizing patrol trajectories and events."
