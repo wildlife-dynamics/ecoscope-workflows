@@ -257,6 +257,6 @@ patrol_dashboard_params = dict(
 # call the task
 
 patrol_dashboard = gather_dashboard(
-    widgets=patrol_traj_map_widget,
+    widgets=[patrol_traj_map_widget, patrol_events_map_widget],
     **patrol_dashboard_params,
 )

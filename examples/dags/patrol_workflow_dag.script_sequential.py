@@ -78,7 +78,7 @@ if __name__ == "__main__":
     )
 
     patrol_dashboard = gather_dashboard.replace(validate=True)(
-        widgets=patrol_traj_map_widget,
+        widgets=[patrol_traj_map_widget, patrol_events_map_widget],
         **params["patrol_dashboard"],
     )
 

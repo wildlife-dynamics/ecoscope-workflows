@@ -10,6 +10,7 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
+    field_serializer,
     computed_field,
     model_validator,
 )
@@ -72,6 +73,7 @@ TaskInstanceId = Annotated[
 ]
 KnownTaskName = Annotated[str, AfterValidator(_is_known_task_name)]
 KnownTaskArgName: TypeAlias = str
+ArgDependencies: TypeAlias = dict[KnownTaskArgName, Variable | list[Variable]]
 
 SpecName = Annotated[
     str, AfterValidator(_is_not_reserved), AfterValidator(_is_valid_spec_name)
@@ -101,9 +103,7 @@ class TaskInstance(_ForbidExtra):
         in the `with` field.
         """,
     )
-    arg_dependencies: dict[KnownTaskArgName, Variable | list[Variable]] = Field(
-        default_factory=dict, alias="with"
-    )
+    arg_dependencies: ArgDependencies = Field(default_factory=dict, alias="with")
 
     @computed_field  # type: ignore[misc]
     @property
@@ -126,6 +126,13 @@ class TaskInstance(_ForbidExtra):
                 )
             return val
         return None
+
+    @field_serializer("arg_dependencies")
+    def serialize_arg_dependencies(arg_dependencies: ArgDependencies) -> dict[str, str]:
+        return {
+            arg: (dep if isinstance(dep, str) else f"[{', '.join(dep)}]")
+            for arg, dep in arg_dependencies.items()
+        }
 
     # TODO: this requires parsing known task parameter names at registration time (or in DistributedTask)
     # @model_validator(mode="after")
