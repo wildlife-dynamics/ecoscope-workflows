@@ -121,8 +121,9 @@ assert_that_stdout = {
         # is different. Leaving this note here rather than deleting the commented-out asserts, bc
         # this speaks to a forthcoming item we'll need to address, namely aggregation of results
         # from non-convergent branches of the workflow.
-        lambda out: "patrol_events_ecomap.html" in out,
-        lambda out: "widget_type='map', title='Patrol Events Map'" in out,
+        lambda out: "A dashboard for visualizing patrol trajectories." in out,
+        lambda out: "patrol_traj_map.html" in out,
+        lambda out: "widget_type='map', title='Patrol Trajectory Map'" in out,
     ],
     "mode-map.yaml": [],
 }
