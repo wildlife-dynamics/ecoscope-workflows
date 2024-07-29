@@ -114,7 +114,7 @@
         ],
         "type": "object"
     },
-    "patrol_ecomap": {
+    "patrol_traj_ecomap": {
         "additionalProperties": false,
         "properties": {
             "data_type": {
@@ -175,7 +175,7 @@
         ],
         "type": "object"
     },
-    "patrol_ecomap_html_url": {
+    "patrol_traj_ecomap_html_url": {
         "additionalProperties": false,
         "properties": {
             "root_path": {
@@ -195,7 +195,7 @@
         ],
         "type": "object"
     },
-    "patrol_map_widget": {
+    "patrol_traj_map_widget": {
         "additionalProperties": false,
         "properties": {
             "title": {
@@ -494,6 +494,134 @@
             }
         },
         "required": [],
+        "type": "object"
+    },
+    "patrol_events_ecomap": {
+        "additionalProperties": false,
+        "properties": {
+            "data_type": {
+                "enum": [
+                    "Scatterplot",
+                    "Path",
+                    "Polygon"
+                ],
+                "title": "Data Type",
+                "type": "string",
+                "description": "The type of visualization."
+            },
+            "style_kws": {
+                "title": "Style Kws",
+                "type": "object",
+                "description": "Style arguments for the data visualization."
+            },
+            "tile_layer": {
+                "default": "",
+                "title": "Tile Layer",
+                "type": "string",
+                "description": "A named tile layer, ie OpenStreetMap."
+            },
+            "static": {
+                "default": false,
+                "title": "Static",
+                "type": "boolean",
+                "description": "Set to true to disable map pan/zoom."
+            },
+            "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string",
+                "description": "The map title."
+            },
+            "title_kws": {
+                "default": {},
+                "title": "Title Kws",
+                "type": "object",
+                "description": "Additional arguments for configuring the Title."
+            },
+            "scale_kws": {
+                "default": {},
+                "title": "Scale Kws",
+                "type": "object",
+                "description": "Additional arguments for configuring the Scale Bar."
+            },
+            "north_arrow_kws": {
+                "default": {},
+                "title": "North Arrow Kws",
+                "type": "object",
+                "description": "Additional arguments for configuring the North Arrow."
+            }
+        },
+        "required": [
+            "data_type",
+            "style_kws"
+        ],
+        "type": "object"
+    },
+    "patrol_events_ecomap_html_url": {
+        "additionalProperties": false,
+        "properties": {
+            "root_path": {
+                "title": "Root Path",
+                "type": "string",
+                "description": "Root path to persist text to"
+            },
+            "filename": {
+                "title": "Filename",
+                "type": "string",
+                "description": "Name of file to persist text to"
+            }
+        },
+        "required": [
+            "root_path",
+            "filename"
+        ],
+        "type": "object"
+    },
+    "patrol_events_map_widget": {
+        "additionalProperties": false,
+        "properties": {
+            "title": {
+                "title": "Title",
+                "type": "string",
+                "description": "The title of the widget"
+            },
+            "view": {
+                "anyOf": [
+                    {
+                        "items": {
+                            "maxItems": 3,
+                            "minItems": 3,
+                            "prefixItems": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "const": "=",
+                                    "enum": [
+                                        "="
+                                    ],
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "string"
+                                }
+                            ],
+                            "type": "array"
+                        },
+                        "type": "array"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "View",
+                "description": "If grouped, the view of the widget"
+            }
+        },
+        "required": [
+            "title"
+        ],
         "type": "object"
     }
 }

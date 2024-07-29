@@ -38,23 +38,23 @@ if __name__ == "__main__":
         **params["patrol_traj"],
     )
 
-    patrol_ecomap = draw_ecomap.replace(validate=True)(
+    patrol_traj_ecomap = draw_ecomap.replace(validate=True)(
         geodataframe=patrol_traj,
-        **params["patrol_ecomap"],
+        **params["patrol_traj_ecomap"],
     )
 
-    patrol_ecomap_html_url = persist_text.replace(validate=True)(
-        text=patrol_ecomap,
-        **params["patrol_ecomap_html_url"],
+    patrol_traj_ecomap_html_url = persist_text.replace(validate=True)(
+        text=patrol_traj_ecomap,
+        **params["patrol_traj_ecomap_html_url"],
     )
 
-    patrol_map_widget = create_map_widget_single_view.replace(validate=True)(
-        data=patrol_ecomap_html_url,
-        **params["patrol_map_widget"],
+    patrol_traj_map_widget = create_map_widget_single_view.replace(validate=True)(
+        data=patrol_traj_ecomap_html_url,
+        **params["patrol_traj_map_widget"],
     )
 
     patrol_dashboard = gather_dashboard.replace(validate=True)(
-        widgets=patrol_map_widget,
+        widgets=patrol_traj_map_widget,
         **params["patrol_dashboard"],
     )
 
@@ -67,4 +67,19 @@ if __name__ == "__main__":
         **params["filter_patrol_events"],
     )
 
-    print(filter_patrol_events)
+    patrol_events_ecomap = draw_ecomap.replace(validate=True)(
+        geodataframe=filter_patrol_events,
+        **params["patrol_events_ecomap"],
+    )
+
+    patrol_events_ecomap_html_url = persist_text.replace(validate=True)(
+        text=patrol_events_ecomap,
+        **params["patrol_events_ecomap_html_url"],
+    )
+
+    patrol_events_map_widget = create_map_widget_single_view.replace(validate=True)(
+        data=patrol_events_ecomap_html_url,
+        **params["patrol_events_map_widget"],
+    )
+
+    print(patrol_events_map_widget)

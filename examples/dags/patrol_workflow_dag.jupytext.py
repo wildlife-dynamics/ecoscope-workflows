@@ -85,7 +85,7 @@ patrol_traj = relocations_to_trajectory(
 # %%
 # parameters
 
-patrol_ecomap_params = dict(
+patrol_traj_ecomap_params = dict(
     data_type=...,
     style_kws=...,
     tile_layer=...,
@@ -99,9 +99,9 @@ patrol_ecomap_params = dict(
 # %%
 # call the task
 
-patrol_ecomap = draw_ecomap(
+patrol_traj_ecomap = draw_ecomap(
     geodataframe=patrol_traj,
-    **patrol_ecomap_params,
+    **patrol_traj_ecomap_params,
 )
 # %% [markdown]
 # ## Persist Text
@@ -109,7 +109,7 @@ patrol_ecomap = draw_ecomap(
 # %%
 # parameters
 
-patrol_ecomap_html_url_params = dict(
+patrol_traj_ecomap_html_url_params = dict(
     root_path=...,
     filename=...,
 )
@@ -117,9 +117,9 @@ patrol_ecomap_html_url_params = dict(
 # %%
 # call the task
 
-patrol_ecomap_html_url = persist_text(
-    text=patrol_ecomap,
-    **patrol_ecomap_html_url_params,
+patrol_traj_ecomap_html_url = persist_text(
+    text=patrol_traj_ecomap,
+    **patrol_traj_ecomap_html_url_params,
 )
 # %% [markdown]
 # ## Create Map Widget Single View
@@ -127,7 +127,7 @@ patrol_ecomap_html_url = persist_text(
 # %%
 # parameters
 
-patrol_map_widget_params = dict(
+patrol_traj_map_widget_params = dict(
     title=...,
     view=...,
 )
@@ -135,9 +135,9 @@ patrol_map_widget_params = dict(
 # %%
 # call the task
 
-patrol_map_widget = create_map_widget_single_view(
-    data=patrol_ecomap_html_url,
-    **patrol_map_widget_params,
+patrol_traj_map_widget = create_map_widget_single_view(
+    data=patrol_traj_ecomap_html_url,
+    **patrol_traj_map_widget_params,
 )
 # %% [markdown]
 # ## Gather Dashboard
@@ -155,7 +155,7 @@ patrol_dashboard_params = dict(
 # call the task
 
 patrol_dashboard = gather_dashboard(
-    widgets=patrol_map_widget,
+    widgets=patrol_traj_map_widget,
     **patrol_dashboard_params,
 )
 # %% [markdown]
@@ -199,4 +199,64 @@ filter_patrol_events_params = dict(
 filter_patrol_events = apply_reloc_coord_filter(
     df=patrol_events,
     **filter_patrol_events_params,
+)
+# %% [markdown]
+# ## Draw Ecomap
+
+# %%
+# parameters
+
+patrol_events_ecomap_params = dict(
+    data_type=...,
+    style_kws=...,
+    tile_layer=...,
+    static=...,
+    title=...,
+    title_kws=...,
+    scale_kws=...,
+    north_arrow_kws=...,
+)
+
+# %%
+# call the task
+
+patrol_events_ecomap = draw_ecomap(
+    geodataframe=filter_patrol_events,
+    **patrol_events_ecomap_params,
+)
+# %% [markdown]
+# ## Persist Text
+
+# %%
+# parameters
+
+patrol_events_ecomap_html_url_params = dict(
+    root_path=...,
+    filename=...,
+)
+
+# %%
+# call the task
+
+patrol_events_ecomap_html_url = persist_text(
+    text=patrol_events_ecomap,
+    **patrol_events_ecomap_html_url_params,
+)
+# %% [markdown]
+# ## Create Map Widget Single View
+
+# %%
+# parameters
+
+patrol_events_map_widget_params = dict(
+    title=...,
+    view=...,
+)
+
+# %%
+# call the task
+
+patrol_events_map_widget = create_map_widget_single_view(
+    data=patrol_events_ecomap_html_url,
+    **patrol_events_map_widget_params,
 )

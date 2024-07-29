@@ -32,7 +32,7 @@ patrol_traj:
   min_speed_kmhr: 0.0 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
 
 # Parameters for 'Draw Ecomap from Trajectories' using task `draw_ecomap`.
-patrol_ecomap:
+patrol_traj_ecomap:
   data_type: Path # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
   style_kws: { get_width: 200 } # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
   tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
@@ -43,12 +43,12 @@ patrol_ecomap:
   north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist Ecomap as Text' using task `persist_text`.
-patrol_ecomap_html_url:
+patrol_traj_ecomap_html_url:
   root_path: "examples/output/" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
   filename: "patrol_traj_map.html" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of file to persist text to'))
 
 # Parameters for 'Create Map Widget for Patrols' using task `create_map_widget_single_view`.
-patrol_map_widget:
+patrol_traj_map_widget:
   title: "Patrol Trajectory Map"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
 
 # Parameters for 'Create Dashboard with Patrol Map Widget' using task `gather_dashboard`.
@@ -72,3 +72,23 @@ patrol_events:
 filter_patrol_events:
   max_y: 0.0 # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=90.0))
   filter_point_coords: [[180, 90], [0, 0]] # (list[list[float]], FieldInfo(annotation=NoneType, required=True))
+
+# Parameters for 'Draw Ecomap for Patrols Events' using task `draw_ecomap`.
+patrol_events_ecomap:
+  data_type: Scatterplot # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
+  style_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
+  tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
+  static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
+  title: "Patrol Events Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
+  title_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
+  scale_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
+  north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
+
+# Parameters for 'Persist Patrols Ecomap as Text' using task `persist_text`.
+patrol_events_ecomap_html_url:
+  root_path: "examples/output/" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
+  filename: "patrol_events_ecomap.html" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of file to persist text to'))
+
+# Parameters for 'Create Map Widget for Patrol Events' using task `create_map_widget_single_view`.
+patrol_events_map_widget:
+  title: "Patrol Events Map"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))

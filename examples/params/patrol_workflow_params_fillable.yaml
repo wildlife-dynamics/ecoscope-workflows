@@ -22,7 +22,7 @@ patrol_traj:
   min_speed_kmhr:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
 
 # Parameters for 'Draw Ecomap from Trajectories' using task `draw_ecomap`.
-patrol_ecomap:
+patrol_traj_ecomap:
   data_type:   # (typing.Literal['Scatterplot', 'Path', 'Polygon'], FieldInfo(annotation=NoneType, required=True, description='The type of visualization.'))
   style_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the data visualization.'))
   tile_layer:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A named tile layer, ie OpenStreetMap.'))
@@ -32,17 +32,17 @@ patrol_ecomap:
   scale_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Scale Bar.'))
   north_arrow_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the North Arrow.'))
 
-# Parameters for 'Persist Ecomap as Text' using task `persist_text`.
-patrol_ecomap_html_url:
+# Parameters for 'Persist Patrol Trajectories Ecomap as Text' using task `persist_text`.
+patrol_traj_ecomap_html_url:
   root_path:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
   filename:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of file to persist text to'))
 
-# Parameters for 'Create Map Widget for Patrols' using task `create_map_widget_single_view`.
-patrol_map_widget:
+# Parameters for 'Create Map Widget for Patrols Trajectories' using task `create_map_widget_single_view`.
+patrol_traj_map_widget:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
   view:   # (tuple[tuple[str, typing.Literal['='], str], ...] | None, FieldInfo(annotation=NoneType, required=True, description='If grouped, the view of the widget'))
 
-# Parameters for 'Create Dashboard with Patrol Map Widget' using task `gather_dashboard`.
+# Parameters for 'Create Dashboard with Patrol Map Widgets' using task `gather_dashboard`.
 patrol_dashboard:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the dashboard'))
   description:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The description of the dashboard'))
@@ -63,3 +63,24 @@ filter_patrol_events:
   min_y:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=-90.0))
   max_y:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=90.0))
   filter_point_coords:   # (list[list[float]], FieldInfo(annotation=NoneType, required=False, default=[[0.0, 0.0]]))
+
+# Parameters for 'Draw Ecomap for Patrols Events' using task `draw_ecomap`.
+patrol_events_ecomap:
+  data_type:   # (typing.Literal['Scatterplot', 'Path', 'Polygon'], FieldInfo(annotation=NoneType, required=True, description='The type of visualization.'))
+  style_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the data visualization.'))
+  tile_layer:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A named tile layer, ie OpenStreetMap.'))
+  static:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Set to true to disable map pan/zoom.'))
+  title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The map title.'))
+  title_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Title.'))
+  scale_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Scale Bar.'))
+  north_arrow_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the North Arrow.'))
+
+# Parameters for 'Persist Patrols Ecomap as Text' using task `persist_text`.
+patrol_events_ecomap_html_url:
+  root_path:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
+  filename:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of file to persist text to'))
+
+# Parameters for 'Create Map Widget for Patrol Events' using task `create_map_widget_single_view`.
+patrol_events_map_widget:
+  title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+  view:   # (tuple[tuple[str, typing.Literal['='], str], ...] | None, FieldInfo(annotation=NoneType, required=True, description='If grouped, the view of the widget'))
