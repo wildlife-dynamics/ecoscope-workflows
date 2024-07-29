@@ -198,13 +198,8 @@ def gather_dashboard(
     title: Annotated[str, Field(description="The title of the dashboard")],
     description: Annotated[str, Field(description="The description of the dashboard")],
     widgets: Annotated[
-        list[GroupedWidget] | WidgetSingleView,
-        Field(
-            description="""\
-            A list of grouped widgets (for a dashboard with multiple widgets),
-            or a single grouped widget (for a dashboard with a single widget).
-            """,
-        ),
+        list[GroupedWidget] | list[WidgetSingleView] | GroupedWidget | WidgetSingleView,
+        Field(description="The widgets to display."),
     ],
     groupers: Annotated[
         list | None,
@@ -216,11 +211,23 @@ def gather_dashboard(
         ),
     ] = None,
 ) -> Annotated[Dashboard, Field()]:
-    grouped_widgets = (
-        [GroupedWidget.from_single_view(widgets)]
-        if isinstance(widgets, WidgetSingleView)
-        else widgets
-    )
+    match widgets:
+        # Regardless of input type, parse into a list of GroupedWidgets accordingly
+        case list() as widget_list if all(
+            isinstance(w, WidgetSingleView) for w in widget_list
+        ):
+            grouped_widgets = [GroupedWidget.from_single_view(w) for w in widget_list]
+        case list() as widget_list if all(
+            isinstance(w, GroupedWidget) for w in widget_list
+        ):
+            grouped_widgets = widget_list
+        case GroupedWidget() as widget:
+            grouped_widgets = [widget]
+        case WidgetSingleView() as widget:
+            grouped_widgets = [GroupedWidget.from_single_view(widget)]
+        case _:
+            raise ValueError(f"Invalid input {widgets=}")
+
     if groupers:
         for gw in grouped_widgets:
             keys_sample = list(gw.views)
