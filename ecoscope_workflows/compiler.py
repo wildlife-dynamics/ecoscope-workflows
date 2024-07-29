@@ -197,11 +197,15 @@ class Spec(_ForbidExtra):
         all_ids = [task_instance.id for task_instance in self.workflow]
         for task_instance in self.workflow:
             for dep in task_instance.arg_dependencies.values():
-                if dep not in all_ids:
-                    raise ValueError(
-                        f"Task `{task_instance.name}` has an arg dependency `{dep}` that is "
-                        f"not a valid task id. Valid task ids for this workflow are: {all_ids}"
-                    )
+                # deps could be `Variable` or `list[Variable]` (i.e. `str` or `list[str]`),
+                # so we cast to list if the former, to handle validation in a uniform way
+                dep_list = dep if isinstance(dep, list) else [dep]
+                for d in dep_list:
+                    if d not in all_ids:
+                        raise ValueError(
+                            f"Task `{task_instance.name}` has an arg dependency `{dep}` that is "
+                            f"not a valid task id. Valid task ids for this workflow are: {all_ids}"
+                        )
         return self
 
     @computed_field  # type: ignore[misc]
