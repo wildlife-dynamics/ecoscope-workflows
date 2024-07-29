@@ -64,13 +64,6 @@ workflow:
     id: patrol_dashboard
     task: gather_dashboard
     with:
-      widgets: ${{ patrol_traj_map_widget.return }}
-
-  # dashboard
-  # - name: Create Dashboard with Patrol Map Widgets
-  #   id: patrol_dashboard
-  #   task: gather_dashboard
-  #   with:
-  #     widgets:
-  #       - ${{ patrol_traj_map_widget.return }}
-  #       - ${{ patrol_events_map_widget.return }}
+      widgets:
+        - ${{ patrol_traj_map_widget.return }}
+        - ${{ patrol_events_map_widget.return }}
