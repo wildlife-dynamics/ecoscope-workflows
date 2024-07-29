@@ -151,7 +151,7 @@ def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
             encoding="utf-8",
         )
         linted = subprocess.check_output(
-            ["ruff", "check", "--fix", "-s", "-"],
+            ["ruff", "check", "--fix", "--exit-zero", "-s", "-"],
             input=formatted,
             encoding="utf-8",
         )
