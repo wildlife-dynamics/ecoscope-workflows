@@ -28,6 +28,7 @@ workflow:
     task: persist_text
     with:
       text: ${{ workflow.td_ecomap.return }}
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
   - name: Create Time Density Map Widget
     id: td_map_widget
     task: create_map_widget_single_view

@@ -7,6 +7,7 @@
 # %% [markdown]
 # ## Imports
 
+import os
 from ecoscope_workflows.tasks.io import get_patrol_observations
 from ecoscope_workflows.tasks.preprocessing import process_relocations
 from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
@@ -113,7 +114,6 @@ patrol_traj_ecomap = draw_ecomap(
 # parameters
 
 patrol_traj_ecomap_html_url_params = dict(
-    root_path=...,
     filename=...,
 )
 
@@ -122,6 +122,7 @@ patrol_traj_ecomap_html_url_params = dict(
 
 patrol_traj_ecomap_html_url = persist_text(
     text=patrol_traj_ecomap,
+    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
     **patrol_traj_ecomap_html_url_params,
 )
 
@@ -219,7 +220,6 @@ patrol_events_ecomap = draw_ecomap(
 # parameters
 
 patrol_events_ecomap_html_url_params = dict(
-    root_path=...,
     filename=...,
 )
 
@@ -228,6 +228,7 @@ patrol_events_ecomap_html_url_params = dict(
 
 patrol_events_ecomap_html_url = persist_text(
     text=patrol_events_ecomap,
+    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
     **patrol_events_ecomap_html_url_params,
 )
 

@@ -24,6 +24,7 @@ workflow:
     task: persist_text
     with:
       text: ${{ workflow.patrol_traj_ecomap.return }}
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
   - name: Create Map Widget for Patrols Trajectories
     id: patrol_traj_map_widget
     task: create_map_widget_single_view
@@ -49,6 +50,7 @@ workflow:
     task: persist_text
     with:
       text: ${{ workflow.patrol_events_ecomap.return }}
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
   - name: Create Map Widget for Patrol Events
     id: patrol_events_map_widget
     task: create_map_widget_single_view

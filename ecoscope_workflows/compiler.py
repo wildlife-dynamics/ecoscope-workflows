@@ -42,7 +42,7 @@ class TaskIdVariable(WorkflowVariableBase):
 class EnvVariable(WorkflowVariableBase):
     @model_serializer
     def serialize(self) -> str:
-        return f"os.environ[{self.value}]"
+        return f'os.environ["{self.value}"]'
 
 
 def _parse_variable(s: str) -> str:
@@ -259,7 +259,7 @@ class Spec(_ForbidExtra):
                     [obj.value for obj in dep] if isinstance(dep, list) else [dep.value]
                 )
                 for d in dep_list:
-                    if d not in all_ids:
+                    if isinstance(d, TaskIdVariable) and d not in all_ids:
                         raise ValueError(
                             f"Task `{task_instance.name}` has an arg dependency `{d}` that is "
                             f"not a valid task id. Valid task ids for this workflow are: {all_ids}"

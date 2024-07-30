@@ -1,4 +1,5 @@
 import argparse
+import os
 import yaml
 
 from ecoscope_workflows.tasks.io import get_patrol_observations
@@ -45,6 +46,7 @@ if __name__ == "__main__":
 
     patrol_traj_ecomap_html_url = persist_text.replace(validate=True)(
         text=patrol_traj_ecomap,
+        root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
         **params["patrol_traj_ecomap_html_url"],
     )
 
@@ -69,6 +71,7 @@ if __name__ == "__main__":
 
     patrol_events_ecomap_html_url = persist_text.replace(validate=True)(
         text=patrol_events_ecomap,
+        root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
         **params["patrol_events_ecomap_html_url"],
     )
 

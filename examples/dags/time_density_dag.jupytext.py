@@ -7,6 +7,7 @@
 # %% [markdown]
 # ## Imports
 
+import os
 from ecoscope_workflows.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows.tasks.preprocessing import process_relocations
 from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
@@ -135,7 +136,6 @@ td_ecomap = draw_ecomap(
 # parameters
 
 td_ecomap_html_url_params = dict(
-    root_path=...,
     filename=...,
 )
 
@@ -144,6 +144,7 @@ td_ecomap_html_url_params = dict(
 
 td_ecomap_html_url = persist_text(
     text=td_ecomap,
+    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
     **td_ecomap_html_url_params,
 )
 

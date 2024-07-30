@@ -1,4 +1,5 @@
 import argparse
+import os
 import yaml
 
 from ecoscope_workflows.tasks.io import get_subjectgroup_observations
@@ -49,6 +50,7 @@ if __name__ == "__main__":
 
     td_ecomap_html_url = persist_text.replace(validate=True)(
         text=td_ecomap,
+        root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
         **params["td_ecomap_html_url"],
     )
 
