@@ -185,7 +185,6 @@ class Spec(_ForbidExtra):
         Python keywords, or Python builtins. The maximum length is 64 chars.
         """
     )
-    cache_root: str  # e.g. "gcs://my-bucket/dag-runs/cache/"
     workflow: list[TaskInstance] = Field(
         description="A list of task instances that define the workflow.",
     )

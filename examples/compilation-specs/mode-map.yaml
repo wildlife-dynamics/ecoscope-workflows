@@ -1,5 +1,4 @@
 name: map_example
-cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
 workflow:
   - name: Get Observations A
     id: obs_a

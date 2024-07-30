@@ -21,7 +21,6 @@ def test_dag_compiler_from_spec():
     s = dedent(
         """\
         name: calculate_time_density
-        cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -44,7 +43,6 @@ def test_extra_forbid_raises():
         # this is a mistake, as this should be nested under a `with` block
         """\
         name: calculate_time_density
-        cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -85,7 +83,6 @@ def test_invalid_id_raises(invalid_id: str, raises_match: str):
     s = dedent(
         f"""\
         name: calculate_time_density
-        cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
         workflow:
           - name: Get Subjectgroup Observations
             id: {invalid_id}
@@ -100,7 +97,6 @@ def test_ids_must_be_unique():
     s = dedent(
         """\
         name: calculate_time_density
-        cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -131,7 +127,6 @@ def test_invalid_known_task_name_raises(task: str, valid_known_task_name: bool):
     s = dedent(
         f"""\
         name: calculate_time_density
-        cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -162,7 +157,6 @@ def test_arg_deps_must_be_valid_id_of_another_task(
     s = dedent(
         f"""\
         name: calculate_time_density
-        cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -205,7 +199,6 @@ def test_all_arg_deps_array_members_must_be_valid_id_of_another_task(
     s = dedent(
         f"""\
         name: create_dashboard
-        cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
         workflow:
           - name: Create Map Widget Single View
             id: map_widget
@@ -259,7 +252,6 @@ def test_invaild_spec_name_raises(invalid_name: str, raises_match: str):
     s = dedent(
         f"""\
         name: {invalid_name}
-        cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -274,7 +266,6 @@ def test_mode_default():
     s = dedent(
         """\
         name: calculate_time_density
-        cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -300,7 +291,6 @@ def test_set_mode(mode: str, valid_mode: bool):
     s = dedent(
         f"""\
         name: calculate_time_density
-        cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
         workflow:
           - name: Get Subjectgroup Observations
             id: obs

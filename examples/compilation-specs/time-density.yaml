@@ -1,5 +1,4 @@
 name: calculate_time_density
-cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
 workflow:
   - name: Get SubjectGroup Observations from EarthRanger
     id: obs

@@ -1,5 +1,4 @@
 name: patrol_workflow
-cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
 workflow:
   # patrol observations
   - name: Get Patrol Observations from EarthRanger
