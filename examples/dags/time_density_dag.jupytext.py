@@ -55,6 +55,7 @@ reloc = process_relocations(
     observations=obs,
     **reloc_params,
 )
+
 # %% [markdown]
 # ## Relocations To Trajectory
 
@@ -77,6 +78,7 @@ traj = relocations_to_trajectory(
     relocations=reloc,
     **traj_params,
 )
+
 # %% [markdown]
 # ## Calculate Time Density
 
@@ -100,6 +102,7 @@ td = calculate_time_density(
     trajectory_gdf=traj,
     **td_params,
 )
+
 # %% [markdown]
 # ## Draw Ecomap
 
@@ -124,6 +127,7 @@ td_ecomap = draw_ecomap(
     geodataframe=td,
     **td_ecomap_params,
 )
+
 # %% [markdown]
 # ## Persist Text
 
@@ -142,6 +146,7 @@ td_ecomap_html_url = persist_text(
     text=td_ecomap,
     **td_ecomap_html_url_params,
 )
+
 # %% [markdown]
 # ## Create Map Widget Single View
 
@@ -160,6 +165,7 @@ td_map_widget = create_map_widget_single_view(
     data=td_ecomap_html_url,
     **td_map_widget_params,
 )
+
 # %% [markdown]
 # ## Gather Dashboard
 

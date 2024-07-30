@@ -57,6 +57,7 @@ patrol_reloc = process_relocations(
     observations=patrol_obs,
     **patrol_reloc_params,
 )
+
 # %% [markdown]
 # ## Relocations To Trajectory
 
@@ -79,6 +80,7 @@ patrol_traj = relocations_to_trajectory(
     relocations=patrol_reloc,
     **patrol_traj_params,
 )
+
 # %% [markdown]
 # ## Draw Ecomap
 
@@ -103,6 +105,7 @@ patrol_traj_ecomap = draw_ecomap(
     geodataframe=patrol_traj,
     **patrol_traj_ecomap_params,
 )
+
 # %% [markdown]
 # ## Persist Text
 
@@ -121,6 +124,7 @@ patrol_traj_ecomap_html_url = persist_text(
     text=patrol_traj_ecomap,
     **patrol_traj_ecomap_html_url_params,
 )
+
 # %% [markdown]
 # ## Create Map Widget Single View
 
@@ -139,6 +143,7 @@ patrol_traj_map_widget = create_map_widget_single_view(
     data=patrol_traj_ecomap_html_url,
     **patrol_traj_map_widget_params,
 )
+
 # %% [markdown]
 # ## Get Patrol Events
 
@@ -181,6 +186,7 @@ filter_patrol_events = apply_reloc_coord_filter(
     df=patrol_events,
     **filter_patrol_events_params,
 )
+
 # %% [markdown]
 # ## Draw Ecomap
 
@@ -205,6 +211,7 @@ patrol_events_ecomap = draw_ecomap(
     geodataframe=filter_patrol_events,
     **patrol_events_ecomap_params,
 )
+
 # %% [markdown]
 # ## Persist Text
 
@@ -223,6 +230,7 @@ patrol_events_ecomap_html_url = persist_text(
     text=patrol_events_ecomap,
     **patrol_events_ecomap_html_url_params,
 )
+
 # %% [markdown]
 # ## Create Map Widget Single View
 
@@ -241,6 +249,7 @@ patrol_events_map_widget = create_map_widget_single_view(
     data=patrol_events_ecomap_html_url,
     **patrol_events_map_widget_params,
 )
+
 # %% [markdown]
 # ## Gather Dashboard
 
