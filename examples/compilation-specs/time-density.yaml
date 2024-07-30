@@ -7,34 +7,34 @@ workflow:
     id: reloc
     task: process_relocations
     with:
-      observations: ${{ obs.return }}
+      observations: ${{ workflow.obs.return }}
   - name: Transform Relocations to Trajectories
     id: traj
     task: relocations_to_trajectory
     with:
-      relocations: ${{ reloc.return }}
+      relocations: ${{ workflow.reloc.return }}
   - name: Calculate Time Density from Trajectory
     id: td
     task: calculate_time_density
     with:
-      trajectory_gdf: ${{ traj.return }}
+      trajectory_gdf: ${{ workflow.traj.return }}
   - name: Draw Ecomap from Time Density
     id: td_ecomap
     task: draw_ecomap
     with:
-      geodataframe: ${{ td.return }}
+      geodataframe: ${{ workflow.td.return }}
   - name: Persist Ecomap as Text
     id: td_ecomap_html_url
     task: persist_text
     with:
-      text: ${{ td_ecomap.return }}
+      text: ${{ workflow.td_ecomap.return }}
   - name: Create Time Density Map Widget
     id: td_map_widget
     task: create_map_widget_single_view
     with:
-      data: ${{ td_ecomap_html_url.return }}
+      data: ${{ workflow.td_ecomap_html_url.return }}
   - name: Create Dashboard with Time Density Map Widget
     id: td_dashboard
     task: gather_dashboard
     with:
-      widgets: ${{ td_map_widget.return }}
+      widgets: ${{ workflow.td_map_widget.return }}

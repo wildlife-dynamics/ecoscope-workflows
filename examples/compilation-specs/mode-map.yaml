@@ -15,12 +15,12 @@ workflow:
     mode: map
     with:
       geodataframe:
-        - ${{ obs_a.return }}
-        - ${{ obs_b.return }}
-        - ${{ obs_c.return }}
+        - ${{ workflow.obs_a.return }}
+        - ${{ workflow.obs_b.return }}
+        - ${{ workflow.obs_c.return }}
   - name: Persist Ecomaps as Text
     id: td_ecomap_html_url
     task: persist_text
     mode: map
     with:
-      text: ${{ ecomaps.return }}
+      text: ${{ workflow.ecomaps.return }}

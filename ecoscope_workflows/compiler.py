@@ -12,9 +12,10 @@ from pydantic import (
     Field,
     field_serializer,
     computed_field,
+    model_serializer,
     model_validator,
 )
-from pydantic.functional_validators import AfterValidator
+from pydantic.functional_validators import AfterValidator, BeforeValidator
 
 from ecoscope_workflows.registry import KnownTask, known_tasks
 
@@ -26,12 +27,47 @@ class _ForbidExtra(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
-def _parse_variable(s: str):
-    assert s.startswith("${{") and s.endswith("}}")
-    drop_curlies = s.replace("${{", "").replace("}}", "").strip()
-    assert drop_curlies.count(".") == 1
-    assert drop_curlies.endswith(".return")  # TODO: add other options, like [*]
-    return drop_curlies.split(".")[0]
+class WorkflowVariableBase(BaseModel):
+    value: str
+
+
+class TaskIdVariable(WorkflowVariableBase):
+    suffix: Literal["return"]
+
+    @model_serializer
+    def serialize(self) -> str:
+        return self.value
+
+
+class EnvVariable(WorkflowVariableBase):
+    @model_serializer
+    def serialize(self) -> str:
+        return f"os.environ[{self.value}]"
+
+
+def _parse_variable(s: str) -> str:
+    if not (s.startswith("${{") and s.endswith("}}")):
+        raise ValueError(
+            f"`{s}` is not a valid variable. " "Variables must be wrapped in `${{ }}`."
+        )
+    inner = s.replace("${{", "").replace("}}", "").strip()
+    match inner.split("."):
+        case ["workflow", task_id, suffix]:
+            return TaskIdVariable(value=task_id, suffix=suffix)
+        case ["env", env_var_name]:
+            return EnvVariable(value=env_var_name)
+        case _:
+            raise ValueError(
+                "Unrecognized variable format. Expected one of: "
+                "`${{ workflow.<task_id>.<suffix> }}`, "
+                "`${{ env.<ENV_VAR_NAME> }}`."
+            )
+
+
+def _parse_variables(s: str | list[str]) -> str | list[str]:
+    if isinstance(s, str):
+        return _parse_variable(s)
+    return [_parse_variable(v) for v in s]
 
 
 def _is_not_reserved(s: str):
@@ -65,7 +101,7 @@ def _is_valid_spec_name(s: str):
 
 
 # TODO: structural Variable options `[*]` etc. for iterables
-Variable = Annotated[str, AfterValidator(_parse_variable)]
+Variable = Annotated[TaskIdVariable | EnvVariable, BeforeValidator(_parse_variables)]
 TaskInstanceId = Annotated[
     str,
     AfterValidator(_is_not_reserved),
@@ -81,7 +117,11 @@ SpecName = Annotated[
 
 
 def _serialize_arg_dep(dep: Variable | list[Variable]) -> str:
-    return dep if isinstance(dep, str) else f"[{', '.join(dep)}]"
+    return (
+        dep.model_dump()
+        if not isinstance(dep, list)
+        else f"[{', '.join(d.model_dump() for d in dep)}]"
+    )
 
 
 class TaskInstance(_ForbidExtra):
@@ -215,7 +255,9 @@ class Spec(_ForbidExtra):
             for dep in task_instance.arg_dependencies.values():
                 # deps could be `Variable` or `list[Variable]` (i.e. `str` or `list[str]`),
                 # so we cast to list if the former, to handle validation in a uniform way
-                dep_list = dep if isinstance(dep, list) else [dep]
+                dep_list = (
+                    [obj.value for obj in dep] if isinstance(dep, list) else [dep.value]
+                )
                 for d in dep_list:
                     if d not in all_ids:
                         raise ValueError(

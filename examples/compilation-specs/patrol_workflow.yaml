@@ -8,27 +8,27 @@ workflow:
     id: patrol_reloc
     task: process_relocations
     with:
-      observations: ${{ patrol_obs.return }}
+      observations: ${{ workflow.patrol_obs.return }}
   - name: Transform Relocations to Trajectories
     id: patrol_traj
     task: relocations_to_trajectory
     with:
-      relocations: ${{ patrol_reloc.return }}
+      relocations: ${{ workflow.patrol_reloc.return }}
   - name: Draw Ecomap from Trajectories
     id: patrol_traj_ecomap
     task: draw_ecomap
     with:
-      geodataframe: ${{ patrol_traj.return }}
+      geodataframe: ${{ workflow.patrol_traj.return }}
   - name: Persist Patrol Trajectories Ecomap as Text
     id: patrol_traj_ecomap_html_url
     task: persist_text
     with:
-      text: ${{ patrol_traj_ecomap.return }}
+      text: ${{ workflow.patrol_traj_ecomap.return }}
   - name: Create Map Widget for Patrols Trajectories
     id: patrol_traj_map_widget
     task: create_map_widget_single_view
     with:
-      data: ${{ patrol_traj_ecomap_html_url.return }}
+      data: ${{ workflow.patrol_traj_ecomap_html_url.return }}
 
   # patrol events
   - name: Get Patrol Events from EarthRanger
@@ -38,17 +38,17 @@ workflow:
     id: filter_patrol_events
     task: apply_reloc_coord_filter
     with:
-      df: ${{ patrol_events.return }}
+      df: ${{ workflow.patrol_events.return }}
   - name: Draw Ecomap for Patrols Events
     id: patrol_events_ecomap
     task: draw_ecomap
     with:
-      geodataframe: ${{ filter_patrol_events.return }}
+      geodataframe: ${{ workflow.filter_patrol_events.return }}
   - name: Persist Patrols Ecomap as Text
     id: patrol_events_ecomap_html_url
     task: persist_text
     with:
-      text: ${{ patrol_events_ecomap.return }}
+      text: ${{ workflow.patrol_events_ecomap.return }}
   - name: Create Map Widget for Patrol Events
     id: patrol_events_map_widget
     task: create_map_widget_single_view
@@ -56,7 +56,7 @@ workflow:
       # FIXME: i had this typo and it was not caught by validator, i.e.
       # we cannot be allow texts to reference their own ids as dependencies
       # data: ${{ patrol_events_map_widget.return }}
-      data: ${{ patrol_events_ecomap_html_url.return }}
+      data: ${{ workflow.patrol_events_ecomap_html_url.return }}
 
   # dashboard
   - name: Create Dashboard with Patrol Map Widgets
@@ -64,5 +64,5 @@ workflow:
     task: gather_dashboard
     with:
       widgets:
-        - ${{ patrol_traj_map_widget.return }}
-        - ${{ patrol_events_map_widget.return }}
+        - ${{ workflow.patrol_traj_map_widget.return }}
+        - ${{ workflow.patrol_events_map_widget.return }}
