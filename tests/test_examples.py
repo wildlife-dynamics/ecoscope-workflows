@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -156,7 +157,9 @@ def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
         "--config-file",
         end_to_end.param_path.as_posix(),
     ]
-    out = subprocess.run(cmd, capture_output=True, text=True)
+    env = os.environ.copy()
+    env["ECOSCOPE_WORKFLOWS_RESULTS"] = tmp.as_posix()
+    out = subprocess.run(cmd, capture_output=True, text=True, env=env)
     assert out.returncode == 0
     for assert_fn in end_to_end.assert_that_stdout:
         assert assert_fn(out.stdout.strip())
