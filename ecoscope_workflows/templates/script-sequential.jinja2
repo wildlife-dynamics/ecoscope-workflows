@@ -1,3 +1,5 @@
+{% import 'script-sequential-macros.jinja' as macros %}
+
 {%- if testing %}
 """WARNING: This file is generated in a testing context and should not be used in production.
 Lines specific to the testing context are marked with a test tube emoji (🧪) to indicate
@@ -36,21 +38,7 @@ if __name__ == "__main__":
     {% endif %}
     # FIXME: first pass assumes tasks are already in topological order
     {% for t in spec.workflow %}
-
-    {% if t.mode == "call" %}
-    {{ t.id }} = {{ t.known_task.importable_reference.function }}.replace(validate=True)(
-    {%- if t.arg_dependencies %}
-        {% for arg in t.arg_dependencies %}{{ arg }}={{ t.arg_dependencies[arg] }},{% endfor %}
-        **params["{{ t.id }}"],
-    )
-    {% else %}**params["{{ t.id }}"],
-    )
-    {% endif -%}
-    {% elif t.mode == "map" %}
-    {{ t.id }}_partial = partial({{ t.known_task.importable_reference.function }}.replace(validate=True), **params["{{ t.id }}"])
-    {{ t.id }}_mapped_iterable = map({{ t.id }}_partial, {{ t.map_iterable }})
-    {{ t.id }} = list({{ t.id}}_mapped_iterable)
-    {% endif -%}
+    {{ macros.handle_task(t, params) }}
     {% if loop.last %}
     print({{ t.id }})
     {% endif %}
