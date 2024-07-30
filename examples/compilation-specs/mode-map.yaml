@@ -10,7 +10,7 @@ workflow:
   - name: Get Observations C
     id: obs_c
     task: get_subjectgroup_observations
-  - name: Creat EcoMap For Every Group
+  - name: Creat EcoMap For Each Group
     id: ecomaps
     task: draw_ecomap
     mode: map
@@ -19,3 +19,19 @@ workflow:
         - ${{ obs_a.return }}
         - ${{ obs_b.return }}
         - ${{ obs_c.return }}
+  - name: Persist Ecomaps as Text
+    id: td_ecomap_html_url
+    task: persist_text
+    mode: map
+    with:
+      text: ${{ ecomaps.return }}
+  # - name: Create Time Density Map Widget
+  #   id: td_map_widget
+  #   task: create_map_widget_single_view
+  #   with:
+  #     data: ${{ td_ecomap_html_url.return }}
+  # - name: Create Dashboard with Time Density Map Widget
+  #   id: td_dashboard
+  #   task: gather_dashboard
+  #   with:
+  #     widgets: ${{ td_map_widget.return }}

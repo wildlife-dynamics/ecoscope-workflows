@@ -184,14 +184,21 @@
                 "description": "Root path to persist text to"
             },
             "filename": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
                 "title": "Filename",
-                "type": "string",
-                "description": "Name of file to persist text to"
+                "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
             }
         },
         "required": [
-            "root_path",
-            "filename"
+            "root_path"
         ],
         "type": "object"
     },
@@ -399,14 +406,21 @@
                 "description": "Root path to persist text to"
             },
             "filename": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
                 "title": "Filename",
-                "type": "string",
-                "description": "Name of file to persist text to"
+                "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
             }
         },
         "required": [
-            "root_path",
-            "filename"
+            "root_path"
         ],
         "type": "object"
     },

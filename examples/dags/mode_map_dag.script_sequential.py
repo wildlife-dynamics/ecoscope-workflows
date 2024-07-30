@@ -4,6 +4,7 @@ import yaml
 
 from ecoscope_workflows.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows.tasks.results import draw_ecomap
+from ecoscope_workflows.tasks.io import persist_text
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -34,4 +35,10 @@ if __name__ == "__main__":
     ecomaps_mapped_iterable = map(ecomaps_partial, [obs_a, obs_b, obs_c])
     ecomaps = list(ecomaps_mapped_iterable)
 
-    print(ecomaps)
+    td_ecomap_html_url_partial = partial(
+        persist_text.replace(validate=True), **params["td_ecomap_html_url"]
+    )
+    td_ecomap_html_url_mapped_iterable = map(td_ecomap_html_url_partial, ecomaps)
+    td_ecomap_html_url = list(td_ecomap_html_url_mapped_iterable)
+
+    print(td_ecomap_html_url)
