@@ -157,6 +157,25 @@ class TaskInstance(_ForbidExtra):
     map_iterable: ArgDependencies = Field(default_factory=dict, alias="iter")
     arg_dependencies: ArgDependencies = Field(default_factory=dict, alias="with")
 
+    @model_validator(mode="after")
+    def check_map_iterable(self) -> "Spec":
+        if self.mode == "call" and self.map_iterable:
+            raise ValueError(
+                "In `call` mode, the `iter` field must be empty. "
+                "Specify keyword arguments in the `with` field."
+            )
+        elif self.mode == "map" and not self.map_iterable:
+            raise ValueError(
+                "In `map` mode, the `iter` field must be specified with an iterable."
+            )
+        if len(self.map_iterable) > 1:
+            raise ValueError(
+                "The `iter` field must have only one key-value pair. "
+                "To pass additional keyword arguments to each mapped invocation, "
+                "provide them in the `with` field."
+            )
+        return self
+
     @computed_field  # type: ignore[misc]
     @property
     def known_task(self) -> KnownTask:
