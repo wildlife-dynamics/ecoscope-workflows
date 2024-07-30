@@ -1,5 +1,4 @@
-{% macro handle_task(t, params) %}
-{% if t.mode == "call" %}
+{% macro handle_call_mode(t, params) %}
     {{ t.id }} = {{ t.known_task.importable_reference.function }}.replace(validate=True)(
     {%- if t.arg_dependencies %}
         {% for arg in t.arg_dependencies %}
@@ -11,9 +10,20 @@
         **params["{{ t.id }}"],
     )
     {% endif %}
-{% elif t.mode == "map" %}
+{% endmacro %}
+
+
+{% macro handle_map_mode(t, params) %}
     {{ t.id }}_partial = partial({{ t.known_task.importable_reference.function }}.replace(validate=True), **params["{{ t.id }}"])
     {{ t.id }}_mapped_iterable = map({{ t.id }}_partial, {{ t.map_iterable }})
     {{ t.id }} = list({{ t.id }}_mapped_iterable)
+{% endmacro %}
+
+
+{% macro handle_task(t, params) %}
+{% if t.mode == "call" %}
+    {{ handle_call_mode(t, params) }}
+{% elif t.mode == "map" %}
+    {{ handle_map_mode(t, params) }}
 {% endif %}
 {% endmacro %}
