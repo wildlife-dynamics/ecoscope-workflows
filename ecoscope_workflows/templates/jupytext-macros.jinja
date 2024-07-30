@@ -1,0 +1,36 @@
+{% macro handle_call_mode(t, params) %}
+{{ t.id }} = {{ t.known_task.importable_reference.function }}(
+{%- if t.arg_dependencies %}
+    {% for arg in t.arg_dependencies %}{{ arg }}={{ t.arg_dependencies[arg] }},{% endfor %}
+    **{{ t.id }}_params,
+)
+{% else %}**{{ t.id }}_params,
+)
+{% endif -%}
+{% endmacro %}
+
+
+{% macro handle_map_mode(t, params) %}
+{{ t.id }}_partial = partial({{ t.known_task.importable_reference.function }}, **{{ t.id }}_params)
+{{ t.id }}_mapped_iterable = map({{ t.id }}_partial, {{ t.map_iterable }})
+{{ t.id }} = list({{ t.id}}_mapped_iterable)
+{% endmacro %}
+
+
+{% macro handle_task(t) -%}
+# %% [markdown]
+# ## {{ t.known_task.importable_reference.function.title().replace("_", " ") }}
+
+# %%
+# parameters
+
+{{ t.id }}_params = {{ t.known_task.importable_reference.params_notebook }}
+
+# %%
+# call the task
+{%- if t.mode == "call" %}
+{{ handle_call_mode(t, params) }}
+{%- elif t.mode == "map" %}
+{{ handle_map_mode(t, params) }}
+{% endif -%}
+{% endmacro %}

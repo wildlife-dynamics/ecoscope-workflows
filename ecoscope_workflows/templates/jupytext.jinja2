@@ -1,3 +1,4 @@
+{% import 'jupytext-macros.jinja' as macros %}
 # ruff: noqa: E402
 
 # %% [markdown]
@@ -15,33 +16,6 @@ from functools import partial
 {% if loop.last %}
 {% endif -%}
 {% endfor -%}
-
-
-{% for t in spec.workflow -%}
-# %% [markdown]
-# ## {{ t.known_task.importable_reference.function.title().replace("_", " ") }}
-
-# %%
-# parameters
-
-{{ t.id }}_params = {{ t.known_task.importable_reference.params_notebook }}
-
-# %%
-# call the task
-{% if t.mode == "call" %}
-{{ t.id }} = {{ t.known_task.importable_reference.function }}(
-{%- if t.arg_dependencies %}
-    {% for arg in t.arg_dependencies %}{{ arg }}={{ t.arg_dependencies[arg] }},{% endfor %}
-    **{{ t.id }}_params,
-)
-{% else %}**{{ t.id }}_params,
-)
-
-{% endif -%}
-{% elif t.mode == "map" %}
-{{ t.id }}_partial = partial({{ t.known_task.importable_reference.function }}, **{{ t.id }}_params)
-{{ t.id }}_mapped_iterable = map({{ t.id }}_partial, {{ t.map_iterable }})
-{{ t.id }} = list({{ t.id}}_mapped_iterable)
-{% endif -%}
-
-{% endfor %}
+{%- for t in spec.workflow -%}
+{{ macros.handle_task(t) }}
+{% endfor -%}
