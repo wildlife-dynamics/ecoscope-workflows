@@ -35,5 +35,4 @@ ecomaps:
 
 # Parameters for 'Persist Ecomaps as Text' using task `persist_text`.
 td_ecomap_html_url:
-  root_path:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
   filename:   # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))

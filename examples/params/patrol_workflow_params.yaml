@@ -43,8 +43,7 @@ patrol_traj_ecomap:
   north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist Ecomap as Text' using task `persist_text`.
-patrol_traj_ecomap_html_url:
-  root_path: "examples/output/" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
+patrol_traj_ecomap_html_url: {}
 
 # Parameters for 'Create Map Widget for Patrols' using task `create_map_widget_single_view`.
 patrol_traj_map_widget:
@@ -79,8 +78,7 @@ patrol_events_ecomap:
   north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist Patrols Ecomap as Text' using task `persist_text`.
-patrol_events_ecomap_html_url:
-  root_path: "examples/output/" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
+patrol_events_ecomap_html_url: {}
 
 # Parameters for 'Create Map Widget for Patrol Events' using task `create_map_widget_single_view`.
 patrol_events_map_widget:

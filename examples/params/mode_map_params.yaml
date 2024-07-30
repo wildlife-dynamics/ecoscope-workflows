@@ -34,5 +34,4 @@ ecomaps:
   north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist Ecomaps as Text' using task `persist_text`.
-td_ecomap_html_url:
-  root_path: "examples/output/"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
+td_ecomap_html_url: {}

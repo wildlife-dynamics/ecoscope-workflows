@@ -183,11 +183,6 @@
     "td_ecomap_html_url": {
         "additionalProperties": false,
         "properties": {
-            "root_path": {
-                "title": "Root Path",
-                "type": "string",
-                "description": "Root path to persist text to"
-            },
             "filename": {
                 "anyOf": [
                     {
@@ -202,9 +197,7 @@
                 "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
             }
         },
-        "required": [
-            "root_path"
-        ],
+        "required": [],
         "type": "object"
     }
 }
