@@ -25,13 +25,3 @@ workflow:
     mode: map
     with:
       text: ${{ ecomaps.return }}
-  # - name: Create Time Density Map Widget
-  #   id: td_map_widget
-  #   task: create_map_widget_single_view
-  #   with:
-  #     data: ${{ td_ecomap_html_url.return }}
-  # - name: Create Dashboard with Time Density Map Widget
-  #   id: td_dashboard
-  #   task: gather_dashboard
-  #   with:
-  #     widgets: ${{ td_map_widget.return }}
