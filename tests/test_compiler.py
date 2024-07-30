@@ -5,7 +5,7 @@ import pytest
 import yaml
 from pydantic_core import ValidationError
 
-from ecoscope_workflows.compiler import DagCompiler, Spec, TaskInstance
+from ecoscope_workflows.compiler import DagCompiler, Spec, TaskInstance, TaskIdVariable
 from ecoscope_workflows.registry import KnownTask, known_tasks
 
 
@@ -29,7 +29,7 @@ def test_dag_compiler_from_spec():
             id: relocs
             task: process_relocations
             with:
-              observations: ${{ obs.return }}
+              observations: ${{ workflow.obs.return }}
         """
     )
     spec = Spec(**yaml.safe_load(s))
@@ -50,7 +50,7 @@ def test_extra_forbid_raises():
           - name: Process Relocations
             id: relocs
             task: process_relocations
-            observations: ${{ get_subjectgroup_observations }}
+            observations: ${{ workflow.obs.return }}
         """
     )
     with pytest.raises(ValidationError):
@@ -165,12 +165,14 @@ def test_arg_deps_must_be_valid_id_of_another_task(
             id: relocs
             task: process_relocations
             with:
-                observations: ${{{{ {arg_dep_id}.return }}}}
+                observations: ${{{{ workflow.{arg_dep_id}.return }}}}
         """
     )
     if valid_id_of_another_task:
         spec = Spec(**yaml.safe_load(s))
-        assert spec.workflow[1].arg_dependencies == {"observations": arg_dep_id}
+        assert spec.workflow[1].arg_dependencies == {
+            "observations": TaskIdVariable(value="obs", suffix="return")
+        }
     else:
         with pytest.raises(
             ValidationError,
@@ -211,13 +213,15 @@ def test_all_arg_deps_array_members_must_be_valid_id_of_another_task(
             task: gather_dashboard
             with:
               widgets:
-                - ${{{{ {arg_dep_ids[0]}.return }}}}
-                - ${{{{ {arg_dep_ids[1]}.return }}}}
+                - ${{{{ workflow.{arg_dep_ids[0]}.return }}}}
+                - ${{{{ workflow.{arg_dep_ids[1]}.return }}}}
         """
     )
     if all_valid_ids_of_another_task:
         spec = Spec(**yaml.safe_load(s))
-        assert spec.workflow[2].arg_dependencies == {"widgets": arg_dep_ids}
+        assert spec.workflow[2].arg_dependencies == {
+            "widgets": [TaskIdVariable(value=v, suffix="return") for v in arg_dep_ids]
+        }
     else:
         with pytest.raises(
             ValidationError,
