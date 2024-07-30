@@ -105,7 +105,6 @@ class EndToEndFixture:
 assert_that_stdout = {
     "time-density.yaml": [
         lambda out: "A dashboard for visualizing a time density map." in out,
-        lambda out: "td_map.html" in out,
         lambda out: "widget_type='map', title='Great Map'," in out,
     ],
     "patrol_workflow.yaml": [
@@ -113,9 +112,7 @@ assert_that_stdout = {
             lambda out: "A dashboard for visualizing patrol trajectories and events."
             in out
         ),
-        lambda out: "patrol_traj_map.html" in out,
         lambda out: "widget_type='map', title='Patrol Trajectory Map'" in out,
-        lambda out: "patrol_events_ecomap.html" in out,
         lambda out: "widget_type='map', title='Patrol Events Map'" in out,
     ],
     "mode-map.yaml": [],

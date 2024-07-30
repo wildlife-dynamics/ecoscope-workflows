@@ -44,7 +44,6 @@ td_ecomap:
 # Parameters for 'Persist Ecomap as Text' using task `persist_text`.
 td_ecomap_html_url:
   root_path: "examples/output/" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
-  filename: "td_map.html" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of file to persist text to'))
 
 # Parameters for 'Create Time Density Map Widget' using task `create_map_widget_single_view`.
 td_map_widget:
