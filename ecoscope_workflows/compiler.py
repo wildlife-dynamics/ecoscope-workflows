@@ -28,10 +28,14 @@ class _ForbidExtra(BaseModel):
 
 
 class WorkflowVariableBase(BaseModel):
+    """Base class for workflow variables."""
+
     value: str
 
 
 class TaskIdVariable(WorkflowVariableBase):
+    """A variable that references the return value of another task in the workflow."""
+
     suffix: Literal["return"]
 
     @model_serializer
@@ -40,6 +44,8 @@ class TaskIdVariable(WorkflowVariableBase):
 
 
 class EnvVariable(WorkflowVariableBase):
+    """A variable that references an environment variable."""
+
     @model_serializer
     def serialize(self) -> str:
         return f'os.environ["{self.value}"]'
@@ -134,7 +140,11 @@ SpecName = Annotated[
 class TaskInstance(_ForbidExtra):
     """A task instance in a workflow."""
 
-    name: str
+    name: str = Field(
+        description="""\
+        A human-readable name, e.g. 'Draw Ecomaps for Each Input Geodataframe'.
+        """,
+    )
     id: TaskInstanceId = Field(
         description="""\
         Unique identifier for this task instance. This will be used as the name to which
@@ -142,9 +152,14 @@ class TaskInstance(_ForbidExtra):
         valid python identifier and it cannot collide with any: Python keywords, Python
         builtins, or any registered known task names. It must also be unique within the
         context of all task instance `id`s in the workflow. The maximum length is 32 chars.
-        """
+        """,
     )
-    known_task_name: KnownTaskName = Field(alias="task")
+    known_task_name: KnownTaskName = Field(
+        alias="task",
+        description="""\
+        The name of the known task to be executed. This must be a registered known task name.
+        """,
+    )
     mode: Literal["call", "map"] = Field(
         default="call",
         description="""\
@@ -154,8 +169,31 @@ class TaskInstance(_ForbidExtra):
         in the `with` field.
         """,
     )
-    map_iterable: ArgDependencies = Field(default_factory=dict, alias="iter")
-    arg_dependencies: ArgDependencies = Field(default_factory=dict, alias="with")
+    map_iterable: ArgDependencies = Field(
+        default_factory=dict,
+        alias="iter",
+        description="""\
+        The iterable to be passed to the task in `map` mode. This must be a single key-value
+        pair where the key is the name of the argument on the known task that will receive
+        each element of the iterable, and the value is the iterable itself. The value can be
+        a variable reference or a list of variable references. The variable reference(s) must be
+        in the form `${{ workflow.<task_id>.return }}` where `<task_id>` is the `id` of another
+        task instance in the workflow.
+        """,
+    )
+    arg_dependencies: ArgDependencies = Field(
+        default_factory=dict,
+        alias="with",
+        description="""\
+        Keyword arguments to be passed to the task. This must be a dictionary where the keys
+        are the names of the arguments on the known task that will receive the values, and the
+        values are the values to be passed. The values can be variable references or lists of
+        variable references. The variable reference(s) may be in the form
+        `${{ workflow.<task_id>.return }}` for task return values, or `${{ env.<ENV_VAR_NAME> }}`
+        for environment variables. In mode `map` these keyword arguments will be passed to each
+        invocation of the task.
+        """,
+    )
 
     @model_validator(mode="after")
     def check_map_iterable(self) -> "Spec":
