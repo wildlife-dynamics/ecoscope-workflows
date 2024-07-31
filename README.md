@@ -101,37 +101,48 @@ The inline comments in this example explain what each line means:
 ```yaml
 # the workflow name
 name: calculate_time_density
-# for distibuted compilation targets (e.g. Airflow), this is where task
-# results will be serialized for passing between nodes (i.e. tasks)
-cache_root: gcs://my-bucket/ecoscope/cache/dag-runs
-# the tasks. these names either have to be built-ins or third-party registrations
+# the workflow. these names either have to be built-ins or third-party registrations
 # via the "ecoscope_workflows.tasks" entry point. to see a list of known tasks for
 # a given python environment, from the terminal, run `ecoscope-workflows tasks` to
 # dump the current task registry to stdout.
-tasks:
+workflow:
   # root tasks (which have no dependencies on the output of other tasks) are specified
   # by their name, followed by empty curly braces, like so:
-  get_subjectgroup_observations: {}
+  - name: Get SubjectGroup Observations from EarthRanger
+    id: obs
+    task: get_subjectgroup_observations
   # this next task has a dependency defined within it...
-  process_relocations:
-    # this means, that the `process_relocations` task takes an argument `observations`,
-    # and we want the value passed to this argument to be the return value of the task
-    # `get_subjectgroup_observations`, which is the root task of this workflow.
-    observations: get_subjectgroup_observations
-  relocations_to_trajectory:
-    # the pattern continues: `relocations_to_trajectory` has an argument named
-    # `relocations`. populate its value from the return value of `process_relocations`
-    relocations: process_relocations
-  calculate_time_density:
-    # etc.
-    trajectory_gdf: relocations_to_trajectory
-  draw_ecomap:
-    # and etc., until the last task!
-    geodataframe: calculate_time_density
+  - name: Turn Observations into Relocations
+    id: relocs
+    task: process_relocations
+    with:
+      # this means, that the `process_relocations` task takes an argument `observations`,
+      # and we want the value passed to this argument to be the return value of the task
+      # `get_subjectgroup_observations`, which is the root task of this workflow.
+      observations: ${{ workflow.obs.return }}
+  - name: Turn Relocations into Trajectories
+    id: traj
+    task: relocations_to_trajectory
+    with:
+      # the pattern continues: `relocations_to_trajectory` has an argument named
+      # `relocations`. populate its value from the return value of `process_relocations`
+      relocations: ${{ workflow.relocs.return }}
+  - name: Calculate Time Density
+    id: td
+    task: calculate_time_density
+    with:
+      # etc.
+      trajectory_gdf: ${{ workflow.traj.return }}
+  - name: Draw Ecomap
+    id: ecomap
+    task: draw_ecomap
+    with:
+      # and etc., until the last task!
+      geodataframe: ${{ workflow.td.return }}
 ```
 
 Note that any arguments for a [task](#task) not specified in the spec will need to be passed
-at the time the workflow (script, Airflow DAG, etc.) is invoked. The following command
+at the time the workflow (script, etc.) is invoked. The following command
 
 ```console
 $ ecoscope-workflows get-params --spec ${PATH_TO_SPEC}
