@@ -266,13 +266,11 @@ class Spec(_ForbidExtra):
             for dep in task_instance.arg_dependencies.values():
                 # deps could be `Variable` or `list[Variable]` (i.e. `str` or `list[str]`),
                 # so we cast to list if the former, to handle validation in a uniform way
-                dep_list = (
-                    [obj.value for obj in dep] if isinstance(dep, list) else [dep.value]
-                )
+                dep_list = [d for d in dep] if isinstance(dep, list) else [dep]
                 for d in dep_list:
-                    if isinstance(d, TaskIdVariable) and d not in all_ids:
+                    if isinstance(d, TaskIdVariable) and d.value not in all_ids:
                         raise ValueError(
-                            f"Task `{task_instance.name}` has an arg dependency `{d}` that is "
+                            f"Task `{task_instance.name}` has an arg dependency `{d.value}` that is "
                             f"not a valid task id. Valid task ids for this workflow are: {all_ids}"
                         )
         return self
