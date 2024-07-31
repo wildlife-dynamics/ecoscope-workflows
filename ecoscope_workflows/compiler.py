@@ -233,16 +233,6 @@ class TaskInstance(_ForbidExtra):
             raise NotImplementedError("Flatmap mode not yet implemented.")
         return None
 
-    # TODO: this requires parsing known task parameter names at registration time (or in DistributedTask)
-    # @model_validator(mode="after")
-    # def check_known_task_arg_names(self) -> "TaskInstance":
-    #     for arg in self.arg_dependencies:
-    #         if arg not in self.known_task.parameters:
-    #             raise ValueError(
-    #                 f"`{arg}` is not a valid argument name for task `{self.known_task_name}`."
-    #             )
-    #     return self
-
 
 def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
     """Decorator to format the output of a function that returns a string with ruff."""
