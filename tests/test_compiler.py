@@ -378,3 +378,25 @@ def test_depends_on_self_raises():
         ),
     ):
         _ = Spec(**yaml.safe_load(s))
+
+
+def test_task_id_collides_with_spec_id_raises():
+    s = dedent(
+        """\
+        id: get_subjects
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: get_subjects
+            task: get_subjectgroup_observations
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape(
+            "Task `id`s cannot be the same as the spec `id`. "
+            "The `id` of task `Get Subjectgroup Observations` is `get_subjects`, "
+            "which is the same as the spec `id`. "
+            "Please choose a different `id` for this task."
+        ),
+    ):
+        _ = Spec(**yaml.safe_load(s))

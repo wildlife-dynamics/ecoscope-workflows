@@ -268,14 +268,28 @@ class Spec(_ForbidExtra):
         description="A list of task instances that define the workflow.",
     )
 
+    @property
+    def all_task_ids(self) -> dict[str, str]:
+        return {task_instance.name: task_instance.id for task_instance in self.workflow}
+
+    @model_validator(mode="after")
+    def check_task_ids_dont_collide_with_spec_id(self) -> "Spec":
+        if self.id in self.all_task_ids.values():
+            name = next(name for name, id in self.all_task_ids.items() if id == self.id)
+            raise ValueError(
+                "Task `id`s cannot be the same as the spec `id`. "
+                f"The `id` of task `{name}` is `{self.id}`, which is the same as the spec `id`. "
+                "Please choose a different `id` for this task."
+            )
+        return self
+
     @model_validator(mode="after")
     def check_task_ids_unique(self) -> "Spec":
-        all_ids = {
-            task_instance.name: task_instance.id for task_instance in self.workflow
-        }
-        if len(all_ids.values()) != len(set(all_ids.values())):
-            id_keyed_dict: dict[str, list[str]] = {id: [] for id in all_ids.values()}
-            for name, id in all_ids.items():
+        if len(self.all_task_ids.values()) != len(set(self.all_task_ids.values())):
+            id_keyed_dict: dict[str, list[str]] = {
+                id: [] for id in self.all_task_ids.values()
+            }
+            for name, id in self.all_task_ids.items():
                 id_keyed_dict[id].append(name)
             dupes = {id: names for id, names in id_keyed_dict.items() if len(names) > 1}
             dupes_fmt_string = "; ".join(
