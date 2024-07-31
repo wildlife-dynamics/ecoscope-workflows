@@ -34,10 +34,36 @@
 {% endmacro %}
 
 
+{% macro handle_mapvalues_mode(t, params) %}
+    {{ t.id }}_mapped_iterable = map(
+        lambda kv: (kv[0], {{ t.known_task.importable_reference.function }}.replace(validate=True)(**kv[1])),
+        {% for arg in t.map_iterable %}
+        [
+            (
+                k,
+                {
+                    "{{ arg }}": v,
+                    {%- if t.arg_dependencies %}
+                    {% for arg in t.arg_dependencies %}
+                    "{{ arg }}": {{ t.arg_dependencies[arg] }},
+                    {% endfor %}
+                    {%- endif %}
+                } | params["{{ t.id }}"],
+            )
+            for (k, v) in {{ t.map_iterable[arg] }}
+        ],
+        {% endfor %}
+    )
+    {{ t.id }} = list({{ t.id }}_mapped_iterable)
+{% endmacro %}
+
+
 {% macro handle_task(t, params) %}
 {% if t.mode == "call" %}
     {{ handle_call_mode(t, params) }}
 {% elif t.mode == "map" %}
     {{ handle_map_mode(t, params) }}
+{% elif t.mode == "mapvalues" %}
+    {{ handle_mapvalues_mode(t, params) }}
 {% endif %}
 {% endmacro %}
