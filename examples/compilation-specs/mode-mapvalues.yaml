@@ -22,13 +22,6 @@ workflow:
   - name: Create EcoMap For Each Group
     id: ecomaps
     task: draw_ecomap
-    # TODO: `split_obs` will be a keyed iterable of GeoDataFrames, and we want
-    # to map over the values of this iterable. This means we need a new mode,
-    # "mapvalues", which will be implemented as part of this PR. This mode is the
-    # same as map except that it preserves keys, like the following in spark:
-    # https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.RDD.mapValues.html
-    # And here is a nice simple implementation in python for reference:
-    # https://github.com/pangeo-forge/pangeo-forge-recipes/pull/700/files
     mode: mapvalues
     iter:
       # As part of mode: mapvalues, I'm not quite sure if it may be useful to instroduce the
@@ -38,3 +31,19 @@ workflow:
       # to the arg dependencies for `iter`s associated with `mode=map`, if a single iterable value is given,
       # but not if an array of single values is given.)
       geodataframe: ${{ workflow.split_obs.return }}  # or ...return[*][1]
+  # Step 5 - Persisting the EcoMaps
+  - name: Persist EcoMaps
+    id: ecomaps_persist
+    task: persist_text
+    mode: mapvalues
+    iter:
+      text: ${{ workflow.ecomaps.return }}
+    with:
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+  # # Step 6 - Creating Widgets for Each EcoMap
+  # - name: Create EcoMap Widgets
+  #   id: ecomap_widgets
+  #   task: create_map_widget_single_view
+  #   mode: mapvalues
+  #   iter:
+  #     data: ${{ workflow.ecomaps_persist.return }}
