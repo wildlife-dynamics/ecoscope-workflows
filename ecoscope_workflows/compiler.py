@@ -338,9 +338,23 @@ class Spec(_ForbidExtra):
             for task_instance in self.workflow
         }
 
-    # @model_validator(mode="after")
-    # def check_task_instances_are_in_topological_order(self) -> "Spec":
-    #     ...
+    @model_validator(mode="after")
+    def check_task_instances_are_in_topological_order(self) -> "Spec":
+        seen_task_instance_ids = set()
+        for task_instance_id, deps in self.task_instance_dependencies.items():
+            seen_task_instance_ids.add(task_instance_id)
+            for dep_id in deps:
+                if dep_id not in seen_task_instance_ids:
+                    dep_name = next(ti.name for ti in self.workflow if ti.id == dep_id)
+                    task_instance_name = next(
+                        ti.name for ti in self.workflow if ti.id == task_instance_id
+                    )
+                    raise ValueError(
+                        f"Task instances are not in topological order. "
+                        f"`{task_instance_name}` depends on `{dep_name}`, "
+                        f"but `{dep_name}` is defined after `{task_instance_name}`."
+                    )
+        return self
 
 
 class DagCompiler(BaseModel):

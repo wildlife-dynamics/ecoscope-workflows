@@ -449,9 +449,8 @@ def test_wrong_topological_order_raises():
         ValidationError,
         match=re.escape(
             "Task instances are not in topological order. "
-            "Task `Process Relocations` depends on task `Get Subjectgroup Observations`, "
+            "`Process Relocations` depends on `Get Subjectgroup Observations`, "
             "but `Get Subjectgroup Observations` is defined after `Process Relocations`."
         ),
     ):
-        s = Spec(**yaml.safe_load(s))
-        print(s)
+        _ = Spec(**yaml.safe_load(s))
