@@ -7,7 +7,6 @@
 # %% [markdown]
 # ## Imports
 
-from functools import partial
 from ecoscope_workflows.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
@@ -95,8 +94,10 @@ ecomaps_params = dict(
 # %%
 # call the task
 
-ecomaps_partial = partial(draw_ecomap, **ecomaps_params)
-ecomaps_mapped_iterable = map(ecomaps_partial, [obs_a, obs_b, obs_c])
+ecomaps_mapped_iterable = map(
+    lambda kv: draw_ecomap.replace(validate=True)(**kv),
+    [{"geodataframe": i} | ecomaps_params for i in [obs_a, obs_b, obs_c]],
+)
 ecomaps = list(ecomaps_mapped_iterable)
 
 
@@ -107,13 +108,14 @@ ecomaps = list(ecomaps_mapped_iterable)
 # parameters
 
 td_ecomap_html_url_params = dict(
-    root_path=...,
     filename=...,
 )
 
 # %%
 # call the task
 
-td_ecomap_html_url_partial = partial(persist_text, **td_ecomap_html_url_params)
-td_ecomap_html_url_mapped_iterable = map(td_ecomap_html_url_partial, ecomaps)
+td_ecomap_html_url_mapped_iterable = map(
+    lambda kv: persist_text.replace(validate=True)(**kv),
+    [{"text": i} | td_ecomap_html_url_params for i in ecomaps],
+)
 td_ecomap_html_url = list(td_ecomap_html_url_mapped_iterable)

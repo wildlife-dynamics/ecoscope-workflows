@@ -9,9 +9,6 @@
 # ## Imports
 
 import os
-{% if spec.requires_map_exra_imports -%}
-from functools import partial
-{% endif -%}
 {% for t in spec.workflow -%}
 {{ t.known_task.importable_reference.statement }}
 {% if loop.last %}

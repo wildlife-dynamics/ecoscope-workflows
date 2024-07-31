@@ -312,9 +312,11 @@ class DagCompiler(BaseModel):
         # for a given task arg, if it is dependent on another task's return value,
         # we don't need to include it in the `dag_params_schema`,
         # because we don't need it to be passed as a parameter by the user.
-        return ["return"] + [
-            arg for t in self.spec.workflow for arg in t.arg_dependencies
-        ]
+        return (
+            ["return"]
+            + [arg for t in self.spec.workflow for arg in t.arg_dependencies]
+            + [arg for t in self.spec.workflow for arg in t.map_iterable]
+        )
 
     def get_params_jsonschema(self) -> dict[str, dict]:
         return {
