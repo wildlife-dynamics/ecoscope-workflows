@@ -10,6 +10,8 @@ from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
+from ecoscope_workflows.tasks.io import get_subjectgroup_observations
+from ecoscope_workflows.tasks.analysis import calculate_time_density
 from ecoscope_workflows.tasks.results import gather_dashboard
 
 if __name__ == "__main__":
@@ -80,8 +82,43 @@ if __name__ == "__main__":
         **params["patrol_events_map_widget"],
     )
 
+    obs = get_subjectgroup_observations.replace(validate=True)(
+        **params["obs"],
+    )
+
+    reloc = process_relocations.replace(validate=True)(
+        observations=obs,
+        **params["reloc"],
+    )
+
+    traj = relocations_to_trajectory.replace(validate=True)(
+        relocations=reloc,
+        **params["traj"],
+    )
+
+    td = calculate_time_density.replace(validate=True)(
+        trajectory_gdf=traj,
+        **params["td"],
+    )
+
+    td_ecomap = draw_ecomap.replace(validate=True)(
+        geodataframe=td,
+        **params["td_ecomap"],
+    )
+
+    td_ecomap_html_url = persist_text.replace(validate=True)(
+        text=td_ecomap,
+        root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+        **params["td_ecomap_html_url"],
+    )
+
+    td_map_widget = create_map_widget_single_view.replace(validate=True)(
+        data=td_ecomap_html_url,
+        **params["td_map_widget"],
+    )
+
     patrol_dashboard = gather_dashboard.replace(validate=True)(
-        widgets=[patrol_traj_map_widget, patrol_events_map_widget],
+        widgets=[patrol_traj_map_widget, patrol_events_map_widget, td_map_widget],
         **params["patrol_dashboard"],
     )
 
