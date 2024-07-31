@@ -3,17 +3,17 @@ from typing import Annotated
 from pydantic import Field
 
 from ecoscope_workflows.annotations import AnyDataFrame
-from ecoscope_workflows.indexes import CompositeFilter
+from ecoscope_workflows.indexes import CompositeFilter, IndexName, IndexValue
 from ecoscope_workflows.decorators import distributed
 
 
 def _groupkey_to_composite_filter(
-    groupers: list[str], index_value: tuple
+    groupers: list[IndexName], index_values: tuple[IndexValue, ...]
 ) -> CompositeFilter:
     """Given the list of `groupers` used to group a dataframe, convert a group key
     tuple (the pandas native representation) to a composite filter (our representation).
     """
-    return tuple((index, "=", value) for index, value in zip(groupers, index_value))
+    return tuple((index, "=", value) for index, value in zip(groupers, index_values))
 
 
 @distributed

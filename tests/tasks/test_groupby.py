@@ -1,7 +1,35 @@
 import numpy as np
 import pandas as pd
 
+import pytest
+
+from ecoscope_workflows.indexes import CompositeFilter, IndexName, IndexValue
 from ecoscope_workflows.tasks.groupby import split_groups
+from ecoscope_workflows.tasks.groupby._groupby import _groupkey_to_composite_filter
+
+
+@pytest.mark.parametrize(
+    "groupers, index_values, expected",
+    [
+        (
+            ["class", "order"],
+            ("bird", "Falconiformes"),
+            (("class", "=", "bird"), ("order", "=", "Falconiformes")),
+        ),
+        (
+            ["month", "year"],
+            ("jan", "2022"),
+            (("month", "=", "jan"), ("year", "=", "2022")),
+        ),
+    ],
+)
+def test__groupkey_to_composite_filter(
+    groupers: list[IndexName],
+    index_values: tuple[IndexValue, ...],
+    expected: CompositeFilter,
+):
+    composite_filter = _groupkey_to_composite_filter(groupers, index_values)
+    assert composite_filter == expected
 
 
 def test_split_groups():
