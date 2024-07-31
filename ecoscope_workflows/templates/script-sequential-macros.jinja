@@ -15,7 +15,7 @@
 
 {% macro handle_map_mode(t, params) %}
     {{ t.id }}_mapped_iterable = map(
-        lambda kv: {{ t.known_task.importable_reference.function }}.replace(validate=True)(**kv),
+        lambda kw: {{ t.known_task.importable_reference.function }}.replace(validate=True)(**kw),
         {% for arg in t.map_iterable %}
         [
             {

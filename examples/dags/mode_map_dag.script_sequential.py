@@ -32,7 +32,7 @@ if __name__ == "__main__":
     )
 
     ecomaps_mapped_iterable = map(
-        lambda kv: draw_ecomap.replace(validate=True)(**kv),
+        lambda kw: draw_ecomap.replace(validate=True)(**kw),
         [
             {
                 "geodataframe": i,
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     ecomaps = list(ecomaps_mapped_iterable)
 
     td_ecomap_html_url_mapped_iterable = map(
-        lambda kv: persist_text.replace(validate=True)(**kv),
+        lambda kw: persist_text.replace(validate=True)(**kw),
         [
             {
                 "text": i,

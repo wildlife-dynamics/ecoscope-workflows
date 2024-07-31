@@ -7,6 +7,7 @@
 # %% [markdown]
 # ## Imports
 
+import os
 from ecoscope_workflows.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
@@ -95,8 +96,14 @@ ecomaps_params = dict(
 # call the task
 
 ecomaps_mapped_iterable = map(
-    lambda kv: draw_ecomap.replace(validate=True)(**kv),
-    [{"geodataframe": i} | ecomaps_params for i in [obs_a, obs_b, obs_c]],
+    lambda kw: draw_ecomap.replace(validate=True)(**kw),
+    [
+        {
+            "geodataframe": i,
+        }
+        | ecomaps_params
+        for i in [obs_a, obs_b, obs_c]
+    ],
 )
 ecomaps = list(ecomaps_mapped_iterable)
 
@@ -115,7 +122,14 @@ td_ecomap_html_url_params = dict(
 # call the task
 
 td_ecomap_html_url_mapped_iterable = map(
-    lambda kv: persist_text.replace(validate=True)(**kv),
-    [{"text": i} | td_ecomap_html_url_params for i in ecomaps],
+    lambda kw: persist_text.replace(validate=True)(**kw),
+    [
+        {
+            "text": i,
+            "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+        }
+        | td_ecomap_html_url_params
+        for i in ecomaps
+    ],
 )
 td_ecomap_html_url = list(td_ecomap_html_url_mapped_iterable)
