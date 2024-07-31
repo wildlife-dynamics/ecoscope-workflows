@@ -1,4 +1,5 @@
 import argparse
+import os
 import yaml
 
 from ecoscope_workflows.tasks.io import get_patrol_observations
@@ -7,9 +8,9 @@ from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
-from ecoscope_workflows.tasks.results import gather_dashboard
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
+from ecoscope_workflows.tasks.results import gather_dashboard
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -24,49 +25,64 @@ if __name__ == "__main__":
     params = yaml.safe_load(args.config_file)
     # FIXME: first pass assumes tasks are already in topological order
 
-    get_patrol_observations_return = get_patrol_observations.replace(validate=True)(
-        **params["get_patrol_observations"],
+    patrol_obs = get_patrol_observations.replace(validate=True)(
+        **params["patrol_obs"],
     )
 
-    process_relocations_return = process_relocations.replace(validate=True)(
-        observations=get_patrol_observations_return,
-        **params["process_relocations"],
+    patrol_reloc = process_relocations.replace(validate=True)(
+        observations=patrol_obs,
+        **params["patrol_reloc"],
     )
 
-    relocations_to_trajectory_return = relocations_to_trajectory.replace(validate=True)(
-        relocations=process_relocations_return,
-        **params["relocations_to_trajectory"],
+    patrol_traj = relocations_to_trajectory.replace(validate=True)(
+        relocations=patrol_reloc,
+        **params["patrol_traj"],
     )
 
-    draw_ecomap_return = draw_ecomap.replace(validate=True)(
-        geodataframe=relocations_to_trajectory_return,
-        **params["draw_ecomap"],
+    patrol_traj_ecomap = draw_ecomap.replace(validate=True)(
+        geodataframe=patrol_traj,
+        **params["patrol_traj_ecomap"],
     )
 
-    persist_text_return = persist_text.replace(validate=True)(
-        text=draw_ecomap_return,
-        **params["persist_text"],
+    patrol_traj_ecomap_html_url = persist_text.replace(validate=True)(
+        text=patrol_traj_ecomap,
+        root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+        **params["patrol_traj_ecomap_html_url"],
     )
 
-    create_map_widget_single_view_return = create_map_widget_single_view.replace(
-        validate=True
-    )(
-        data=persist_text_return,
-        **params["create_map_widget_single_view"],
+    patrol_traj_map_widget = create_map_widget_single_view.replace(validate=True)(
+        data=patrol_traj_ecomap_html_url,
+        **params["patrol_traj_map_widget"],
     )
 
-    gather_dashboard_return = gather_dashboard.replace(validate=True)(
-        widgets=create_map_widget_single_view_return,
-        **params["gather_dashboard"],
+    patrol_events = get_patrol_events.replace(validate=True)(
+        **params["patrol_events"],
     )
 
-    get_patrol_events_return = get_patrol_events.replace(validate=True)(
-        **params["get_patrol_events"],
+    filter_patrol_events = apply_reloc_coord_filter.replace(validate=True)(
+        df=patrol_events,
+        **params["filter_patrol_events"],
     )
 
-    apply_reloc_coord_filter_return = apply_reloc_coord_filter.replace(validate=True)(
-        df=get_patrol_events_return,
-        **params["apply_reloc_coord_filter"],
+    patrol_events_ecomap = draw_ecomap.replace(validate=True)(
+        geodataframe=filter_patrol_events,
+        **params["patrol_events_ecomap"],
     )
 
-    print(apply_reloc_coord_filter_return)
+    patrol_events_ecomap_html_url = persist_text.replace(validate=True)(
+        text=patrol_events_ecomap,
+        root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+        **params["patrol_events_ecomap_html_url"],
+    )
+
+    patrol_events_map_widget = create_map_widget_single_view.replace(validate=True)(
+        data=patrol_events_ecomap_html_url,
+        **params["patrol_events_map_widget"],
+    )
+
+    patrol_dashboard = gather_dashboard.replace(validate=True)(
+        widgets=[patrol_traj_map_widget, patrol_events_map_widget],
+        **params["patrol_dashboard"],
+    )
+
+    print(patrol_dashboard)

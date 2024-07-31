@@ -189,16 +189,21 @@ class KnownTask(BaseModel):
         }.items():
             yield fmt.format(arg=arg, param=param)
 
-    def parameters_annotation_yaml_str(self, omit_args: list[str] | None = None) -> str:
+    def parameters_annotation_yaml_str(
+        self,
+        title: str,
+        description: str,
+        omit_args: list[str] | None = None,
+    ) -> str:
         yaml = ruamel.yaml.YAML(typ="rt")
-        yaml_str = f"{self.function}:\n"
+        yaml_str = f"{description}\n{title}:\n"
         for line in self._iter_parameters_annotation(
             fmt="  {arg}:   # {param}\n",
             omit_args=omit_args,
         ):
             yaml_str += line
         _ = yaml.load(yaml_str)
-        return yaml_str
+        return yaml_str + "\n"
 
     def parameters_notebook(self, omit_args: list[str] | None = None) -> str:
         params = "dict(\n"

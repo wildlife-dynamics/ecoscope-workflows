@@ -1,4 +1,5 @@
 import argparse
+import os
 import yaml
 
 from ecoscope_workflows.tasks.io import get_subjectgroup_observations
@@ -23,47 +24,44 @@ if __name__ == "__main__":
     params = yaml.safe_load(args.config_file)
     # FIXME: first pass assumes tasks are already in topological order
 
-    get_subjectgroup_observations_return = get_subjectgroup_observations.replace(
-        validate=True
-    )(
-        **params["get_subjectgroup_observations"],
+    obs = get_subjectgroup_observations.replace(validate=True)(
+        **params["obs"],
     )
 
-    process_relocations_return = process_relocations.replace(validate=True)(
-        observations=get_subjectgroup_observations_return,
-        **params["process_relocations"],
+    reloc = process_relocations.replace(validate=True)(
+        observations=obs,
+        **params["reloc"],
     )
 
-    relocations_to_trajectory_return = relocations_to_trajectory.replace(validate=True)(
-        relocations=process_relocations_return,
-        **params["relocations_to_trajectory"],
+    traj = relocations_to_trajectory.replace(validate=True)(
+        relocations=reloc,
+        **params["traj"],
     )
 
-    calculate_time_density_return = calculate_time_density.replace(validate=True)(
-        trajectory_gdf=relocations_to_trajectory_return,
-        **params["calculate_time_density"],
+    td = calculate_time_density.replace(validate=True)(
+        trajectory_gdf=traj,
+        **params["td"],
     )
 
-    draw_ecomap_return = draw_ecomap.replace(validate=True)(
-        geodataframe=calculate_time_density_return,
-        **params["draw_ecomap"],
+    td_ecomap = draw_ecomap.replace(validate=True)(
+        geodataframe=td,
+        **params["td_ecomap"],
     )
 
-    persist_text_return = persist_text.replace(validate=True)(
-        text=draw_ecomap_return,
-        **params["persist_text"],
+    td_ecomap_html_url = persist_text.replace(validate=True)(
+        text=td_ecomap,
+        root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+        **params["td_ecomap_html_url"],
     )
 
-    create_map_widget_single_view_return = create_map_widget_single_view.replace(
-        validate=True
-    )(
-        data=persist_text_return,
-        **params["create_map_widget_single_view"],
+    td_map_widget = create_map_widget_single_view.replace(validate=True)(
+        data=td_ecomap_html_url,
+        **params["td_map_widget"],
     )
 
-    gather_dashboard_return = gather_dashboard.replace(validate=True)(
-        widgets=create_map_widget_single_view_return,
-        **params["gather_dashboard"],
+    td_dashboard = gather_dashboard.replace(validate=True)(
+        widgets=td_map_widget,
+        **params["td_dashboard"],
     )
 
-    print(gather_dashboard_return)
+    print(td_dashboard)

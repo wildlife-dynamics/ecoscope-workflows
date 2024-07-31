@@ -1,39 +1,19 @@
+{% import 'jupytext-macros.jinja' as macros %}
 # ruff: noqa: E402
 
 # %% [markdown]
-# # {{ name.title().replace("_", " ") }}
+# # {{ spec.id.title().replace("_", " ") }}
 # TODO: top level description
 
 # %% [markdown]
 # ## Imports
 
-{% for t in tasks -%}
+import os
+{% for t in spec.workflow -%}
 {{ t.known_task.importable_reference.statement }}
 {% if loop.last %}
 {% endif -%}
 {% endfor -%}
-
-
-{% for t in tasks -%}
-# %% [markdown]
-# ## {{ t.known_task.importable_reference.function.title().replace("_", " ") }}
-
-# %%
-# parameters
-
-{{ t.known_task.importable_reference.function }}_params = {{ t.known_task.importable_reference.params_notebook }}
-
-# %%
-# call the task
-
-{{ t.known_task.importable_reference.function }}_return = {{ t.known_task.importable_reference.function }}(
-{%- if t.arg_dependencies %}
-    {% for arg in t.arg_dependencies %}{{ arg }}={{ t.arg_dependencies[arg] }},{% endfor %}
-    **{{ t.known_task.importable_reference.function }}_params,
-)
-{% else %}**{{ t.known_task.importable_reference.function }}_params,
-)
-
-{% endif -%}
-
-{% endfor %}
+{%- for t in spec.workflow -%}
+{{ macros.handle_task(t) }}
+{% endfor -%}

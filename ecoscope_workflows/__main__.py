@@ -7,7 +7,7 @@ import yaml
 from pydantic import SecretStr
 
 from ecoscope_workflows import config
-from ecoscope_workflows.compiler import DagCompiler
+from ecoscope_workflows.compiler import DagCompiler, Spec
 from ecoscope_workflows.config import TomlConfigTable
 from ecoscope_workflows.registry import known_connections, known_tasks
 
@@ -18,8 +18,8 @@ class Colors(str, Enum):
 
 
 def compile_command(args):
-    compilation_spec = yaml.safe_load(args.spec)
-    dc = DagCompiler.from_spec(spec=compilation_spec)
+    compilation_spec = Spec(**yaml.safe_load(args.spec))
+    dc = DagCompiler(spec=compilation_spec)
     if args.template:
         dc.template = args.template
     if args.testing:
@@ -44,8 +44,8 @@ def tasks_command(args):
 
 
 def get_params_command(args):
-    compilation_spec = yaml.safe_load(args.spec)
-    dc = DagCompiler.from_spec(spec=compilation_spec)
+    compilation_spec = Spec(**yaml.safe_load(args.spec))
+    dc = DagCompiler(spec=compilation_spec)
     if args.format == "json":
         params = dc.get_params_jsonschema()
     elif args.format == "yaml":
