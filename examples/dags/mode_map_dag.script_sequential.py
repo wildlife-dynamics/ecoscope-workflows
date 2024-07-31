@@ -1,4 +1,5 @@
 import argparse
+import os
 import yaml
 
 from ecoscope_workflows.tasks.io import get_subjectgroup_observations
@@ -32,13 +33,26 @@ if __name__ == "__main__":
 
     ecomaps_mapped_iterable = map(
         lambda kv: draw_ecomap.replace(validate=True)(**kv),
-        [{"geodataframe": i} | params["ecomaps"] for i in [obs_a, obs_b, obs_c]],
+        [
+            {
+                "geodataframe": i,
+            }
+            | params["ecomaps"]
+            for i in [obs_a, obs_b, obs_c]
+        ],
     )
     ecomaps = list(ecomaps_mapped_iterable)
 
     td_ecomap_html_url_mapped_iterable = map(
         lambda kv: persist_text.replace(validate=True)(**kv),
-        [{"text": i} | params["td_ecomap_html_url"] for i in ecomaps],
+        [
+            {
+                "text": i,
+                "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            }
+            | params["td_ecomap_html_url"]
+            for i in ecomaps
+        ],
     )
     td_ecomap_html_url = list(td_ecomap_html_url_mapped_iterable)
 

@@ -17,7 +17,17 @@
     {{ t.id }}_mapped_iterable = map(
         lambda kv: {{ t.known_task.importable_reference.function }}.replace(validate=True)(**kv),
         {% for arg in t.map_iterable %}
-        [{"{{ arg }}": i} | params["{{ t.id }}"] for i in {{ t.map_iterable[arg] }}],
+        [
+            {
+                "{{ arg }}": i,
+                {%- if t.arg_dependencies %}
+                {% for arg in t.arg_dependencies %}
+                "{{ arg }}": {{ t.arg_dependencies[arg] }},
+                {% endfor %}
+                {%- endif %}
+            } | params["{{ t.id }}"]
+            for i in {{ t.map_iterable[arg] }}
+        ],
         {% endfor %}
     )
     {{ t.id }} = list({{ t.id }}_mapped_iterable)
