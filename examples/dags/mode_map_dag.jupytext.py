@@ -13,7 +13,7 @@ from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 
 # %% [markdown]
-# ## Get Subjectgroup Observations
+# ## Get Observations A
 
 # %%
 # parameters
@@ -34,7 +34,7 @@ obs_a = get_subjectgroup_observations(
 )
 
 # %% [markdown]
-# ## Get Subjectgroup Observations
+# ## Get Observations B
 
 # %%
 # parameters
@@ -55,7 +55,7 @@ obs_b = get_subjectgroup_observations(
 )
 
 # %% [markdown]
-# ## Get Subjectgroup Observations
+# ## Get Observations C
 
 # %%
 # parameters
@@ -76,7 +76,7 @@ obs_c = get_subjectgroup_observations(
 )
 
 # %% [markdown]
-# ## Draw Ecomap
+# ## Creat EcoMap For Each Group
 
 # %%
 # parameters
@@ -109,7 +109,7 @@ ecomaps = list(ecomaps_mapped_iterable)
 
 
 # %% [markdown]
-# ## Persist Text
+# ## Persist Ecomaps as Text
 
 # %%
 # parameters

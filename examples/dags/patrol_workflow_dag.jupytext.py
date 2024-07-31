@@ -19,7 +19,7 @@ from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
 from ecoscope_workflows.tasks.results import gather_dashboard
 
 # %% [markdown]
-# ## Get Patrol Observations
+# ## Get Patrol Observations from EarthRanger
 
 # %%
 # parameters
@@ -41,7 +41,7 @@ patrol_obs = get_patrol_observations(
 )
 
 # %% [markdown]
-# ## Process Relocations
+# ## Transform Observations to Relocations
 
 # %%
 # parameters
@@ -60,7 +60,7 @@ patrol_reloc = process_relocations(
 )
 
 # %% [markdown]
-# ## Relocations To Trajectory
+# ## Transform Relocations to Trajectories
 
 # %%
 # parameters
@@ -83,7 +83,7 @@ patrol_traj = relocations_to_trajectory(
 )
 
 # %% [markdown]
-# ## Draw Ecomap
+# ## Draw Ecomap from Trajectories
 
 # %%
 # parameters
@@ -108,7 +108,7 @@ patrol_traj_ecomap = draw_ecomap(
 )
 
 # %% [markdown]
-# ## Persist Text
+# ## Persist Patrol Trajectories Ecomap as Text
 
 # %%
 # parameters
@@ -127,7 +127,7 @@ patrol_traj_ecomap_html_url = persist_text(
 )
 
 # %% [markdown]
-# ## Create Map Widget Single View
+# ## Create Map Widget for Patrols Trajectories
 
 # %%
 # parameters
@@ -146,7 +146,7 @@ patrol_traj_map_widget = create_map_widget_single_view(
 )
 
 # %% [markdown]
-# ## Get Patrol Events
+# ## Get Patrol Events from EarthRanger
 
 # %%
 # parameters
@@ -167,7 +167,7 @@ patrol_events = get_patrol_events(
 )
 
 # %% [markdown]
-# ## Apply Reloc Coord Filter
+# ## Apply Relocation Coordinate Filter
 
 # %%
 # parameters
@@ -189,7 +189,7 @@ filter_patrol_events = apply_reloc_coord_filter(
 )
 
 # %% [markdown]
-# ## Draw Ecomap
+# ## Draw Ecomap for Patrols Events
 
 # %%
 # parameters
@@ -214,7 +214,7 @@ patrol_events_ecomap = draw_ecomap(
 )
 
 # %% [markdown]
-# ## Persist Text
+# ## Persist Patrols Ecomap as Text
 
 # %%
 # parameters
@@ -233,7 +233,7 @@ patrol_events_ecomap_html_url = persist_text(
 )
 
 # %% [markdown]
-# ## Create Map Widget Single View
+# ## Create Map Widget for Patrol Events
 
 # %%
 # parameters
@@ -252,7 +252,7 @@ patrol_events_map_widget = create_map_widget_single_view(
 )
 
 # %% [markdown]
-# ## Gather Dashboard
+# ## Create Dashboard with Patrol Map Widgets
 
 # %%
 # parameters

@@ -18,7 +18,7 @@ from ecoscope_workflows.tasks.results import create_map_widget_single_view
 from ecoscope_workflows.tasks.results import gather_dashboard
 
 # %% [markdown]
-# ## Get Subjectgroup Observations
+# ## Get SubjectGroup Observations from EarthRanger
 
 # %%
 # parameters
@@ -39,7 +39,7 @@ obs = get_subjectgroup_observations(
 )
 
 # %% [markdown]
-# ## Process Relocations
+# ## Transform Observations to Relocations
 
 # %%
 # parameters
@@ -58,7 +58,7 @@ reloc = process_relocations(
 )
 
 # %% [markdown]
-# ## Relocations To Trajectory
+# ## Transform Relocations to Trajectories
 
 # %%
 # parameters
@@ -81,7 +81,7 @@ traj = relocations_to_trajectory(
 )
 
 # %% [markdown]
-# ## Calculate Time Density
+# ## Calculate Time Density from Trajectory
 
 # %%
 # parameters
@@ -105,7 +105,7 @@ td = calculate_time_density(
 )
 
 # %% [markdown]
-# ## Draw Ecomap
+# ## Draw Ecomap from Time Density
 
 # %%
 # parameters
@@ -130,7 +130,7 @@ td_ecomap = draw_ecomap(
 )
 
 # %% [markdown]
-# ## Persist Text
+# ## Persist Ecomap as Text
 
 # %%
 # parameters
@@ -149,7 +149,7 @@ td_ecomap_html_url = persist_text(
 )
 
 # %% [markdown]
-# ## Create Map Widget Single View
+# ## Create Time Density Map Widget
 
 # %%
 # parameters
@@ -168,7 +168,7 @@ td_map_widget = create_map_widget_single_view(
 )
 
 # %% [markdown]
-# ## Gather Dashboard
+# ## Create Dashboard with Time Density Map Widget
 
 # %%
 # parameters
