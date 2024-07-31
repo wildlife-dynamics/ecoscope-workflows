@@ -1,5 +1,4 @@
 import argparse
-from functools import partial
 import yaml
 
 from ecoscope_workflows.tasks.io import get_subjectgroup_observations
@@ -31,14 +30,16 @@ if __name__ == "__main__":
         **params["obs_c"],
     )
 
-    ecomaps_partial = partial(draw_ecomap.replace(validate=True), **params["ecomaps"])
-    ecomaps_mapped_iterable = map(ecomaps_partial, [obs_a, obs_b, obs_c])
+    ecomaps_mapped_iterable = map(
+        lambda kv: draw_ecomap.replace(validate=True)(**kv),
+        [{"geodataframe": i} | params["ecomaps"] for i in [obs_a, obs_b, obs_c]],
+    )
     ecomaps = list(ecomaps_mapped_iterable)
 
-    td_ecomap_html_url_partial = partial(
-        persist_text.replace(validate=True), **params["td_ecomap_html_url"]
+    td_ecomap_html_url_mapped_iterable = map(
+        lambda kv: persist_text.replace(validate=True)(**kv),
+        [{"text": i} | params["td_ecomap_html_url"] for i in ecomaps],
     )
-    td_ecomap_html_url_mapped_iterable = map(td_ecomap_html_url_partial, ecomaps)
     td_ecomap_html_url = list(td_ecomap_html_url_mapped_iterable)
 
     print(td_ecomap_html_url)

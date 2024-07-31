@@ -13,7 +13,7 @@ workflow:
     id: ecomaps
     task: draw_ecomap
     mode: map
-    with:
+    iter:
       geodataframe:
         - ${{ workflow.obs_a.return }}
         - ${{ workflow.obs_b.return }}
@@ -22,6 +22,7 @@ workflow:
     id: td_ecomap_html_url
     task: persist_text
     mode: map
-    with:
+    iter:
       text: ${{ workflow.ecomaps.return }}
+    with:
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
