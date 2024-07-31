@@ -96,36 +96,56 @@ def my_cool_analysis_task(
 Compilation specs define a DAG of known [tasks](#tasks), which can either be built-ins,
 or tasks registered via the [extensible task registry](#extensible-task-registry).
 
-The inline comments in this example explain what each line means:
+Each task is referenced in the spec as part of a "task instance" item, which declares a step
+of a workflow that the task is used for, and is defined as an object with the following fields:
+
+```yaml
+- name:  # [required] a human readable name for the step
+  id:  # [required] a short, unique id for the step
+  task:  # [required] the name of the task as it appears in the task registry
+  mode:  # [optional] one of "call" or "map"; see below for more detail
+  iter:
+    # [required if mode="map"; not allowed if mode="call"]
+    # a key value pair defining the iterable to map over in mode "map"
+    # <k>: <v>
+  with:
+    # [optional] keyword arguments for the task invocation
+    # <k>: <v>
+```
+
+> **Note**: For more complex usage, including multiple DAG branches, `mode: "map"`, etc.,
+> please refer to the `examples/` directory of this repository.
+
+A simple workflow example is given below, with comments providing further description:
 
 ```yaml
 # the workflow name
 name: calculate_time_density
-# the workflow. these names either have to be built-ins or third-party registrations
-# via the "ecoscope_workflows.tasks" entry point. to see a list of known tasks for
-# a given python environment, from the terminal, run `ecoscope-workflows tasks` to
-# dump the current task registry to stdout.
+# the list of task instances; note all of these will default to `mode: "call"`
 workflow:
-  # root tasks (which have no dependencies on the output of other tasks) are specified
-  # by their name, followed by empty curly braces, like so:
+  # root tasks (which have no dependencies on the output of other tasks)
+  # do not require a `with` field (as we will see below)
   - name: Get SubjectGroup Observations from EarthRanger
     id: obs
     task: get_subjectgroup_observations
-  # this next task has a dependency defined within it...
+  # this next task has a dependency defined by the `with` field...
   - name: Turn Observations into Relocations
     id: relocs
     task: process_relocations
     with:
-      # this means, that the `process_relocations` task takes an argument `observations`,
-      # and we want the value passed to this argument to be the return value of the task
-      # `get_subjectgroup_observations`, which is the root task of this workflow.
+      # this k:v pair indicates that the `process_relocations` task takes an argument
+      # `observations`, and we want the value passed to this argument to be the return
+      # value of the task instance with id `obs`, which is the root task of this workflow.
+      # note that (a) variables which resolve based on the outputs of other tasks are wrapped
+      # in `${{ }}`; and (b) return values of other task instances are referenced by strings
+      # having the structure `workflow.<id>.return`.
       observations: ${{ workflow.obs.return }}
   - name: Turn Relocations into Trajectories
     id: traj
     task: relocations_to_trajectory
     with:
       # the pattern continues: `relocations_to_trajectory` has an argument named
-      # `relocations`. populate its value from the return value of `process_relocations`
+      # `relocations`. populate its value from the return value of `relocs`
       relocations: ${{ workflow.relocs.return }}
   - name: Calculate Time Density
     id: td
