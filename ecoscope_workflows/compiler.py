@@ -196,6 +196,18 @@ class TaskInstance(_ForbidExtra):
     )
 
     @model_validator(mode="after")
+    def check_does_not_depend_on_self(self) -> "Spec":
+        for arg, dep in (self.arg_dependencies | self.map_iterable).items():
+            for d in [d for d in dep] if isinstance(dep, list) else [dep]:
+                if isinstance(d, TaskIdVariable) and d.value == self.id:
+                    raise ValueError(
+                        f"Task `{self.name}` has an arg dependency that references itself: "
+                        f"`{arg}` is set to depend on the return value of `{d.value}`. "
+                        "Task instances cannot depend on their own return values."
+                    )
+        return self
+
+    @model_validator(mode="after")
     def check_map_iterable(self) -> "Spec":
         if self.mode == "call" and self.map_iterable:
             raise ValueError(
@@ -280,10 +292,7 @@ class Spec(_ForbidExtra):
         all_ids = [task_instance.id for task_instance in self.workflow]
         for task_instance in self.workflow:
             for dep in task_instance.arg_dependencies.values():
-                # deps could be `Variable` or `list[Variable]` (i.e. `str` or `list[str]`),
-                # so we cast to list if the former, to handle validation in a uniform way
-                dep_list = [d for d in dep] if isinstance(dep, list) else [dep]
-                for d in dep_list:
+                for d in [d for d in dep] if isinstance(dep, list) else [dep]:
                     if isinstance(d, TaskIdVariable) and d.value not in all_ids:
                         raise ValueError(
                             f"Task `{task_instance.name}` has an arg dependency `{d.value}` that is "

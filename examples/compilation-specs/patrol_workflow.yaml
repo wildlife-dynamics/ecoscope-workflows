@@ -55,9 +55,6 @@ workflow:
     id: patrol_events_map_widget
     task: create_map_widget_single_view
     with:
-      # FIXME: i had this typo and it was not caught by validator, i.e.
-      # we cannot be allow texts to reference their own ids as dependencies
-      # data: ${{ patrol_events_map_widget.return }}
       data: ${{ workflow.patrol_events_ecomap_html_url.return }}
 
   # dashboard

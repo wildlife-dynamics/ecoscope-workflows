@@ -352,3 +352,29 @@ def test_set_mode_map(mode: str, valid_mode: bool):
             ),
         ):
             _ = Spec(**yaml.safe_load(s))
+
+
+def test_depends_on_self_raises():
+    s = dedent(
+        """\
+        name: calculate_time_density
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            with:
+              observations: ${{ workflow.relocs.return }}
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape(
+            "Task `Process Relocations` has an arg dependency that references itself: "
+            "`observations` is set to depend on the return value of `relocs`. "
+            "Task instances cannot depend on their own return values."
+        ),
+    ):
+        _ = Spec(**yaml.safe_load(s))
