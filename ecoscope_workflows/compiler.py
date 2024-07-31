@@ -124,7 +124,7 @@ def _serialize_arg_deps(arg_deps: _ArgDependenciesTypeAlias) -> dict[str, str]:
 
 ArgDependencies = Annotated[
     _ArgDependenciesTypeAlias,
-    PlainSerializer(_serialize_arg_deps, return_type=str),
+    PlainSerializer(_serialize_arg_deps, return_type=dict[str, str]),
 ]
 SpecName = Annotated[
     str, AfterValidator(_is_not_reserved), AfterValidator(_is_valid_spec_name)
