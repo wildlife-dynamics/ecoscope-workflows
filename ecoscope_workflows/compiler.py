@@ -137,6 +137,10 @@ SpecId = Annotated[
 ]
 
 
+def _dep_as_list(dep: Variable | list[Variable]) -> list[Variable]:
+    return [dep] if not isinstance(dep, list) else dep
+
+
 class TaskInstance(_ForbidExtra):
     """A task instance in a workflow."""
 
@@ -198,7 +202,7 @@ class TaskInstance(_ForbidExtra):
     @model_validator(mode="after")
     def check_does_not_depend_on_self(self) -> "Spec":
         for arg, dep in (self.arg_dependencies | self.map_iterable).items():
-            for d in [d for d in dep] if isinstance(dep, list) else [dep]:
+            for d in _dep_as_list(dep):
                 if isinstance(d, TaskIdVariable) and d.value == self.id:
                     raise ValueError(
                         f"Task `{self.name}` has an arg dependency that references itself: "
@@ -306,7 +310,7 @@ class Spec(_ForbidExtra):
         all_ids = [task_instance.id for task_instance in self.workflow]
         for task_instance in self.workflow:
             for dep in task_instance.arg_dependencies.values():
-                for d in [d for d in dep] if isinstance(dep, list) else [dep]:
+                for d in _dep_as_list(dep):
                     if isinstance(d, TaskIdVariable) and d.value not in all_ids:
                         raise ValueError(
                             f"Task `{task_instance.name}` has an arg dependency `{d.value}` that is "
@@ -314,8 +318,29 @@ class Spec(_ForbidExtra):
                         )
         return self
 
-    # TODO: on __init__ (or in cached_property), sort tasks
-    # topologically so we know what order to invoke them in dag
+    @property
+    def task_instance_dependencies(self) -> dict[str, list[str]]:
+        return {
+            task_instance.id: (
+                [
+                    d.value
+                    for dep in task_instance.arg_dependencies.values()
+                    for d in _dep_as_list(dep)
+                    if isinstance(d, TaskIdVariable)
+                ]
+                + [
+                    d.value
+                    for dep in task_instance.map_iterable.values()
+                    for d in _dep_as_list(dep)
+                    if isinstance(d, TaskIdVariable)
+                ]
+            )
+            for task_instance in self.workflow
+        }
+
+    # @model_validator(mode="after")
+    # def check_task_instances_are_in_topological_order(self) -> "Spec":
+    #     ...
 
 
 class DagCompiler(BaseModel):

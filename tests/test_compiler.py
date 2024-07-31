@@ -402,7 +402,34 @@ def test_task_id_collides_with_spec_id_raises():
         _ = Spec(**yaml.safe_load(s))
 
 
-@pytest.mark.xfail(reason="Topological sorting checks are not yet implemented.")
+def test_task_instance_dependencies_property():
+    s = dedent(
+        """\
+        id: calculate_time_density
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            with:
+              observations: ${{ workflow.obs.return }}
+          - name: Transform Relocations to Trajectories
+            id: traj
+            task: relocations_to_trajectory
+            with:
+              relocations: ${{ workflow.relocs.return }}
+        """
+    )
+    spec = Spec(**yaml.safe_load(s))
+    assert spec.task_instance_dependencies == {
+        "obs": [],
+        "relocs": ["obs"],
+        "traj": ["relocs"],
+    }
+
+
 def test_wrong_topological_order_raises():
     s = dedent(
         """\
@@ -426,4 +453,5 @@ def test_wrong_topological_order_raises():
             "but `Get Subjectgroup Observations` is defined after `Process Relocations`."
         ),
     ):
-        _ = Spec(**yaml.safe_load(s))
+        s = Spec(**yaml.safe_load(s))
+        print(s)
