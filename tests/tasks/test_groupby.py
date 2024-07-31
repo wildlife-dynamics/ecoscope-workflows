@@ -4,8 +4,19 @@ import pandas as pd
 import pytest
 
 from ecoscope_workflows.indexes import CompositeFilter, IndexName, IndexValue
-from ecoscope_workflows.tasks.groupby import split_groups
-from ecoscope_workflows.tasks.groupby._groupby import _groupkey_to_composite_filter
+from ecoscope_workflows.tasks.groupby import set_groupers, split_groups
+from ecoscope_workflows.tasks.groupby._groupby import (
+    Grouper,
+    _groupkey_to_composite_filter,
+)
+
+
+def test_set_groupers():
+    groupers = set_groupers(["class", "order"])
+    assert len(groupers) == 2
+    assert all(isinstance(g, Grouper) for g in groupers)
+    assert groupers[0].index_name == "class"
+    assert groupers[1].index_name == "order"
 
 
 @pytest.mark.parametrize(

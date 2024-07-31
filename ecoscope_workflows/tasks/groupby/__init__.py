@@ -1,3 +1,3 @@
-from ._groupby import split_groups
+from ._groupby import set_groupers, split_groups
 
-__all__ = ["split_groups"]
+__all__ = ["set_groupers", "split_groups"]

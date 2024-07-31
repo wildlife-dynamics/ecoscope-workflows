@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from ecoscope_workflows.annotations import AnyDataFrame
 from ecoscope_workflows.indexes import CompositeFilter, IndexName, IndexValue
@@ -16,20 +16,38 @@ def _groupkey_to_composite_filter(
     return tuple((index, "=", value) for index, value in zip(groupers, index_values))
 
 
+class Grouper(BaseModel):
+    index_name: IndexName
+    display_name: str | None = None
+    help_text: str | None = None
+
+
+@distributed
+def set_groupers(
+    groupers: Annotated[
+        list[str], Field(description="Index(es) and/or column(s) to group by")
+    ],
+    # TODO: support setting display names and help text
+) -> Annotated[
+    list[Grouper],
+    Field(description="Groupers with optional display names and help text"),
+]:
+    return [Grouper(index_name=grouper) for grouper in groupers]
+
+
 @distributed
 def split_groups(
     df: AnyDataFrame,
     groupers: Annotated[
-        str | list[str], Field(description="Index(es) and/or column(s) to group by")
+        list[str], Field(description="Index(es) and/or column(s) to group by")
     ],
 ) -> Annotated[
     dict[CompositeFilter, AnyDataFrame],
     Field(description="Dictionary of indexed groups"),
 ]:
-    _groupers = groupers if isinstance(groupers, list) else [groupers]
     # TODO: configurable cardinality constraint with a default?
-    grouped = df.groupby(_groupers)
+    grouped = df.groupby(groupers)
     return {
-        _groupkey_to_composite_filter(_groupers, index_value): group
+        _groupkey_to_composite_filter(groupers, index_value): group
         for index_value, group in grouped
     }
