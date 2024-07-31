@@ -292,7 +292,7 @@ class DagCompiler(BaseModel):
     spec: Spec
 
     # jinja kwargs; TODO: nest in separate model
-    template: str = "airflow-kubernetes.jinja2"
+    template: str = "script-sequential.jinja2"
     template_dir: pathlib.Path = TEMPLATES
 
     # compilation settings
