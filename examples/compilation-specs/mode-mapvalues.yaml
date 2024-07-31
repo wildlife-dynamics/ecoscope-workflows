@@ -1,0 +1,40 @@
+id: mapvalues_example
+workflow:
+  # ----------------------------------------------------------------------
+  # Mapping over a groups split from a single data source, which are keyed
+  # ----------------------------------------------------------------------
+  # Step 1 - Fetching a single data source
+  - name: Get Observations
+    id: obs
+    task: get_subjectgroup_observations
+  # Step 2 - Setting the groupers
+  - name: Set Groupers
+    id: set_groupers
+    task: set_groupers
+  # Step 3 - Splitting the data source into groups
+  - name: Split Observations
+    id: split_obs
+    task: split_groups
+    with:
+      df: ${{ workflow.obs.return }}
+      groupers: ${{ workflow.set_groupers.return }}
+  # Step 4 - Mapping over the groups
+  - name: Create EcoMap For Each Group
+    id: ecomaps
+    task: draw_ecomap
+    # TODO: `split_obs` will be a keyed iterable of GeoDataFrames, and we want
+    # to map over the values of this iterable. This means we need a new mode,
+    # "mapvalues", which will be implemented as part of this PR. This mode is the
+    # same as map except that it preserves keys, like the following in spark:
+    # https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.RDD.mapValues.html
+    # And here is a nice simple implementation in python for reference:
+    # https://github.com/pangeo-forge/pangeo-forge-recipes/pull/700/files
+    mode: mapvalues
+    iter:
+      # As part of mode: mapvalues, I'm not quite sure if it may be useful to instroduce the
+      # `[*][N]` syntax to access the values of the iterable. The idea here is to allow users
+      # to more easily see what they are iterating over in the context of `mapvalues`, but I'm
+      # not yet sure if it's necessary. (If so, we should add `[*]`, or whatever the "each" syntax is,
+      # to the arg dependencies for `iter`s associated with `mode=map`, if a single iterable value is given,
+      # but not if an array of single values is given.)
+      geodataframe: ${{ workflow.split_obs.return[*][1] }}
