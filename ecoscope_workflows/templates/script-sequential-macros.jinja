@@ -14,8 +14,12 @@
 
 
 {% macro handle_map_mode(t, params) %}
-    {{ t.id }}_partial = partial({{ t.known_task.importable_reference.function }}.replace(validate=True), **params["{{ t.id }}"])
-    {{ t.id }}_mapped_iterable = map({{ t.id }}_partial, {{ t.map_iterable }})
+    {{ t.id }}_mapped_iterable = map(
+        lambda kv: {{ t.known_task.importable_reference.function }}.replace(validate=True)(**kv),
+        {% for arg in t.map_iterable %}
+        [{"{{ arg }}": i} | params["{{ t.id }}"] for i in {{ t.map_iterable[arg] }}],
+        {% endfor %}
+    )
     {{ t.id }} = list({{ t.id }}_mapped_iterable)
 {% endmacro %}
 
