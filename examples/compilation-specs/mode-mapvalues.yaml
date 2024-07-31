@@ -9,7 +9,7 @@ workflow:
     task: get_subjectgroup_observations
   # Step 2 - Setting the groupers
   - name: Set Groupers
-    id: set_groupers
+    id: groupers
     task: set_groupers
   # Step 3 - Splitting the data source into groups
   - name: Split Observations
@@ -17,7 +17,7 @@ workflow:
     task: split_groups
     with:
       df: ${{ workflow.obs.return }}
-      groupers: ${{ workflow.set_groupers.return }}
+      groupers: ${{ workflow.groupers.return }}
   # Step 4 - Mapping over the groups
   - name: Create EcoMap For Each Group
     id: ecomaps
@@ -37,4 +37,4 @@ workflow:
       # not yet sure if it's necessary. (If so, we should add `[*]`, or whatever the "each" syntax is,
       # to the arg dependencies for `iter`s associated with `mode=map`, if a single iterable value is given,
       # but not if an array of single values is given.)
-      geodataframe: ${{ workflow.split_obs.return[*][1] }}
+      geodataframe: ${{ workflow.split_obs.return }}  # or ...return[*][1]

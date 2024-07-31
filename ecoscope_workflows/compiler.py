@@ -164,7 +164,7 @@ class TaskInstance(_ForbidExtra):
         The name of the known task to be executed. This must be a registered known task name.
         """,
     )
-    mode: Literal["call", "map"] = Field(
+    mode: Literal["call", "map", "mapvalues"] = Field(
         default="call",
         description="""\
         The mode in which this task will be executed. In `call` mode, the task will be
