@@ -132,7 +132,7 @@ ArgDependencies = Annotated[
     _ArgDependenciesTypeAlias,
     PlainSerializer(_serialize_arg_deps, return_type=dict[str, str]),
 ]
-SpecName = Annotated[
+SpecId = Annotated[
     str, AfterValidator(_is_not_reserved), AfterValidator(_is_valid_spec_name)
 ]
 
@@ -257,9 +257,9 @@ def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
 
 
 class Spec(_ForbidExtra):
-    name: SpecName = Field(
+    id: SpecId = Field(
         description="""\
-        A unique name for this workflow. This will be used as the name of the compiled DAG.
+        A unique identifier for this workflow. This will be used to identify the compiled DAG.
         It should be a valid python identifier and cannot collide with any: Python identifiers,
         Python keywords, or Python builtins. The maximum length is 64 chars.
         """

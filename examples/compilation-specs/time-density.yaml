@@ -1,4 +1,4 @@
-name: calculate_time_density
+id: calculate_time_density
 workflow:
   - name: Get SubjectGroup Observations from EarthRanger
     id: obs

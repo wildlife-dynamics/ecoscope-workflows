@@ -1,4 +1,4 @@
-name: patrol_workflow
+id: patrol_workflow
 workflow:
   # patrol observations
   - name: Get Patrol Observations from EarthRanger
