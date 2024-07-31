@@ -132,7 +132,7 @@ td_ecomap_html_url: {}
 
 # Parameters for 'Create Time Density Map Widget' using task `create_map_widget_single_view`.
 td_map_widget:
-  title: "Great Map"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+  title: "Time Density Map"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
 
 # Parameters for 'Create Dashboard with Patrol Map Widget' using task `gather_dashboard`.
 patrol_dashboard:
