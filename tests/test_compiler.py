@@ -284,14 +284,10 @@ def test_mode_default():
     "mode, valid_mode",
     [
         ("call", True),
-        ("map", True),
         ("Call", False),
-        ("maptuple", False),
-        ("flatmap", False),
-        ("flatmaptuple", False),
     ],
 )
-def test_set_mode(mode: str, valid_mode: bool):
+def test_set_mode_call(mode: str, valid_mode: bool):
     s = dedent(
         f"""\
         name: calculate_time_density
@@ -305,6 +301,49 @@ def test_set_mode(mode: str, valid_mode: bool):
     if valid_mode:
         spec = Spec(**yaml.safe_load(s))
         assert spec.workflow[0].mode == mode
+    else:
+        with pytest.raises(
+            ValidationError,
+            match=re.escape(
+                f"Input should be 'call' or 'map' [type=literal_error, input_value='{mode}',"
+            ),
+        ):
+            _ = Spec(**yaml.safe_load(s))
+
+
+@pytest.mark.parametrize(
+    "mode, valid_mode",
+    [
+        ("map", True),
+        ("maptuple", False),
+        ("flatmap", False),
+        ("flatmaptuple", False),
+    ],
+)
+def test_set_mode_map(mode: str, valid_mode: bool):
+    s = dedent(
+        f"""\
+        name: calculate_time_density
+        workflow:
+          - name: Get Subjectgroup Observations A
+            id: obs_a
+            task: get_subjectgroup_observations
+          - name: Get Subjectgroup Observations B
+            id: obs_b
+            task: get_subjectgroup_observations
+          - name: Draw Ecomaps
+            id: ecomaps
+            task: draw_ecomap
+            mode: {mode}
+            iter:
+              geodataframe:
+                - ${{{{ workflow.obs_a.return }}}}
+                - ${{{{ workflow.obs_b.return }}}}
+        """
+    )
+    if valid_mode:
+        spec = Spec(**yaml.safe_load(s))
+        assert spec.workflow[2].mode == mode
     else:
         with pytest.raises(
             ValidationError,
