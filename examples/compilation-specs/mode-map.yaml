@@ -1,4 +1,4 @@
-name: map_example
+id: map_example
 workflow:
   - name: Get Observations A
     id: obs_a

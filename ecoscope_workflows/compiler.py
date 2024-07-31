@@ -132,9 +132,13 @@ ArgDependencies = Annotated[
     _ArgDependenciesTypeAlias,
     PlainSerializer(_serialize_arg_deps, return_type=dict[str, str]),
 ]
-SpecName = Annotated[
+SpecId = Annotated[
     str, AfterValidator(_is_not_reserved), AfterValidator(_is_valid_spec_name)
 ]
+
+
+def _dep_as_list(dep: Variable | list[Variable]) -> list[Variable]:
+    return [dep] if not isinstance(dep, list) else dep
 
 
 class TaskInstance(_ForbidExtra):
@@ -196,6 +200,18 @@ class TaskInstance(_ForbidExtra):
     )
 
     @model_validator(mode="after")
+    def check_does_not_depend_on_self(self) -> "Spec":
+        for arg, dep in (self.arg_dependencies | self.map_iterable).items():
+            for d in _dep_as_list(dep):
+                if isinstance(d, TaskIdVariable) and d.value == self.id:
+                    raise ValueError(
+                        f"Task `{self.name}` has an arg dependency that references itself: "
+                        f"`{arg}` is set to depend on the return value of `{d.value}`. "
+                        "Task instances cannot depend on their own return values."
+                    )
+        return self
+
+    @model_validator(mode="after")
     def check_map_iterable(self) -> "Spec":
         if self.mode == "call" and self.map_iterable:
             raise ValueError(
@@ -245,9 +261,9 @@ def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
 
 
 class Spec(_ForbidExtra):
-    name: SpecName = Field(
+    id: SpecId = Field(
         description="""\
-        A unique name for this workflow. This will be used as the name of the compiled DAG.
+        A unique identifier for this workflow. This will be used to identify the compiled DAG.
         It should be a valid python identifier and cannot collide with any: Python identifiers,
         Python keywords, or Python builtins. The maximum length is 64 chars.
         """
@@ -256,14 +272,28 @@ class Spec(_ForbidExtra):
         description="A list of task instances that define the workflow.",
     )
 
+    @property
+    def all_task_ids(self) -> dict[str, str]:
+        return {task_instance.name: task_instance.id for task_instance in self.workflow}
+
+    @model_validator(mode="after")
+    def check_task_ids_dont_collide_with_spec_id(self) -> "Spec":
+        if self.id in self.all_task_ids.values():
+            name = next(name for name, id in self.all_task_ids.items() if id == self.id)
+            raise ValueError(
+                "Task `id`s cannot be the same as the spec `id`. "
+                f"The `id` of task `{name}` is `{self.id}`, which is the same as the spec `id`. "
+                "Please choose a different `id` for this task."
+            )
+        return self
+
     @model_validator(mode="after")
     def check_task_ids_unique(self) -> "Spec":
-        all_ids = {
-            task_instance.name: task_instance.id for task_instance in self.workflow
-        }
-        if len(all_ids.values()) != len(set(all_ids.values())):
-            id_keyed_dict: dict[str, list[str]] = {id: [] for id in all_ids.values()}
-            for name, id in all_ids.items():
+        if len(self.all_task_ids.values()) != len(set(self.all_task_ids.values())):
+            id_keyed_dict: dict[str, list[str]] = {
+                id: [] for id in self.all_task_ids.values()
+            }
+            for name, id in self.all_task_ids.items():
                 id_keyed_dict[id].append(name)
             dupes = {id: names for id, names in id_keyed_dict.items() if len(names) > 1}
             dupes_fmt_string = "; ".join(
@@ -280,10 +310,7 @@ class Spec(_ForbidExtra):
         all_ids = [task_instance.id for task_instance in self.workflow]
         for task_instance in self.workflow:
             for dep in task_instance.arg_dependencies.values():
-                # deps could be `Variable` or `list[Variable]` (i.e. `str` or `list[str]`),
-                # so we cast to list if the former, to handle validation in a uniform way
-                dep_list = [d for d in dep] if isinstance(dep, list) else [dep]
-                for d in dep_list:
+                for d in _dep_as_list(dep):
                     if isinstance(d, TaskIdVariable) and d.value not in all_ids:
                         raise ValueError(
                             f"Task `{task_instance.name}` has an arg dependency `{d.value}` that is "
@@ -291,8 +318,43 @@ class Spec(_ForbidExtra):
                         )
         return self
 
-    # TODO: on __init__ (or in cached_property), sort tasks
-    # topologically so we know what order to invoke them in dag
+    @property
+    def task_instance_dependencies(self) -> dict[str, list[str]]:
+        return {
+            task_instance.id: (
+                [
+                    d.value
+                    for dep in task_instance.arg_dependencies.values()
+                    for d in _dep_as_list(dep)
+                    if isinstance(d, TaskIdVariable)
+                ]
+                + [
+                    d.value
+                    for dep in task_instance.map_iterable.values()
+                    for d in _dep_as_list(dep)
+                    if isinstance(d, TaskIdVariable)
+                ]
+            )
+            for task_instance in self.workflow
+        }
+
+    @model_validator(mode="after")
+    def check_task_instances_are_in_topological_order(self) -> "Spec":
+        seen_task_instance_ids = set()
+        for task_instance_id, deps in self.task_instance_dependencies.items():
+            seen_task_instance_ids.add(task_instance_id)
+            for dep_id in deps:
+                if dep_id not in seen_task_instance_ids:
+                    dep_name = next(ti.name for ti in self.workflow if ti.id == dep_id)
+                    task_instance_name = next(
+                        ti.name for ti in self.workflow if ti.id == task_instance_id
+                    )
+                    raise ValueError(
+                        f"Task instances are not in topological order. "
+                        f"`{task_instance_name}` depends on `{dep_name}`, "
+                        f"but `{dep_name}` is defined after `{task_instance_name}`."
+                    )
+        return self
 
 
 class DagCompiler(BaseModel):

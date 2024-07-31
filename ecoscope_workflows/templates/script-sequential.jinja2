@@ -22,7 +22,7 @@ from ecoscope_workflows.testing import create_distributed_task_magicmock  # 🧪
 {% endfor -%}
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    g = parser.add_argument_group("{{ spec.name }}")
+    g = parser.add_argument_group("{{ spec.id }}")
     g.add_argument(
         "--config-file",
         dest="config_file",

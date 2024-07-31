@@ -118,8 +118,8 @@ declares a step of a workflow, and has the following fields:
 A simple workflow example is given below, with comments providing further description:
 
 ```yaml
-# the workflow name
-name: calculate_time_density
+# a unique identifier for the workflow. must be a valid python identifier.
+id: calculate_time_density
 # the list of task instances; note all of these will default to `mode: "call"`
 workflow:
   # root tasks (which have no dependencies on the output of other tasks)

@@ -1,0 +1,41 @@
+id: calculate_time_density
+workflow:
+  - name: Get SubjectGroup Observations from EarthRanger
+    id: obs
+    task: get_subjectgroup_observations
+  - name: Transform Observations to Relocations
+    id: reloc
+    task: process_relocations
+    with:
+      observations: ${{ workflow.obs.return }}
+  - name: Transform Relocations to Trajectories
+    id: traj
+    task: relocations_to_trajectory
+    with:
+      relocations: ${{ workflow.reloc.return }}
+  - name: Calculate Time Density from Trajectory
+    id: td
+    task: calculate_time_density
+    with:
+      trajectory_gdf: ${{ workflow.traj.return }}
+  - name: Draw Ecomap from Time Density
+    id: td_ecomap
+    task: draw_ecomap
+    with:
+      geodataframe: ${{ workflow.td.return }}
+  - name: Persist Ecomap as Text
+    id: td_ecomap_html_url
+    task: persist_text
+    with:
+      text: ${{ workflow.td_ecomap.return }}
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+  - name: Create Time Density Map Widget
+    id: td_map_widget
+    task: create_map_widget_single_view
+    with:
+      data: ${{ workflow.td_ecomap_html_url.return }}
+  - name: Create Dashboard with Time Density Map Widget
+    id: td_dashboard
+    task: gather_dashboard
+    with:
+      widgets: ${{ workflow.td_map_widget.return }}
