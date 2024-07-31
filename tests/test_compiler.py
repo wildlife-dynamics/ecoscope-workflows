@@ -400,3 +400,30 @@ def test_task_id_collides_with_spec_id_raises():
         ),
     ):
         _ = Spec(**yaml.safe_load(s))
+
+
+@pytest.mark.xfail(reason="Topological sorting checks are not yet implemented.")
+def test_wrong_topological_order_raises():
+    s = dedent(
+        """\
+        id: calculate_time_density
+        workflow:
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            with:
+              observations: ${{ workflow.obs.return }}
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape(
+            "Task instances are not in topological order. "
+            "Task `Process Relocations` depends on task `Get Subjectgroup Observations`, "
+            "but `Get Subjectgroup Observations` is defined after `Process Relocations`."
+        ),
+    ):
+        _ = Spec(**yaml.safe_load(s))
