@@ -95,15 +95,14 @@ def my_cool_analysis_task(
 
 Compilation specs define a DAG of known [tasks](#tasks), which can either be built-ins,
 or tasks registered via the [extensible task registry](#extensible-task-registry).
-
-Each task is referenced in the spec as part of a "task instance" item, which declares a step
-of a workflow that the task is used for, and is defined as an object with the following fields:
+Tasks are composed into workflows as a sequence of "task instance" objects, each of which
+declares a step of a workflow, and has the following fields:
 
 ```yaml
 - name:  # [required] a human readable name for the step
   id:  # [required] a short, unique id for the step
   task:  # [required] the name of the task as it appears in the task registry
-  mode:  # [optional] one of "call" or "map"; see below for more detail
+  mode:  # [optional] one of "call" or "map"; defaults to "call"
   iter:
     # [required if mode="map"; not allowed if mode="call"]
     # a key value pair defining the iterable to map over in mode "map"
@@ -113,8 +112,8 @@ of a workflow that the task is used for, and is defined as an object with the fo
     # <k>: <v>
 ```
 
-> **Note**: For more complex usage, including multiple DAG branches, `mode: "map"`, etc.,
-> please refer to the `examples/` directory of this repository.
+> **Note**: For more complex usage, including multiple DAG branches, `mode: "map"`,
+> use of environment variables, etc., please refer to the `examples/` directory of this repository.
 
 A simple workflow example is given below, with comments providing further description:
 
@@ -124,7 +123,7 @@ name: calculate_time_density
 # the list of task instances; note all of these will default to `mode: "call"`
 workflow:
   # root tasks (which have no dependencies on the output of other tasks)
-  # do not require a `with` field (as we will see below)
+  # do not require a `with` field (all parameters will be user-defined)
   - name: Get SubjectGroup Observations from EarthRanger
     id: obs
     task: get_subjectgroup_observations
