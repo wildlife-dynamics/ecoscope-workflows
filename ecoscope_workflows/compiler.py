@@ -65,6 +65,20 @@ def _is_valid_env_var_name(name: str) -> bool:
 
 
 def _split_indexed_suffix(s: str) -> tuple[str, str]:
+    """Split an indexed suffix into the base suffix and the index.
+    If the suffix is not indexed, return a 2-tuple of empty strings.
+
+    Examples:
+    ```python
+    >>> _split_indexed_suffix("return[0]")
+    ('return', '0')
+    >>> _split_indexed_suffix("return[1]")
+    ('return', '1')
+    >>> _split_indexed_suffix("return")
+    ('', '')
+
+    ```
+    """
     match = re.match(SPLIT_SQ_BRACKETS, s)
     if match:
         parts = match.groups()
