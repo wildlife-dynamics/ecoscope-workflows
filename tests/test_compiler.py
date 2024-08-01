@@ -16,18 +16,22 @@ from ecoscope_workflows.registry import KnownTask, known_tasks
 
 
 @pytest.mark.parametrize(
-    "s, expected_value, expected_suffix",
+    "s, expected_value, expected_suffix, expected_tuple_index",
     [
-        ("${{ workflow.obs.return }}", "obs", "return"),
-        ("${{ workflow.relocs.return }}", "relocs", "return"),
-        ("${{ workflow.traj.return }}", "traj", "return"),
+        ("${{ workflow.obs.return }}", "obs", "return", None),
+        ("${{ workflow.relocs.return }}", "relocs", "return", None),
+        ("${{ workflow.traj.return }}", "traj", "return", None),
+        ("${{ workflow.ecomaps.return[0] }}", "ecomaps", "return", 0),
+        ("${{ workflow.ecomaps.return[1] }}", "ecomaps", "return", 1),
+        ("${{ workflow.ecomaps.return[2] }}", "ecomaps", "return", 2),
     ],
 )
-def test__parse_variable(s, expected_value, expected_suffix):
+def test__parse_variable(s, expected_value, expected_suffix, expected_tuple_index):
     tiv = _parse_variable(s)
     assert isinstance(tiv, TaskIdVariable)
     assert tiv.value == expected_value
     assert tiv.suffix == expected_suffix
+    assert tiv.tuple_index == expected_tuple_index
 
 
 def test_task_instance_known_task_parsing():

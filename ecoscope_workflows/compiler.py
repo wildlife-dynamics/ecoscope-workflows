@@ -67,7 +67,7 @@ def _parse_variable(s: str) -> TaskIdVariable | EnvVariable:
                 index = int(index_match.group(2))
             else:
                 index = None
-            return TaskIdVariable(value=task_id, suffix=suffix, index=index)
+            return TaskIdVariable(value=task_id, suffix=suffix, tuple_index=index)
         case ["env", env_var_name]:
             return EnvVariable(value=env_var_name)
         case _:
