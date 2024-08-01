@@ -42,5 +42,5 @@ workflow:
     task: create_map_widget_single_view
     mode: map
     iter:
-      # view: ${{ workflow.ecomaps_persist.return }}  # or ...return[*][0]
+      view: ${{ workflow.ecomaps_persist.return }}  # or ...return[*][0]
       data: ${{ workflow.ecomaps_persist.return }}  # or ...return[*][1]

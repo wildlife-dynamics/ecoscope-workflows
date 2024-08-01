@@ -222,12 +222,12 @@ class TaskInstance(_ForbidExtra):
             raise ValueError(
                 "In `map` mode, the `iter` field must be specified with an iterable."
             )
-        if len(self.map_iterable) > 1:
-            raise ValueError(
-                "The `iter` field must have only one key-value pair. "
-                "To pass additional keyword arguments to each mapped invocation, "
-                "provide them in the `with` field."
-            )
+        # if len(self.map_iterable) > 1:
+        #     raise ValueError(
+        #         "The `iter` field must have only one key-value pair. "
+        #         "To pass additional keyword arguments to each mapped invocation, "
+        #         "provide them in the `with` field."
+        #     )
         return self
 
     @computed_field  # type: ignore[misc]
