@@ -16,7 +16,6 @@ from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
-from ecoscope_workflows.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows.tasks.analysis import calculate_time_density
 from ecoscope_workflows.tasks.results import gather_dashboard
 
@@ -254,69 +253,6 @@ patrol_events_map_widget = create_map_widget_single_view(
 )
 
 # %% [markdown]
-# ## Get SubjectGroup Observations from EarthRanger
-
-# %%
-# parameters
-
-obs_params = dict(
-    client=...,
-    subject_group_name=...,
-    include_inactive=...,
-    since=...,
-    until=...,
-)
-
-# %%
-# call the task
-
-obs = get_subjectgroup_observations(
-    **obs_params,
-)
-
-# %% [markdown]
-# ## Transform Observations to Relocations
-
-# %%
-# parameters
-
-reloc_params = dict(
-    filter_point_coords=...,
-    relocs_columns=...,
-)
-
-# %%
-# call the task
-
-reloc = process_relocations(
-    observations=obs,
-    **reloc_params,
-)
-
-# %% [markdown]
-# ## Transform Relocations to Trajectories
-
-# %%
-# parameters
-
-traj_params = dict(
-    min_length_meters=...,
-    max_length_meters=...,
-    max_time_secs=...,
-    min_time_secs=...,
-    max_speed_kmhr=...,
-    min_speed_kmhr=...,
-)
-
-# %%
-# call the task
-
-traj = relocations_to_trajectory(
-    relocations=reloc,
-    **traj_params,
-)
-
-# %% [markdown]
 # ## Calculate Time Density from Trajectory
 
 # %%
@@ -336,7 +272,7 @@ td_params = dict(
 # call the task
 
 td = calculate_time_density(
-    trajectory_gdf=traj,
+    trajectory_gdf=patrol_traj,
     **td_params,
 )
 

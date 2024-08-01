@@ -10,7 +10,6 @@ from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
-from ecoscope_workflows.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows.tasks.analysis import calculate_time_density
 from ecoscope_workflows.tasks.results import gather_dashboard
 
@@ -82,22 +81,8 @@ if __name__ == "__main__":
         **params["patrol_events_map_widget"],
     )
 
-    obs = get_subjectgroup_observations.replace(validate=True)(
-        **params["obs"],
-    )
-
-    reloc = process_relocations.replace(validate=True)(
-        observations=obs,
-        **params["reloc"],
-    )
-
-    traj = relocations_to_trajectory.replace(validate=True)(
-        relocations=reloc,
-        **params["traj"],
-    )
-
     td = calculate_time_density.replace(validate=True)(
-        trajectory_gdf=traj,
+        trajectory_gdf=patrol_traj,
         **params["td"],
     )
 
