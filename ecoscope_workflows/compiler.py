@@ -76,6 +76,22 @@ def _split_indexed_suffix(s: str) -> tuple[str, str]:
 
 
 def _parse_variable(s: str) -> TaskIdVariable | EnvVariable:
+    """Parse a variable reference from a string into a `TaskIdVariable` or `EnvVariable`.
+
+    Examples:
+
+    ```python
+    >>> _parse_variable("${{ workflow.task1.return }}")
+    TaskIdVariable(value='task1', suffix='return', tuple_index=None)
+    >>> _parse_variable("${{ workflow.task1.return[0] }}")
+    TaskIdVariable(value='task1', suffix='return', tuple_index=0)
+    >>> _parse_variable("${{ workflow.task1.return[1] }}")
+    TaskIdVariable(value='task1', suffix='return', tuple_index=1)
+    >>> _parse_variable("${{ env.MY_ENV_VAR }}")
+    EnvVariable(value='MY_ENV_VAR')
+
+    ```
+    """
     if not (s.startswith("${{") and s.endswith("}}")):
         raise ValueError(
             f"`{s}` is not a valid variable. " "Variables must be wrapped in `${{ }}`."
