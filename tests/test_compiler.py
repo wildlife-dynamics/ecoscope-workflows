@@ -7,6 +7,7 @@ from pydantic_core import ValidationError
 
 from ecoscope_workflows.compiler import (
     DagCompiler,
+    EnvVariable,
     Spec,
     TaskInstance,
     TaskIdVariable,
@@ -37,22 +38,41 @@ def test__split_indexed_suffix(s, expected_suffix, expected_tuple_index):
 
 
 @pytest.mark.parametrize(
-    "s, expected_value, expected_suffix, expected_tuple_index",
+    "expected_type, s, expected_value, expected_suffix, expected_tuple_index",
     [
-        ("${{ workflow.obs.return }}", "obs", "return", None),
-        ("${{ workflow.relocs.return }}", "relocs", "return", None),
-        ("${{ workflow.traj.return }}", "traj", "return", None),
-        ("${{ workflow.ecomaps.return[0] }}", "ecomaps", "return", 0),
-        ("${{ workflow.ecomaps.return[1] }}", "ecomaps", "return", 1),
-        ("${{ workflow.ecomaps.return[2] }}", "ecomaps", "return", 2),
+        # task id variables, no tuple index
+        (TaskIdVariable, "${{ workflow.obs.return }}", "obs", "return", None),
+        (TaskIdVariable, "${{ workflow.relocs.return }}", "relocs", "return", None),
+        (TaskIdVariable, "${{ workflow.traj.return }}", "traj", "return", None),
+        # task id variables, with tuple index
+        (TaskIdVariable, "${{ workflow.ecomaps.return[0] }}", "ecomaps", "return", 0),
+        (TaskIdVariable, "${{ workflow.ecomaps.return[1] }}", "ecomaps", "return", 1),
+        (TaskIdVariable, "${{ workflow.ecomaps.return[2] }}", "ecomaps", "return", 2),
+        # env variables
+        (
+            EnvVariable,
+            "${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}",
+            "ECOSCOPE_WORKFLOWS_RESULTS",
+            None,
+            None,
+        ),
     ],
 )
-def test__parse_variable(s, expected_value, expected_suffix, expected_tuple_index):
-    tiv = _parse_variable(s)
-    assert isinstance(tiv, TaskIdVariable)
-    assert tiv.value == expected_value
-    assert tiv.suffix == expected_suffix
-    assert tiv.tuple_index == expected_tuple_index
+def test__parse_variable(
+    expected_type, s, expected_value, expected_suffix, expected_tuple_index
+):
+    parsed = _parse_variable(s)
+    assert isinstance(parsed, expected_type)
+    if isinstance(parsed, TaskIdVariable):
+        assert parsed.value == expected_value
+        assert parsed.suffix == expected_suffix
+        assert parsed.tuple_index == expected_tuple_index
+    elif isinstance(parsed, EnvVariable):
+        assert parsed.value == expected_value
+        assert not hasattr(parsed, "suffix")
+        assert not hasattr(parsed, "tuple_index")
+    else:
+        raise ValueError(f"Unexpected type: {type(parsed)}")
 
 
 def test_task_instance_known_task_parsing():
