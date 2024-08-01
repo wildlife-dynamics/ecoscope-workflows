@@ -400,7 +400,7 @@ def test_set_mode_call(mode: str, valid_mode: bool):
         with pytest.raises(
             ValidationError,
             match=re.escape(
-                f"Input should be 'call' or 'map' [type=literal_error, input_value='{mode}',"
+                f"Input should be 'call', 'map' or 'mapvalues' [type=literal_error, input_value='{mode}',"
             ),
         ):
             _ = Spec(**yaml.safe_load(s))
@@ -443,7 +443,7 @@ def test_set_mode_map(mode: str, valid_mode: bool):
         with pytest.raises(
             ValidationError,
             match=re.escape(
-                f"Input should be 'call' or 'map' [type=literal_error, input_value='{mode}',"
+                f"Input should be 'call', 'map' or 'mapvalues' [type=literal_error, input_value='{mode}',"
             ),
         ):
             _ = Spec(**yaml.safe_load(s))
