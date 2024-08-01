@@ -1,6 +1,6 @@
 id: patrol_workflow
 workflow:
-  # get patrol observations
+  # patrol observations
   - name: Get Patrol Observations from EarthRanger
     id: patrol_obs
     task: get_patrol_observations
