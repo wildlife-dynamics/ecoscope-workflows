@@ -199,6 +199,8 @@ def _is_valid_spec_name(s: str):
     return s
 
 
+# TODO: make this subscriptable with a typevar, like `DataFrame`, and then for MapIterable
+# let _MapIterableArgDependenciesTypeAlias support only task id variables
 Variable = Annotated[TaskIdVariable | EnvVariable, BeforeValidator(_parse_variables)]
 TaskInstanceId = Annotated[
     str,
@@ -208,6 +210,9 @@ TaskInstanceId = Annotated[
 KnownTaskName = Annotated[str, AfterValidator(_is_known_task_name)]
 KnownTaskArgName: TypeAlias = str
 _ArgDependenciesTypeAlias: TypeAlias = dict[KnownTaskArgName, Variable | list[Variable]]
+_MapIterableArgDependenciesTypeAlias: TypeAlias = dict[
+    KnownTaskArgName, Variable | list[Variable]
+]
 
 
 def _serialize_arg_deps(arg_deps: _ArgDependenciesTypeAlias) -> dict[str, str]:
@@ -316,7 +321,7 @@ class TaskInstance(_ForbidExtra):
                 "In `map` mode, the `iter` field must be specified with an iterable."
             )
         if len(self.map_iterable) > 1 and not all(
-            v == list(self.map_iterable.values())[0]
+            v.value == list(self.map_iterable.values())[0].value  # TODO: test this
             for v in self.map_iterable.values()
             # TODO: this is for unpacking so they also have to be indexed in this case
         ):
