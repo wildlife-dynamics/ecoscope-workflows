@@ -11,8 +11,16 @@ from ecoscope_workflows.compiler import (
     TaskInstance,
     TaskIdVariable,
     _parse_variable,
+    _split_indexed_suffix,
 )
 from ecoscope_workflows.registry import KnownTask, known_tasks
+
+
+def test__split_indexed_suffix():
+    s = "return[0]"
+    suffix, tuple_index = _split_indexed_suffix(s)
+    assert suffix == "return"
+    assert int(tuple_index) == 0
 
 
 @pytest.mark.parametrize(
