@@ -233,11 +233,36 @@ def _validate_iterable_arg_deps(
 
     Examples:
 
+    The following is the most basic case, where the `iter` field is a single reference to
+    another task's return value. In this case, the return value of `task1` referenced here
+    would be expected to be an iterable:
+
     ```python
-    >>> _validate_iterable_arg_deps({"arg1": TaskIdVariable(value='task1', suffix='return', tuple_index=None)})
+    >>> import yaml
+    >>> s = '''
+    ... iter:
+    ...   arg1: ${{ workflow.task1.return }}
+    ... '''
+    >>> parsed = {k: _parse_variable(v) for k, v in yaml.safe_load(s)["iter"].items()}
+    >>> parsed
+    {'arg1': TaskIdVariable(value='task1', suffix='return', tuple_index=None)}
+    >>> _validate_iterable_arg_deps(parsed)
     {'arg1': TaskIdVariable(value='task1', suffix='return', tuple_index=None)}
 
+    ```
+
+    ```python
+    >>> import yaml
+    >>> s = '''
+    ... iter:
+    ...   view: ${{ workflow.ecomaps_persist.return[0] }}
+    ...   data: ${{ workflow.ecomaps_persist.return[1] }}
+    ... '''
+
+    ```
+
     """
+
     if len(iter_arg_deps) > 1:
         assert not any(isinstance(v, list) for v in iter_arg_deps.values()), (
             "If multiple arguments are passed to the `iter` field, they must all "
