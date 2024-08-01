@@ -199,9 +199,8 @@ def _is_valid_spec_name(s: str):
     return s
 
 
-# TODO: make this subscriptable with a typevar, like `DataFrame`, and then for MapIterable
-# let _MapIterableArgDependenciesTypeAlias support only task id variables
 Variable = Annotated[TaskIdVariable | EnvVariable, BeforeValidator(_parse_variables)]
+IterableVariable = Annotated[TaskIdVariable, BeforeValidator(_parse_variable)]
 TaskInstanceId = Annotated[
     str,
     AfterValidator(_is_not_reserved),
@@ -209,9 +208,10 @@ TaskInstanceId = Annotated[
 ]
 KnownTaskName = Annotated[str, AfterValidator(_is_known_task_name)]
 KnownTaskArgName: TypeAlias = str
+
 _ArgDependenciesTypeAlias: TypeAlias = dict[KnownTaskArgName, Variable | list[Variable]]
-_MapIterableArgDependenciesTypeAlias: TypeAlias = dict[
-    KnownTaskArgName, Variable | list[Variable]
+_IterableArgDependenciesTypeAlias: TypeAlias = dict[
+    KnownTaskArgName, IterableVariable | list[IterableVariable]
 ]
 
 
@@ -226,9 +226,48 @@ def _serialize_arg_deps(arg_deps: _ArgDependenciesTypeAlias) -> dict[str, str]:
     }
 
 
+def _validate_iterable_arg_deps(
+    iter_arg_deps: _IterableArgDependenciesTypeAlias,
+) -> _IterableArgDependenciesTypeAlias:
+    """
+
+    Examples:
+
+    ```python
+    >>> _validate_iterable_arg_deps({"arg1": TaskIdVariable(value='task1', suffix='return', tuple_index=None)})
+    {'arg1': TaskIdVariable(value='task1', suffix='return', tuple_index=None)}
+
+    """
+    if len(iter_arg_deps) > 1:
+        assert not any(isinstance(v, list) for v in iter_arg_deps.values()), (
+            "If multiple arguments are passed to the `iter` field, they must all "
+            "be references to task instance return values. Arrays are not allowed in "
+            "this context."
+        )
+        # TODO: this is for unpacking so they also have to be indexed in this case
+        all_values = [
+            v.value if isinstance(v, TaskIdVariable) else None
+            for v in iter_arg_deps.values()
+        ]  # TODO: test this
+        if not len(set(all_values)) == 1:
+            raise ValueError(
+                # Note: this is disallowed becuase it implies a cartesian product, which
+                # is not something we've decided to support yet.
+                "If multiple arguments are passed to the `iter` field, they must all "
+                "refer to the same task instance's return value. Got references to "
+                f"multiple task instances: {iter_arg_deps.values()}"
+            )
+    return iter_arg_deps
+
+
 ArgDependencies = Annotated[
     _ArgDependenciesTypeAlias,
     PlainSerializer(_serialize_arg_deps, return_type=dict[str, str]),
+]
+IterableArgDependencies = Annotated[
+    _IterableArgDependenciesTypeAlias,
+    PlainSerializer(_serialize_arg_deps, return_type=dict[str, str]),
+    AfterValidator(_validate_iterable_arg_deps),
 ]
 SpecId = Annotated[
     str, AfterValidator(_is_not_reserved), AfterValidator(_is_valid_spec_name)
@@ -271,7 +310,7 @@ class TaskInstance(_ForbidExtra):
         in the `with` field.
         """,
     )
-    map_iterable: ArgDependencies = Field(
+    map_iterable: IterableArgDependencies = Field(
         default_factory=dict,
         alias="iter",
         description="""\
@@ -310,27 +349,15 @@ class TaskInstance(_ForbidExtra):
         return self
 
     @model_validator(mode="after")
-    def check_map_iterable(self) -> "Spec":
+    def check_map_iterable_mode_compatibility(self) -> "Spec":
         if self.mode == "call" and self.map_iterable:
             raise ValueError(
                 "In `call` mode, the `iter` field must be empty. "
                 "Specify keyword arguments in the `with` field."
             )
-        elif self.mode == "map" and not self.map_iterable:
+        elif self.mode in ("map", "mapvalues") and not self.map_iterable:
             raise ValueError(
-                "In `map` mode, the `iter` field must be specified with an iterable."
-            )
-        if len(self.map_iterable) > 1 and not all(
-            v.value == list(self.map_iterable.values())[0].value  # TODO: test this
-            for v in self.map_iterable.values()
-            # TODO: this is for unpacking so they also have to be indexed in this case
-        ):
-            raise ValueError(
-                # Note: this is disallowed becuase it implies a cartesian product, which
-                # is not something we've decided to support yet.
-                "If multiple arguments are passed to the `iter` field, they must all "
-                "refer to the same task instance's return value. Got references to "
-                f"multiple task instances: {self.map_iterable.values()}"
+                "In `map` or `mapvalues` mode, the `iter` field must be specified with an iterable."
             )
         return self
 
