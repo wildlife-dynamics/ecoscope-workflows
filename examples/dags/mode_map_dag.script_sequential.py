@@ -35,10 +35,10 @@ if __name__ == "__main__":
         lambda kw: draw_ecomap.replace(validate=True)(**kw),
         [
             {
-                "geodataframe": i,
+                "geodataframe": geodataframe,
             }
             | params["ecomaps"]
-            for i in [obs_a, obs_b, obs_c]
+            for geodataframe in [obs_a, obs_b, obs_c]
         ],
     )
     ecomaps = list(ecomaps_mapped_iterable)
@@ -47,11 +47,11 @@ if __name__ == "__main__":
         lambda kw: persist_text.replace(validate=True)(**kw),
         [
             {
-                "text": i,
+                "text": text,
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
             | params["td_ecomap_html_url"]
-            for i in ecomaps
+            for text in ecomaps
         ],
     )
     td_ecomap_html_url = list(td_ecomap_html_url_mapped_iterable)

@@ -29,7 +29,8 @@
             } | params["{{ t.id }}"]
             {% set iterable = t.map_iterable.values() | list | first %}
             {% if t.map_iterable | length == 1 %}
-            for {{ arg }} in {{ iterable }}
+            {% set only_arg = t.map_iterable.keys() | list | first %}
+            for {{ only_arg }} in {{ iterable }}
             {% else %}
             for ({% for arg in t.map_iterable %}{{ arg }}{% if not loop.last%},{% endif %} {% endfor %}) in {{ iterable }}
             {% endif %}
