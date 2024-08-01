@@ -16,11 +16,24 @@ from ecoscope_workflows.compiler import (
 from ecoscope_workflows.registry import KnownTask, known_tasks
 
 
-def test__split_indexed_suffix():
-    s = "return[0]"
+@pytest.mark.parametrize(
+    "s, expected_suffix, expected_tuple_index",
+    [
+        ("return", "", ""),  # no re.match, bc no index
+        ("return[ABC]", "", ""),  # no re.match, bc ABC is not a digit
+        ("return0]", "", ""),  # no re.match, bc no opening bracket
+        ("return[0", "", ""),  # no re.match, bc no closing bracket
+        ("[0]return", "", ""),  # no re.match, bc starts with brackets
+        ("hello[0]world", "", ""),  # no re.match, bc not even close
+        ("return[0]", "return", "0"),
+        ("return[1]", "return", "1"),
+        ("return[2]", "return", "2"),
+    ],
+)
+def test__split_indexed_suffix(s, expected_suffix, expected_tuple_index):
     suffix, tuple_index = _split_indexed_suffix(s)
-    assert suffix == "return"
-    assert int(tuple_index) == 0
+    assert suffix == expected_suffix
+    assert tuple_index == expected_tuple_index
 
 
 @pytest.mark.parametrize(

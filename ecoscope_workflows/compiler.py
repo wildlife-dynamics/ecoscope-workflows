@@ -90,7 +90,8 @@ def _parse_variable(s: str) -> TaskIdVariable | EnvVariable:
         case _:
             raise ValueError(
                 "Unrecognized variable format. Expected one of: "
-                "`${{ workflow.<task_id>.<suffix> }}`, "
+                "`${{ workflow.<task_id>.return }}`, "
+                "`${{ workflow.<task_id>.return[<tuple_index>] }}`, "
                 "`${{ env.<ENV_VAR_NAME> }}`."
             )
 
