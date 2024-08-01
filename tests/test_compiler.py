@@ -76,13 +76,16 @@ def test__parse_variable(
         ("${{ workflow.ecomaps.return", "curly_brace"),  # no closing brackets
         ("{{ workflow.ecomaps.return", "curly_brace"),  # missing leading dollar sign
         ("${ workflow.ecomaps.return }", "curly_brace"),  # single braces not supported
-        # inner value issues
+        # inner value issues, task id variables
         ("${{ unknown.SOME_VAR }}", "inner_value"),  # `unknown` not a namespace
         ("${{ workflows.abc.return }}", "inner_value"),  # `workflows` not a namespace
-        ("${{ environment.SOME_VAR }}", "inner_value"),  # `environment` not a namespace
-        ("${{ env.SOME_VAR[0] }}", "inner_value"),  # tuple index on an env vars
         ("${{ workflow.ecomaps.return[ABC] }}", "inner_value"),  # ABC is not a digit
         ("${{ workflow.ecomaps.return[1 }}", "inner_value"),  # no index closing bracket
+        # inner value issues, env variables
+        ("${{ environment.SOME_VAR }}", "inner_value"),  # `environment` not a namespace
+        ("${{ env.SOME_VAR[0] }}", "inner_value"),  # tuple index on an env vars
+        ("${{ env.1SOME_VAR[1] }}", "inner_value"),  # starts with a digit
+        ("${{ env.SOME_%_VAR }}", "inner_value"),  # has special character
     ],
 )
 def test__parse_varaible_raises(s, failure_mode):
@@ -94,7 +97,7 @@ def test__parse_varaible_raises(s, failure_mode):
             "Unrecognized variable format. Expected one of: "
             "`${{ workflow.<task_id>.return }}`, "
             "`${{ workflow.<task_id>.return[<tuple_index>] }}`, "
-            "`${{ env.<ENV_VAR_NAME> }}`."
+            "`${{ env.<VALID_ENV_VAR_NAME> }}`."
         ),
     }
     with pytest.raises(ValueError, match=match[failure_mode]):

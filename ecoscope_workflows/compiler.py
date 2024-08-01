@@ -56,6 +56,14 @@ class EnvVariable(WorkflowVariableBase):
 SPLIT_SQ_BRACKETS = re.compile(r"(.+)\[(\d+)\]$")
 
 
+def _is_indexed(s: str) -> bool:
+    return bool(re.match(SPLIT_SQ_BRACKETS, s))
+
+
+def _is_valid_env_var_name(name: str) -> bool:
+    return bool(re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", name))
+
+
 def _split_indexed_suffix(s: str) -> tuple[str, str]:
     match = re.match(SPLIT_SQ_BRACKETS, s)
     if match:
@@ -85,14 +93,16 @@ def _parse_variable(s: str) -> TaskIdVariable | EnvVariable:
                 suffix=_split_indexed_suffix(suffix)[0],
                 tuple_index=_split_indexed_suffix(suffix)[1],
             )
-        case ["env", env_var_name]:
+        case ["env", env_var_name] if (
+            _is_valid_env_var_name(env_var_name) and not _is_indexed(env_var_name)
+        ):
             return EnvVariable(value=env_var_name)
         case _:
             raise ValueError(
                 "Unrecognized variable format. Expected one of: "
                 "`${{ workflow.<task_id>.return }}`, "
                 "`${{ workflow.<task_id>.return[<tuple_index>] }}`, "
-                "`${{ env.<ENV_VAR_NAME> }}`."
+                "`${{ env.<VALID_ENV_VAR_NAME> }}`."
             )
 
 
