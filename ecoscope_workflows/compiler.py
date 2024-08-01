@@ -57,10 +57,37 @@ SPLIT_SQ_BRACKETS = re.compile(r"(.+)\[(\d+)\]$")
 
 
 def _is_indexed(s: str) -> bool:
+    """Check if a string is indexed, e.g. `return[0]`.
+
+    Examples:
+    ```python
+    >>> _is_indexed("return[0]")
+    True
+    >>> _is_indexed("return[1]")
+    True
+    >>> _is_indexed("return")
+    False
+
+    ```
+    """
     return bool(re.match(SPLIT_SQ_BRACKETS, s))
 
 
 def _is_valid_env_var_name(name: str) -> bool:
+    """Check if a string is a valid environment variable name.
+
+    Examples:
+    ```python
+    >>> _is_valid_env_var_name("MY_ENV_VAR")
+    True
+    >>> _is_valid_env_var_name("MY_ENV_VAR_1")
+    True
+    >>> _is_valid_env_var_name("1_MY_ENV_VAR")
+    False
+
+    ```
+    """
+
     return bool(re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", name))
 
 
