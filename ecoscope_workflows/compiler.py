@@ -222,12 +222,18 @@ class TaskInstance(_ForbidExtra):
             raise ValueError(
                 "In `map` mode, the `iter` field must be specified with an iterable."
             )
-        # if len(self.map_iterable) > 1:
-        #     raise ValueError(
-        #         "The `iter` field must have only one key-value pair. "
-        #         "To pass additional keyword arguments to each mapped invocation, "
-        #         "provide them in the `with` field."
-        #     )
+        if len(self.map_iterable) > 1 and not all(
+            v == list(self.map_iterable.values())[0]
+            for v in self.map_iterable.values()
+            # TODO: this is for unpacking so they also have to be indexed in this case
+        ):
+            raise ValueError(
+                # Note: this is disallowed becuase it implies a cartesian product, which
+                # is not something we've decided to support yet.
+                "If multiple arguments are passed to the `iter` field, they must all "
+                "refer to the same task instance's return value. Got references to "
+                f"multiple task instances: {self.map_iterable.values()}"
+            )
         return self
 
     @computed_field  # type: ignore[misc]
