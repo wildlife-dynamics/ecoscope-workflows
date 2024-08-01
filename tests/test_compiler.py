@@ -82,10 +82,7 @@ def test__parse_variable(
         ("${{ environment.SOME_VAR }}", "inner_value"),  # `environment` not a namespace
         ("${{ env.SOME_VAR[0] }}", "inner_value"),  # tuple index on an env vars
         ("${{ workflow.ecomaps.return[ABC] }}", "inner_value"),  # ABC is not a digit
-        (
-            "${{ workflow.ecomaps.return[1 }}",
-            "inner_value",
-        ),  # no closing bracket on tuple index
+        ("${{ workflow.ecomaps.return[1 }}", "inner_value"),  # no index closing bracket
     ],
 )
 def test__parse_varaible_raises(s, failure_mode):
