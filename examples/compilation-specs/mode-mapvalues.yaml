@@ -24,26 +24,23 @@ workflow:
     task: draw_ecomap
     mode: mapvalues
     iter:
-      # As part of mode: mapvalues, I'm not quite sure if it may be useful to instroduce the
-      # `[*][N]` syntax to access the values of the iterable. The idea here is to allow users
-      # to more easily see what they are iterating over in the context of `mapvalues`, but I'm
-      # not yet sure if it's necessary. (If so, we should add `[*]`, or whatever the "each" syntax is,
-      # to the arg dependencies for `iter`s associated with `mode=map`, if a single iterable value is given,
-      # but not if an array of single values is given.)
-      geodataframe: ${{ workflow.split_obs.return }}  # or ...return[*][1]
+      geodataframe: ${{ workflow.split_obs.return[1] }}  # or ...return[*][1]
   # Step 5 - Persisting the EcoMaps
   - name: Persist EcoMaps
     id: ecomaps_persist
     task: persist_text
     mode: mapvalues
     iter:
-      text: ${{ workflow.ecomaps.return }}
+      text: ${{ workflow.ecomaps.return[1] }}
     with:
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
-  # # Step 6 - Creating Widgets for Each EcoMap
-  # - name: Create EcoMap Widgets
-  #   id: ecomap_widgets
-  #   task: create_map_widget_single_view
-  #   mode: mapvalues
-  #   iter:
-  #     data: ${{ workflow.ecomaps_persist.return }}
+  # Step 6 - Creating Widgets for Each EcoMap
+  # This is actuall a _map_ (not mapvalues) because the key is passed into
+  # the map widget creation directly, not carried along outside as a sidecar
+  - name: Create EcoMap Widgets
+    id: ecomap_widgets
+    task: create_map_widget_single_view
+    mode: map
+    iter:
+      view: ${{ workflow.ecomaps_persist.return[0] }}
+      data: ${{ workflow.ecomaps_persist.return[1] }}

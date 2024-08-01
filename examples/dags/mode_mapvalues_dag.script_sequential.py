@@ -7,6 +7,7 @@ from ecoscope_workflows.tasks.groupby import set_groupers
 from ecoscope_workflows.tasks.groupby import split_groups
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
+from ecoscope_workflows.tasks.results import create_map_widget_single_view
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -41,11 +42,11 @@ if __name__ == "__main__":
             (
                 k,
                 {
-                    "geodataframe": v,
+                    "geodataframe": geodataframe,
                 }
                 | params["ecomaps"],
             )
-            for (k, v) in split_obs
+            for (k, geodataframe) in split_obs
         ],
     )
     ecomaps = list(ecomaps_mapped_iterable)
@@ -56,14 +57,27 @@ if __name__ == "__main__":
             (
                 k,
                 {
-                    "text": v,
+                    "text": text,
                     "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
                 }
                 | params["ecomaps_persist"],
             )
-            for (k, v) in ecomaps
+            for (k, text) in ecomaps
         ],
     )
     ecomaps_persist = list(ecomaps_persist_mapped_iterable)
 
-    print(ecomaps_persist)
+    ecomap_widgets_mapped_iterable = map(
+        lambda kw: create_map_widget_single_view.replace(validate=True)(**kw),
+        [
+            {
+                "view": view,
+                "data": data,
+            }
+            | params["ecomap_widgets"]
+            for (view, data) in ecomaps_persist
+        ],
+    )
+    ecomap_widgets = list(ecomap_widgets_mapped_iterable)
+
+    print(ecomap_widgets)
