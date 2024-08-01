@@ -53,6 +53,14 @@ class EnvVariable(WorkflowVariableBase):
         return f'os.environ["{self.value}"]'
 
 
+SPLIT_SQ_BRACKETS = re.compile(r"(.+)\[(\d+)\]$")
+
+
+# def _split_sq_brackets(s: str) -> tuple[str, str]:
+#     match = re.match(SPLIT_SQ_BRACKETS, s)
+#     return match.group(1), match.group(2)
+
+
 def _parse_variable(s: str) -> TaskIdVariable | EnvVariable:
     if not (s.startswith("${{") and s.endswith("}}")):
         raise ValueError(
@@ -60,14 +68,20 @@ def _parse_variable(s: str) -> TaskIdVariable | EnvVariable:
         )
     inner = s.replace("${{", "").replace("}}", "").strip()
     match inner.split("."):
-        case ["workflow", task_id, suffix]:
-            index_match = re.match(r"(.+)\[(\d+)\]$", suffix)
-            if index_match:
-                suffix = index_match.group(1)
-                index = int(index_match.group(2))
-            else:
-                index = None
-            return TaskIdVariable(value=task_id, suffix=suffix, tuple_index=index)
+        case ["workflow", task_id, "return"]:
+            return TaskIdVariable(value=task_id, suffix="return")
+        case ["workflow", task_id, suffix] if (
+            suffix.startswith("return")
+            and all(substring in suffix for substring in ["[", "]"])
+            and suffix.endswith("]")
+            and re.match(SPLIT_SQ_BRACKETS, suffix).group(1) == "return"
+            and re.match(SPLIT_SQ_BRACKETS, suffix).group(2).isdigit()
+        ):
+            return TaskIdVariable(
+                value=task_id,
+                suffix=re.match(SPLIT_SQ_BRACKETS, suffix).group(1),
+                tuple_index=re.match(SPLIT_SQ_BRACKETS, suffix).group(2),
+            )
         case ["env", env_var_name]:
             return EnvVariable(value=env_var_name)
         case _:
