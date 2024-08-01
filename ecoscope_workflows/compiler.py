@@ -2,6 +2,7 @@ import builtins
 import functools
 import keyword
 import pathlib
+import re
 import subprocess
 from typing import Annotated, Callable, Literal, TypeAlias
 
@@ -37,6 +38,7 @@ class TaskIdVariable(WorkflowVariableBase):
     """A variable that references the return value of another task in the workflow."""
 
     suffix: Literal["return"]
+    tuple_index: int | None = None
 
     @model_serializer
     def serialize(self) -> str:
@@ -59,7 +61,13 @@ def _parse_variable(s: str) -> str:
     inner = s.replace("${{", "").replace("}}", "").strip()
     match inner.split("."):
         case ["workflow", task_id, suffix]:
-            return TaskIdVariable(value=task_id, suffix=suffix)
+            index_match = re.match(r"(.+)\[(\d+)\]$", suffix)
+            if index_match:
+                suffix = index_match.group(1)
+                index = int(index_match.group(2))
+            else:
+                index = None
+            return TaskIdVariable(value=task_id, suffix=suffix, index=index)
         case ["env", env_var_name]:
             return EnvVariable(value=env_var_name)
         case _:

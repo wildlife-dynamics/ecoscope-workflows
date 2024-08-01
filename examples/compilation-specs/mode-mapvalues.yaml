@@ -41,6 +41,10 @@ workflow:
     id: ecomap_widgets
     task: create_map_widget_single_view
     mode: map
+    # 'workflow.ecomaps_persist.return' is an iterable of 2-tuples
+    # Each tuple is unpacked such that:
+    # - 'view' receives the first element
+    # - 'data' receives the second element
     iter:
-      view: ${{ workflow.ecomaps_persist.return }}  # or ...return[*][0]
-      data: ${{ workflow.ecomaps_persist.return }}  # or ...return[*][1]
+      view: ${{ workflow.ecomaps_persist.return[0] }}
+      data: ${{ workflow.ecomaps_persist.return[1] }}
