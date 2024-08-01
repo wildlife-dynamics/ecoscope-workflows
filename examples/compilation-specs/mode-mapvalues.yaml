@@ -24,14 +24,14 @@ workflow:
     task: draw_ecomap
     mode: mapvalues
     iter:
-      geodataframe: ${{ workflow.split_obs.return[1] }}  # or ...return[*][1]
+      geodataframe: ${{ workflow.split_obs.return }}  # or ...return[*][1]
   # Step 5 - Persisting the EcoMaps
   - name: Persist EcoMaps
     id: ecomaps_persist
     task: persist_text
     mode: mapvalues
     iter:
-      text: ${{ workflow.ecomaps.return[1] }}
+      text: ${{ workflow.ecomaps.return }}  # or ...return[*][1]
     with:
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
   # Step 6 - Creating Widgets for Each EcoMap
@@ -42,5 +42,5 @@ workflow:
     task: create_map_widget_single_view
     mode: map
     iter:
-      view: ${{ workflow.ecomaps_persist.return[0] }}
-      data: ${{ workflow.ecomaps_persist.return[1] }}
+      # view: ${{ workflow.ecomaps_persist.return }}  # or ...return[*][0]
+      data: ${{ workflow.ecomaps_persist.return }}  # or ...return[*][1]

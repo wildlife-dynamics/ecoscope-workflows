@@ -19,14 +19,14 @@
         {% for arg in t.map_iterable %}
         [
             {
-                "{{ arg }}": i,
+                "{{ arg }}": {{ arg }},
                 {%- if t.arg_dependencies %}
                 {% for arg in t.arg_dependencies %}
                 "{{ arg }}": {{ t.arg_dependencies[arg] }},
                 {% endfor %}
                 {%- endif %}
             } | params["{{ t.id }}"]
-            for i in {{ t.map_iterable[arg] }}
+            for {{ arg }} in {{ t.map_iterable[arg] }}
         ],
         {% endfor %}
     )
@@ -42,7 +42,7 @@
             (
                 k,
                 {
-                    "{{ arg }}": v,
+                    "{{ arg }}": {{ arg }},
                     {%- if t.arg_dependencies %}
                     {% for arg in t.arg_dependencies %}
                     "{{ arg }}": {{ t.arg_dependencies[arg] }},
@@ -50,7 +50,7 @@
                     {%- endif %}
                 } | params["{{ t.id }}"],
             )
-            for (k, v) in {{ t.map_iterable[arg] }}
+            for (k, {{ arg }}) in {{ t.map_iterable[arg] }}
         ],
         {% endfor %}
     )
