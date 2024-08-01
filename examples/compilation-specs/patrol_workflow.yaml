@@ -1,6 +1,6 @@
 id: patrol_workflow
 workflow:
-  # patrol observations
+  # get patrol observations
   - name: Get Patrol Observations from EarthRanger
     id: patrol_obs
     task: get_patrol_observations
@@ -14,6 +14,8 @@ workflow:
     task: relocations_to_trajectory
     with:
       relocations: ${{ workflow.patrol_reloc.return }}
+
+  # patrol trajectories ecomap
   - name: Draw Ecomap from Trajectories
     id: patrol_traj_ecomap
     task: draw_ecomap
@@ -58,24 +60,11 @@ workflow:
       data: ${{ workflow.patrol_events_ecomap_html_url.return }}
 
   # time density
-  - name: Get SubjectGroup Observations from EarthRanger
-    id: obs
-    task: get_subjectgroup_observations
-  - name: Transform Observations to Relocations
-    id: reloc
-    task: process_relocations
-    with:
-      observations: ${{ workflow.obs.return }}
-  - name: Transform Relocations to Trajectories
-    id: traj
-    task: relocations_to_trajectory
-    with:
-      relocations: ${{ workflow.reloc.return }}
   - name: Calculate Time Density from Trajectory
     id: td
     task: calculate_time_density
     with:
-      trajectory_gdf: ${{ workflow.traj.return }}
+      trajectory_gdf: ${{ workflow.patrol_traj.return }}
   - name: Draw Ecomap from Time Density
     id: td_ecomap
     task: draw_ecomap

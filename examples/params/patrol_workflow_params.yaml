@@ -84,28 +84,6 @@ patrol_events_ecomap_html_url: {}
 patrol_events_map_widget:
   title: "Patrol Events Map"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
 
-# Parameters for 'Get SubjectGroup Observations from EarthRanger' using task `get_subjectgroup_observations`.
-obs:
-  client: "mep_dev" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
-  subject_group_name: "Elephants" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of EarthRanger Subject'))
-  include_inactive: True # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether or not to include inactive subjects'))
-  since: "2011-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
-  until: "2023-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
-
-# Parameters for 'Transform Observations to Relocations' using task `process_relocations`.
-reloc:
-  filter_point_coords: [[180, 90], [0, 0]] # (list[list[float]], FieldInfo(annotation=NoneType, required=True))
-  relocs_columns: ["groupby_col", "fixtime", "junk_status", "geometry"] # (list[str], FieldInfo(annotation=NoneType, required=True))
-
-# Parameters for 'Transform Relocations to Trajectories' using task `relocations_to_trajectory`.
-traj:
-  min_length_meters: 0.001 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
-  max_length_meters: 10000 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
-  max_time_secs: 3600 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
-  min_time_secs: 1 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
-  max_speed_kmhr: 120 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
-  min_speed_kmhr: 0.0 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
-
 # Parameters for 'Calculate Time Density from Trajectory' using task `calculate_time_density`.
 td:
   pixel_size: 250.0 # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=250.0, description='Pixel size for raster profile.'))
