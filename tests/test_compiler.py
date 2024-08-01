@@ -49,13 +49,7 @@ def test__split_indexed_suffix(s, expected_suffix, expected_tuple_index):
         (TaskIdVariable, "${{ workflow.ecomaps.return[1] }}", "ecomaps", "return", 1),
         (TaskIdVariable, "${{ workflow.ecomaps.return[2] }}", "ecomaps", "return", 2),
         # env variables
-        (
-            EnvVariable,
-            "${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}",
-            "ECOSCOPE_WORKFLOWS_RESULTS",
-            None,
-            None,
-        ),
+        (EnvVariable, "${{ env.SUPER_USEFUL_VAR }}", "SUPER_USEFUL_VAR", None, None),
     ],
 )
 def test__parse_variable(
