@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Literal
 
 import pandas as pd
 from pydantic import Field
@@ -10,8 +10,10 @@ from ecoscope_workflows.decorators import distributed
 @distributed
 def aggregate(
     df: DataFrame[JsonSerializableDataFrameModel],
-    column_name: Annotated[str, Field(description="Start date")],
-    func_name: str,
+    column_name: Annotated[str, Field(description="Column to aggregate")],
+    func_name: Annotated[
+        Literal["count", "mean", "sum"], Field(description="The method of aggregation")
+    ],
 ) -> DataFrame[JsonSerializableDataFrameModel]:
     match func_name.upper():
         case "COUNT":
@@ -21,5 +23,4 @@ def aggregate(
         case "SUM":
             return pd.Series({f"{column_name}_sum": df[column_name].sum()})
         case _:
-            raise ValueError(f"Unknown aggregation function: {func_name}")
             raise ValueError(f"Unknown aggregation function: {func_name}")

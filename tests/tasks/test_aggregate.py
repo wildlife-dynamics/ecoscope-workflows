@@ -1,9 +1,7 @@
 import pandas as pd
 import pytest
 
-from ecoscope_workflows.tasks.analysis import (
-    aggregate,
-)  # Replace 'your_module' with the actual module name
+from ecoscope_workflows.tasks.analysis import aggregate
 
 
 def test_count():
