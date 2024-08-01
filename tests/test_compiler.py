@@ -69,6 +69,41 @@ def test__parse_variable(
         raise ValueError(f"Unexpected type: {type(parsed)}")
 
 
+@pytest.mark.parametrize(
+    "s, failure_mode",
+    [
+        # curly brace issues
+        ("${{ workflow.ecomaps.return", "curly_brace"),  # no closing brackets
+        ("{{ workflow.ecomaps.return", "curly_brace"),  # missing leading dollar sign
+        ("${ workflow.ecomaps.return }", "curly_brace"),  # single braces not supported
+        # inner value issues
+        ("${{ unknown.SOME_VAR }}", "inner_value"),  # `unknown` not a namespace
+        ("${{ workflows.abc.return }}", "inner_value"),  # `workflows` not a namespace
+        ("${{ environment.SOME_VAR }}", "inner_value"),  # `environment` not a namespace
+        ("${{ env.SOME_VAR[0] }}", "inner_value"),  # tuple index on an env vars
+        ("${{ workflow.ecomaps.return[ABC] }}", "inner_value"),  # ABC is not a digit
+        (
+            "${{ workflow.ecomaps.return[1 }}",
+            "inner_value",
+        ),  # no closing bracket on tuple index
+    ],
+)
+def test__parse_varaible_raises(s, failure_mode):
+    match = {
+        "curly_brace": re.escape(
+            f"`{s}` is not a valid variable. " "Variables must be wrapped in `${{ }}`."
+        ),
+        "inner_value": re.escape(
+            "Unrecognized variable format. Expected one of: "
+            "`${{ workflow.<task_id>.return }}`, "
+            "`${{ workflow.<task_id>.return[<tuple_index>] }}`, "
+            "`${{ env.<ENV_VAR_NAME> }}`."
+        ),
+    }
+    with pytest.raises(ValueError, match=match[failure_mode]):
+        _ = _parse_variable(s)
+
+
 def test_task_instance_known_task_parsing():
     task_name = "get_subjectgroup_observations"
     kws = {"name": "Get Subjectgroup Observations", "id": "obs"}
