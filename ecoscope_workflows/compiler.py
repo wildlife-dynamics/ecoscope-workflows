@@ -53,7 +53,7 @@ class EnvVariable(WorkflowVariableBase):
         return f'os.environ["{self.value}"]'
 
 
-def _parse_variable(s: str) -> str:
+def _parse_variable(s: str) -> TaskIdVariable | EnvVariable:
     if not (s.startswith("${{") and s.endswith("}}")):
         raise ValueError(
             f"`{s}` is not a valid variable. " "Variables must be wrapped in `${{ }}`."

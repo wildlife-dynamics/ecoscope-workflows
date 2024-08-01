@@ -5,8 +5,29 @@ import pytest
 import yaml
 from pydantic_core import ValidationError
 
-from ecoscope_workflows.compiler import DagCompiler, Spec, TaskInstance, TaskIdVariable
+from ecoscope_workflows.compiler import (
+    DagCompiler,
+    Spec,
+    TaskInstance,
+    TaskIdVariable,
+    _parse_variable,
+)
 from ecoscope_workflows.registry import KnownTask, known_tasks
+
+
+@pytest.mark.parametrize(
+    "s, expected_value, expected_suffix",
+    [
+        ("${{ workflow.obs.return }}", "obs", "return"),
+        ("${{ workflow.relocs.return }}", "relocs", "return"),
+        ("${{ workflow.traj.return }}", "traj", "return"),
+    ],
+)
+def test__parse_variable(s, expected_value, expected_suffix):
+    tiv = _parse_variable(s)
+    assert isinstance(tiv, TaskIdVariable)
+    assert tiv.value == expected_value
+    assert tiv.suffix == expected_suffix
 
 
 def test_task_instance_known_task_parsing():
