@@ -99,4 +99,3 @@ def test_draw_pie_chart(pie_dataframe):
     )
 
     assert isinstance(plot, str)
-    open("pietest.html", "w").write(plot)
