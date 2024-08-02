@@ -3,14 +3,14 @@ import functools
 import keyword
 import pathlib
 import subprocess
-from typing import Annotated, Callable, Literal, TypeAlias
+from typing import Annotated, Any, Callable, Literal, TypeAlias
 
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
     BaseModel,
     ConfigDict,
-    PlainSerializer,
     Field,
+    PlainSerializer,
     computed_field,
     model_serializer,
     model_validator,
@@ -18,7 +18,6 @@ from pydantic import (
 from pydantic.functional_validators import AfterValidator, BeforeValidator
 
 from ecoscope_workflows.registry import KnownTask, known_tasks
-
 
 TEMPLATES = pathlib.Path(__file__).parent / "templates"
 
@@ -394,11 +393,14 @@ class DagCompiler(BaseModel):
             + [arg for t in self.spec.workflow for arg in t.map_iterable]
         )
 
-    def get_params_jsonschema(self) -> dict[str, dict]:
-        return {
+    def get_params_jsonschema(self) -> dict[str, Any]:
+        schema: dict[str, Any] = {}
+        schema["title"] = "Ecoscope Workflow Configurations Form"
+        schema["properties"] = {
             t.id: t.known_task.parameters_jsonschema(omit_args=self._omit_args)
             for t in self.spec.workflow
         }
+        return schema
 
     def get_params_fillable_yaml(self) -> str:
         yaml_str = ""
