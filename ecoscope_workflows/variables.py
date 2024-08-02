@@ -1,4 +1,5 @@
 import re
+from abc import ABC, abstractmethod
 from typing import Literal, TypeVar, cast
 
 from pydantic import BaseModel, model_serializer
@@ -7,13 +8,17 @@ from pydantic import BaseModel, model_serializer
 T = TypeVar("T")
 
 
-class WorkflowVariableBase(BaseModel):
+class WorkflowVariableABC(ABC, BaseModel):
     """Base class for workflow variables."""
 
     value: str
 
+    @abstractmethod
+    def is_iterable(self) -> bool:
+        raise NotImplementedError
 
-class EnvVariable(WorkflowVariableBase):
+
+class EnvVariable(WorkflowVariableABC):
     """A variable that references an environment variable.
 
     Examples:
@@ -25,12 +30,15 @@ class EnvVariable(WorkflowVariableBase):
     ```
     """
 
+    def is_iterable(self) -> Literal[False]:
+        return False
+
     @model_serializer
     def serialize(self) -> str:
         return f'os.environ["{self.value}"]'
 
 
-class TaskIdVariable(WorkflowVariableBase):
+class TaskIdVariable(WorkflowVariableABC):
     """A variable that references the return value of another task in the workflow.
 
     Examples:
@@ -42,6 +50,9 @@ class TaskIdVariable(WorkflowVariableBase):
     """
 
     suffix: Literal["return"]
+
+    def is_iterable(self) -> bool:
+        return False
 
     @model_serializer
     def serialize(self) -> str:
@@ -64,6 +75,9 @@ class IndexedTaskIdVariable(TaskIdVariable):
 
     tuple_index: int
 
+    def is_iterable(self) -> Literal[False]:
+        return False
+
 
 class ElementwiseTaskIdVariable(TaskIdVariable):
     """A variable that references the return value of another task in the workflow,
@@ -79,7 +93,8 @@ class ElementwiseTaskIdVariable(TaskIdVariable):
     ```
     """
 
-    pass
+    def is_iterable(self) -> Literal[True]:
+        return True
 
 
 SPLIT_SQ_BRACKETS = re.compile(r"(.+?)\[(\d+|\*)\](?:\[(\d+|\*)\])?")
@@ -165,6 +180,18 @@ def _parse_task_id_variable(
             )
         case ("return", "*", None):
             return ElementwiseTaskIdVariable(value=task_id, suffix="return")
+        case ("return", "*", str(index)) if index.isdigit():
+            raise NotImplementedError
+        case ("return", "*", "*"):
+            raise NotImplementedError
+        case (
+            "return",
+            str(index),
+            str(index2),
+        ) if index.isdigit() and index2.isdigit():
+            raise NotImplementedError
+        case ("return", str(index), "*") if index.isdigit():
+            raise NotImplementedError
         case _:
             raise ValueError(
                 "Unrecognized task id variable format. Expected one of: "
@@ -207,8 +234,7 @@ def parse_variable(s: str) -> TaskIdVariable | IndexedTaskIdVariable | EnvVariab
         case _:
             raise ValueError(
                 "Unrecognized variable format. Expected one of: "
-                "`${{ workflow.<task_id>.return }}`, "
-                "`${{ workflow.<task_id>.return[<tuple_index>] }}`, "
+                "`${{ workflow.<task_id>.<suffix> }}`, "
                 "`${{ env.<VALID_ENV_VAR_NAME> }}`."
             )
 
