@@ -106,7 +106,7 @@ def test__parse_varaible_raises(s, failure_mode):
 
 
 @pytest.mark.parametrize(
-    "yaml_str, expected",
+    "yaml_str, expected, raises, raises_match",
     [
         (
             """
@@ -114,13 +114,32 @@ def test__parse_varaible_raises(s, failure_mode):
               arg1: ${{ workflow.task1.return }}
             """,
             {"arg1": TaskIdVariable(value="task1", suffix="return", tuple_index=None)},
-        )
+            False,
+            None,
+        ),
+        (
+            """
+            iter:
+              arg1: ${{ workflow.task1.return[0] }}
+            """,
+            {"arg1": TaskIdVariable(value="task1", suffix="return", tuple_index=0)},
+            True,
+            re.escape(
+                "If a single argument is passed to the `iter` field, it must not be indexed. "
+                "Indexing is only allowed when multiple arguments are passed to the `iter` field."
+            ),
+        ),
     ],
 )
-def test__validate_iterable_arg_dependencies(yaml_str, expected):
+def test__validate_iterable_arg_dependencies(yaml_str, expected, raises, raises_match):
     d: dict[str, dict] = yaml.safe_load(yaml_str)
     parsed = {k: _parse_variable(v) for k, v in d["iter"].items()}
-    assert _validate_iterable_arg_deps(parsed) == expected
+    assert parsed == expected
+    if not raises:
+        assert _validate_iterable_arg_deps(parsed) == expected
+    else:
+        with pytest.raises(ValueError, match=raises_match):
+            _ = _validate_iterable_arg_deps(parsed)
 
 
 def test_task_instance_known_task_parsing():
