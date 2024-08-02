@@ -1,7 +1,7 @@
 {
     "title": "Ecoscope Workflow Configurations Form",
     "properties": {
-        "obs_a": {
+        "Get Observations A": {
             "additionalProperties": false,
             "properties": {
                 "client": {
@@ -14,11 +14,6 @@
                     "type": "string",
                     "description": "Name of EarthRanger Subject"
                 },
-                "include_inactive": {
-                    "title": "Include Inactive",
-                    "type": "boolean",
-                    "description": "Whether or not to include inactive subjects"
-                },
                 "since": {
                     "format": "date-time",
                     "title": "Since",
@@ -30,18 +25,23 @@
                     "title": "Until",
                     "type": "string",
                     "description": "End date"
+                },
+                "include_inactive": {
+                    "default": true,
+                    "title": "Include Inactive",
+                    "type": "boolean",
+                    "description": "Whether or not to include inactive subjects"
                 }
             },
             "required": [
                 "client",
                 "subject_group_name",
-                "include_inactive",
                 "since",
                 "until"
             ],
             "type": "object"
         },
-        "obs_b": {
+        "Get Observations B": {
             "additionalProperties": false,
             "properties": {
                 "client": {
@@ -54,11 +54,6 @@
                     "type": "string",
                     "description": "Name of EarthRanger Subject"
                 },
-                "include_inactive": {
-                    "title": "Include Inactive",
-                    "type": "boolean",
-                    "description": "Whether or not to include inactive subjects"
-                },
                 "since": {
                     "format": "date-time",
                     "title": "Since",
@@ -70,18 +65,23 @@
                     "title": "Until",
                     "type": "string",
                     "description": "End date"
+                },
+                "include_inactive": {
+                    "default": true,
+                    "title": "Include Inactive",
+                    "type": "boolean",
+                    "description": "Whether or not to include inactive subjects"
                 }
             },
             "required": [
                 "client",
                 "subject_group_name",
-                "include_inactive",
                 "since",
                 "until"
             ],
             "type": "object"
         },
-        "obs_c": {
+        "Get Observations C": {
             "additionalProperties": false,
             "properties": {
                 "client": {
@@ -94,11 +94,6 @@
                     "type": "string",
                     "description": "Name of EarthRanger Subject"
                 },
-                "include_inactive": {
-                    "title": "Include Inactive",
-                    "type": "boolean",
-                    "description": "Whether or not to include inactive subjects"
-                },
                 "since": {
                     "format": "date-time",
                     "title": "Since",
@@ -110,18 +105,23 @@
                     "title": "Until",
                     "type": "string",
                     "description": "End date"
+                },
+                "include_inactive": {
+                    "default": true,
+                    "title": "Include Inactive",
+                    "type": "boolean",
+                    "description": "Whether or not to include inactive subjects"
                 }
             },
             "required": [
                 "client",
                 "subject_group_name",
-                "include_inactive",
                 "since",
                 "until"
             ],
             "type": "object"
         },
-        "ecomaps": {
+        "Creat EcoMap For Each Group": {
             "additionalProperties": false,
             "properties": {
                 "data_type": {
@@ -135,6 +135,7 @@
                     "description": "The type of visualization."
                 },
                 "style_kws": {
+                    "default": {},
                     "title": "Style Kws",
                     "type": "object",
                     "description": "Style arguments for the data visualization."
@@ -177,12 +178,11 @@
                 }
             },
             "required": [
-                "data_type",
-                "style_kws"
+                "data_type"
             ],
             "type": "object"
         },
-        "td_ecomap_html_url": {
+        "Persist Ecomaps as Text": {
             "additionalProperties": false,
             "properties": {
                 "filename": {

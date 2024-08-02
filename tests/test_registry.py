@@ -20,11 +20,6 @@ def test_known_task_parameters_jsonschema():
                 "type": "string",
                 "description": "Name of EarthRanger Subject",
             },
-            "include_inactive": {
-                "title": "Include Inactive",
-                "type": "boolean",
-                "description": "Whether or not to include inactive subjects",
-            },
             "since": {
                 "format": "date-time",
                 "title": "Since",
@@ -37,13 +32,13 @@ def test_known_task_parameters_jsonschema():
                 "type": "string",
                 "description": "End date",
             },
+            "include_inactive": {
+                "default": True,
+                "title": "Include Inactive",
+                "type": "boolean",
+                "description": "Whether or not to include inactive subjects",
+            },
         },
-        "required": [
-            "client",
-            "subject_group_name",
-            "include_inactive",
-            "since",
-            "until",
-        ],
+        "required": ["client", "subject_group_name", "since", "until"],
         "type": "object",
     }
