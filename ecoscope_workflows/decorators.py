@@ -1,32 +1,31 @@
-import functools
 from dataclasses import FrozenInstanceError, dataclass, field, replace
-from typing import Any, Callable, Generic, TypeVar, overload
+from typing import Any, Callable, Generic, ParamSpec, TypeVar, overload
 
 from pydantic import validate_call
 
 from ecoscope_workflows.operators import OperatorKws
 
-FuncReturn = TypeVar("FuncReturn")
+P = ParamSpec("P")
+R = TypeVar("R")
 
 
 @dataclass
-class DistributedTask(Generic[FuncReturn]):
+class DistributedTask(Generic[P, R]):
     """ """
 
-    func: Callable[..., FuncReturn]
+    func: Callable[P, R]
     validate: bool = False
     operator_kws: OperatorKws = field(default_factory=OperatorKws)
     tags: list[str] = field(default_factory=list)
     _initialized: bool = False
 
     def __post_init__(self):
-        functools.update_wrapper(self, self.func)
         self._initialized = True
 
     def replace(
         self,
         validate: bool | None = None,
-    ) -> "DistributedTask[FuncReturn]":
+    ) -> "DistributedTask[P, R]":
         self._initialized = False
         changes = {
             k: v
@@ -45,9 +44,9 @@ class DistributedTask(Generic[FuncReturn]):
             )
         return super().__setattr__(name, value)
 
-    def __call__(self, *args, **kwargs) -> FuncReturn:
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
         return (
-            validate_call(self.func, validate_return=True)(*args, **kwargs)
+            validate_call(self.func)(*args, **kwargs)
             if self.validate
             else self.func(*args, **kwargs)
         )
@@ -55,12 +54,12 @@ class DistributedTask(Generic[FuncReturn]):
 
 @overload  # @distributed style
 def distributed(
-    func: Callable[..., FuncReturn],
+    func: Callable[P, R],
     *,
     image: str | None = None,
     container_resources: dict[str, Any] | None = None,
     tags: list[str] | None = None,
-) -> DistributedTask[FuncReturn]: ...
+) -> DistributedTask[P, R]: ...
 
 
 @overload  # @distributed(...) style
@@ -69,19 +68,16 @@ def distributed(
     image: str | None = None,
     container_resources: dict[str, Any] | None = None,
     tags: list[str] | None = None,
-) -> Callable[
-    [Callable[..., FuncReturn]],
-    DistributedTask[FuncReturn],
-]: ...
+) -> Callable[[Callable[P, R]], DistributedTask[P, R]]: ...
 
 
 def distributed(
-    func: Callable[..., FuncReturn] | None = None,
+    func: Callable[P, R] | None = None,
     *,
     image: str | None = None,
     container_resources: dict[str, Any] | None = None,
     tags: list[str] | None = None,
-) -> Callable[..., DistributedTask[FuncReturn]] | DistributedTask[FuncReturn]:
+) -> Callable[[Callable[P, R]], DistributedTask[P, R]] | DistributedTask[P, R]:
     operator_kws = {
         k: v
         for k, v in {"image": image, "container_resources": container_resources}.items()
@@ -89,8 +85,8 @@ def distributed(
     }
 
     def wrapper(
-        func: Callable[..., FuncReturn],
-    ) -> DistributedTask[FuncReturn]:
+        func: Callable[P, R],
+    ) -> DistributedTask[P, R]:
         return DistributedTask(
             func,
             operator_kws=OperatorKws(**operator_kws),
