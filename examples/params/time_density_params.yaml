@@ -30,10 +30,13 @@ td:
   expansion_factor: 1.3 # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=1.3))
   percentiles: [50.0, 60.0, 70.0, 80.0, 90.0, 95.0] # (list[float], FieldInfo(annotation=NoneType, required=False, default=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0]))
 
-# Parameters for 'Draw Ecomap from Time Density' using task `draw_ecomap`.
-td_ecomap:
+# Parameters for 'Create map layer from Time Density' using task `create_map_layer`.
+td_map_layer:
   data_type: Polygon # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
   style_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
+
+# Parameters for 'Draw Ecomap from Time Density' using task `draw_ecomap`.
+td_ecomap:
   tile_layer: OpenStreetMap # (str, FieldInfo(annotation=NoneType, required=False))
   static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
   title: "Great Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))

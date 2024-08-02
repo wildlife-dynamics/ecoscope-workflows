@@ -31,10 +31,13 @@ patrol_traj:
   max_speed_kmhr: 120 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
   min_speed_kmhr: 0.0 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
 
+# Parameters for 'Create map layer from Trajectories' using task `create_map_layer`.
+patrol_traj_map_layer:
+  data_type: Polyline # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
+  style_kws: { get_width: 200 } # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
+
 # Parameters for 'Draw Ecomap from Trajectories' using task `draw_ecomap`.
 patrol_traj_ecomap:
-  data_type: Path # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
-  style_kws: { get_width: 200 } # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
   tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
   static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
   title: "Patrol Trajectory Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
@@ -66,10 +69,13 @@ filter_patrol_events:
   max_y: 0.0 # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=90.0))
   filter_point_coords: [[180, 90], [0, 0]] # (list[list[float]], FieldInfo(annotation=NoneType, required=True))
 
+# Parameters for 'Create map layer from Patrols Events' using task `create_map_layer`.
+patrol_events_map_layer:
+  data_type: Point # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
+  style_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
+
 # Parameters for 'Draw Ecomap for Patrols Events' using task `draw_ecomap`.
 patrol_events_ecomap:
-  data_type: Scatterplot # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
-  style_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
   tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
   static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
   title: "Patrol Events Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))

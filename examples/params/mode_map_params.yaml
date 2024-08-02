@@ -22,10 +22,13 @@ obs_c:
   since: "2011-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
   until: "2023-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
 
-# Parameters for 'Creat EcoMap For Each Group' using task `draw_ecomap`.
-ecomaps:
-  data_type: Scatterplot # (typing.Literal['Scatterplot', 'Path', 'Polygon'], FieldInfo(annotation=NoneType, required=True, description='The type of visualization.'))
+# Parameters for 'Create Map Layer For Each Group' using task `create_map_layer`.
+map_layers:
+  data_type: Point # (typing.Literal['Scatterplot', 'Path', 'Polygon'], FieldInfo(annotation=NoneType, required=True, description='The type of visualization.'))
   style_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the data visualization.'))
+
+# Parameters for 'Create EcoMap For Each Group' using task `draw_ecomap`.
+ecomaps:
   tile_layer: OpenStreetMap # (str, FieldInfo(annotation=NoneType, required=False))
   static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
   title: "Great Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
