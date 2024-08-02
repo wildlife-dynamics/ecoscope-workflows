@@ -36,21 +36,32 @@ class TaskIdVariable(WorkflowVariableBase):
     Examples:
     ```python
     >>> parse_variable("${{ workflow.task1.return }}")
-    TaskIdVariable(value='task1', suffix='return', tuple_index=None)
-    >>> parse_variable("${{ workflow.task1.return[0] }}")
-    TaskIdVariable(value='task1', suffix='return', tuple_index=0)
-    >>> parse_variable("${{ workflow.task1.return[1] }}")
-    TaskIdVariable(value='task1', suffix='return', tuple_index=1)
+    TaskIdVariable(value='task1', suffix='return')
 
     ```
     """
 
     suffix: Literal["return"]
-    tuple_index: int | None = None
 
     @model_serializer
     def serialize(self) -> str:
         return self.value
+
+
+class IndexedTaskIdVariable(TaskIdVariable):
+    """A variable that references the return value of another task in the workflow.
+
+    Examples:
+    ```python
+    >>> parse_variable("${{ workflow.task1.return[0] }}")
+    IndexedTaskIdVariable(value='task1', suffix='return', tuple_index=0)
+    >>> parse_variable("${{ workflow.task1.return[1] }}")
+    IndexedTaskIdVariable(value='task1', suffix='return', tuple_index=1)
+
+    ```
+    """
+
+    tuple_index: int
 
 
 class Iter(dict, Generic[T]):
@@ -120,18 +131,18 @@ def _split_indexed_suffix(s: str) -> tuple[str, str]:
         return ("", "")
 
 
-def parse_variable(s: str) -> TaskIdVariable | EnvVariable:
+def parse_variable(s: str) -> TaskIdVariable | IndexedTaskIdVariable | EnvVariable:
     """Parse a variable reference from a string into a `TaskIdVariable` or `EnvVariable`.
 
     Examples:
 
     ```python
     >>> parse_variable("${{ workflow.task1.return }}")
-    TaskIdVariable(value='task1', suffix='return', tuple_index=None)
+    TaskIdVariable(value='task1', suffix='return')
     >>> parse_variable("${{ workflow.task1.return[0] }}")
-    TaskIdVariable(value='task1', suffix='return', tuple_index=0)
+    IndexedTaskIdVariable(value='task1', suffix='return', tuple_index=0)
     >>> parse_variable("${{ workflow.task1.return[1] }}")
-    TaskIdVariable(value='task1', suffix='return', tuple_index=1)
+    IndexedTaskIdVariable(value='task1', suffix='return', tuple_index=1)
     >>> parse_variable("${{ env.MY_ENV_VAR }}")
     EnvVariable(value='MY_ENV_VAR')
 
@@ -149,7 +160,7 @@ def parse_variable(s: str) -> TaskIdVariable | EnvVariable:
             _split_indexed_suffix(suffix)[0] == "return"
             and _split_indexed_suffix(suffix)[1].isdigit()
         ):
-            return TaskIdVariable(
+            return IndexedTaskIdVariable(
                 value=task_id,
                 suffix=_split_indexed_suffix(suffix)[0],
                 tuple_index=_split_indexed_suffix(suffix)[1],
