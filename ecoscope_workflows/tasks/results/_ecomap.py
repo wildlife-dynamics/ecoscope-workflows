@@ -1,9 +1,17 @@
+from dataclasses import dataclass
 from typing import Annotated, Literal
 
 from pydantic import Field
 
 from ecoscope_workflows.annotations import AnyGeoDataFrame
 from ecoscope_workflows.decorators import distributed
+
+
+@dataclass
+class LayerDefinition:
+    geodataframe: AnyGeoDataFrame
+    data_type: str
+    style_kws: dict
 
 
 @distributed
@@ -16,9 +24,9 @@ def create_map_layer(
         Field(description="The type of visualization."),
     ],
     style_kws: Annotated[dict, Field(description="Style arguments for the layer.")],
-) -> Annotated[object, Field()]:
+) -> Annotated[LayerDefinition, Field()]:
     """
-    Creates a map layer based on the provided configuration.
+    Creates a map layer definition based on the provided configuration.
 
     Args:
     geodataframe (geopandas.GeoDataFrame): The geodataframe to visualize.
@@ -26,26 +34,21 @@ def create_map_layer(
     style_kws (dict): Style arguments for the data visualization.
 
     Returns:
-    The generated map layer
+    The generated LayerDefinition
     """
 
-    from ecoscope.mapping import EcoMap
-
-    match data_type:
-        case "Point":
-            layer = EcoMap.point_layer(geodataframe, **style_kws)
-        case "Polyline":
-            layer = EcoMap.polyline_layer(geodataframe, **style_kws)
-        case "Polygon":
-            layer = EcoMap.polygon_layer(geodataframe, **style_kws)
-
-    return layer
+    return LayerDefinition(
+        geodataframe=geodataframe,
+        data_type=data_type,
+        style_kws=style_kws,
+    )
 
 
 @distributed
 def draw_ecomap(
     geo_layers: Annotated[
-        list[object], Field(description="A list of map layers to add to the map.")
+        list[LayerDefinition],
+        Field(description="A list of map layers to add to the map."),
     ],
     tile_layer: Annotated[
         str, Field(description="A named tile layer, ie OpenStreetMap.")
@@ -95,6 +98,21 @@ def draw_ecomap(
     if tile_layer:
         m.add_layer(EcoMap.get_named_tile_layer(tile_layer))
 
-    m.add_layer(geo_layers)
+    for layer_def in geo_layers:
+        match layer_def.data_type:
+            case "Point":
+                layer = EcoMap.point_layer(
+                    layer_def.geodataframe, **layer_def.style_kws
+                )
+            case "Polyline":
+                layer = EcoMap.polyline_layer(
+                    layer_def.geodataframe, **layer_def.style_kws
+                )
+            case "Polygon":
+                layer = EcoMap.polygon_layer(
+                    layer_def.geodataframe, **layer_def.style_kws
+                )
+        m.add_layer(layer)
+
     m.zoom_to_bounds(m.layers)
     return m.to_html(title=title if title is not None else "Map Export")

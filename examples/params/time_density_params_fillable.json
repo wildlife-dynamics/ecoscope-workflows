@@ -183,6 +183,31 @@
         "type": "object"
     },
     "td_ecomap": {
+        "$defs": {
+            "LayerDefinition": {
+                "properties": {
+                    "geodataframe": {
+                        "title": "Geodataframe",
+                        "type": "ecoscope.distributed.types.DataFrame"
+                    },
+                    "data_type": {
+                        "title": "Data Type",
+                        "type": "string"
+                    },
+                    "style_kws": {
+                        "title": "Style Kws",
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "geodataframe",
+                    "data_type",
+                    "style_kws"
+                ],
+                "title": "LayerDefinition",
+                "type": "object"
+            }
+        },
         "additionalProperties": false,
         "properties": {
             "tile_layer": {
