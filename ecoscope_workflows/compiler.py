@@ -229,39 +229,64 @@ def _serialize_arg_deps(arg_deps: _ArgDependenciesTypeAlias) -> dict[str, str]:
 def _validate_iterable_arg_deps(
     iter_arg_deps: _IterableArgDependenciesTypeAlias,
 ) -> _IterableArgDependenciesTypeAlias:
-    """
+    """Validate than a given iterable argument dependency conforms to one of the expected format(s).
 
     Examples:
 
-    The following is the most basic case, where the `iter` field is a single reference to
-    another task's return value. In this case, the return value of `task1` referenced here
-    would be expected to be an iterable:
+    ## A single iterable argument
 
-    ```python
-    >>> import yaml
-    >>> s = '''
-    ... iter:
-    ...   arg1: ${{ workflow.task1.return }}
-    ... '''
-    >>> parsed = {k: _parse_variable(v) for k, v in yaml.safe_load(s)["iter"].items()}
-    >>> parsed
-    {'arg1': TaskIdVariable(value='task1', suffix='return', tuple_index=None)}
-    >>> _validate_iterable_arg_deps(parsed)
-    {'arg1': TaskIdVariable(value='task1', suffix='return', tuple_index=None)}
+    ## Multiple non-iterable arguments assembled into an iterable
 
-    ```
-
-    ```python
-    >>> import yaml
-    >>> s = '''
-    ... iter:
-    ...   view: ${{ workflow.ecomaps_persist.return[0] }}
-    ...   data: ${{ workflow.ecomaps_persist.return[1] }}
-    ... '''
-
-    ```
-
+    # ```python
+    # >>> import yaml
+    # >>> s = '''
+    # ... iter:
+    # ...   arg1:
+    # ...    - ${{ workflow.task1.return }}
+    # ...    - ${{ workflow.task2.return }}
+    # ... '''
+    # >>> parsed = {k: _parse_variable(v) for k, v in yaml.safe_load(s)["iter"].items()}
+    # >>> parsed
+    # {'arg1': TaskIdVariable(value='task1', suffix='return', tuple_index=None)}
+    # >>> _validate_iterable_arg_deps(parsed)
+    # {'arg1': TaskIdVariable(value='task1', suffix='return', tuple_index=None)}
     """
+
+    # ```
+
+    # ```python
+    # >>> import yaml
+    # >>> s = '''
+    # ... iter:
+    # ...   view: ${{ workflow.ecomaps_persist.return[0] }}
+    # ...   data: ${{ workflow.ecomaps_persist.return[1] }}
+    # ... '''
+
+    # ```
+
+    # """
+
+    match list(iter_arg_deps.values()):
+        case [TaskIdVariable(value=str(), suffix="return", tuple_index=None)]:
+            # A single iterable, unindexed argument. The most basic allowed case; e.g.,
+            # ```
+            # iter:
+            #   arg1: ${{ workflow.task1.return }}
+            # ```
+            # The `iter` field is a single reference to another task's return value.
+            # In this case, the return value of `task1` referenced here would be expected
+            # to be an iterable.
+            return iter_arg_deps
+        case [TaskIdVariable(value=str(), suffix="return", tuple_index=int())]:
+            # A single iterable, indexed argument. Not allowed; e.g.,
+            # ```
+            # iter:
+            #   arg1: ${{ workflow.task1.return[0] }}
+            # ```
+            raise ValueError(
+                "If a single argument is passed to the `iter` field, it must not be indexed. "
+                "Indexing is only allowed when multiple arguments are passed to the `iter` field."
+            )
 
     if len(iter_arg_deps) > 1:
         assert not any(isinstance(v, list) for v in iter_arg_deps.values()), (

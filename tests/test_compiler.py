@@ -13,6 +13,7 @@ from ecoscope_workflows.compiler import (
     TaskIdVariable,
     _parse_variable,
     _split_indexed_suffix,
+    _validate_iterable_arg_deps,
 )
 from ecoscope_workflows.registry import KnownTask, known_tasks
 
@@ -102,6 +103,24 @@ def test__parse_varaible_raises(s, failure_mode):
     }
     with pytest.raises(ValueError, match=match[failure_mode]):
         _ = _parse_variable(s)
+
+
+@pytest.mark.parametrize(
+    "yaml_str, expected",
+    [
+        (
+            """
+            iter:
+              arg1: ${{ workflow.task1.return }}
+            """,
+            {"arg1": TaskIdVariable(value="task1", suffix="return", tuple_index=None)},
+        )
+    ],
+)
+def test__validate_iterable_arg_dependencies(yaml_str, expected):
+    d: dict[str, dict] = yaml.safe_load(yaml_str)
+    parsed = {k: _parse_variable(v) for k, v in d["iter"].items()}
+    assert _validate_iterable_arg_deps(parsed) == expected
 
 
 def test_task_instance_known_task_parsing():
