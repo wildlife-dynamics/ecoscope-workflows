@@ -16,6 +16,7 @@ from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
+from ecoscope_workflows.tasks.analysis import calculate_time_density
 from ecoscope_workflows.tasks.results import gather_dashboard
 
 # %% [markdown]
@@ -252,6 +253,93 @@ patrol_events_map_widget = create_map_widget_single_view(
 )
 
 # %% [markdown]
+# ## Calculate Time Density from Trajectory
+
+# %%
+# parameters
+
+td_params = dict(
+    pixel_size=...,
+    crs=...,
+    nodata_value=...,
+    band_count=...,
+    max_speed_factor=...,
+    expansion_factor=...,
+    percentiles=...,
+)
+
+# %%
+# call the task
+
+td = calculate_time_density(
+    trajectory_gdf=patrol_traj,
+    **td_params,
+)
+
+# %% [markdown]
+# ## Draw Ecomap from Time Density
+
+# %%
+# parameters
+
+td_ecomap_params = dict(
+    data_type=...,
+    style_kws=...,
+    tile_layer=...,
+    static=...,
+    title=...,
+    title_kws=...,
+    scale_kws=...,
+    north_arrow_kws=...,
+)
+
+# %%
+# call the task
+
+td_ecomap = draw_ecomap(
+    geodataframe=td,
+    **td_ecomap_params,
+)
+
+# %% [markdown]
+# ## Persist Ecomap as Text
+
+# %%
+# parameters
+
+td_ecomap_html_url_params = dict(
+    filename=...,
+)
+
+# %%
+# call the task
+
+td_ecomap_html_url = persist_text(
+    text=td_ecomap,
+    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+    **td_ecomap_html_url_params,
+)
+
+# %% [markdown]
+# ## Create Time Density Map Widget
+
+# %%
+# parameters
+
+td_map_widget_params = dict(
+    title=...,
+    view=...,
+)
+
+# %%
+# call the task
+
+td_map_widget = create_map_widget_single_view(
+    data=td_ecomap_html_url,
+    **td_map_widget_params,
+)
+
+# %% [markdown]
 # ## Create Dashboard with Patrol Map Widgets
 
 # %%
@@ -267,6 +355,6 @@ patrol_dashboard_params = dict(
 # call the task
 
 patrol_dashboard = gather_dashboard(
-    widgets=[patrol_traj_map_widget, patrol_events_map_widget],
+    widgets=[patrol_traj_map_widget, patrol_events_map_widget, td_map_widget],
     **patrol_dashboard_params,
 )
