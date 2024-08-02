@@ -397,7 +397,7 @@ class DagCompiler(BaseModel):
         schema: dict[str, Any] = {}
         schema["title"] = "Ecoscope Workflow Configurations Form"
         schema["properties"] = {
-            t.id: t.known_task.parameters_jsonschema(omit_args=self._omit_args)
+            t.name: t.known_task.parameters_jsonschema(omit_args=self._omit_args)
             for t in self.spec.workflow
         }
         return schema

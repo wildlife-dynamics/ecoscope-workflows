@@ -37,12 +37,12 @@ def get_subjectgroup_observations(
     subject_group_name: Annotated[
         str, Field(description="Name of EarthRanger Subject")
     ],
+    since: Annotated[datetime, Field(description="Start date")],
+    until: Annotated[datetime, Field(description="End date")],
     include_inactive: Annotated[
         bool,
         Field(description="Whether or not to include inactive subjects"),
-    ],
-    since: Annotated[datetime, Field(description="Start date")],
-    until: Annotated[datetime, Field(description="End date")],
+    ] = True,
 ) -> DataFrame[SubjectGroupObservationsGDFSchema]:
     """Get observations for a subject group from EarthRanger."""
     return client.get_subjectgroup_observations(
