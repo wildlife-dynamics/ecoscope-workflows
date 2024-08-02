@@ -11,6 +11,7 @@ import os
 from ecoscope_workflows.tasks.io import get_patrol_observations
 from ecoscope_workflows.tasks.preprocessing import process_relocations
 from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
+from ecoscope_workflows.tasks.results import create_map_layer
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
@@ -83,14 +84,31 @@ patrol_traj = relocations_to_trajectory(
 )
 
 # %% [markdown]
+# ## Create map layer from Trajectories
+
+# %%
+# parameters
+
+patrol_traj_map_layer_params = dict(
+    data_type=...,
+    style_kws=...,
+)
+
+# %%
+# call the task
+
+patrol_traj_map_layer = create_map_layer(
+    geodataframe=patrol_traj,
+    **patrol_traj_map_layer_params,
+)
+
+# %% [markdown]
 # ## Draw Ecomap from Trajectories
 
 # %%
 # parameters
 
 patrol_traj_ecomap_params = dict(
-    data_type=...,
-    style_kws=...,
     tile_layer=...,
     static=...,
     title=...,
@@ -103,7 +121,7 @@ patrol_traj_ecomap_params = dict(
 # call the task
 
 patrol_traj_ecomap = draw_ecomap(
-    geodataframe=patrol_traj,
+    geo_layers=[patrol_traj_map_layer],
     **patrol_traj_ecomap_params,
 )
 
@@ -189,14 +207,31 @@ filter_patrol_events = apply_reloc_coord_filter(
 )
 
 # %% [markdown]
+# ## Create map layer from Patrols Events
+
+# %%
+# parameters
+
+patrol_events_map_layer_params = dict(
+    data_type=...,
+    style_kws=...,
+)
+
+# %%
+# call the task
+
+patrol_events_map_layer = create_map_layer(
+    geodataframe=filter_patrol_events,
+    **patrol_events_map_layer_params,
+)
+
+# %% [markdown]
 # ## Draw Ecomap for Patrols Events
 
 # %%
 # parameters
 
 patrol_events_ecomap_params = dict(
-    data_type=...,
-    style_kws=...,
     tile_layer=...,
     static=...,
     title=...,
@@ -209,7 +244,7 @@ patrol_events_ecomap_params = dict(
 # call the task
 
 patrol_events_ecomap = draw_ecomap(
-    geodataframe=filter_patrol_events,
+    geo_layers=[patrol_events_map_layer],
     **patrol_events_ecomap_params,
 )
 

@@ -119,13 +119,13 @@
         ],
         "type": "object"
     },
-    "ecomaps": {
+    "map_layers": {
         "additionalProperties": false,
         "properties": {
             "data_type": {
                 "enum": [
-                    "Scatterplot",
-                    "Path",
+                    "Point",
+                    "Polyline",
                     "Polygon"
                 ],
                 "title": "Data Type",
@@ -135,8 +135,18 @@
             "style_kws": {
                 "title": "Style Kws",
                 "type": "object",
-                "description": "Style arguments for the data visualization."
-            },
+                "description": "Style arguments for the layer."
+            }
+        },
+        "required": [
+            "data_type",
+            "style_kws"
+        ],
+        "type": "object"
+    },
+    "ecomaps": {
+        "additionalProperties": false,
+        "properties": {
             "tile_layer": {
                 "default": "",
                 "title": "Tile Layer",
@@ -174,10 +184,7 @@
                 "description": "Additional arguments for configuring the North Arrow."
             }
         },
-        "required": [
-            "data_type",
-            "style_kws"
-        ],
+        "required": [],
         "type": "object"
     },
     "td_ecomap_html_url": {

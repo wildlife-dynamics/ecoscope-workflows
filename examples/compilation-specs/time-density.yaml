@@ -18,11 +18,17 @@ workflow:
     task: calculate_time_density
     with:
       trajectory_gdf: ${{ workflow.traj.return }}
+  - name: Create map layer from Time Density
+    id: td_map_layer
+    task: create_map_layer
+    with:
+      geodataframe: ${{ workflow.td.return }}
   - name: Draw Ecomap from Time Density
     id: td_ecomap
     task: draw_ecomap
     with:
-      geodataframe: ${{ workflow.td.return }}
+      geo_layers:
+        - ${{ workflow.td_map_layer.return }}
   - name: Persist Ecomap as Text
     id: td_ecomap_html_url
     task: persist_text

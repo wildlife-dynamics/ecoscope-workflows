@@ -14,11 +14,17 @@ workflow:
     task: relocations_to_trajectory
     with:
       relocations: ${{ workflow.patrol_reloc.return }}
+  - name: Create map layer from Trajectories
+    id: patrol_traj_map_layer
+    task: create_map_layer
+    with:
+      geodataframe: ${{ workflow.patrol_traj.return }}
   - name: Draw Ecomap from Trajectories
     id: patrol_traj_ecomap
     task: draw_ecomap
     with:
-      geodataframe: ${{ workflow.patrol_traj.return }}
+      geo_layers:
+        - ${{ workflow.patrol_traj_map_layer.return }}
   - name: Persist Patrol Trajectories Ecomap as Text
     id: patrol_traj_ecomap_html_url
     task: persist_text
@@ -40,11 +46,17 @@ workflow:
     task: apply_reloc_coord_filter
     with:
       df: ${{ workflow.patrol_events.return }}
+  - name: Create map layer from Patrols Events
+    id: patrol_events_map_layer
+    task: create_map_layer
+    with:
+      geodataframe: ${{ workflow.filter_patrol_events.return }}
   - name: Draw Ecomap for Patrols Events
     id: patrol_events_ecomap
     task: draw_ecomap
     with:
-      geodataframe: ${{ workflow.filter_patrol_events.return }}
+      geo_layers:
+        - ${{ workflow.patrol_events_map_layer.return }}
   - name: Persist Patrols Ecomap as Text
     id: patrol_events_ecomap_html_url
     task: persist_text

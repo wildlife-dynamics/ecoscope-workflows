@@ -12,6 +12,7 @@ from ecoscope_workflows.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows.tasks.preprocessing import process_relocations
 from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
 from ecoscope_workflows.tasks.analysis import calculate_time_density
+from ecoscope_workflows.tasks.results import create_map_layer
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
@@ -105,14 +106,31 @@ td = calculate_time_density(
 )
 
 # %% [markdown]
+# ## Create map layer from Time Density
+
+# %%
+# parameters
+
+td_map_layer_params = dict(
+    data_type=...,
+    style_kws=...,
+)
+
+# %%
+# call the task
+
+td_map_layer = create_map_layer(
+    geodataframe=td,
+    **td_map_layer_params,
+)
+
+# %% [markdown]
 # ## Draw Ecomap from Time Density
 
 # %%
 # parameters
 
 td_ecomap_params = dict(
-    data_type=...,
-    style_kws=...,
     tile_layer=...,
     static=...,
     title=...,
@@ -125,7 +143,7 @@ td_ecomap_params = dict(
 # call the task
 
 td_ecomap = draw_ecomap(
-    geodataframe=td,
+    geo_layers=[td_map_layer],
     **td_ecomap_params,
 )
 

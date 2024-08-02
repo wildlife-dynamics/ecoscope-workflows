@@ -3,6 +3,7 @@ import os
 import yaml
 
 from ecoscope_workflows.tasks.io import get_subjectgroup_observations
+from ecoscope_workflows.tasks.results import create_map_layer
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 
@@ -31,14 +32,26 @@ if __name__ == "__main__":
         **params["obs_c"],
     )
 
-    ecomaps_mapped_iterable = map(
-        lambda kw: draw_ecomap.replace(validate=True)(**kw),
+    map_layers_mapped_iterable = map(
+        lambda kw: create_map_layer.replace(validate=True)(**kw),
         [
             {
                 "geodataframe": i,
             }
-            | params["ecomaps"]
+            | params["map_layers"]
             for i in [obs_a, obs_b, obs_c]
+        ],
+    )
+    map_layers = list(map_layers_mapped_iterable)
+
+    ecomaps_mapped_iterable = map(
+        lambda kw: draw_ecomap.replace(validate=True)(**kw),
+        [
+            {
+                "geo_layers": i,
+            }
+            | params["ecomaps"]
+            for i in [map_layers]
         ],
     )
     ecomaps = list(ecomaps_mapped_iterable)

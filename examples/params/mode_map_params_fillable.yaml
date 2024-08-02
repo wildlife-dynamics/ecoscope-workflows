@@ -22,10 +22,13 @@ obs_c:
   since:   # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
   until:   # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
 
-# Parameters for 'Creat EcoMap For Each Group' using task `draw_ecomap`.
+# Parameters for 'Create Map Layer For Each Group' using task `create_map_layer`.
+map_layers:
+  data_type:   # (typing.Literal['Point', 'Polyline', 'Polygon'], FieldInfo(annotation=NoneType, required=True, description='The type of visualization.'))
+  style_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
+
+# Parameters for 'Create EcoMap For Each Group' using task `draw_ecomap`.
 ecomaps:
-  data_type:   # (typing.Literal['Scatterplot', 'Path', 'Polygon'], FieldInfo(annotation=NoneType, required=True, description='The type of visualization.'))
-  style_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the data visualization.'))
   tile_layer:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A named tile layer, ie OpenStreetMap.'))
   static:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Set to true to disable map pan/zoom.'))
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The map title.'))

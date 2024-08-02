@@ -5,6 +5,7 @@ import yaml
 from ecoscope_workflows.tasks.io import get_patrol_observations
 from ecoscope_workflows.tasks.preprocessing import process_relocations
 from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
+from ecoscope_workflows.tasks.results import create_map_layer
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
@@ -39,8 +40,13 @@ if __name__ == "__main__":
         **params["patrol_traj"],
     )
 
-    patrol_traj_ecomap = draw_ecomap.replace(validate=True)(
+    patrol_traj_map_layer = create_map_layer.replace(validate=True)(
         geodataframe=patrol_traj,
+        **params["patrol_traj_map_layer"],
+    )
+
+    patrol_traj_ecomap = draw_ecomap.replace(validate=True)(
+        geo_layers=[patrol_traj_map_layer],
         **params["patrol_traj_ecomap"],
     )
 
@@ -64,8 +70,13 @@ if __name__ == "__main__":
         **params["filter_patrol_events"],
     )
 
-    patrol_events_ecomap = draw_ecomap.replace(validate=True)(
+    patrol_events_map_layer = create_map_layer.replace(validate=True)(
         geodataframe=filter_patrol_events,
+        **params["patrol_events_map_layer"],
+    )
+
+    patrol_events_ecomap = draw_ecomap.replace(validate=True)(
+        geo_layers=[patrol_events_map_layer],
         **params["patrol_events_ecomap"],
     )
 
