@@ -1,5 +1,5 @@
 import re
-from typing import Literal, TypeVar
+from typing import Literal, TypeVar, cast
 
 from pydantic import BaseModel, model_serializer
 
@@ -120,25 +120,59 @@ def _is_valid_env_var_name(name: str) -> bool:
     return bool(re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", name))
 
 
-def _split_indexed_suffix(s: str) -> tuple:
-    """Split an indexed suffix into the base suffix and the index.
-    If the suffix is not indexed, return a 2-tuple of empty strings.
+SplitSuffix = tuple[str, str | None, str | None]
+
+
+def _split_suffix(s: str) -> SplitSuffix:
+    """Split an indexed or unindexed suffix into the base suffix and the index(es).
 
     Examples:
     ```python
-    >>> _split_indexed_suffix("return[0]")
+    >>> _split_suffix("return")
+    ('return', None, None)
+    >>> _split_suffix("return[0]")
     ('return', '0', None)
-    >>> _split_indexed_suffix("return[1]")
+    >>> _split_suffix("return[1]")
     ('return', '1', None)
-    >>> _split_indexed_suffix("return[*]")
+    >>> _split_suffix("return[*]")
     ('return', '*', None)
-    >>> _split_indexed_suffix("return")
-    ('', '', '')
+    >>> _split_suffix("return[*][*]")
+    ('return', '*', '*')
+    >>> _split_suffix("return[*][0]")
+    ('return', '*', '0')
+    >>> _split_suffix("return[*][1]")
+    ('return', '*', '1')
+
 
     ```
     """
     match = re.match(SPLIT_SQ_BRACKETS, s)
-    return match.groups() if match else ("", "", "")
+    return cast(SplitSuffix, match.groups()) if match else ("return", None, None)
+
+
+def _parse_task_id_variable(
+    task_id: str,
+    suffix: str,
+) -> TaskIdVariable | IndexedTaskIdVariable | ElementwiseTaskIdVariable:
+    match _split_suffix(suffix):
+        case ("return", None, None):
+            return TaskIdVariable(value=task_id, suffix="return")
+        case ("return", str(index), None) if index.isdigit():
+            return IndexedTaskIdVariable(
+                value=task_id,
+                suffix="return",
+                tuple_index=index,
+            )
+        case ("return", "*", None):
+            return ElementwiseTaskIdVariable(value=task_id, suffix="return")
+        case _:
+            raise ValueError(
+                "Unrecognized task id variable format. Expected one of: "
+                "`${{ workflow.<task_id>.return }}`, "
+                "`${{ workflow.<task_id>.return[<index>] }}`, "
+                "`${{ workflow.<task_id>.return[<index>][<index>] }}`. "
+                "Where index is a non-negative integer or `*`."
+            )
 
 
 def parse_variable(s: str) -> TaskIdVariable | IndexedTaskIdVariable | EnvVariable:
@@ -164,18 +198,8 @@ def parse_variable(s: str) -> TaskIdVariable | IndexedTaskIdVariable | EnvVariab
         )
     inner = s.replace("${{", "").replace("}}", "").strip()
     match inner.split("."):
-        case ["workflow", task_id, "return"]:
-            v = TaskIdVariable(value=task_id, suffix="return")
         case ["workflow", task_id, suffix]:
-            match _split_indexed_suffix(suffix):
-                case ("return", index, None) if index.isdigit():
-                    v = IndexedTaskIdVariable(
-                        value=task_id,
-                        suffix="return",
-                        tuple_index=index,
-                    )
-                case ("return", "*", None):
-                    v = ElementwiseTaskIdVariable(value=task_id, suffix="return")
+            return _parse_task_id_variable(task_id, suffix)
         case ["env", env_var_name] if (
             _is_valid_env_var_name(env_var_name) and not _is_indexed(env_var_name)
         ):
@@ -187,7 +211,6 @@ def parse_variable(s: str) -> TaskIdVariable | IndexedTaskIdVariable | EnvVariab
                 "`${{ workflow.<task_id>.return[<tuple_index>] }}`, "
                 "`${{ env.<VALID_ENV_VAR_NAME> }}`."
             )
-    return v
 
 
 def _parse_variables(s: str | list[str]) -> str | list[str]:
