@@ -105,10 +105,10 @@ def draw_stacked_bar_chart(
     agg_function (str): The aggregate function to apply to the group.
     groupby_style_kws (dict): Style arguments passed to plotly.graph_objects.Bar and applied to individual groups.
     style_kws (dict): Style arguments passed to plotly.graph_objects.Bar and applied to all groups.
-    layout_kws (dict): Style arguments passed to plotly.graph_objects.Figure.
+    layout_kws (dict): Additional kwargs passed to plotly.go.Figure(layout).
 
     Returns:
-    The generated plot html as a string
+    The generated chart html as a string
     """
     from ecoscope.plotting import stacked_bar_chart, EcoPlotData
 
@@ -126,6 +126,65 @@ def draw_stacked_bar_chart(
         data=data,
         agg_function=agg_function,
         stack_column=stack_column,
+        layout_kwargs=layout_kws,
+    )
+
+    return plot.to_html(
+        default_height="100%",
+        default_width="100%",
+        config={
+            "autosizable": True,
+            "fillFrame": True,
+            "responsive": True,
+            "displayModeBar": False,
+        },
+    )
+
+
+@distributed
+def draw_pie_chart(
+    dataframe: DataFrame[JsonSerializableDataFrameModel],
+    value_column: Annotated[
+        str,
+        Field(
+            description="The name of the dataframe column to pull slice values from."
+        ),
+    ],
+    label_column: Annotated[
+        str,
+        Field(
+            description="The name of the dataframe column to label slices with, required if the data in value_column is numeric."
+        ),
+    ],
+    style_kws: Annotated[
+        dict | None,
+        Field(description="Additional style kwargs passed to go.Pie()."),
+    ],
+    layout_kws: Annotated[
+        dict | None,
+        Field(description="Additional kwargs passed to plotly.go.Figure(layout)."),
+    ],
+) -> Annotated[str, Field()]:
+    """
+    Generates a pie chart from the provided params
+
+    Args:
+    dataframe (pd.DataFrame): The input dataframe.
+    value_column (str): The name of the dataframe column to pull slice values from.
+    label_column (str): The name of the dataframe column to label slices with, required if the data in value_column is numeric.
+    style_kws (dict): Additional style kwargs passed to go.Pie().
+    layout_kws (dict): Additional kwargs passed to plotly.go.Figure(layout).
+
+    Returns:
+    The generated chart html as a string
+    """
+    from ecoscope.plotting import pie_chart
+
+    plot = pie_chart(
+        data=dataframe,
+        value_column=value_column,
+        label_column=label_column,
+        style_kwargs=style_kws,
         layout_kwargs=layout_kws,
     )
 

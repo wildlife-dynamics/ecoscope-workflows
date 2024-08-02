@@ -4,6 +4,7 @@ import pandas as pd
 from ecoscope_workflows.tasks.results._ecoplot import (
     draw_ecoplot,
     draw_stacked_bar_chart,
+    draw_pie_chart,
 )
 
 
@@ -43,6 +44,17 @@ def stacked_dataframe():
     return pd.DataFrame(data)
 
 
+@pytest.fixture
+def pie_dataframe():
+    """Fixture to provide a sample DataFrame for testing."""
+    data = {
+        "value": [500, 200, 300, 150, 400],
+        "category": ["A", "B", "A", "B", "C"],
+    }
+
+    return pd.DataFrame(data)
+
+
 def test_draw_ecoplot(sample_dataframe):
     groupby = "category"
     x_axis = "time"
@@ -72,3 +84,19 @@ def test_draw_stacked_bar_chart(stacked_dataframe):
     )
 
     assert isinstance(plot, str)
+
+
+def test_draw_pie_chart(pie_dataframe):
+    plot = draw_pie_chart(
+        pie_dataframe,
+        value_column="value",
+        label_column="category",
+        style_kws={
+            "marker_colors": ["chartreuse", "red", "magenta"],
+            "textinfo": "value",
+        },
+        layout_kws={"font_color": "orange", "font_style": "italic"},
+    )
+
+    assert isinstance(plot, str)
+    open("pietest.html", "w").write(plot)
