@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 import pandas as pd
 import pandera as pa
@@ -64,10 +64,8 @@ def get_patrol_observations(
         Field(description="list of UUID of patrol types"),
     ],
     status: Annotated[
-        list[str],
-        Field(
-            description="list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'",
-        ),
+        list[Literal["active", "overdue", "done", "cancelled"]],
+        Field(description="list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"),
     ],
     include_patrol_details: Annotated[
         bool, Field(default=False, description="Include patrol details")

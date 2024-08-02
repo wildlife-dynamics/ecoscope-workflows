@@ -1,7 +1,7 @@
 {
     "title": "Ecoscope Workflow Configurations Form",
     "properties": {
-        "patrol_obs": {
+        "Get Patrol Observations from EarthRanger": {
             "additionalProperties": false,
             "properties": {
                 "client": {
@@ -29,6 +29,12 @@
                 },
                 "status": {
                     "items": {
+                        "enum": [
+                            "active",
+                            "overdue",
+                            "done",
+                            "cancelled"
+                        ],
                         "type": "string"
                     },
                     "title": "Status",
@@ -51,7 +57,7 @@
             ],
             "type": "object"
         },
-        "patrol_reloc": {
+        "Transform Observations to Relocations": {
             "additionalProperties": false,
             "properties": {
                 "filter_point_coords": {
@@ -78,45 +84,44 @@
             ],
             "type": "object"
         },
-        "patrol_traj": {
+        "Transform Relocations to Trajectories": {
             "additionalProperties": false,
             "properties": {
                 "min_length_meters": {
+                    "default": 0.1,
                     "title": "Min Length Meters",
                     "type": "number"
                 },
                 "max_length_meters": {
+                    "default": 10000,
                     "title": "Max Length Meters",
                     "type": "number"
                 },
                 "max_time_secs": {
+                    "default": 3600,
                     "title": "Max Time Secs",
                     "type": "number"
                 },
                 "min_time_secs": {
+                    "default": 1,
                     "title": "Min Time Secs",
                     "type": "number"
                 },
                 "max_speed_kmhr": {
+                    "default": 120,
                     "title": "Max Speed Kmhr",
                     "type": "number"
                 },
                 "min_speed_kmhr": {
+                    "default": 0.0,
                     "title": "Min Speed Kmhr",
                     "type": "number"
                 }
             },
-            "required": [
-                "min_length_meters",
-                "max_length_meters",
-                "max_time_secs",
-                "min_time_secs",
-                "max_speed_kmhr",
-                "min_speed_kmhr"
-            ],
+            "required": [],
             "type": "object"
         },
-        "patrol_traj_ecomap": {
+        "Draw Ecomap from Trajectories": {
             "additionalProperties": false,
             "properties": {
                 "data_type": {
@@ -130,6 +135,7 @@
                     "description": "The type of visualization."
                 },
                 "style_kws": {
+                    "default": {},
                     "title": "Style Kws",
                     "type": "object",
                     "description": "Style arguments for the data visualization."
@@ -172,12 +178,11 @@
                 }
             },
             "required": [
-                "data_type",
-                "style_kws"
+                "data_type"
             ],
             "type": "object"
         },
-        "patrol_traj_ecomap_html_url": {
+        "Persist Patrol Trajectories Ecomap as Text": {
             "additionalProperties": false,
             "properties": {
                 "filename": {
@@ -197,7 +202,7 @@
             "required": [],
             "type": "object"
         },
-        "patrol_traj_map_widget": {
+        "Create Map Widget for Patrols Trajectories": {
             "additionalProperties": false,
             "properties": {
                 "title": {
@@ -244,7 +249,7 @@
             ],
             "type": "object"
         },
-        "patrol_events": {
+        "Get Patrol Events from EarthRanger": {
             "additionalProperties": false,
             "properties": {
                 "client": {
@@ -288,7 +293,7 @@
             ],
             "type": "object"
         },
-        "filter_patrol_events": {
+        "Apply Relocation Coordinate Filter": {
             "additionalProperties": false,
             "properties": {
                 "min_x": {
@@ -331,6 +336,7 @@
             "required": [],
             "type": "object"
         },
+<<<<<<< HEAD
 <<<<<<< HEAD
         "required": [
             "title"
@@ -533,6 +539,9 @@
                         "type": "string"
 =======
         "patrol_events_ecomap": {
+=======
+        "Draw Ecomap for Patrols Events": {
+>>>>>>> dd34cc7 (enum)
             "additionalProperties": false,
             "properties": {
                 "data_type": {
@@ -546,6 +555,7 @@
                     "description": "The type of visualization."
                 },
                 "style_kws": {
+                    "default": {},
                     "title": "Style Kws",
                     "type": "object",
                     "description": "Style arguments for the data visualization."
@@ -588,12 +598,11 @@
                 }
             },
             "required": [
-                "data_type",
-                "style_kws"
+                "data_type"
             ],
             "type": "object"
         },
-        "patrol_events_ecomap_html_url": {
+        "Persist Patrols Ecomap as Text": {
             "additionalProperties": false,
             "properties": {
                 "filename": {
@@ -613,7 +622,7 @@
             "required": [],
             "type": "object"
         },
-        "patrol_events_map_widget": {
+        "Create Map Widget for Patrol Events": {
             "additionalProperties": false,
             "properties": {
                 "title": {
@@ -660,7 +669,7 @@
             ],
             "type": "object"
         },
-        "patrol_dashboard": {
+        "Create Dashboard with Patrol Map Widgets": {
             "$defs": {
                 "GroupedWidget": {
                     "properties": {
