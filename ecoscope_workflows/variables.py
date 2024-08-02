@@ -82,7 +82,7 @@ class ElementwiseTaskIdVariable(TaskIdVariable):
     pass
 
 
-SPLIT_SQ_BRACKETS = re.compile(r"(.+)\[(\d+|\*)\]$")
+SPLIT_SQ_BRACKETS = re.compile(r"(.+?)\[(\d+|\*)\](?:\[(\d+|\*)\])?")
 
 
 def _is_indexed(s: str) -> bool:
@@ -120,31 +120,25 @@ def _is_valid_env_var_name(name: str) -> bool:
     return bool(re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", name))
 
 
-def _split_indexed_suffix(s: str) -> tuple[str, str]:
+def _split_indexed_suffix(s: str) -> tuple:
     """Split an indexed suffix into the base suffix and the index.
     If the suffix is not indexed, return a 2-tuple of empty strings.
 
     Examples:
     ```python
     >>> _split_indexed_suffix("return[0]")
-    ('return', '0')
+    ('return', '0', None)
     >>> _split_indexed_suffix("return[1]")
-    ('return', '1')
+    ('return', '1', None)
     >>> _split_indexed_suffix("return[*]")
-    ('return', '*')
+    ('return', '*', None)
     >>> _split_indexed_suffix("return")
-    ('', '')
+    ('', '', '')
 
     ```
     """
     match = re.match(SPLIT_SQ_BRACKETS, s)
-    if match:
-        parts = match.groups()
-        assert len(parts) == 2
-        assert all(isinstance(p, str) for p in parts)
-        return parts
-    else:
-        return ("", "")
+    return match.groups() if match else ("", "", "")
 
 
 def parse_variable(s: str) -> TaskIdVariable | IndexedTaskIdVariable | EnvVariable:
@@ -174,13 +168,13 @@ def parse_variable(s: str) -> TaskIdVariable | IndexedTaskIdVariable | EnvVariab
             v = TaskIdVariable(value=task_id, suffix="return")
         case ["workflow", task_id, suffix]:
             match _split_indexed_suffix(suffix):
-                case ("return", index) if index.isdigit():
+                case ("return", index, None) if index.isdigit():
                     v = IndexedTaskIdVariable(
                         value=task_id,
                         suffix="return",
                         tuple_index=index,
                     )
-                case ("return", "*"):
+                case ("return", "*", None):
                     v = ElementwiseTaskIdVariable(value=task_id, suffix="return")
         case ["env", env_var_name] if (
             _is_valid_env_var_name(env_var_name) and not _is_indexed(env_var_name)
