@@ -29,6 +29,6 @@ workflow:
     # Step 3 - Chained map over the iterable returned by the previous step
     mode: map
     iter:
-      text: ${{ workflow.ecomaps.return }}
+      text: ${{ workflow.ecomaps.return[*] }}
     with:
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}

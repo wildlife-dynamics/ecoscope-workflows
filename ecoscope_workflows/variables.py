@@ -1,5 +1,5 @@
 import re
-from typing import Generic, Literal, TypeVar
+from typing import Literal, TypeVar
 
 from pydantic import BaseModel, model_serializer
 
@@ -49,7 +49,8 @@ class TaskIdVariable(WorkflowVariableBase):
 
 
 class IndexedTaskIdVariable(TaskIdVariable):
-    """A variable that references the return value of another task in the workflow.
+    """A variable that references the return value of another task in the workflow,
+    for which the return value is a tuple, and indexes to a specific value in the tuple.
 
     Examples:
     ```python
@@ -64,11 +65,24 @@ class IndexedTaskIdVariable(TaskIdVariable):
     tuple_index: int
 
 
-class Iter(dict, Generic[T]):
+class ElementwiseTaskIdVariable(TaskIdVariable):
+    """A variable that references the return value of another task in the workflow,
+    for which the return value is a list, and indexes elementwise into that list.
+
+    Examples:
+    ```python
+    >>> parse_variable("${{ workflow.task1.return[*] }}")
+    ElementwiseTaskIdVariable(value='task1', suffix='return')
+    >>> parse_variable("${{ workflow.task1.return[*] }}")
+    ElementwiseTaskIdVariable(value='task1', suffix='return')
+
+    ```
+    """
+
     pass
 
 
-SPLIT_SQ_BRACKETS = re.compile(r"(.+)\[(\d+)\]$")
+SPLIT_SQ_BRACKETS = re.compile(r"(.+)\[(\d+|\*)\]$")
 
 
 def _is_indexed(s: str) -> bool:
@@ -116,6 +130,8 @@ def _split_indexed_suffix(s: str) -> tuple[str, str]:
     ('return', '0')
     >>> _split_indexed_suffix("return[1]")
     ('return', '1')
+    >>> _split_indexed_suffix("return[*]")
+    ('return', '*')
     >>> _split_indexed_suffix("return")
     ('', '')
 
@@ -155,16 +171,17 @@ def parse_variable(s: str) -> TaskIdVariable | IndexedTaskIdVariable | EnvVariab
     inner = s.replace("${{", "").replace("}}", "").strip()
     match inner.split("."):
         case ["workflow", task_id, "return"]:
-            return TaskIdVariable(value=task_id, suffix="return")
-        case ["workflow", task_id, suffix] if (
-            _split_indexed_suffix(suffix)[0] == "return"
-            and _split_indexed_suffix(suffix)[1].isdigit()
-        ):
-            return IndexedTaskIdVariable(
-                value=task_id,
-                suffix=_split_indexed_suffix(suffix)[0],
-                tuple_index=_split_indexed_suffix(suffix)[1],
-            )
+            v = TaskIdVariable(value=task_id, suffix="return")
+        case ["workflow", task_id, suffix]:
+            match _split_indexed_suffix(suffix):
+                case ("return", index) if index.isdigit():
+                    v = IndexedTaskIdVariable(
+                        value=task_id,
+                        suffix="return",
+                        tuple_index=index,
+                    )
+                case ("return", "*"):
+                    v = ElementwiseTaskIdVariable(value=task_id, suffix="return")
         case ["env", env_var_name] if (
             _is_valid_env_var_name(env_var_name) and not _is_indexed(env_var_name)
         ):
@@ -176,6 +193,7 @@ def parse_variable(s: str) -> TaskIdVariable | IndexedTaskIdVariable | EnvVariab
                 "`${{ workflow.<task_id>.return[<tuple_index>] }}`, "
                 "`${{ env.<VALID_ENV_VAR_NAME> }}`."
             )
+    return v
 
 
 def _parse_variables(s: str | list[str]) -> str | list[str]:
