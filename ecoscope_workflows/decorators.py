@@ -46,7 +46,11 @@ class DistributedTask(Generic[P, R]):
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
         return (
-            validate_call(self.func)(*args, **kwargs)
+            validate_call(
+                self.func,
+                validate_return=True,
+                config={"arbitrary_types_allowed": True},
+            )(*args, **kwargs)
             if self.validate
             else self.func(*args, **kwargs)
         )
