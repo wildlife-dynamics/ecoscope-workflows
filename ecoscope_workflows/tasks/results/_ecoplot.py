@@ -82,17 +82,17 @@ def draw_stacked_bar_chart(
         Field(
             description="Style arguments passed to plotly.graph_objects.Bar and applied to individual groups."
         ),
-    ],
+    ] = None,
     style_kws: Annotated[
-        dict | None,
+        dict,
         Field(
             description="Style arguments passed to plotly.graph_objects.Bar and applied to all groups."
         ),
-    ],
+    ] = {},
     layout_kws: Annotated[
         dict | None,
         Field(description="Style arguments passed to plotly.graph_objects.Figure."),
-    ],
+    ] = None,
 ) -> Annotated[str, Field()]:
     """
     Generates a stacked bar chart from the provided params
@@ -159,11 +159,11 @@ def draw_pie_chart(
     style_kws: Annotated[
         dict | None,
         Field(description="Additional style kwargs passed to go.Pie()."),
-    ],
+    ] = None,
     layout_kws: Annotated[
         dict | None,
         Field(description="Additional kwargs passed to plotly.go.Figure(layout)."),
-    ],
+    ] = None,
 ) -> Annotated[str, Field()]:
     """
     Generates a pie chart from the provided params
