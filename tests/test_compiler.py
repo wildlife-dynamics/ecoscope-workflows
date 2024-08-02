@@ -129,6 +129,27 @@ def test__parse_varaible_raises(s, failure_mode):
                 "Indexing is only allowed when multiple arguments are passed to the `iter` field."
             ),
         ),
+        (
+            """
+            iter:
+              arg1:
+                - ${{ workflow.task1.return }}
+                - ${{ workflow.task2.return }}
+            """,
+            {
+                "arg1": [
+                    TaskIdVariable(value="task1", suffix="return"),
+                    TaskIdVariable(value="task2", suffix="return"),
+                ]
+            },
+            False,
+            None,
+        ),
+    ],
+    ids=[
+        "single_arg_no_index",
+        "single_arg_with_index",
+        "single_arg_array_input_no_index",
     ],
 )
 def test__validate_iterable_arg_dependencies(yaml_str, expected, raises, raises_match):

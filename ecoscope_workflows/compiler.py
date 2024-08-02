@@ -235,7 +235,7 @@ def _validate_iterable_arg_deps(
 
     ## A single iterable argument
 
-    ## Multiple non-iterable arguments assembled into an iterable
+    ##
 
     # ```python
     # >>> import yaml
@@ -265,9 +265,8 @@ def _validate_iterable_arg_deps(
     # ```
 
     # """
-
     match list(iter_arg_deps.values()):
-        case [TaskIdVariable(value=str(), suffix="return", tuple_index=None)]:
+        case [TaskIdVariable(tuple_index=None)]:
             # A single iterable, unindexed argument. The most basic allowed case; e.g.,
             # ```
             # iter:
@@ -277,16 +276,14 @@ def _validate_iterable_arg_deps(
             # In this case, the return value of `task1` referenced here would be expected
             # to be an iterable.
             return iter_arg_deps
-        case [TaskIdVariable(value=str(), suffix="return", tuple_index=int())]:
-            # A single iterable, indexed argument. Not allowed; e.g.,
-            # ```
-            # iter:
-            #   arg1: ${{ workflow.task1.return[0] }}
-            # ```
+        case [TaskIdVariable(tuple_index=int())]:
+            # A single iterable, indexed argument. Not allowed.
             raise ValueError(
                 "If a single argument is passed to the `iter` field, it must not be indexed. "
                 "Indexing is only allowed when multiple arguments are passed to the `iter` field."
             )
+        # case [*all_vars] if all(v.tuple_index is None for v in all_vars):
+        # Multiple iterable, unindexed arguments.
 
     if len(iter_arg_deps) > 1:
         assert not any(isinstance(v, list) for v in iter_arg_deps.values()), (
