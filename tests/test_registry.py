@@ -2,6 +2,7 @@ from ecoscope_workflows.registry import KnownTask, OperatorKws
 
 
 def test_known_task_parameters_jsonschema():
+    # test
     importable_reference = "ecoscope_workflows.tasks.io.get_subjectgroup_observations"
     kt = KnownTask(
         importable_reference=importable_reference,
