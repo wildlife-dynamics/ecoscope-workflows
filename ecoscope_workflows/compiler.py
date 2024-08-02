@@ -395,12 +395,22 @@ class DagCompiler(BaseModel):
         )
 
     def get_params_jsonschema(self) -> dict[str, Any]:
+<<<<<<< HEAD
         return ReactJSONSchemaFormConfiguration(
             properties={
                 t.name: t.known_task.parameters_jsonschema(omit_args=self._omit_args)
                 for t in self.spec.workflow
             }
         ).model_dump()
+=======
+        schema: dict[str, Any] = {}
+        schema["title"] = "Ecoscope Workflow Configurations Form"
+        schema["properties"] = {
+            t.id: t.known_task.parameters_jsonschema(omit_args=self._omit_args)
+            for t in self.spec.workflow
+        }
+        return schema
+>>>>>>> 37fa646 (Generate react-jsonschema-form)
 
     def get_params_fillable_yaml(self) -> str:
         yaml_str = ""
