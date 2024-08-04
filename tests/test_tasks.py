@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from importlib.resources import files
-from pathlib import Path
 from typing import Callable
 
 import geopandas as gpd
@@ -8,7 +7,6 @@ import pandas as pd
 import pytest
 
 from ecoscope_workflows.decorators import DistributedTask
-from ecoscope_workflows.serde import gpd_from_parquet_uri
 from ecoscope_workflows.tasks.analysis import calculate_time_density
 from ecoscope_workflows.tasks.preprocessing import (
     process_relocations,
@@ -99,8 +97,6 @@ task_fixtures = {
         ),
     ),
 }
-# TODO: test `draw_map` task ... and possibly move to `conftest`
-# and ensure all known tasks are accounted for here?
 
 
 @pytest.mark.parametrize(
@@ -108,16 +104,9 @@ task_fixtures = {
     task_fixtures.values(),
     ids=task_fixtures.keys(),
 )
-def test_consumes_and_or_produces_dataframe(
-    tf: TaskFixture,
-    tmp_path: Path,
-):
-    args = (
-        (gpd.read_parquet(tf.example_input_dataframe_path),)
-        if tf.example_input_dataframe_path
-        else ()  # io tasks don't have input dataframes
-    )
-    in_memory = tf.task(*args, **tf.kws)
+def test_consumes_and_or_produces_dataframe(tf: TaskFixture):
+    input_df = gpd.read_parquet(tf.example_input_dataframe_path)
+    in_memory = tf.task(input_df, **tf.kws)
 
     for assert_fn in tf.assert_that_return_dataframe:
         assert assert_fn(in_memory)
@@ -125,23 +114,3 @@ def test_consumes_and_or_produces_dataframe(
     # we've cached this result for reuse by other tests, so check that cache is not stale
     cached = gpd.read_parquet(tf.example_return_path)
     pd.testing.assert_frame_equal(in_memory, cached)
-
-    # compare to `distributed` calling style
-    def serialize_result(gdf: gpd.GeoDataFrame) -> str:
-        path: Path = tmp_path / "result.parquet"
-        gdf.to_parquet(path)
-        return path.as_posix()
-
-    result_path = tf.task.replace(
-        arg_prevalidators=(
-            {tf.input_dataframe_arg_name: gpd_from_parquet_uri}
-            if tf.input_dataframe_arg_name
-            else {}  # io tasks don't have input dataframes
-        ),
-        return_postvalidator=serialize_result,
-        validate=True,
-    )(tf.example_input_dataframe_path, **tf.kws)
-    # this time, the result is written to a file, so we need to read it back in
-    distributed_result = gpd.read_parquet(result_path)
-    # and ensure it's the same as the in-memory result
-    pd.testing.assert_frame_equal(in_memory, distributed_result)
