@@ -3,7 +3,7 @@ from typing import Annotated, Any
 import pandera as pa
 from pydantic import Field
 
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import task
 from ecoscope_workflows.tasks.preprocessing import TrajectoryGDFSchema
 from ecoscope_workflows.annotations import JsonSerializableDataFrameModel, DataFrame
 
@@ -14,7 +14,7 @@ class TimeDensityReturnGDFSchema(JsonSerializableDataFrameModel):
     area_sqkm: pa.typing.Series[float] = pa.Field()
 
 
-@distributed
+@task
 def calculate_time_density(
     trajectory_gdf: DataFrame[TrajectoryGDFSchema],
     # raster profile

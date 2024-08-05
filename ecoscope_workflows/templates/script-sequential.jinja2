@@ -12,7 +12,7 @@ import os
 import yaml
 {%- if testing %}
 import warnings  # 🧪
-from ecoscope_workflows.testing import create_distributed_task_magicmock  # 🧪
+from ecoscope_workflows.testing import create_task_magicmock  # 🧪
 {% endif %}
 
 {% for t in spec.workflow -%}

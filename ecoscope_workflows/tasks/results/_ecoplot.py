@@ -3,10 +3,10 @@ from typing import Annotated
 from pydantic import Field
 
 from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import task
 
 
-@distributed
+@task
 def draw_ecoplot(
     dataframe: DataFrame[JsonSerializableDataFrameModel],
     group_by: Annotated[str, Field(description="The dataframe column to group by.")],

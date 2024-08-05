@@ -2,11 +2,11 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import task
 
 
 def test_call_simple_default_operator_kws():
-    @distributed
+    @task
     def f(a: int, b: int) -> int:
         return a + b
 
@@ -22,7 +22,7 @@ def test_call_simple_default_operator_kws():
 
 
 def test_call_simple_custom_operator_kws():
-    @distributed(
+    @task(
         image="my-custom-image:abc123",
         container_resources={
             "request_memory": "400M",
@@ -46,7 +46,7 @@ def test_call_simple_custom_operator_kws():
 
 
 def test_frozen_instance():
-    @distributed
+    @task
     def f(a: int) -> int:
         return a
 

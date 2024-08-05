@@ -3,14 +3,14 @@ from typing import Annotated
 
 from pydantic import Field
 
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import task
 
 
 # TODO: Unlike the tasks in `._earthranger`, this is not tagged with `tags=["io"]`,
 # because in the end to end test that tag is used to determine which tasks to mock.
 # Ultimately, we should make the mocking process less brittle, but to get his PR merged,
 # I'm going to leave this as is for now.
-@distributed
+@task
 def persist_text(
     text: Annotated[str, Field(description="Text to persist")],
     # TODO: get root path from environment variable or other deployment-level config (not user-provided)
