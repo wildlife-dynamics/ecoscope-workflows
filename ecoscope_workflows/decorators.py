@@ -13,7 +13,6 @@ class Task(Generic[P, R, K, V]):
     """ """
 
     func: Callable[P, R]
-    validate: bool = False
     executor: Executor[P, R, K, V] = PythonExecutor()
     tags: list[str] = field(default_factory=list)
     _initialized: bool = False
@@ -21,19 +20,22 @@ class Task(Generic[P, R, K, V]):
     def __post_init__(self):
         self._initialized = True
 
-    def replace(
+    def partial(
         self,
-        validate: bool | None = None,
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> "Task[P, R, K, V]":
-        self._initialized = False
-        changes = {
-            k: v
-            for k, v in {
-                "validate": validate,
-            }.items()
-            if v is not None
-        }
-        return replace(self, **changes)  # type: ignore
+        return replace(self, func=lambda *a, **kw: self.func(*args, *a, **kwargs, **kw))
+
+    def validate(self) -> "Task[P, R, K, V]":
+        return replace(
+            self,
+            func=validate_call(
+                self.func,
+                validate_return=True,
+                config={"arbitrary_types_allowed": True},
+            ),
+        )
 
     def __setattr__(self, name, value):
         if self._initialized and name != "_initialized":
@@ -43,20 +45,8 @@ class Task(Generic[P, R, K, V]):
             )
         return super().__setattr__(name, value)
 
-    @property
-    def _callable(self) -> Callable[P, R]:
-        return (
-            validate_call(
-                self.func,
-                validate_return=True,
-                config={"arbitrary_types_allowed": True},
-            )
-            if self.validate
-            else self.func
-        )
-
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
-        return self.executor.call(self._callable, *args, **kwargs)
+        return self.executor.call(self.func, *args, **kwargs)
 
     def call(self, *args: P.args, **kwargs: P.kwargs) -> R:
         """Alias for `self.__call__` for more readable method chaining."""
@@ -86,7 +76,7 @@ class Task(Generic[P, R, K, V]):
             {argnames[i]: argvalues_list[j][i] for i in range(len(argnames))}
             for j in range(len(argvalues_list))
         ]
-        return self.executor.map(lambda kw: self._callable(**kw), kwargs_iterable)
+        return self.executor.map(lambda kw: self.func(**kw), kwargs_iterable)
 
     def mapvalues(
         self, argnames: str | Sequence[str], argvalues: Sequence[tuple[K, V]]
@@ -99,7 +89,7 @@ class Task(Generic[P, R, K, V]):
             argnames = [argnames]
         kwargs_iterable = [(k, {argnames[0]: argvalue}) for (k, argvalue) in argvalues]
         return self.executor.mapvalues(
-            lambda kv: (kv[0], self._callable(**kv[1])), kwargs_iterable
+            lambda kv: (kv[0], self.func(**kv[1])), kwargs_iterable
         )
 
 
