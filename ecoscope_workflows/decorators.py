@@ -10,7 +10,7 @@ R = TypeVar("R")
 
 
 @dataclass
-class DistributedTask(Generic[P, R]):
+class Task(Generic[P, R]):
     """ """
 
     func: Callable[P, R]
@@ -25,7 +25,7 @@ class DistributedTask(Generic[P, R]):
     def replace(
         self,
         validate: bool | None = None,
-    ) -> "DistributedTask[P, R]":
+    ) -> "Task[P, R]":
         self._initialized = False
         changes = {
             k: v
@@ -57,31 +57,31 @@ class DistributedTask(Generic[P, R]):
 
 
 @overload  # @distributed style
-def distributed(
+def task(
     func: Callable[P, R],
     *,
     image: str | None = None,
     container_resources: dict[str, Any] | None = None,
     tags: list[str] | None = None,
-) -> DistributedTask[P, R]: ...
+) -> Task[P, R]: ...
 
 
 @overload  # @distributed(...) style
-def distributed(
+def task(
     *,
     image: str | None = None,
     container_resources: dict[str, Any] | None = None,
     tags: list[str] | None = None,
-) -> Callable[[Callable[P, R]], DistributedTask[P, R]]: ...
+) -> Callable[[Callable[P, R]], Task[P, R]]: ...
 
 
-def distributed(
+def task(
     func: Callable[P, R] | None = None,
     *,
     image: str | None = None,
     container_resources: dict[str, Any] | None = None,
     tags: list[str] | None = None,
-) -> Callable[[Callable[P, R]], DistributedTask[P, R]] | DistributedTask[P, R]:
+) -> Callable[[Callable[P, R]], Task[P, R]] | Task[P, R]:
     operator_kws = {
         k: v
         for k, v in {"image": image, "container_resources": container_resources}.items()
@@ -90,8 +90,8 @@ def distributed(
 
     def wrapper(
         func: Callable[P, R],
-    ) -> DistributedTask[P, R]:
-        return DistributedTask(
+    ) -> Task[P, R]:
+        return Task(
             func,
             operator_kws=OperatorKws(**operator_kws),
             tags=tags or [],
