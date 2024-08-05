@@ -12,7 +12,6 @@ from inspect import getmembers, ismodule
 from typing import Annotated, Any, Generator, get_args
 
 import ruamel.yaml
-import pandera as pa
 from pydantic import (
     BaseModel,
     Field,
@@ -28,7 +27,6 @@ from ecoscope_workflows.annotations import (
 from ecoscope_workflows.connections import EarthRangerConnection
 from ecoscope_workflows.decorators import Task
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
-from ecoscope_workflows.serde import gpd_from_parquet_uri
 from ecoscope_workflows.util import (
     import_task_from_reference,
     rsplit_importable_reference,
@@ -216,8 +214,4 @@ known_tasks = types.MappingProxyType(_known_tasks)  # external, immutable
 
 known_connections = {
     conn.__ecoscope_connection_type__: conn for conn in (EarthRangerConnection,)
-}
-
-known_deserializers = {
-    pa.typing.DataFrame: gpd_from_parquet_uri,
 }
