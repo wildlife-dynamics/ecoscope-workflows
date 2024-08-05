@@ -120,6 +120,40 @@
         "type": "object"
     },
     "ecomaps": {
+        "$defs": {
+            "LayerStyleProperty": {
+                "properties": {
+                    "auto_highlight": {
+                        "default": false,
+                        "title": "Auto Highlight",
+                        "type": "boolean"
+                    },
+                    "opacity": {
+                        "default": 1,
+                        "title": "Opacity",
+                        "type": "number"
+                    },
+                    "pickable": {
+                        "default": true,
+                        "title": "Pickable",
+                        "type": "boolean"
+                    }
+                },
+                "title": "LayerStyleProperty",
+                "type": "object"
+            },
+            "NorthArrowProperty": {
+                "properties": {
+                    "placement": {
+                        "default": "top-left",
+                        "title": "Placement",
+                        "type": "string"
+                    }
+                },
+                "title": "NorthArrowProperty",
+                "type": "object"
+            }
+        },
         "additionalProperties": false,
         "properties": {
             "data_type": {
@@ -132,9 +166,18 @@
                 "type": "string",
                 "description": "The type of visualization."
             },
-            "style_kws": {
-                "title": "Style Kws",
-                "type": "object",
+            "style_props": {
+                "allOf": [
+                    {
+                        "$ref": "#/$defs/LayerStyleProperty"
+                    }
+                ],
+                "default": {
+                    "auto_highlight": false,
+                    "opacity": 1.0,
+                    "pickable": true
+                },
+                "title": "Style Props",
                 "description": "Style arguments for the data visualization."
             },
             "tile_layer": {
@@ -155,28 +198,21 @@
                 "type": "string",
                 "description": "The map title."
             },
-            "title_kws": {
-                "default": {},
-                "title": "Title Kws",
-                "type": "object",
-                "description": "Additional arguments for configuring the Title."
-            },
-            "scale_kws": {
-                "default": {},
-                "title": "Scale Kws",
-                "type": "object",
-                "description": "Additional arguments for configuring the Scale Bar."
-            },
-            "north_arrow_kws": {
-                "default": {},
-                "title": "North Arrow Kws",
-                "type": "object",
+            "north_arrow_props": {
+                "allOf": [
+                    {
+                        "$ref": "#/$defs/NorthArrowProperty"
+                    }
+                ],
+                "default": {
+                    "placement": "top-left"
+                },
+                "title": "North Arrow Props",
                 "description": "Additional arguments for configuring the North Arrow."
             }
         },
         "required": [
-            "data_type",
-            "style_kws"
+            "data_type"
         ],
         "type": "object"
     },

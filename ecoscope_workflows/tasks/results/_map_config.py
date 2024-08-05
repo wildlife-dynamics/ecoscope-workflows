@@ -28,17 +28,5 @@ class PolygonLayerProperty(ShapeLayerProperty):
     get_elevation: float = 1000
 
 
-class TitleProperty(BaseModel):
-    font_size: str = "18px"
-    position: str = "upper"
-
-
 class NorthArrowProperty(BaseModel):
-    placement: str = "topleft"
-    scale: float = 1
-
-
-class ScaleBarPropertyProperty(BaseModel):
-    placement: str = "topleft"
-    use_imperial: bool = False
-    scale: float = 1
+    placement: str = "top-left"
