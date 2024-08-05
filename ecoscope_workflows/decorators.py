@@ -64,8 +64,9 @@ class Task(Generic[P, R]):
         """Alias for `self.__call__` for more readable method chaining."""
         return self(*args, **kwargs)
 
-    def map(self, iterable: Sequence) -> Sequence[R]:
-        return self.executor.map(self._callable, iterable)
+    def map(self, argname: str, argvalues: Sequence) -> Sequence[R]:
+        kwargs_iterable = [{argname: argvalue} for argvalue in argvalues]
+        return self.executor.map(lambda kw: self._callable(**kw), kwargs_iterable)
 
 
 @overload  # @task style

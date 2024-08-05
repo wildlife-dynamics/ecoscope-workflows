@@ -41,10 +41,10 @@ def test_map_simple():
     def f(a: int) -> int:
         return a
 
-    assert f.map([1, 2, 3]) == [1, 2, 3]
+    assert f.map("a", [1, 2, 3]) == [1, 2, 3]
 
     @task
     def double(a: int) -> int:
         return a * 2
 
-    assert double.map([1, 2, 3]) == [2, 4, 6]
+    assert double.map("a", [1, 2, 3]) == [2, 4, 6]

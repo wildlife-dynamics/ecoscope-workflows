@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Callable, Generic, ParamSpec, Sequence, TypeVar
+from typing import Callable, Generic, Iterable, ParamSpec, Sequence, TypeVar
 
 
 P = ParamSpec("P")
@@ -12,5 +12,5 @@ class Executor(ABC, Generic[P, R]):
         pass
 
     @abstractmethod
-    def map(self, func: Callable[..., R], iterable: Sequence) -> Sequence[R]:
+    def map(self, func: Callable[..., R], iterable: Iterable) -> Sequence[R]:
         pass

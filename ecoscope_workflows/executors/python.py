@@ -1,4 +1,4 @@
-from typing import Callable, ParamSpec, Sequence, TypeVar
+from typing import Callable, ParamSpec, Iterable, Sequence, TypeVar
 
 from .base import Executor
 
@@ -10,6 +10,6 @@ class PythonExecutor(Executor[P, R]):
     def call(self, func: Callable[P, R], *args: P.args, **kwargs: P.kwargs) -> R:
         return func(*args, **kwargs)
 
-    def map(self, func: Callable[..., R], iterable: Sequence) -> Sequence[R]:
+    def map(self, func: Callable[..., R], iterable: Iterable) -> Sequence[R]:
         mapper = map(func, iterable)
         return list(mapper)
