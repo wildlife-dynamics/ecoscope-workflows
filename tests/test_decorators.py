@@ -80,3 +80,22 @@ def test_mapvalues_args_unpacking():
         match="Arg unpacking is not yet supported for `mapvalues`.",
     ):
         assert f.mapvalues(["a", "b"], keyed_input) == expected_output
+
+
+def test_partial():
+    @task
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    f_partial = f.partial(a=1)
+    assert f_partial(b=2) == 3
+    assert f_partial(b=3) == 4
+
+
+def test_partial_chain():
+    @task
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    assert f.partial(a=1)(b=2) == 3
+    assert f.partial(a=1)(b=3) == 4
