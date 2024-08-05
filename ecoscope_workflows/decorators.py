@@ -83,6 +83,9 @@ class Task(Generic[P, R, K, V]):
             if not isinstance(argvalues[0], tuple)
             else cast(list[tuple], argvalues)
         )
+        assert all(
+            len(v) == len(argnames) for v in argvalues_list
+        ), "All values in `argvalues` must have the same length as `argnames`."
         kwargs_iterable = [
             {argnames[i]: argvalues_list[j][i] for i in range(len(argnames))}
             for j in range(len(argvalues_list))
