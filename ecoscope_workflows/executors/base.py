@@ -1,11 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Callable, Generic, Iterable, ParamSpec, Sequence, TypeVar
+from typing import Callable, Generic, Iterable, Sequence
 
-
-P = ParamSpec("P")
-R = TypeVar("R")
-K = TypeVar("K")
-V = TypeVar("V")
+from ecoscope_workflows.typevars import P, R, K, V
 
 
 class Executor(ABC, Generic[P, R, K, V]):

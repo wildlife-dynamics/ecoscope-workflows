@@ -1,11 +1,7 @@
-from typing import Callable, ParamSpec, Iterable, Sequence, TypeVar
+from typing import Callable, Iterable, Sequence
 
+from ecoscope_workflows.typevars import P, R, K, V
 from .base import Executor
-
-P = ParamSpec("P")
-R = TypeVar("R")
-K = TypeVar("K")
-V = TypeVar("V")
 
 
 class LithopsExecutor(Executor[P, R, K, V]):

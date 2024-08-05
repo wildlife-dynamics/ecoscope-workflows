@@ -1,15 +1,11 @@
 from dataclasses import FrozenInstanceError, dataclass, field, replace
-from typing import Callable, Generic, ParamSpec, Sequence, TypeVar, cast, overload
+from typing import Callable, Generic, Sequence, cast, overload
 
 from pydantic import validate_call
 
+from ecoscope_workflows.typevars import P, R, K, V
 from ecoscope_workflows.executors import Executor
 from ecoscope_workflows.executors.python import PythonExecutor
-
-P = ParamSpec("P")
-R = TypeVar("R")
-K = TypeVar("K")
-V = TypeVar("V")
 
 
 @dataclass
