@@ -1,21 +1,20 @@
 from dataclasses import FrozenInstanceError, dataclass, field, replace
-from typing import Any, Callable, Generic, ParamSpec, TypeVar, overload
+from typing import Callable, Generic, Sequence, cast, overload
 
 from pydantic import validate_call
 
-from ecoscope_workflows.operators import OperatorKws
-
-P = ParamSpec("P")
-R = TypeVar("R")
+from ecoscope_workflows.typevars import P, R, K, V
+from ecoscope_workflows.executors import Executor
+from ecoscope_workflows.executors.python import PythonExecutor
 
 
 @dataclass
-class Task(Generic[P, R]):
+class Task(Generic[P, R, K, V]):
     """ """
 
     func: Callable[P, R]
     validate: bool = False
-    operator_kws: OperatorKws = field(default_factory=OperatorKws)
+    executor: Executor[P, R, K, V] = PythonExecutor()
     tags: list[str] = field(default_factory=list)
     _initialized: bool = False
 
@@ -25,7 +24,7 @@ class Task(Generic[P, R]):
     def replace(
         self,
         validate: bool | None = None,
-    ) -> "Task[P, R]":
+    ) -> "Task[P, R, K, V]":
         self._initialized = False
         changes = {
             k: v
@@ -44,15 +43,63 @@ class Task(Generic[P, R]):
             )
         return super().__setattr__(name, value)
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
+    @property
+    def _callable(self) -> Callable[P, R]:
         return (
             validate_call(
                 self.func,
                 validate_return=True,
                 config={"arbitrary_types_allowed": True},
-            )(*args, **kwargs)
+            )
             if self.validate
-            else self.func(*args, **kwargs)
+            else self.func
+        )
+
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
+        return self.executor.call(self._callable, *args, **kwargs)
+
+    def call(self, *args: P.args, **kwargs: P.kwargs) -> R:
+        """Alias for `self.__call__` for more readable method chaining."""
+        return self(*args, **kwargs)
+
+    def map(
+        self,
+        argnames: str | Sequence[str],
+        argvalues: Sequence[V] | Sequence[tuple[V, ...]],
+    ) -> Sequence[R]:
+        if isinstance(argnames, str):
+            argnames = [argnames]
+        assert all(
+            isinstance(v, type(argvalues[0])) for v in argvalues
+        ), "All values in `argvalues` must be of the same type."
+
+        # For mypy, ensure argvalues is a list of tuples, regardless of input
+        argvalues_list: list[tuple] = (
+            [(v,) for v in argvalues]
+            if not isinstance(argvalues[0], tuple)
+            else cast(list[tuple], argvalues)
+        )
+        assert all(
+            len(v) == len(argnames) for v in argvalues_list
+        ), "All values in `argvalues` must have the same length as `argnames`."
+        kwargs_iterable = [
+            {argnames[i]: argvalues_list[j][i] for i in range(len(argnames))}
+            for j in range(len(argvalues_list))
+        ]
+        return self.executor.map(lambda kw: self._callable(**kw), kwargs_iterable)
+
+    def mapvalues(
+        self, argnames: str | Sequence[str], argvalues: Sequence[tuple[K, V]]
+    ) -> Sequence[tuple[K, R]]:
+        if not isinstance(argnames, str) and len(argnames) > 1:
+            raise NotImplementedError(
+                "Arg unpacking is not yet supported for `mapvalues`."
+            )
+        if isinstance(argnames, str):
+            argnames = [argnames]
+        kwargs_iterable = [(k, {argnames[0]: argvalue}) for (k, argvalue) in argvalues]
+        return self.executor.mapvalues(
+            lambda kv: (kv[0], self._callable(**kv[1])), kwargs_iterable
         )
 
 
@@ -60,40 +107,27 @@ class Task(Generic[P, R]):
 def task(
     func: Callable[P, R],
     *,
-    image: str | None = None,
-    container_resources: dict[str, Any] | None = None,
     tags: list[str] | None = None,
-) -> Task[P, R]: ...
+) -> Task[P, R, K, V]: ...
 
 
 @overload  # @task(...) style
 def task(
     *,
-    image: str | None = None,
-    container_resources: dict[str, Any] | None = None,
     tags: list[str] | None = None,
-) -> Callable[[Callable[P, R]], Task[P, R]]: ...
+) -> Callable[[Callable[P, R]], Task[P, R, K, V]]: ...
 
 
 def task(
     func: Callable[P, R] | None = None,
     *,
-    image: str | None = None,
-    container_resources: dict[str, Any] | None = None,
     tags: list[str] | None = None,
-) -> Callable[[Callable[P, R]], Task[P, R]] | Task[P, R]:
-    operator_kws = {
-        k: v
-        for k, v in {"image": image, "container_resources": container_resources}.items()
-        if v is not None
-    }
-
+) -> Callable[[Callable[P, R]], Task[P, R, K, V]] | Task[P, R, K, V]:
     def wrapper(
         func: Callable[P, R],
-    ) -> Task[P, R]:
+    ) -> Task[P, R, K, V]:
         return Task(
             func,
-            operator_kws=OperatorKws(**operator_kws),
             tags=tags or [],
         )
 

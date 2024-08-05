@@ -12,7 +12,6 @@ from inspect import getmembers, ismodule
 from typing import Annotated, Any, Generator, get_args
 
 import ruamel.yaml
-import pandera as pa
 from pydantic import (
     BaseModel,
     Field,
@@ -28,8 +27,6 @@ from ecoscope_workflows.annotations import (
 from ecoscope_workflows.connections import EarthRangerConnection
 from ecoscope_workflows.decorators import Task
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
-from ecoscope_workflows.operators import OperatorKws
-from ecoscope_workflows.serde import gpd_from_parquet_uri
 from ecoscope_workflows.util import (
     import_task_from_reference,
     rsplit_importable_reference,
@@ -41,7 +38,6 @@ from ecoscope_workflows.util import (
 class _KnownTaskArgs:
     name: str
     anchor: str
-    operator_kws: dict
     tags: list[str]
 
 
@@ -56,7 +52,6 @@ def recurse_into_tasks(
             yield _KnownTaskArgs(
                 name=name,
                 anchor=module.__name__,
-                operator_kws=obj.operator_kws.model_dump(),
                 tags=obj.tags or [],
             )
         elif ismodule(obj):
@@ -89,7 +84,6 @@ def collect_task_entries() -> dict[str, "KnownTask"]:
                 # perhaps the fact that anchor and function names are properties
                 # of KnownTask is strange? Maybe we should just pass them directly.
                 importable_reference=f"{kta.anchor}.{kta.name}",
-                operator_kws=kta.operator_kws,
                 tags=kta.tags,
             )
             for kta in known_task_args
@@ -106,7 +100,6 @@ class TaskTag(str, Enum):
 
 class KnownTask(BaseModel):
     importable_reference: ImportableReference
-    operator_kws: OperatorKws
     tags: list[TaskTag] = Field(default_factory=list)
 
     @field_serializer("importable_reference")
@@ -221,8 +214,4 @@ known_tasks = types.MappingProxyType(_known_tasks)  # external, immutable
 
 known_connections = {
     conn.__ecoscope_connection_type__: conn for conn in (EarthRangerConnection,)
-}
-
-known_deserializers = {
-    pa.typing.DataFrame: gpd_from_parquet_uri,
 }
