@@ -58,14 +58,17 @@ def draw_ecomap(
     ] = False,
     title: Annotated[str, Field(description="The map title.")] = "",
     title_kws: Annotated[
-        dict, Field(description="Additional arguments for configuring the Title.")
-    ] = {},
+        dict | None,
+        Field(description="Additional arguments for configuring the Title."),
+    ] = None,
     scale_kws: Annotated[
-        dict, Field(description="Additional arguments for configuring the Scale Bar.")
-    ] = {},
+        dict | None,
+        Field(description="Additional arguments for configuring the Scale Bar."),
+    ] = None,
     north_arrow_kws: Annotated[
-        dict, Field(description="Additional arguments for configuring the North Arrow.")
-    ] = {},
+        dict | None,
+        Field(description="Additional arguments for configuring the North Arrow."),
+    ] = None,
 ) -> Annotated[str, Field()]:
     """
     Creates a map based on the provided layer definitions and configuration.
@@ -90,10 +93,10 @@ def draw_ecomap(
     m = EcoMap(static=static, default_widgets=False)
 
     if title:
-        m.add_title(title, **title_kws)
+        m.add_title(title, **(title_kws or {}))
 
-    m.add_scale_bar(**scale_kws)
-    m.add_north_arrow(**north_arrow_kws)
+    m.add_scale_bar(**(scale_kws or {}))
+    m.add_north_arrow(**(north_arrow_kws or {}))
 
     if tile_layer:
         m.add_layer(EcoMap.get_named_tile_layer(tile_layer))

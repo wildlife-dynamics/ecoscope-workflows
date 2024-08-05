@@ -191,21 +191,42 @@
                 "description": "The map title."
             },
             "title_kws": {
-                "default": {},
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
                 "title": "Title Kws",
-                "type": "object",
                 "description": "Additional arguments for configuring the Title."
             },
             "scale_kws": {
-                "default": {},
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
                 "title": "Scale Kws",
-                "type": "object",
                 "description": "Additional arguments for configuring the Scale Bar."
             },
             "north_arrow_kws": {
-                "default": {},
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
                 "title": "North Arrow Kws",
-                "type": "object",
                 "description": "Additional arguments for configuring the North Arrow."
             }
         },

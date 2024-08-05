@@ -84,11 +84,11 @@ def draw_stacked_bar_chart(
         ),
     ] = None,
     style_kws: Annotated[
-        dict,
+        dict | None,
         Field(
             description="Style arguments passed to plotly.graph_objects.Bar and applied to all groups."
         ),
-    ] = {},
+    ] = None,
     layout_kws: Annotated[
         dict | None,
         Field(description="Style arguments passed to plotly.graph_objects.Figure."),
@@ -119,7 +119,7 @@ def draw_stacked_bar_chart(
         x_col=x_axis,
         y_col=y_axis,
         groupby_style=groupby_style_kws,
-        **style_kws,
+        **(style_kws or {}),
     )
 
     plot = stacked_bar_chart(
