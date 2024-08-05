@@ -93,10 +93,15 @@ class Task(Generic[P, R, K, V]):
         return self.executor.map(lambda kw: self._callable(**kw), kwargs_iterable)
 
     def mapvalues(
-        self, argname: str, argvalues: Sequence[tuple[K, V]]
+        self, argnames: str | Sequence[str], argvalues: Sequence[tuple[K, V]]
     ) -> Sequence[tuple[K, R]]:
-        # TODO: argname unpacking like in `map`
-        kwargs_iterable = [(k, {argname: argvalue}) for (k, argvalue) in argvalues]
+        if not isinstance(argnames, str) and len(argnames) > 1:
+            raise NotImplementedError(
+                "Arg unpacking is not yet supported for `mapvalues`."
+            )
+        if isinstance(argnames, str):
+            argnames = [argnames]
+        kwargs_iterable = [(k, {argnames[0]: argvalue}) for (k, argvalue) in argvalues]
         return self.executor.mapvalues(
             lambda kv: (kv[0], self._callable(**kv[1])), kwargs_iterable
         )

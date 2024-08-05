@@ -68,7 +68,6 @@ def test_map_args_unpacking():
     assert f.map(["a", "b"], [(1, 2), (3, 4), (5, 6)]) == [3, 7, 11]
 
 
-@pytest.mark.xfail(reason="Not yet implemented")
 def test_mapvalues_args_unpacking():
     @task
     def f(a: int, b: int) -> int:
@@ -76,4 +75,8 @@ def test_mapvalues_args_unpacking():
 
     keyed_input = [("h", (1, 2)), ("i", (3, 4)), ("j", (5, 6))]
     expected_output = [("h", 3), ("i", 7), ("j", 11)]
-    assert f.mapvalues(["a", "b"], keyed_input) == expected_output
+    with pytest.raises(
+        NotImplementedError,
+        match="Arg unpacking is not yet supported for `mapvalues`.",
+    ):
+        assert f.mapvalues(["a", "b"], keyed_input) == expected_output
