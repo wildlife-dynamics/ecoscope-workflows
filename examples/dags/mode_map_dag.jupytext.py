@@ -87,9 +87,7 @@ ecomaps_params = dict(
     tile_layer=...,
     static=...,
     title=...,
-    title_kws=...,
-    scale_kws=...,
-    north_arrow_kws=...,
+    north_arrow_property=...,
 )
 
 # %%

@@ -9,8 +9,8 @@ from jinja2 import Environment, FileSystemLoader
 from pydantic import (
     BaseModel,
     ConfigDict,
-    PlainSerializer,
     Field,
+    PlainSerializer,
     computed_field,
     model_serializer,
     model_validator,
@@ -18,7 +18,6 @@ from pydantic import (
 from pydantic.functional_validators import AfterValidator, BeforeValidator
 
 from ecoscope_workflows.registry import KnownTask, known_tasks
-
 
 TEMPLATES = pathlib.Path(__file__).parent / "templates"
 
@@ -395,6 +394,7 @@ class DagCompiler(BaseModel):
         )
 
     def get_params_jsonschema(self) -> dict[str, dict]:
+        # todo: pull $defs out of the json schema of each task. Wait until #123 is merged
         return {
             t.id: t.known_task.parameters_jsonschema(omit_args=self._omit_args)
             for t in self.spec.workflow

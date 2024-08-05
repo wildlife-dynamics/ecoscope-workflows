@@ -95,9 +95,9 @@ patrol_traj_ecomap_params = dict(
     tile_layer=...,
     static=...,
     title=...,
-    title_kws=...,
+    title_property=...,
     scale_kws=...,
-    north_arrow_kws=...,
+    north_arrow_property=...,
 )
 
 # %%
@@ -201,9 +201,9 @@ patrol_events_ecomap_params = dict(
     tile_layer=...,
     static=...,
     title=...,
-    title_kws=...,
+    title_property=...,
     scale_kws=...,
-    north_arrow_kws=...,
+    north_arrow_property=...,
 )
 
 # %%
@@ -288,9 +288,9 @@ td_ecomap_params = dict(
     tile_layer=...,
     static=...,
     title=...,
-    title_kws=...,
+    title_property=...,
     scale_kws=...,
-    north_arrow_kws=...,
+    north_arrow_property=...,
 )
 
 # %%
