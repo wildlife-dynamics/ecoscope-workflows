@@ -21,7 +21,7 @@ class PythonExecutor(Executor[P, R, K, V]):
     def mapvalues(
         self,
         func: Callable[..., tuple[K, R]],
-        iterable: Iterable[dict[K, dict[str, V]]],
+        iterable: Iterable[tuple[K, dict[str, V]]],
     ) -> Sequence[tuple[K, R]]:
         mapper = map(func, iterable)
         return list(mapper)

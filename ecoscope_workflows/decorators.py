@@ -73,7 +73,7 @@ class Task(Generic[P, R, K, V]):
     def mapvalues(
         self, argname: str, argvalues: Sequence[tuple[K, V]]
     ) -> Sequence[tuple[K, R]]:
-        kwargs_iterable = [{k: {argname: argvalue}} for (k, argvalue) in argvalues]
+        kwargs_iterable = [(k, {argname: argvalue}) for (k, argvalue) in argvalues]
         return self.executor.mapvalues(
             lambda kv: (kv[0], self._callable(**kv[1])), kwargs_iterable
         )
