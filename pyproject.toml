@@ -33,7 +33,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
-    "ecoscope[analysis,mapping,plotting] @ git+https://github.com/wildlife-dynamics/ecoscope@99ae961",
+    "ecoscope[analysis,mapping,plotting] @ git+https://github.com/wildlife-dynamics/ecoscope@v1.8.1",
     "pytest",
     "google-cloud-secret-manager",
 ]
