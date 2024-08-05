@@ -3,10 +3,10 @@ from typing import Annotated, Literal
 from pydantic import Field
 
 from ecoscope_workflows.annotations import AnyGeoDataFrame
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import task
 
 
-@distributed
+@task
 def draw_ecomap(
     geodataframe: Annotated[
         AnyGeoDataFrame, Field(description="The geodataframe to visualize.")
