@@ -26,7 +26,7 @@ from ecoscope_workflows.annotations import (
     JsonSerializableDataFrameModel,
 )
 from ecoscope_workflows.connections import EarthRangerConnection
-from ecoscope_workflows.decorators import DistributedTask
+from ecoscope_workflows.decorators import Task
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
 from ecoscope_workflows.operators import OperatorKws
 from ecoscope_workflows.serde import gpd_from_parquet_uri
@@ -52,7 +52,7 @@ def recurse_into_tasks(
     for name, obj in [
         m for m in getmembers(module) if not m[0].startswith(("__", "_"))
     ]:
-        if isinstance(obj, DistributedTask):
+        if isinstance(obj, Task):
             yield _KnownTaskArgs(
                 name=name,
                 anchor=module.__name__,
@@ -121,7 +121,7 @@ class KnownTask(BaseModel):
             "statement": (
                 (
                     # if this is a testing context, and a mock was requested:
-                    f"{self.function} = create_distributed_task_magicmock(  # 🧪\n"
+                    f"{self.function} = create_task_magicmock(  # 🧪\n"
                     f"    anchor='{self.anchor}',  # 🧪\n"
                     f"    func_name='{self.function}',  # 🧪\n"
                     ")  # 🧪"
@@ -142,7 +142,7 @@ class KnownTask(BaseModel):
         return rsplit_importable_reference(self.importable_reference)[1]
 
     @property
-    def task(self) -> DistributedTask:
+    def task(self) -> Task:
         return import_distributed_task_from_reference(self.anchor, self.function)
 
     def parameters_jsonschema(self, omit_args: list[str] | None = None) -> dict:
