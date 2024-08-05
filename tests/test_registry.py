@@ -1,12 +1,9 @@
-from ecoscope_workflows.registry import KnownTask, OperatorKws
+from ecoscope_workflows.registry import KnownTask
 
 
 def test_known_task_parameters_jsonschema():
     importable_reference = "ecoscope_workflows.tasks.io.get_subjectgroup_observations"
-    kt = KnownTask(
-        importable_reference=importable_reference,
-        operator_kws=OperatorKws(image="", container_resources={}),
-    )
+    kt = KnownTask(importable_reference=importable_reference)
     assert kt.parameters_jsonschema() == {
         "additionalProperties": False,
         "properties": {
