@@ -1,5 +1,5 @@
 from dataclasses import FrozenInstanceError, dataclass, field, replace
-from typing import Callable, Generic, ParamSpec, Sequence, TypeVar, overload
+from typing import Callable, Generic, ParamSpec, Sequence, TypeVar, cast, overload
 
 from pydantic import validate_call
 
@@ -69,15 +69,22 @@ class Task(Generic[P, R, K, V]):
     def map(
         self,
         argnames: str | Sequence[str],
-        argvalues: Sequence[V] | Sequence[Sequence[V]],
+        argvalues: Sequence[V] | Sequence[tuple[V, ...]],
     ) -> Sequence[R]:
         if isinstance(argnames, str):
-            kwargs_iterable = [{argnames: argvalue} for argvalue in argvalues]
-        else:
-            kwargs_iterable = [
-                {argnames[i]: argvalues[j][i] for i in range(len(argnames))}
-                for j in range(len(argvalues))
-            ]
+            argnames = [argnames]
+        assert all(
+            isinstance(v, type(argvalues[0])) for v in argvalues
+        ), "All values in `argvalues` must be of the same type."
+        argvalues_list: list[tuple] = (
+            [(v,) for v in argvalues]
+            if not isinstance(argvalues[0], tuple)
+            else cast(list[tuple], argvalues)
+        )
+        kwargs_iterable = [
+            {argnames[i]: argvalues_list[j][i] for i in range(len(argnames))}
+            for j in range(len(argvalues_list))
+        ]
         return self.executor.map(lambda kw: self._callable(**kw), kwargs_iterable)
 
     def mapvalues(
