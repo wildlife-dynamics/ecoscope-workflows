@@ -1,9 +1,10 @@
 from dataclasses import FrozenInstanceError, dataclass, field, replace
-from typing import Any, Callable, Generic, ParamSpec, TypeVar, overload
+from typing import Callable, Generic, ParamSpec, TypeVar, overload
 
 from pydantic import validate_call
 
-from ecoscope_workflows.operators import OperatorKws
+from ecoscope_workflows.executors import Executor
+from ecoscope_workflows.executors.python import PythonExecutor
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -15,7 +16,7 @@ class Task(Generic[P, R]):
 
     func: Callable[P, R]
     validate: bool = False
-    operator_kws: OperatorKws = field(default_factory=OperatorKws)
+    executor: Executor = PythonExecutor()
     tags: list[str] = field(default_factory=list)
     _initialized: bool = False
 
@@ -60,8 +61,6 @@ class Task(Generic[P, R]):
 def task(
     func: Callable[P, R],
     *,
-    image: str | None = None,
-    container_resources: dict[str, Any] | None = None,
     tags: list[str] | None = None,
 ) -> Task[P, R]: ...
 
@@ -69,8 +68,6 @@ def task(
 @overload  # @task(...) style
 def task(
     *,
-    image: str | None = None,
-    container_resources: dict[str, Any] | None = None,
     tags: list[str] | None = None,
 ) -> Callable[[Callable[P, R]], Task[P, R]]: ...
 
@@ -78,22 +75,13 @@ def task(
 def task(
     func: Callable[P, R] | None = None,
     *,
-    image: str | None = None,
-    container_resources: dict[str, Any] | None = None,
     tags: list[str] | None = None,
 ) -> Callable[[Callable[P, R]], Task[P, R]] | Task[P, R]:
-    operator_kws = {
-        k: v
-        for k, v in {"image": image, "container_resources": container_resources}.items()
-        if v is not None
-    }
-
     def wrapper(
         func: Callable[P, R],
     ) -> Task[P, R]:
         return Task(
             func,
-            operator_kws=OperatorKws(**operator_kws),
             tags=tags or [],
         )
 
