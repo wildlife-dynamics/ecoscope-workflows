@@ -66,8 +66,18 @@ class Task(Generic[P, R, K, V]):
         """Alias for `self.__call__` for more readable method chaining."""
         return self(*args, **kwargs)
 
-    def map(self, argname: str, argvalues: Sequence[V]) -> Sequence[R]:
-        kwargs_iterable = [{argname: argvalue} for argvalue in argvalues]
+    def map(
+        self,
+        argnames: str | Sequence[str],
+        argvalues: Sequence[V] | Sequence[Sequence[V]],
+    ) -> Sequence[R]:
+        if isinstance(argnames, str):
+            kwargs_iterable = [{argnames: argvalue} for argvalue in argvalues]
+        else:
+            kwargs_iterable = [
+                {argnames[i]: argvalues[j][i] for i in range(len(argnames))}
+                for j in range(len(argvalues))
+            ]
         return self.executor.map(lambda kw: self._callable(**kw), kwargs_iterable)
 
     def mapvalues(

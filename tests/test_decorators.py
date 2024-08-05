@@ -58,3 +58,11 @@ def test_mapvalues_simple():
     keyed_input = [("h", 1), ("i", 2), ("j", 3)]
     expected_output = [("h", 2), ("i", 4), ("j", 6)]
     assert double.mapvalues("a", keyed_input) == expected_output
+
+
+def test_map_args_unpacking():
+    @task
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    assert f.map(["a", "b"], [(1, 2), (3, 4), (5, 6)]) == [3, 7, 11]
