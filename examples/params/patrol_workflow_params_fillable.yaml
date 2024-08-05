@@ -4,7 +4,7 @@ patrol_obs:
   since:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
   until:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
   patrol_type:   # (list[str], FieldInfo(annotation=NoneType, required=True, description='list of UUID of patrol types'))
-  status:   # (list[str], FieldInfo(annotation=NoneType, required=True, description="list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"))
+  status:   # (list[typing.Literal['active', 'overdue', 'done', 'cancelled']], FieldInfo(annotation=NoneType, required=True, description="list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"))
   include_patrol_details:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False, default=False, description='Include patrol details'))
 
 # Parameters for 'Transform Observations to Relocations' using task `process_relocations`.
