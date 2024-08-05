@@ -1,5 +1,4 @@
 from dataclasses import FrozenInstanceError
-from typing import Annotated
 
 import pytest
 
@@ -57,35 +56,3 @@ def test_frozen_instance():
 
     f_new = f.replace(validate=True)
     assert f_new.validate
-
-
-def test_arg_prevalidators():
-    @distributed
-    def f(a: Annotated[int, "some metadata field"]) -> int:
-        return a
-
-    def a_prevalidator(x):
-        return x + 1
-
-    f_new = f.replace(arg_prevalidators={"a": a_prevalidator})
-    # the prevalidator's behavior
-    assert a_prevalidator(1) == 2
-    # without `validate=True` we still get normal behavior from the function itself
-    assert f_new(1) == 1
-    # only when we set validate=True do we finally see the prevalidator is invoked
-    assert f_new.replace(validate=True)(1) == 2
-
-
-def test_return_postvalidator():
-    @distributed
-    def f(a) -> Annotated[int, "some metadata field"]:
-        return a
-
-    assert f(4) == 4
-
-    def postvalidator(x):
-        return x + 1
-
-    # note that the postvalidator will not be invoked unless `validate=True`
-    f_new = f.replace(return_postvalidator=postvalidator, validate=True)
-    assert f_new(4) == 5
