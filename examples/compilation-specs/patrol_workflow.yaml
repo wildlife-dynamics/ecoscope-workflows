@@ -14,6 +14,8 @@ workflow:
     task: relocations_to_trajectory
     with:
       relocations: ${{ workflow.patrol_reloc.return }}
+
+  # patrol trajectories ecomap
   - name: Create map layer from Trajectories
     id: patrol_traj_map_layer
     task: create_map_layer
@@ -69,6 +71,35 @@ workflow:
     with:
       data: ${{ workflow.patrol_events_ecomap_html_url.return }}
 
+  # time density
+  - name: Calculate Time Density from Trajectory
+    id: td
+    task: calculate_time_density
+    with:
+      trajectory_gdf: ${{ workflow.patrol_traj.return }}
+  - name: Create map layer from Time Density
+    id: td_map_layer
+    task: create_map_layer
+    with:
+      geodataframe: ${{ workflow.td.return }}
+  - name: Draw Ecomap from Time Density
+    id: td_ecomap
+    task: draw_ecomap
+    with:
+      geo_layers:
+        - ${{ workflow.td_map_layer.return }}
+  - name: Persist Ecomap as Text
+    id: td_ecomap_html_url
+    task: persist_text
+    with:
+      text: ${{ workflow.td_ecomap.return }}
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+  - name: Create Time Density Map Widget
+    id: td_map_widget
+    task: create_map_widget_single_view
+    with:
+      data: ${{ workflow.td_ecomap_html_url.return }}
+
   # dashboard
   - name: Create Dashboard with Patrol Map Widgets
     id: patrol_dashboard
@@ -77,3 +108,4 @@ workflow:
       widgets:
         - ${{ workflow.patrol_traj_map_widget.return }}
         - ${{ workflow.patrol_events_map_widget.return }}
+        - ${{ workflow.td_map_widget.return }}
