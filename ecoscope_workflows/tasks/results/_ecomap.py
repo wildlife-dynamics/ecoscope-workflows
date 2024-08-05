@@ -4,6 +4,12 @@ from pydantic import Field
 
 from ecoscope_workflows.annotations import AnyGeoDataFrame
 from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.results._map_config import (
+    LayerStyleProperty,
+    NorthArrowProperty,
+    ScaleBarPropertyProperty,
+    TitleProperty,
+)
 
 
 @distributed
@@ -16,7 +22,8 @@ def draw_ecomap(
         Field(description="The type of visualization."),
     ],
     style_kws: Annotated[
-        dict, Field(description="Style arguments for the data visualization.")
+        LayerStyleProperty,
+        Field(description="Style arguments for the data visualization."),
     ],
     tile_layer: Annotated[
         str, Field(description="A named tile layer, ie OpenStreetMap.")
@@ -25,14 +32,17 @@ def draw_ecomap(
         bool, Field(description="Set to true to disable map pan/zoom.")
     ] = False,
     title: Annotated[str, Field(description="The map title.")] = "",
-    title_kws: Annotated[
-        dict, Field(description="Additional arguments for configuring the Title.")
+    title_property: Annotated[
+        TitleProperty,
+        Field(description="Additional arguments for configuring the Title."),
     ] = {},
     scale_kws: Annotated[
-        dict, Field(description="Additional arguments for configuring the Scale Bar.")
+        ScaleBarPropertyProperty,
+        Field(description="Additional arguments for configuring the Scale Bar."),
     ] = {},
-    north_arrow_kws: Annotated[
-        dict, Field(description="Additional arguments for configuring the North Arrow.")
+    north_arrow_property: Annotated[
+        NorthArrowProperty,
+        Field(description="Additional arguments for configuring the North Arrow."),
     ] = {},
 ) -> Annotated[str, Field()]:
     """
@@ -58,21 +68,21 @@ def draw_ecomap(
     m = EcoMap(static=static, default_widgets=False)
 
     if title:
-        m.add_title(title, **title_kws)
+        m.add_title(title, title_property.model_dump())
 
-    m.add_scale_bar(**scale_kws)
-    m.add_north_arrow(**north_arrow_kws)
+    m.add_scale_bar(scale_kws.model_dump())
+    m.add_north_arrow(north_arrow_property.model_dump())
 
     if tile_layer:
         m.add_layer(EcoMap.get_named_tile_layer(tile_layer))
 
     match data_type:
         case "Scatterplot":
-            m.add_scatterplot_layer(geodataframe, **style_kws)
+            m.add_scatterplot_layer(geodataframe, style_kws.model_dump())
         case "Path":
-            m.add_path_layer(geodataframe, **style_kws)
+            m.add_path_layer(geodataframe, style_kws.model_dump())
         case "Polygon":
-            m.add_polygon_layer(geodataframe, **style_kws)
+            m.add_polygon_layer(geodataframe, style_kws.model_dump())
 
     m.zoom_to_bounds(m.layers)
     return m.to_html()
