@@ -76,6 +76,8 @@ class Task(Generic[P, R, K, V]):
         assert all(
             isinstance(v, type(argvalues[0])) for v in argvalues
         ), "All values in `argvalues` must be of the same type."
+
+        # For mypy, ensure argvalues is a list of tuples, regardless of input
         argvalues_list: list[tuple] = (
             [(v,) for v in argvalues]
             if not isinstance(argvalues[0], tuple)
