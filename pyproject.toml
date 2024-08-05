@@ -22,6 +22,7 @@ classifiers = [
 # keywords = []
 dependencies = [
     "dill",  # for function deep-copies (maybe there's a better way to do this)
+    "jinja2",
     "pandera",
     "pydantic",
     "pydantic-settings",
