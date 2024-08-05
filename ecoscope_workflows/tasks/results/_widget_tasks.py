@@ -2,7 +2,7 @@ from typing import Annotated
 
 from pydantic import Field
 
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import task
 from ecoscope_workflows.indexes import CompositeFilter
 from ecoscope_workflows.tasks.results._widget_types import (
     GroupedWidget,
@@ -14,7 +14,7 @@ from ecoscope_workflows.tasks.results._widget_types import (
 )
 
 
-@distributed
+@task
 def create_map_widget_single_view(
     title: Annotated[str, Field(description="The title of the widget")],
     data: Annotated[
@@ -42,7 +42,7 @@ def create_map_widget_single_view(
     )
 
 
-@distributed
+@task
 def create_plot_widget_single_view(
     title: Annotated[str, Field(description="The title of the widget")],
     data: Annotated[
@@ -70,7 +70,7 @@ def create_plot_widget_single_view(
     )
 
 
-@distributed
+@task
 def create_text_widget_single_view(
     title: Annotated[str, Field(description="The title of the widget")],
     data: Annotated[TextWidgetData, Field(description="Text to display.")],
@@ -96,7 +96,7 @@ def create_text_widget_single_view(
     )
 
 
-@distributed
+@task
 def create_single_value_widget_single_view(
     title: Annotated[str, Field(description="The title of the widget")],
     data: Annotated[SingleValueWidgetData, Field(description="Value to display.")],
@@ -122,7 +122,7 @@ def create_single_value_widget_single_view(
     )
 
 
-@distributed
+@task
 def merge_widget_views(
     widgets: Annotated[
         list[WidgetSingleView],
