@@ -6,7 +6,7 @@ P = ParamSpec("P")
 R = TypeVar("R")
 
 
-class PythonExecutor(Executor):
+class PythonExecutor(Executor[P, R]):
     def call(self, func: Callable[P, R], *args: P.args, **kwargs: P.kwargs) -> R:
         return func(*args, **kwargs)
 

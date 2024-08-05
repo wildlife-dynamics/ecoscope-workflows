@@ -1,5 +1,5 @@
 from dataclasses import FrozenInstanceError, dataclass, field, replace
-from typing import Callable, Generic, ParamSpec, TypeVar, overload
+from typing import Callable, Generic, ParamSpec, Sequence, TypeVar, overload
 
 from pydantic import validate_call
 
@@ -16,7 +16,7 @@ class Task(Generic[P, R]):
 
     func: Callable[P, R]
     validate: bool = False
-    executor: Executor = PythonExecutor()
+    executor: Executor[P, R] = PythonExecutor()
     tags: list[str] = field(default_factory=list)
     _initialized: bool = False
 
@@ -45,16 +45,27 @@ class Task(Generic[P, R]):
             )
         return super().__setattr__(name, value)
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
+    @property
+    def _callable(self) -> Callable[P, R]:
         return (
             validate_call(
                 self.func,
                 validate_return=True,
                 config={"arbitrary_types_allowed": True},
-            )(*args, **kwargs)
+            )
             if self.validate
-            else self.func(*args, **kwargs)
+            else self.func
         )
+
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
+        return self.executor.call(self._callable, *args, **kwargs)
+
+    def call(self, *args: P.args, **kwargs: P.kwargs) -> R:
+        """Alias for `self.__call__` for more readable method chaining."""
+        return self(*args, **kwargs)
+
+    def map(self, iterable: Sequence) -> list[R]:
+        return self.executor.map(self._callable, iterable)
 
 
 @overload  # @task style
