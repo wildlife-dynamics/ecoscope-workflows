@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, create_autospec
 
 from ecoscope_workflows.util import (
     load_example_return_from_task_reference,
-    import_distributed_task_from_reference,
+    import_task_from_reference,
 )
 
 
@@ -11,7 +11,7 @@ class MockWrappedFunctionProtocol(Protocol):
     return_value: MagicMock
 
     def __call__(self, *args, **kws):
-        """Mocks the call signature of a function decorated by `@distributed`.
+        """Mocks the call signature of a function decorated by `@task`.
         These functions can have arbitrary signatures, so we use `*args` and `**kws`.
         """
         ...
@@ -26,8 +26,8 @@ class MockReplaceProtocol(Protocol):
         return_postvalidator: Callable | None = None,
         validate: bool | None = None,
     ) -> "TaskMagicMock":
-        """Mocks the call signature of `distributed.replace`, which returns a mutated
-        instance of the `distributed` decorator with the specified changes.
+        """Mocks the call signature of `Task.replace`, which returns a mutated
+        instance of the `@task` decorator with the specified changes.
         """
         ...
 
@@ -37,7 +37,7 @@ class TaskMagicMock(MagicMock):
 
 
 def create_task_magicmock(anchor: str, func_name: str) -> TaskMagicMock:
-    spec = import_distributed_task_from_reference(anchor, func_name)
+    spec = import_task_from_reference(anchor, func_name)
     mock_task: TaskMagicMock = create_autospec(spec=spec)
     # match the signature of the wrapped function, to require same arguments
     mock_task.replace.return_value = create_autospec(spec=spec.func)

@@ -56,7 +56,7 @@ class Task(Generic[P, R]):
         )
 
 
-@overload  # @distributed style
+@overload  # @task style
 def task(
     func: Callable[P, R],
     *,
@@ -66,7 +66,7 @@ def task(
 ) -> Task[P, R]: ...
 
 
-@overload  # @distributed(...) style
+@overload  # @task(...) style
 def task(
     *,
     image: str | None = None,
@@ -98,5 +98,5 @@ def task(
         )
 
     if func:
-        return wrapper(func)  # @distributed style
-    return wrapper  # @distributed(...) style
+        return wrapper(func)  # @task style
+    return wrapper  # @task(...) style

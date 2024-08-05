@@ -27,20 +27,20 @@ def validate_importable_reference(reference: str):
     return reference
 
 
-def import_distributed_task_from_reference(anchor: str, func_name: str) -> Task:
-    """Import a distributed task function from an importable reference."""
+def import_task_from_reference(anchor: str, func_name: str) -> Task:
+    """Import a task function from an importable reference."""
     # TODO: we will need to be clear in docs about what imports are allowed at top
     # level (ecoscope_workflows, pydantic, pandera, pandas) and which imports must
     # be deferred to function body (geopandas, ecoscope itself, etc.). maybe we can
     # also enforce this programmatically.
     mod = importlib.import_module(anchor)
     func = getattr(mod, func_name)
-    assert isinstance(func, Task), f"{anchor}.{func_name} is not `@distributed`"
+    assert isinstance(func, Task), f"{anchor}.{func_name} is not `@task`"
     return func
 
 
 def _example_return_path_from_task_reference(anchor: str, func_name: str) -> Path:
-    """Return the filename of the example return data for a distributed task."""
+    """Return the filename of the example return data for a task."""
     all_files_for_anchor = files(anchor)
     all_example_return_fnames = [
         cast(Path, f)
@@ -59,7 +59,7 @@ def _example_return_path_from_task_reference(anchor: str, func_name: str) -> Pat
 
 
 def load_example_return_from_task_reference(anchor: str, func_name: str):
-    """Load example return data from a distributed task reference."""
+    """Load example return data from a task reference."""
     example_return_path = _example_return_path_from_task_reference(anchor, func_name)
     match example_return_path.suffix:
         case ".parquet":

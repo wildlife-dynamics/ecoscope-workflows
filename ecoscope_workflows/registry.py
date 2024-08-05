@@ -31,7 +31,7 @@ from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
 from ecoscope_workflows.operators import OperatorKws
 from ecoscope_workflows.serde import gpd_from_parquet_uri
 from ecoscope_workflows.util import (
-    import_distributed_task_from_reference,
+    import_task_from_reference,
     rsplit_importable_reference,
     validate_importable_reference,
 )
@@ -48,7 +48,7 @@ class _KnownTaskArgs:
 def recurse_into_tasks(
     module: types.ModuleType,
 ) -> Generator[_KnownTaskArgs, None, None]:
-    """Recursively yield `@distributed` task names from the given module (i.e. package)."""
+    """Recursively yield `@task` names from the given module (i.e. package)."""
     for name, obj in [
         m for m in getmembers(module) if not m[0].startswith(("__", "_"))
     ]:
@@ -73,7 +73,7 @@ def collect_task_entries() -> dict[str, "KnownTask"]:
     ecoscope_workflows_eps = eps.select(group="ecoscope_workflows")
     known_tasks: dict[str, "KnownTask"] = {}
     for ep in ecoscope_workflows_eps:
-        # a bit redundant with `util.import_distributed_task_from_reference`
+        # a bit redundant with `util.import_task_from_reference`
         root_pkg_name, tasks_pkg_name = ep.value.rsplit(".", 1)
         assert "." not in root_pkg_name, (
             "Tasks must be top-level in root (e.g. `pkg.tasks`, not `pkg.foo.tasks`). "
@@ -143,7 +143,7 @@ class KnownTask(BaseModel):
 
     @property
     def task(self) -> Task:
-        return import_distributed_task_from_reference(self.anchor, self.function)
+        return import_task_from_reference(self.anchor, self.function)
 
     def parameters_jsonschema(self, omit_args: list[str] | None = None) -> dict:
         # NOTE: SurfacesDescriptionSchema is a workaround for https://github.com/pydantic/pydantic/issues/9404
