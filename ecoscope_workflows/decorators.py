@@ -8,15 +8,17 @@ from ecoscope_workflows.executors.python import PythonExecutor
 
 P = ParamSpec("P")
 R = TypeVar("R")
+K = TypeVar("K")
+V = TypeVar("V")
 
 
 @dataclass
-class Task(Generic[P, R]):
+class Task(Generic[P, R, K, V]):
     """ """
 
     func: Callable[P, R]
     validate: bool = False
-    executor: Executor[P, R] = PythonExecutor()
+    executor: Executor[P, R, K, V] = PythonExecutor()
     tags: list[str] = field(default_factory=list)
     _initialized: bool = False
 
@@ -26,7 +28,7 @@ class Task(Generic[P, R]):
     def replace(
         self,
         validate: bool | None = None,
-    ) -> "Task[P, R]":
+    ) -> "Task[P, R, K, V]":
         self._initialized = False
         changes = {
             k: v
@@ -64,9 +66,17 @@ class Task(Generic[P, R]):
         """Alias for `self.__call__` for more readable method chaining."""
         return self(*args, **kwargs)
 
-    def map(self, argname: str, argvalues: Sequence) -> Sequence[R]:
+    def map(self, argname: str, argvalues: Sequence[V]) -> Sequence[R]:
         kwargs_iterable = [{argname: argvalue} for argvalue in argvalues]
         return self.executor.map(lambda kw: self._callable(**kw), kwargs_iterable)
+
+    def mapvalues(
+        self, argname: str, argvalues: Sequence[tuple[K, V]]
+    ) -> Sequence[tuple[K, R]]:
+        kwargs_iterable = [{k: {argname: argvalue}} for (k, argvalue) in argvalues]
+        return self.executor.mapvalues(
+            lambda kv: (kv[0], self._callable(**kv[1])), kwargs_iterable
+        )
 
 
 @overload  # @task style
@@ -74,24 +84,24 @@ def task(
     func: Callable[P, R],
     *,
     tags: list[str] | None = None,
-) -> Task[P, R]: ...
+) -> Task[P, R, K, V]: ...
 
 
 @overload  # @task(...) style
 def task(
     *,
     tags: list[str] | None = None,
-) -> Callable[[Callable[P, R]], Task[P, R]]: ...
+) -> Callable[[Callable[P, R]], Task[P, R, K, V]]: ...
 
 
 def task(
     func: Callable[P, R] | None = None,
     *,
     tags: list[str] | None = None,
-) -> Callable[[Callable[P, R]], Task[P, R]] | Task[P, R]:
+) -> Callable[[Callable[P, R]], Task[P, R, K, V]] | Task[P, R, K, V]:
     def wrapper(
         func: Callable[P, R],
-    ) -> Task[P, R]:
+    ) -> Task[P, R, K, V]:
         return Task(
             func,
             tags=tags or [],

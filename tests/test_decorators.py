@@ -48,3 +48,13 @@ def test_map_simple():
         return a * 2
 
     assert double.map("a", [1, 2, 3]) == [2, 4, 6]
+
+
+def test_mapvalues_simple():
+    @task
+    def double(a: int) -> int:
+        return a * 2
+
+    keyed_input = [("h", 1), ("i", 2), ("j", 3)]
+    expected_output = [("h", 2), ("i", 4), ("j", 6)]
+    assert double.mapvalues("a", keyed_input) == expected_output
