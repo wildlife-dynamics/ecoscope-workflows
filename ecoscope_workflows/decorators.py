@@ -1,5 +1,5 @@
 import functools
-from dataclasses import FrozenInstanceError, dataclass, field, replace
+from dataclasses import dataclass, field, replace
 from typing import Callable, Generic, Sequence, cast, overload
 
 from pydantic import validate_call
@@ -16,10 +16,6 @@ class Task(Generic[P, R, K, V]):
     func: Callable[P, R]
     executor: Executor[P, R, K, V] = PythonExecutor()
     tags: list[str] = field(default_factory=list)
-    _initialized: bool = False
-
-    def __post_init__(self):
-        self._initialized = True
 
     def partial(
         self,
@@ -36,14 +32,6 @@ class Task(Generic[P, R, K, V]):
                 config={"arbitrary_types_allowed": True},
             ),
         )
-
-    def __setattr__(self, name, value):
-        if self._initialized and name != "_initialized":
-            raise FrozenInstanceError(
-                "Re-assignment of attributes not permitted post-init. "
-                "Use `self.replace` to create a new instance instead."
-            )
-        return super().__setattr__(name, value)
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
         return self.executor.call(self.func, *args, **kwargs)
