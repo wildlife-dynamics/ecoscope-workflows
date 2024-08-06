@@ -52,3 +52,23 @@ def test_draw_ecomap_lines(trajectories):
         title="Trajectories",
     )
     assert isinstance(map_html, str)
+
+
+def test_draw_ecomap_combined(relocations, trajectories):
+    relocs = create_map_layer(
+        geodataframe=relocations,
+        data_type="Point",
+        style_kws={"get_radius": 150, "get_fill_color": "#0000FF"},
+    )
+    traj = create_map_layer(
+        geodataframe=trajectories,
+        data_type="Polyline",
+        style_kws={"get_width": 200, "get_color": "#00FFFF"},
+    )
+
+    map_html = draw_ecomap(
+        geo_layers=[relocs, traj],
+        tile_layer="OpenStreetMap",
+        title="Relocations and Trajectories",
+    )
+    assert isinstance(map_html, str)
