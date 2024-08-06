@@ -115,3 +115,36 @@ def test_partial_repeated_args_raises():
     # but arg overrides are not allowed
     with pytest.raises(TypeError, match="got multiple values for argument 'a'"):
         f.partial(a=1).call(2, b=3)
+
+
+def test_validate():
+    @task
+    def f(a: int) -> int:
+        return a
+
+    assert f.validate().call(1) == 1
+    assert f.validate().call(2) == 2
+
+    # no parsing without validate
+    assert f("1") == "1"
+    assert f("2") == "2"
+
+    # with validate, we get input parsing
+    assert f.validate().call("1") == 1
+    assert f.validate().call("2") == 2
+
+
+def test_validate_partial_chain():
+    @task
+    def f(a: int) -> int:
+        return a
+
+    assert f.validate().partial(a="1").call() == 1
+
+
+def test_partial_validate_chain():
+    @task
+    def f(a: int) -> int:
+        return a
+
+    assert f.partial(a="1").validate().call() == 1
