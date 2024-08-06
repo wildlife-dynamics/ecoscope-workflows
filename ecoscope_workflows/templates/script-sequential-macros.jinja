@@ -1,8 +1,8 @@
-{% macro handle_call_mode(t, params) %}
+{% macro handle_call_method(t, params) %}
     {{ t.id }} = {{ t.known_task.importable_reference.function }}.validate().call(
-    {%- if t.arg_dependencies %}
-        {% for arg in t.arg_dependencies %}
-            {{ arg }}={{ t.arg_dependencies[arg] }},
+    {%- if t.partial %}
+        {% for arg in t.partial %}
+            {{ arg }}={{ t.partial[arg] }},
         {% endfor %}
         **params["{{ t.id }}"],
     )
@@ -13,7 +13,7 @@
 {% endmacro %}
 
 
-{% macro handle_map_mode(t, params) %}
+{% macro handle_map_method(t, params) %}
     {{ t.id }}_mapped_iterable = map(
         lambda kw: {{ t.known_task.importable_reference.function }}.validate().call(**kw),
         {% for arg in t.map_iterable %}
@@ -35,9 +35,9 @@
 
 
 {% macro handle_task(t, params) %}
-{% if t.mode == "call" %}
-    {{ handle_call_mode(t, params) }}
-{% elif t.mode == "map" %}
-    {{ handle_map_mode(t, params) }}
+{% if t.method == "call" %}
+    {{ handle_call_method(t, params) }}
+{% elif t.method == "map" %}
+    {{ handle_map_method(t, params) }}
 {% endif %}
 {% endmacro %}
