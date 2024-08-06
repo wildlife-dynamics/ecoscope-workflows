@@ -1,7 +1,9 @@
-{% macro handle_call_method(t, params, indent) %}
+{% macro handle_call_method(t, validate, params, indent) %}
 {{ indent }}{{ t.id }} = (
         {{ t.known_task.importable_reference.function }}
+        {%- if validate %}
         .validate()
+        {% endif %}
         {%- if t.partial %}
         .partial({% for arg in t.partial %}{{ arg }}={{ t.partial[arg] }}{% if not loop.last %},{% endif %}{% endfor %})
         {% endif %}
@@ -11,11 +13,13 @@
 {% endmacro %}
 
 
-{% macro handle_map_method(t, params, indent) %}
+{% macro handle_map_method(t, validate, params, indent) %}
 {{ indent }}{{ t.id }} = (
         {{ t.known_task.importable_reference.function }}
+        {% if validate %}
         .validate()
-        {%- if t.partial %}
+        {% endif %}
+        {% if t.partial %}
         .partial({% for arg in t.partial %}{{ arg }}={{ t.partial[arg] }}{% endfor %}, **{{ params }})
         {% endif %}
         .map(argnames={{ t.map.argnames }}, argvalues={{ t.map.argvalues }})
@@ -23,10 +27,10 @@
 {% endmacro %}
 
 
-{% macro handle_task(t, params, indent) %}
+{% macro handle_task(t, validate, params, indent) %}
 {% if t.method == "call" %}
-    {{ handle_call_method(t, params, indent) }}
+    {{ handle_call_method(t, validate, params, indent) }}
 {% elif t.method == "map" %}
-    {{ handle_map_method(t, params, indent) }}
+    {{ handle_map_method(t, validate, params, indent) }}
 {% endif %}
 {% endmacro %}

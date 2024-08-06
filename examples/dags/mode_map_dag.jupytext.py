@@ -30,7 +30,7 @@ obs_a_params = dict(
 # call the task
 
 
-obs_a = get_subjectgroup_observations.validate().call(**obs_a_params)
+obs_a = get_subjectgroup_observations.call(**obs_a_params)
 
 
 # %% [markdown]
@@ -51,7 +51,7 @@ obs_b_params = dict(
 # call the task
 
 
-obs_b = get_subjectgroup_observations.validate().call(**obs_b_params)
+obs_b = get_subjectgroup_observations.call(**obs_b_params)
 
 
 # %% [markdown]
@@ -72,7 +72,7 @@ obs_c_params = dict(
 # call the task
 
 
-obs_c = get_subjectgroup_observations.validate().call(**obs_c_params)
+obs_c = get_subjectgroup_observations.call(**obs_c_params)
 
 
 # %% [markdown]
@@ -96,9 +96,7 @@ ecomaps_params = dict(
 # call the task
 
 
-ecomaps = draw_ecomap.validate().map(
-    argnames=["geodataframe"], argvalues=[obs_a, obs_b, obs_c]
-)
+ecomaps = draw_ecomap.map(argnames=["geodataframe"], argvalues=[obs_a, obs_b, obs_c])
 
 
 # %% [markdown]
@@ -115,10 +113,6 @@ td_ecomap_html_url_params = dict(
 # call the task
 
 
-td_ecomap_html_url = (
-    persist_text.validate()
-    .partial(
-        root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"], **td_ecomap_html_url_params
-    )
-    .map(argnames=["text"], argvalues=ecomaps)
-)
+td_ecomap_html_url = persist_text.partial(
+    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"], **td_ecomap_html_url_params
+).map(argnames=["text"], argvalues=ecomaps)

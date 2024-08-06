@@ -35,9 +35,10 @@ if __name__ == "__main__":
     warnings.warn("This test script should not be used in production!")  # 🧪
     {% endif %}
     {% for t in spec.workflow %}
+    {% set validate = true %}
     {% set params = 'params["' ~ t.id ~ '"]' %}
     {% set indent = '    ' %}
-    {{ call_task_macros.handle_task(t, params, indent) }}
+    {{ call_task_macros.handle_task(t, validate, params, indent) }}
     {% if loop.last %}
     print({{ t.id }})
     {% endif %}
