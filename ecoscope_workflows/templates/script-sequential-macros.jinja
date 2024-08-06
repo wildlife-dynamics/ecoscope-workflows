@@ -1,5 +1,5 @@
 {% macro handle_call_mode(t, params) %}
-    {{ t.id }} = {{ t.known_task.importable_reference.function }}.replace(validate=True)(
+    {{ t.id }} = {{ t.known_task.importable_reference.function }}.validate().call(
     {%- if t.arg_dependencies %}
         {% for arg in t.arg_dependencies %}
             {{ arg }}={{ t.arg_dependencies[arg] }},
@@ -15,7 +15,7 @@
 
 {% macro handle_map_mode(t, params) %}
     {{ t.id }}_mapped_iterable = map(
-        lambda kw: {{ t.known_task.importable_reference.function }}.replace(validate=True)(**kw),
+        lambda kw: {{ t.known_task.importable_reference.function }}.validate().call(**kw),
         {% for arg in t.map_iterable %}
         [
             {

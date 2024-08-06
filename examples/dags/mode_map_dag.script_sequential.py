@@ -19,20 +19,20 @@ if __name__ == "__main__":
     params = yaml.safe_load(args.config_file)
     # FIXME: first pass assumes tasks are already in topological order
 
-    obs_a = get_subjectgroup_observations.replace(validate=True)(
+    obs_a = get_subjectgroup_observations.validate().call(
         **params["obs_a"],
     )
 
-    obs_b = get_subjectgroup_observations.replace(validate=True)(
+    obs_b = get_subjectgroup_observations.validate().call(
         **params["obs_b"],
     )
 
-    obs_c = get_subjectgroup_observations.replace(validate=True)(
+    obs_c = get_subjectgroup_observations.validate().call(
         **params["obs_c"],
     )
 
     ecomaps_mapped_iterable = map(
-        lambda kw: draw_ecomap.replace(validate=True)(**kw),
+        lambda kw: draw_ecomap.validate().call(**kw),
         [
             {
                 "geodataframe": i,
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     ecomaps = list(ecomaps_mapped_iterable)
 
     td_ecomap_html_url_mapped_iterable = map(
-        lambda kw: persist_text.replace(validate=True)(**kw),
+        lambda kw: persist_text.validate().call(**kw),
         [
             {
                 "text": i,

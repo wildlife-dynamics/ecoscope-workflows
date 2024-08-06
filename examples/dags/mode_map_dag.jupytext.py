@@ -96,7 +96,7 @@ ecomaps_params = dict(
 # call the task
 
 ecomaps_mapped_iterable = map(
-    lambda kw: draw_ecomap.replace(validate=True)(**kw),
+    lambda kw: draw_ecomap(**kw),
     [
         {
             "geodataframe": i,
@@ -122,7 +122,7 @@ td_ecomap_html_url_params = dict(
 # call the task
 
 td_ecomap_html_url_mapped_iterable = map(
-    lambda kw: persist_text.replace(validate=True)(**kw),
+    lambda kw: persist_text(**kw),
     [
         {
             "text": i,
