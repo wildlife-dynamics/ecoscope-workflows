@@ -35,6 +35,7 @@ if __name__ == "__main__":
     warnings.warn("This test script should not be used in production!")  # 🧪
     {% endif %}
     {% for t in spec.workflow %}
+    {% set params = 'params["' ~ t.id ~ '"]' %}
     {{ macros.handle_task(t, params) }}
     {% if loop.last %}
     print({{ t.id }})
