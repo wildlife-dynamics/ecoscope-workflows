@@ -92,10 +92,19 @@ def test_partial():
     assert f_partial(b=3) == 4
 
 
-def test_partial_chain():
+def test_partial_direct_call():
     @task
     def f(a: int, b: int) -> int:
         return a + b
 
     assert f.partial(a=1)(b=2) == 3
     assert f.partial(a=1)(b=3) == 4
+
+
+def test_partial_chain_dot_call():
+    @task
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    assert f.partial(a=1).call(b=2) == 3
+    assert f.partial(a=1).call(b=3) == 4
