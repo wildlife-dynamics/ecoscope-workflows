@@ -23,10 +23,9 @@ class Task(Generic[P, R, K, V]):
 
     def partial(
         self,
-        *args: P.args,
-        **kwargs: P.kwargs,
+        **kwargs: dict,
     ) -> "Task[P, R, K, V]":
-        return replace(self, func=functools.partial(self.func, *args, **kwargs))
+        return replace(self, func=functools.partial(self.func, **kwargs))
 
     def validate(self) -> "Task[P, R, K, V]":
         return replace(
