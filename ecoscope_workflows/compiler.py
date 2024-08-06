@@ -366,9 +366,8 @@ class DagCompiler(BaseModel):
         # we don't need to include it in the `dag_params_schema`,
         # because we don't need it to be passed as a parameter by the user.
         return (
-            ["return"]
-            + [arg for t in self.spec.workflow for arg in t.arg_dependencies]
-            + [arg for t in self.spec.workflow for arg in t.map_iterable]
+            ["return"] + [arg for t in self.spec.workflow for arg in t.partial]
+            # TODO: check `call`/`map`/`mapvalues` args as well
         )
 
     def get_params_jsonschema(self) -> dict[str, dict]:
