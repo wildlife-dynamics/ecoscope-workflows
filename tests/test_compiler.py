@@ -406,3 +406,29 @@ def test_wrong_topological_order_raises():
         ),
     ):
         _ = Spec(**yaml.safe_load(s))
+
+
+def test_generate_dag_smoke():
+    s = dedent(
+        """\
+        id: calculate_time_density
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            partial:
+              observations: ${{ workflow.obs.return }}
+          - name: Transform Relocations to Trajectories
+            id: traj
+            task: relocations_to_trajectory
+            partial:
+              relocations: ${{ workflow.relocs.return }}
+        """
+    )
+    spec = Spec(**yaml.safe_load(s))
+    dc = DagCompiler(spec=spec)
+    dag = dc.generate_dag()
+    assert isinstance(dag, str)

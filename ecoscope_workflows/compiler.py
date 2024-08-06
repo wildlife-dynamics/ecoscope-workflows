@@ -164,6 +164,10 @@ class _ParallelOperation(_ForbidExtra):
             for arg in self.argnames:
                 yield arg
 
+    @model_serializer
+    def serialize(self) -> str | None:
+        return None if not self else self.model_dump()
+
 
 class MapOperation(_ParallelOperation):
     pass
@@ -408,7 +412,6 @@ class DagCompiler(BaseModel):
             + [arg for t in self.spec.workflow for arg in t.partial]
             + [arg for t in self.spec.workflow for arg in t.map.iterargs()]
             + [arg for t in self.spec.workflow for arg in t.mapvalues.iterargs()]
-            # TODO: check `call`/`map`/`mapvalues` args as well
         )
 
     def get_params_jsonschema(self) -> dict[str, dict]:
