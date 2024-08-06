@@ -24,7 +24,6 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     params = yaml.safe_load(args.config_file)
-    # FIXME: first pass assumes tasks are already in topological order
 
     patrol_obs = get_patrol_observations.validate().call(**params["patrol_obs"])
 

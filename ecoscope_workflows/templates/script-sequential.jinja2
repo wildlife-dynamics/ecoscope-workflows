@@ -34,7 +34,6 @@ if __name__ == "__main__":
     {%- if testing %}
     warnings.warn("This test script should not be used in production!")  # 🧪
     {% endif %}
-    # FIXME: first pass assumes tasks are already in topological order
     {% for t in spec.workflow %}
     {{ macros.handle_task(t, params) }}
     {% if loop.last %}
