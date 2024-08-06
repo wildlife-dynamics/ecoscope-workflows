@@ -3,7 +3,7 @@ import functools
 import keyword
 import pathlib
 import subprocess
-from typing import Annotated, Callable, Literal, TypeAlias
+from typing import Annotated, Callable, Generator, Literal, TypeAlias
 
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
@@ -152,6 +152,17 @@ class _ParallelOperation(_ForbidExtra):
         still allowing boolean checks such as `if self.map`, `if self.mapvalues`, etc.
         """
         return bool(self.argnames) and bool(self.argvalues)
+
+    def iterargs(self) -> Generator[KnownTaskArgName, None, None]:
+        """Yield each argname in the operation's argnames field,
+        whether it is a single argname or a list of argnames.
+        """
+        if isinstance(self.argnames, str):
+            yield self.argnames
+            return
+        if isinstance(self.argnames, list):
+            for arg in self.argnames:
+                yield arg
 
 
 class MapOperation(_ParallelOperation):
@@ -395,8 +406,8 @@ class DagCompiler(BaseModel):
         return (
             ["return"]
             + [arg for t in self.spec.workflow for arg in t.partial]
-            + [arg for t in self.spec.workflow for arg in t.map.argnames]
-            + [arg for t in self.spec.workflow for arg in t.mapvalues.argnames]
+            + [arg for t in self.spec.workflow for arg in t.map.iterargs()]
+            + [arg for t in self.spec.workflow for arg in t.mapvalues.iterargs()]
             # TODO: check `call`/`map`/`mapvalues` args as well
         )
 
