@@ -68,7 +68,7 @@ workflow:
   - name: Draw Ecomap from Time Density
     id: td_ecomap
     task: draw_ecomap
-    with:
+    partial:
       geodataframe: ${{ workflow.td.return }}
   - name: Persist Ecomap as Text
     id: td_ecomap_html_url
