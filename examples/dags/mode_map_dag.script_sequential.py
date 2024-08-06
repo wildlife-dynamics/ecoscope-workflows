@@ -25,7 +25,7 @@ if __name__ == "__main__":
     obs_c = get_subjectgroup_observations.validate().call(**params["obs_c"])
 
     ecomaps = draw_ecomap.validate().map(
-        argnames=["geodataframe"], argvalues=["obs_a", "obs_b", "obs_c"]
+        argnames=["geodataframe"], argvalues=[obs_a, obs_b, obs_c]
     )
 
     td_ecomap_html_url = (
@@ -34,7 +34,7 @@ if __name__ == "__main__":
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             **params["td_ecomap_html_url"],
         )
-        .map(argnames=["text"], argvalues=["ecomaps"])
+        .map(argnames=["text"], argvalues=ecomaps)
     )
 
     print(td_ecomap_html_url)

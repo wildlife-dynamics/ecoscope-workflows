@@ -141,16 +141,9 @@ ArgDependencies: TypeAlias = dict[KnownTaskArgName, VarOrVars]
 SpecId = Annotated[
     str, AfterValidator(_is_not_reserved), AfterValidator(_is_valid_spec_name)
 ]
-
-
-def _serialize_parallel_op_argnames(args: list[KnownTaskArgName]) -> str:
-    return f"[{', '.join(a for a in args)}]"
-
-
 ParallelOpArgNames = Annotated[
     KnownTaskArgName | list[KnownTaskArgName],
     AfterValidator(_str_or_list_of_strs_as_list),
-    PlainSerializer(_serialize_parallel_op_argnames, return_type=str),
 ]
 
 
@@ -175,17 +168,6 @@ class _ParallelOperation(_ForbidExtra):
         if isinstance(self.argnames, list):
             for arg in self.argnames:
                 yield arg
-
-    @model_serializer
-    def serialize(self) -> None | dict:
-        return (
-            None
-            if not self
-            else {
-                "argnames": self.argnames,
-                "argvalues": self.argvalues,
-            }
-        )
 
 
 class MapOperation(_ParallelOperation):
