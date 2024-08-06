@@ -24,6 +24,32 @@ class Task(Generic[P, R, K, V]):
         return replace(self, func=functools.partial(self.func, **kwargs))
 
     def validate(self) -> "Task[P, R, K, V]":
+        """Return a new Task with the same attributes, but with the function input
+        parameters and return values validated by Pydantic's `validate_call` This
+        is required in settings where the input parameters are given as strings that
+        need to be parsed into the correct Python type before being passed to the task
+        function, such as calling workflows as scripts with parameters provided in text
+        config files, or when calling workflows over http with parameters provided as json
+        in the http request body.
+
+        Examples:
+
+        ```python
+        >>> @task
+        ... def f(a: int) -> int:
+        ...     return a
+        >>> f("1")  # no parsing without validate; input value is returned as a string
+        '1'
+        >>> f("2")
+        '2'
+        >>> f.validate().call("1")  # with validate, input value is parsed into an int
+        1
+        >>> f.validate().call("2")
+        2
+
+        ```
+
+        """
         return replace(
             self,
             func=validate_call(
