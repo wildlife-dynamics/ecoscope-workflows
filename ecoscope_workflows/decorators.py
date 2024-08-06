@@ -11,7 +11,42 @@ from ecoscope_workflows.executors.python import PythonExecutor
 
 @dataclass
 class Task(Generic[P, R, K, V]):
-    """ """
+    """The implementation of `@task`. This class is used to wrap a task function
+    and provide methods for calling the task function, mapping it over an iterable
+    of arguments, and mapping it over an iterable of key-value pairs. Any of these
+    methods can be chained with the `partial` method to set some of the task function's
+    arguments before calling or mapping. Any of these methods can also be chained with
+    the `validate` method to parse the task function's input parameters and return
+    values using Pydantic's `validate_call` wrapper. The task function is executed
+    using an `Executor` instance, which can be set to a specific executor using the
+    `executor` attribute, or left as the default `PythonExecutor`.
+
+    Examples:
+
+    ```python
+    >>> @task
+    ... def f(a: int, b: int) -> int:
+    ...     return a + b
+    >>> f(1, 2)
+    3
+    >>> f.call(1, 2)
+    3
+    >>> f.partial(a=1)(b=2)
+    3
+    >>> f.partial(a=1).call(b=2)
+    3
+    >>> f.partial(a=1).map("b", [2, 3])
+    [3, 4]
+    >>> f.partial(a=1).mapvalues("b", [("x", 2), ("y", 3)])
+    [('x', 3), ('y', 4)]
+    >>> f.validate().call("1", "2")  # coerce input values to ints
+    3
+    >>> f.validate().partial(a="1").map("b", ["2", "3"])  # type coercion with map
+    [3, 4]
+    >>> f.validate().partial(a="1").mapvalues("b", [("x", "2"), ("y", "3")])
+    [('x', 3), ('y', 4)]
+
+    """
 
     func: Callable[P, R]
     executor: Executor[P, R, K, V] = PythonExecutor()
