@@ -1,10 +1,10 @@
 {% macro handle_call_method(t, validate, params, indent) %}
 {{ indent }}{{ t.id }} = (
         {{ t.known_task.importable_reference.function }}
-        {%- if validate %}
+        {% if validate %}
         .validate()
         {% endif %}
-        {%- if t.partial %}
+        {% if t.partial %}
         .partial({% for arg in t.partial %}{{ arg }}={{ t.partial[arg] }}{% if not loop.last %},{% endif %}{% endfor %})
         {% endif %}
         .call(**{{ params }})
@@ -21,6 +21,8 @@
         {% endif %}
         {% if t.partial %}
         .partial({% for arg in t.partial %}{{ arg }}={{ t.partial[arg] }}{% endfor %}, **{{ params }})
+        {% else %}
+        .partial(**{{ params }})
         {% endif %}
         .map(argnames={{ t.map.argnames }}, argvalues={{ t.map.argvalues }})
     )

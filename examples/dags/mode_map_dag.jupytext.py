@@ -96,7 +96,9 @@ ecomaps_params = dict(
 # call the task
 
 
-ecomaps = draw_ecomap.map(argnames=["geodataframe"], argvalues=[obs_a, obs_b, obs_c])
+ecomaps = draw_ecomap.partial(**ecomaps_params).map(
+    argnames=["geodataframe"], argvalues=[obs_a, obs_b, obs_c]
+)
 
 
 # %% [markdown]

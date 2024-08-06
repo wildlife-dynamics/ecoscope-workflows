@@ -24,8 +24,10 @@ if __name__ == "__main__":
 
     obs_c = get_subjectgroup_observations.validate().call(**params["obs_c"])
 
-    ecomaps = draw_ecomap.validate().map(
-        argnames=["geodataframe"], argvalues=[obs_a, obs_b, obs_c]
+    ecomaps = (
+        draw_ecomap.validate()
+        .partial(**params["ecomaps"])
+        .map(argnames=["geodataframe"], argvalues=[obs_a, obs_b, obs_c])
     )
 
     td_ecomap_html_url = (
