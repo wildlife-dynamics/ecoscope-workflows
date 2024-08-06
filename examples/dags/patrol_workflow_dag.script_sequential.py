@@ -11,6 +11,9 @@ from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
+from ecoscope_workflows.tasks.results import draw_stacked_bar_chart
+from ecoscope_workflows.tasks.results import create_plot_widget_single_view
+from ecoscope_workflows.tasks.results import draw_pie_chart
 from ecoscope_workflows.tasks.analysis import calculate_time_density
 from ecoscope_workflows.tasks.results import gather_dashboard
 
@@ -90,6 +93,42 @@ if __name__ == "__main__":
     patrol_events_map_widget = create_map_widget_single_view.replace(validate=True)(
         data=patrol_events_ecomap_html_url,
         **params["patrol_events_map_widget"],
+    )
+
+    patrol_events_bar_chart = draw_stacked_bar_chart.replace(validate=True)(
+        dataframe=filter_patrol_events,
+        **params["patrol_events_bar_chart"],
+    )
+
+    patrol_events_bar_chart_html_url = persist_text.replace(validate=True)(
+        text=patrol_events_bar_chart,
+        root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+        **params["patrol_events_bar_chart_html_url"],
+    )
+
+    patrol_events_bar_chart_widget = create_plot_widget_single_view.replace(
+        validate=True
+    )(
+        data=patrol_events_bar_chart_html_url,
+        **params["patrol_events_bar_chart_widget"],
+    )
+
+    patrol_events_pie_chart = draw_pie_chart.replace(validate=True)(
+        dataframe=filter_patrol_events,
+        **params["patrol_events_pie_chart"],
+    )
+
+    patrol_events_pie_chart_html_url = persist_text.replace(validate=True)(
+        text=patrol_events_pie_chart,
+        root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+        **params["patrol_events_pie_chart_html_url"],
+    )
+
+    patrol_events_pie_Chart_widget = create_plot_widget_single_view.replace(
+        validate=True
+    )(
+        data=patrol_events_pie_chart_html_url,
+        **params["patrol_events_pie_Chart_widget"],
     )
 
     td = calculate_time_density.replace(validate=True)(

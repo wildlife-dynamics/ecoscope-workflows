@@ -48,6 +48,8 @@ workflow:
     task: apply_reloc_coord_filter
     with:
       df: ${{ workflow.patrol_events.return }}
+
+  # patrol events EcoMap
   - name: Create map layer from Patrols Events
     id: patrol_events_map_layer
     task: create_map_layer
@@ -70,6 +72,42 @@ workflow:
     task: create_map_widget_single_view
     with:
       data: ${{ workflow.patrol_events_ecomap_html_url.return }}
+
+  #patrol events bar chart
+  - name: Draw Stacked Bar Chart for Patrols Events
+    id: patrol_events_bar_chart
+    task: draw_stacked_bar_chart
+    with:
+      dataframe: ${{ workflow.filter_patrol_events.return }}
+  - name: Persist Patrols Bar Chart as Text
+    id: patrol_events_bar_chart_html_url
+    task: persist_text
+    with:
+      text: ${{ workflow.patrol_events_bar_chart.return }}
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+  - name: Create Plot Widget for Patrol Events
+    id: patrol_events_bar_chart_widget
+    task: create_plot_widget_single_view
+    with:
+      data: ${{ workflow.patrol_events_bar_chart_html_url.return }}
+
+  #patrol events pie chart
+  - name: Draw Pie Chart for Patrols Events
+    id: patrol_events_pie_chart
+    task: draw_pie_chart
+    with:
+      dataframe: ${{ workflow.filter_patrol_events.return }}
+  - name: Persist Patrols Pie Chart as Text
+    id: patrol_events_pie_chart_html_url
+    task: persist_text
+    with:
+      text: ${{ workflow.patrol_events_pie_chart.return }}
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+  - name: Create Plot Widget for Patrol Events
+    id: patrol_events_pie_Chart_widget
+    task: create_plot_widget_single_view
+    with:
+      data: ${{ workflow.patrol_events_pie_chart_html_url.return }}
 
   # time density
   - name: Calculate Time Density from Trajectory

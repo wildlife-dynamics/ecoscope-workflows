@@ -151,11 +151,11 @@ def draw_pie_chart(
         ),
     ],
     label_column: Annotated[
-        str,
+        str | None,
         Field(
             description="The name of the dataframe column to label slices with, required if the data in value_column is numeric."
         ),
-    ],
+    ] = None,
     style_kws: Annotated[
         dict | None,
         Field(description="Additional style kwargs passed to go.Pie()."),

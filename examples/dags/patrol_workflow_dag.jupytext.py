@@ -17,6 +17,9 @@ from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
+from ecoscope_workflows.tasks.results import draw_stacked_bar_chart
+from ecoscope_workflows.tasks.results import create_plot_widget_single_view
+from ecoscope_workflows.tasks.results import draw_pie_chart
 from ecoscope_workflows.tasks.analysis import calculate_time_density
 from ecoscope_workflows.tasks.results import gather_dashboard
 
@@ -285,6 +288,127 @@ patrol_events_map_widget_params = dict(
 patrol_events_map_widget = create_map_widget_single_view(
     data=patrol_events_ecomap_html_url,
     **patrol_events_map_widget_params,
+)
+
+# %% [markdown]
+# ## Draw Stacked Bar Chart for Patrols Events
+
+# %%
+# parameters
+
+patrol_events_bar_chart_params = dict(
+    x_axis=...,
+    y_axis=...,
+    stack_column=...,
+    agg_function=...,
+    groupby_style_kws=...,
+    style_kws=...,
+    layout_kws=...,
+)
+
+# %%
+# call the task
+
+patrol_events_bar_chart = draw_stacked_bar_chart(
+    dataframe=filter_patrol_events,
+    **patrol_events_bar_chart_params,
+)
+
+# %% [markdown]
+# ## Persist Patrols Bar Chart as Text
+
+# %%
+# parameters
+
+patrol_events_bar_chart_html_url_params = dict(
+    filename=...,
+)
+
+# %%
+# call the task
+
+patrol_events_bar_chart_html_url = persist_text(
+    text=patrol_events_bar_chart,
+    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+    **patrol_events_bar_chart_html_url_params,
+)
+
+# %% [markdown]
+# ## Create Plot Widget for Patrol Events
+
+# %%
+# parameters
+
+patrol_events_bar_chart_widget_params = dict(
+    title=...,
+    view=...,
+)
+
+# %%
+# call the task
+
+patrol_events_bar_chart_widget = create_plot_widget_single_view(
+    data=patrol_events_bar_chart_html_url,
+    **patrol_events_bar_chart_widget_params,
+)
+
+# %% [markdown]
+# ## Draw Pie Chart for Patrols Events
+
+# %%
+# parameters
+
+patrol_events_pie_chart_params = dict(
+    value_column=...,
+    label_column=...,
+    style_kws=...,
+    layout_kws=...,
+)
+
+# %%
+# call the task
+
+patrol_events_pie_chart = draw_pie_chart(
+    dataframe=filter_patrol_events,
+    **patrol_events_pie_chart_params,
+)
+
+# %% [markdown]
+# ## Persist Patrols Pie Chart as Text
+
+# %%
+# parameters
+
+patrol_events_pie_chart_html_url_params = dict(
+    filename=...,
+)
+
+# %%
+# call the task
+
+patrol_events_pie_chart_html_url = persist_text(
+    text=patrol_events_pie_chart,
+    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+    **patrol_events_pie_chart_html_url_params,
+)
+
+# %% [markdown]
+# ## Create Plot Widget for Patrol Events
+
+# %%
+# parameters
+
+patrol_events_pie_Chart_widget_params = dict(
+    title=...,
+    view=...,
+)
+
+# %%
+# call the task
+
+patrol_events_pie_Chart_widget = create_plot_widget_single_view(
+    data=patrol_events_pie_chart_html_url,
+    **patrol_events_pie_Chart_widget_params,
 )
 
 # %% [markdown]

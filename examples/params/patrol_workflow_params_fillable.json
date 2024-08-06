@@ -563,6 +563,271 @@
         ],
         "type": "object"
     },
+    "patrol_events_bar_chart": {
+        "additionalProperties": false,
+        "properties": {
+            "x_axis": {
+                "title": "X Axis",
+                "type": "string",
+                "description": "The dataframe column to plot in the x axis."
+            },
+            "y_axis": {
+                "title": "Y Axis",
+                "type": "string",
+                "description": "The dataframe column to plot in the y axis."
+            },
+            "stack_column": {
+                "title": "Stack Column",
+                "type": "string",
+                "description": "The dataframe column to stack in the y axis."
+            },
+            "agg_function": {
+                "enum": [
+                    "count",
+                    "mean",
+                    "sum",
+                    "min",
+                    "max"
+                ],
+                "title": "Agg Function",
+                "type": "string",
+                "description": "The aggregate function to apply to the group."
+            },
+            "groupby_style_kws": {
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Groupby Style Kws",
+                "description": "Style arguments passed to plotly.graph_objects.Bar and applied to individual groups."
+            },
+            "style_kws": {
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Style Kws",
+                "description": "Style arguments passed to plotly.graph_objects.Bar and applied to all groups."
+            },
+            "layout_kws": {
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Layout Kws",
+                "description": "Style arguments passed to plotly.graph_objects.Figure."
+            }
+        },
+        "required": [
+            "x_axis",
+            "y_axis",
+            "stack_column",
+            "agg_function"
+        ],
+        "type": "object"
+    },
+    "patrol_events_bar_chart_html_url": {
+        "additionalProperties": false,
+        "properties": {
+            "filename": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Filename",
+                "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+            }
+        },
+        "required": [],
+        "type": "object"
+    },
+    "patrol_events_bar_chart_widget": {
+        "additionalProperties": false,
+        "properties": {
+            "title": {
+                "title": "Title",
+                "type": "string",
+                "description": "The title of the widget"
+            },
+            "view": {
+                "anyOf": [
+                    {
+                        "items": {
+                            "maxItems": 3,
+                            "minItems": 3,
+                            "prefixItems": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "const": "=",
+                                    "enum": [
+                                        "="
+                                    ],
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "string"
+                                }
+                            ],
+                            "type": "array"
+                        },
+                        "type": "array"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "View",
+                "description": "If grouped, the view of the widget"
+            }
+        },
+        "required": [
+            "title"
+        ],
+        "type": "object"
+    },
+    "patrol_events_pie_chart": {
+        "additionalProperties": false,
+        "properties": {
+            "value_column": {
+                "title": "Value Column",
+                "type": "string",
+                "description": "The name of the dataframe column to pull slice values from."
+            },
+            "label_column": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Label Column",
+                "description": "The name of the dataframe column to label slices with, required if the data in value_column is numeric."
+            },
+            "style_kws": {
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Style Kws",
+                "description": "Additional style kwargs passed to go.Pie()."
+            },
+            "layout_kws": {
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Layout Kws",
+                "description": "Additional kwargs passed to plotly.go.Figure(layout)."
+            }
+        },
+        "required": [
+            "value_column"
+        ],
+        "type": "object"
+    },
+    "patrol_events_pie_chart_html_url": {
+        "additionalProperties": false,
+        "properties": {
+            "filename": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Filename",
+                "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+            }
+        },
+        "required": [],
+        "type": "object"
+    },
+    "patrol_events_pie_Chart_widget": {
+        "additionalProperties": false,
+        "properties": {
+            "title": {
+                "title": "Title",
+                "type": "string",
+                "description": "The title of the widget"
+            },
+            "view": {
+                "anyOf": [
+                    {
+                        "items": {
+                            "maxItems": 3,
+                            "minItems": 3,
+                            "prefixItems": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "const": "=",
+                                    "enum": [
+                                        "="
+                                    ],
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "string"
+                                }
+                            ],
+                            "type": "array"
+                        },
+                        "type": "array"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "View",
+                "description": "If grouped, the view of the widget"
+            }
+        },
+        "required": [
+            "title"
+        ],
+        "type": "object"
+    },
     "td": {
         "additionalProperties": false,
         "properties": {
