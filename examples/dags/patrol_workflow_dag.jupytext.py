@@ -12,11 +12,11 @@ from ecoscope_workflows.tasks.io import get_patrol_observations
 from ecoscope_workflows.tasks.preprocessing import process_relocations
 from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
 from ecoscope_workflows.tasks.results import create_map_layer
+from ecoscope_workflows.tasks.io import get_patrol_events
+from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
-from ecoscope_workflows.tasks.io import get_patrol_events
-from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
 from ecoscope_workflows.tasks.results import draw_stacked_bar_chart
 from ecoscope_workflows.tasks.results import create_plot_widget_single_view
 from ecoscope_workflows.tasks.results import draw_pie_chart
@@ -107,67 +107,6 @@ patrol_traj_map_layer = create_map_layer(
 )
 
 # %% [markdown]
-# ## Draw Ecomap from Trajectories
-
-# %%
-# parameters
-
-patrol_traj_ecomap_params = dict(
-    tile_layer=...,
-    static=...,
-    title=...,
-    title_kws=...,
-    scale_kws=...,
-    north_arrow_kws=...,
-)
-
-# %%
-# call the task
-
-patrol_traj_ecomap = draw_ecomap(
-    geo_layers=[patrol_traj_map_layer],
-    **patrol_traj_ecomap_params,
-)
-
-# %% [markdown]
-# ## Persist Patrol Trajectories Ecomap as Text
-
-# %%
-# parameters
-
-patrol_traj_ecomap_html_url_params = dict(
-    filename=...,
-)
-
-# %%
-# call the task
-
-patrol_traj_ecomap_html_url = persist_text(
-    text=patrol_traj_ecomap,
-    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-    **patrol_traj_ecomap_html_url_params,
-)
-
-# %% [markdown]
-# ## Create Map Widget for Patrols Trajectories
-
-# %%
-# parameters
-
-patrol_traj_map_widget_params = dict(
-    title=...,
-    view=...,
-)
-
-# %%
-# call the task
-
-patrol_traj_map_widget = create_map_widget_single_view(
-    data=patrol_traj_ecomap_html_url,
-    **patrol_traj_map_widget_params,
-)
-
-# %% [markdown]
 # ## Get Patrol Events from EarthRanger
 
 # %%
@@ -230,12 +169,12 @@ patrol_events_map_layer = create_map_layer(
 )
 
 # %% [markdown]
-# ## Draw Ecomap for Patrols Events
+# ## Draw Ecomap for Trajectories and Patrol Events
 
 # %%
 # parameters
 
-patrol_events_ecomap_params = dict(
+traj_patrol_events_ecomap_params = dict(
     tile_layer=...,
     static=...,
     title=...,
@@ -247,9 +186,9 @@ patrol_events_ecomap_params = dict(
 # %%
 # call the task
 
-patrol_events_ecomap = draw_ecomap(
-    geo_layers=[patrol_events_map_layer],
-    **patrol_events_ecomap_params,
+traj_patrol_events_ecomap = draw_ecomap(
+    geo_layers=[patrol_traj_map_layer, patrol_events_map_layer],
+    **traj_patrol_events_ecomap_params,
 )
 
 # %% [markdown]
@@ -258,17 +197,17 @@ patrol_events_ecomap = draw_ecomap(
 # %%
 # parameters
 
-patrol_events_ecomap_html_url_params = dict(
+traj_pe_ecomap_html_url_params = dict(
     filename=...,
 )
 
 # %%
 # call the task
 
-patrol_events_ecomap_html_url = persist_text(
-    text=patrol_events_ecomap,
+traj_pe_ecomap_html_url = persist_text(
+    text=traj_patrol_events_ecomap,
     root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-    **patrol_events_ecomap_html_url_params,
+    **traj_pe_ecomap_html_url_params,
 )
 
 # %% [markdown]
@@ -277,7 +216,7 @@ patrol_events_ecomap_html_url = persist_text(
 # %%
 # parameters
 
-patrol_events_map_widget_params = dict(
+traj_patrol_events_map_widget_params = dict(
     title=...,
     view=...,
 )
@@ -285,9 +224,9 @@ patrol_events_map_widget_params = dict(
 # %%
 # call the task
 
-patrol_events_map_widget = create_map_widget_single_view(
-    data=patrol_events_ecomap_html_url,
-    **patrol_events_map_widget_params,
+traj_patrol_events_map_widget = create_map_widget_single_view(
+    data=traj_pe_ecomap_html_url,
+    **traj_patrol_events_map_widget_params,
 )
 
 # %% [markdown]
@@ -398,7 +337,7 @@ patrol_events_pie_chart_html_url = persist_text(
 # %%
 # parameters
 
-patrol_events_pie_Chart_widget_params = dict(
+patrol_events_pie_chart_widget_params = dict(
     title=...,
     view=...,
 )
@@ -406,9 +345,9 @@ patrol_events_pie_Chart_widget_params = dict(
 # %%
 # call the task
 
-patrol_events_pie_Chart_widget = create_plot_widget_single_view(
+patrol_events_pie_chart_widget = create_plot_widget_single_view(
     data=patrol_events_pie_chart_html_url,
-    **patrol_events_pie_Chart_widget_params,
+    **patrol_events_pie_chart_widget_params,
 )
 
 # %% [markdown]
@@ -531,6 +470,11 @@ patrol_dashboard_params = dict(
 # call the task
 
 patrol_dashboard = gather_dashboard(
-    widgets=[patrol_traj_map_widget, patrol_events_map_widget, td_map_widget],
+    widgets=[
+        traj_patrol_events_map_widget,
+        td_map_widget,
+        patrol_events_bar_chart_widget,
+        patrol_events_pie_chart_widget,
+    ],
     **patrol_dashboard_params,
 )

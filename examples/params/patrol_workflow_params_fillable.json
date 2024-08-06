@@ -139,162 +139,6 @@
         ],
         "type": "object"
     },
-    "patrol_traj_ecomap": {
-        "$defs": {
-            "LayerDefinition": {
-                "properties": {
-                    "geodataframe": {
-                        "title": "Geodataframe",
-                        "type": "ecoscope.distributed.types.DataFrame"
-                    },
-                    "data_type": {
-                        "title": "Data Type",
-                        "type": "string"
-                    },
-                    "style_kws": {
-                        "title": "Style Kws",
-                        "type": "object"
-                    }
-                },
-                "required": [
-                    "geodataframe",
-                    "data_type",
-                    "style_kws"
-                ],
-                "title": "LayerDefinition",
-                "type": "object"
-            }
-        },
-        "additionalProperties": false,
-        "properties": {
-            "tile_layer": {
-                "default": "",
-                "title": "Tile Layer",
-                "type": "string",
-                "description": "A named tile layer, ie OpenStreetMap."
-            },
-            "static": {
-                "default": false,
-                "title": "Static",
-                "type": "boolean",
-                "description": "Set to true to disable map pan/zoom."
-            },
-            "title": {
-                "default": "",
-                "title": "Title",
-                "type": "string",
-                "description": "The map title."
-            },
-            "title_kws": {
-                "anyOf": [
-                    {
-                        "type": "object"
-                    },
-                    {
-                        "type": "null"
-                    }
-                ],
-                "default": null,
-                "title": "Title Kws",
-                "description": "Additional arguments for configuring the Title."
-            },
-            "scale_kws": {
-                "anyOf": [
-                    {
-                        "type": "object"
-                    },
-                    {
-                        "type": "null"
-                    }
-                ],
-                "default": null,
-                "title": "Scale Kws",
-                "description": "Additional arguments for configuring the Scale Bar."
-            },
-            "north_arrow_kws": {
-                "anyOf": [
-                    {
-                        "type": "object"
-                    },
-                    {
-                        "type": "null"
-                    }
-                ],
-                "default": null,
-                "title": "North Arrow Kws",
-                "description": "Additional arguments for configuring the North Arrow."
-            }
-        },
-        "required": [],
-        "type": "object"
-    },
-    "patrol_traj_ecomap_html_url": {
-        "additionalProperties": false,
-        "properties": {
-            "filename": {
-                "anyOf": [
-                    {
-                        "type": "string"
-                    },
-                    {
-                        "type": "null"
-                    }
-                ],
-                "default": null,
-                "title": "Filename",
-                "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
-            }
-        },
-        "required": [],
-        "type": "object"
-    },
-    "patrol_traj_map_widget": {
-        "additionalProperties": false,
-        "properties": {
-            "title": {
-                "title": "Title",
-                "type": "string",
-                "description": "The title of the widget"
-            },
-            "view": {
-                "anyOf": [
-                    {
-                        "items": {
-                            "maxItems": 3,
-                            "minItems": 3,
-                            "prefixItems": [
-                                {
-                                    "type": "string"
-                                },
-                                {
-                                    "const": "=",
-                                    "enum": [
-                                        "="
-                                    ],
-                                    "type": "string"
-                                },
-                                {
-                                    "type": "string"
-                                }
-                            ],
-                            "type": "array"
-                        },
-                        "type": "array"
-                    },
-                    {
-                        "type": "null"
-                    }
-                ],
-                "default": null,
-                "title": "View",
-                "description": "If grouped, the view of the widget"
-            }
-        },
-        "required": [
-            "title"
-        ],
-        "type": "object"
-    },
     "patrol_events": {
         "additionalProperties": false,
         "properties": {
@@ -407,7 +251,7 @@
         ],
         "type": "object"
     },
-    "patrol_events_ecomap": {
+    "traj_patrol_events_ecomap": {
         "$defs": {
             "LayerDefinition": {
                 "properties": {
@@ -496,7 +340,7 @@
         "required": [],
         "type": "object"
     },
-    "patrol_events_ecomap_html_url": {
+    "traj_pe_ecomap_html_url": {
         "additionalProperties": false,
         "properties": {
             "filename": {
@@ -516,7 +360,7 @@
         "required": [],
         "type": "object"
     },
-    "patrol_events_map_widget": {
+    "traj_patrol_events_map_widget": {
         "additionalProperties": false,
         "properties": {
             "title": {
@@ -781,7 +625,7 @@
         "required": [],
         "type": "object"
     },
-    "patrol_events_pie_Chart_widget": {
+    "patrol_events_pie_chart_widget": {
         "additionalProperties": false,
         "properties": {
             "title": {

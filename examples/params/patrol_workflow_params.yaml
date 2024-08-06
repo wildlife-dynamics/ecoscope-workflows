@@ -36,15 +36,6 @@ patrol_traj_map_layer:
   data_type: Polyline # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
   style_kws: { get_width: 200 } # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
 
-# Parameters for 'Draw Ecomap from Trajectories' using task `draw_ecomap`.
-patrol_traj_ecomap:
-  tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
-  static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
-  title: "Patrol Trajectory Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
-  title_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
-  scale_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
-  north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
-
 # Parameters for 'Persist Ecomap as Text' using task `persist_text`.
 patrol_traj_ecomap_html_url:
   filename: "patrol_traj_ecomap.html"  # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
@@ -76,21 +67,21 @@ patrol_events_map_layer:
   style_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
 
 # Parameters for 'Draw Ecomap for Patrols Events' using task `draw_ecomap`.
-patrol_events_ecomap:
+traj_patrol_events_ecomap:
   tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
   static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
-  title: "Patrol Events Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
+  title: "Trajectories & Patrol Events" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
   title_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
   scale_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
   north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist Patrols Ecomap as Text' using task `persist_text`.
-patrol_events_ecomap_html_url:
-  filename: "patrol_events_ecomap.html"  # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
+traj_pe_ecomap_html_url:
+  filename: "traj_patrol_events_ecomap.html"  # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
 # Parameters for 'Create Map Widget for Patrol Events' using task `create_map_widget_single_view`.
-patrol_events_map_widget:
-  title: "Patrol Events Map"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+traj_patrol_events_map_widget:
+  title: "Trajectories & Patrol Events Map"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
 
 # Parameters for 'Draw Stacked Bar Chart for Patrols Events' using task `draw_stacked_bar_chart`.
 patrol_events_bar_chart:
@@ -128,7 +119,7 @@ patrol_events_pie_chart_html_url:
   filename: "patrol_events_pie_chart.html"  # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
 # Parameters for 'Create Plot Widget for Patrol Events' using task `create_plot_widget_single_view`.
-patrol_events_pie_Chart_widget:
+patrol_events_pie_chart_widget:
   title: "Patrol Events Pie Chart"   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
 
 # Parameters for 'Calculate Time Density from Trajectory' using task `calculate_time_density`.
