@@ -12,6 +12,7 @@ from pydantic import (
     PlainSerializer,
     Field,
     computed_field,
+    field_validator,
     model_serializer,
     model_validator,
 )
@@ -141,6 +142,32 @@ def _dep_as_list(dep: Variable | list[Variable]) -> list[Variable]:
     return [dep] if not isinstance(dep, list) else dep
 
 
+class _ParallelOperation(_ForbidExtra):
+    argnames: KnownTaskArgName | list[KnownTaskArgName] = Field(default_factory=list)
+    argvalues: Variable | list[Variable] = Field(default_factory=list)
+
+    def __bool__(self):
+        """Return False if both `argnames` and `argvalues` are empty. Otherwise, return True.
+        Let's us use operation models as their own defaults in the `TaskInstance` model, while
+        still allowing boolean checks such as `if self.map`, `if self.mapvalues`, etc.
+        """
+        return bool(self.argnames) and bool(self.argvalues)
+
+
+class MapOperation(_ParallelOperation):
+    pass
+
+
+class MapValuesOperation(_ParallelOperation):
+    @field_validator("argnames")
+    def check_argnames(cls, v: str | list) -> str | list:
+        if isinstance(v, list) and len(v) > 1:
+            raise NotImplementedError(
+                "Unpacking mutiple `argnames` is not yet implemented for `mapvalues`."
+            )
+        return v
+
+
 class TaskInstance(_ForbidExtra):
     """A task instance in a workflow."""
 
@@ -176,8 +203,8 @@ class TaskInstance(_ForbidExtra):
         invocation of the task.
         """,
     )
-    map: dict | None = Field(default_factory=dict)
-    mapvalues: dict | None = Field(default_factory=dict)
+    map: MapOperation = MapOperation()
+    mapvalues: MapValuesOperation = MapValuesOperation()
 
     @model_validator(mode="after")
     def check_does_not_depend_on_self(self) -> "Spec":
@@ -366,7 +393,10 @@ class DagCompiler(BaseModel):
         # we don't need to include it in the `dag_params_schema`,
         # because we don't need it to be passed as a parameter by the user.
         return (
-            ["return"] + [arg for t in self.spec.workflow for arg in t.partial]
+            ["return"]
+            + [arg for t in self.spec.workflow for arg in t.partial]
+            + [arg for t in self.spec.workflow for arg in t.map.argnames]
+            + [arg for t in self.spec.workflow for arg in t.mapvalues.argnames]
             # TODO: check `call`/`map`/`mapvalues` args as well
         )
 
