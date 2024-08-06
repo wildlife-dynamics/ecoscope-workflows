@@ -21,6 +21,26 @@ class Task(Generic[P, R, K, V]):
         self,
         **kwargs: dict,
     ) -> "Task[P, R, K, V]":
+        """Return a new Task with the same attributes, but with the function converted
+        into a partial function with the given keyword arguments. This is useful for
+        mapping a function over an iterable where some of the function's arguments are
+        constant across all calls.
+
+        Examples:
+
+        ```python
+        >>> @task
+        ... def f(a: int, b: int) -> int:
+        ...     return a + b
+        >>> f.partial(a=1).call(b=2)
+        3
+        >>> f.partial(a=1).map("b", [2, 3])
+        [3, 4]
+        >>> f.partial(a=1).mapvalues("b", [("x", 2), ("y", 3)])
+        [('x', 3), ('y', 4)]
+
+        ```
+        """
         return replace(self, func=functools.partial(self.func, **kwargs))
 
     def validate(self) -> "Task[P, R, K, V]":
