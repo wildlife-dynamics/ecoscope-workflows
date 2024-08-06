@@ -150,7 +150,7 @@ def test_invalid_known_task_name_raises(task: str, valid_known_task_name: bool):
         ("get_subjectgroup_observations", False),
     ],
 )
-def test_arg_deps_must_be_valid_id_of_another_task(
+def test_partial_args_must_be_valid_id_of_another_task(
     arg_dep_id: str,
     valid_id_of_another_task: bool,
 ):
@@ -170,7 +170,7 @@ def test_arg_deps_must_be_valid_id_of_another_task(
     )
     if valid_id_of_another_task:
         spec = Spec(**yaml.safe_load(s))
-        assert spec.workflow[1].arg_dependencies == {
+        assert spec.workflow[1].partial == {
             "observations": TaskIdVariable(value="obs", suffix="return")
         }
     else:
