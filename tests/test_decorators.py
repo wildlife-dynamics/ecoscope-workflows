@@ -82,7 +82,7 @@ def test_mapvalues_args_unpacking():
         assert f.mapvalues(["a", "b"], keyed_input) == expected_output
 
 
-def test_partial():
+def test_partial_call():
     @task
     def f(a: int, b: int) -> int:
         return a + b
@@ -100,3 +100,33 @@ def test_partial():
     # (same as parens, just more readable)
     assert f.partial(a=1).call(b=2) == 3
     assert f.partial(a=1).call(b=3) == 4
+
+
+def test_partial_map():
+    @task
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    assert f.partial(a=1).map("b", [2, 3]) == [3, 4]
+    assert f.partial(a=1).map("b", [4, 5]) == [5, 6]
+
+
+def test_partial_mapvalues():
+    @task
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    assert f.partial(a=1).mapvalues("b", [("h", 2), ("i", 3)]) == [("h", 3), ("i", 4)]
+
+
+def test_partial_repeated_args_raises():
+    @task
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    # we just follow functools.partial behavior here,
+    # so kwarg overrides are allowed
+    assert f.partial(a=1).call(a=2, b=3) == 5
+    # but arg overrides are not allowed
+    with pytest.raises(TypeError, match="got multiple values for argument 'a'"):
+        f.partial(a=1).call(2, b=3)
