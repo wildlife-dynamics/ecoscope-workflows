@@ -280,6 +280,32 @@ def test_method_default():
     assert spec.workflow[0].method == "call"
 
 
+def test_only_oneof_map_or_mapvalues():
+    s = dedent(
+        """\
+        id: calculate_time_density
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+            map:
+              argnames: [a, b]
+              argvalues: [[1, 2], [3, 4]]
+            mapvalues:
+              argnames: c
+              argvalues: [("h", 1), ("i", 2)]
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape(
+            "Task `Get Subjectgroup Observations` cannot have both `map` and `mapvalues` set. "
+            "Please choose one or the other."
+        ),
+    ):
+        _ = Spec(**yaml.safe_load(s))
+
+
 def test_depends_on_self_raises():
     s = dedent(
         """\

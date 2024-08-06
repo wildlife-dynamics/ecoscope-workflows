@@ -192,6 +192,15 @@ class TaskInstance(_ForbidExtra):
                     )
         return self
 
+    @model_validator(mode="after")
+    def check_only_oneof_map_or_mapvalues(self) -> "Spec":
+        if self.map and self.mapvalues:
+            raise ValueError(
+                f"Task `{self.name}` cannot have both `map` and `mapvalues` set. "
+                "Please choose one or the other."
+            )
+        return self
+
     @computed_field  # type: ignore[misc]
     @property
     def known_task(self) -> KnownTask:
