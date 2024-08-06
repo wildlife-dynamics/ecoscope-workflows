@@ -110,6 +110,36 @@ class Task(Generic[P, R, K, V]):
         argnames: str | Sequence[str],
         argvalues: Sequence[V] | Sequence[tuple[V, ...]],
     ) -> Sequence[R]:
+        """Map the task function over an iterable of argvalues where each element of the
+        argvalues is either a single value or a tuple of values that correspond to the
+        argnames. If the argvalues are single values, argnames must be a single string,
+        or a sequence of length 1. If the argvalues are tuples, the length of each tuple
+        must match the length of the sequence of argnames. To statically set one or more
+        arguments, before mapping, chain with the `partial` method.
+
+        Examples:
+
+        ```python
+        >>> @task
+        ... def f(a: int) -> int:
+        ...     return a
+        >>> f.map("a", [1, 2, 3])  # single argument
+        [1, 2, 3]
+        >>> @task
+        ... def g(a: int, b: int) -> int:
+        ...     return a + b
+        >>> g.map(["a", "b"], [(1, 2), (3, 4), (5, 6)])  # multiple arguments
+        [3, 7, 11]
+        >>> g.partial(a=1).map("b", [2, 3, 4])  # statically set one argument
+        [3, 4, 5]
+        >>> @task
+        ... def h(a: int, b: int, c: int) -> int:
+        ...     return a + b + c
+        >>> h.partial(a=1, b=2).map("c", [3, 4, 5])  # statically set multiple arguments
+        [6, 7, 8]
+
+        ```
+        """
         if isinstance(argnames, str):
             argnames = [argnames]
         assert all(
