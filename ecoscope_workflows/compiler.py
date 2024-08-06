@@ -164,30 +164,8 @@ class TaskInstance(_ForbidExtra):
         The name of the known task to be executed. This must be a registered known task name.
         """,
     )
-    mode: Literal["call", "map"] = Field(
-        default="call",
-        description="""\
-        The mode in which this task will be executed. In `call` mode, the task will be
-        called directly. In `map` mode, the task will be called in parallel for each
-        element of an iterable. The iterable is the return value of the task specified
-        in the `with` field.
-        """,
-    )
-    map_iterable: ArgDependencies = Field(
+    partial: ArgDependencies = Field(
         default_factory=dict,
-        alias="iter",
-        description="""\
-        The iterable to be passed to the task in `map` mode. This must be a single key-value
-        pair where the key is the name of the argument on the known task that will receive
-        each element of the iterable, and the value is the iterable itself. The value can be
-        a variable reference or a list of variable references. The variable reference(s) must be
-        in the form `${{ workflow.<task_id>.return }}` where `<task_id>` is the `id` of another
-        task instance in the workflow.
-        """,
-    )
-    arg_dependencies: ArgDependencies = Field(
-        default_factory=dict,
-        alias="with",
         description="""\
         Keyword arguments to be passed to the task. This must be a dictionary where the keys
         are the names of the arguments on the known task that will receive the values, and the
@@ -201,7 +179,8 @@ class TaskInstance(_ForbidExtra):
 
     @model_validator(mode="after")
     def check_does_not_depend_on_self(self) -> "Spec":
-        for arg, dep in (self.arg_dependencies | self.map_iterable).items():
+        # TODO: check `call`/`map`/`mapvalues` args as well
+        for arg, dep in self.partial.items():
             for d in _dep_as_list(dep):
                 if isinstance(d, TaskIdVariable) and d.value == self.id:
                     raise ValueError(
@@ -209,25 +188,6 @@ class TaskInstance(_ForbidExtra):
                         f"`{arg}` is set to depend on the return value of `{d.value}`. "
                         "Task instances cannot depend on their own return values."
                     )
-        return self
-
-    @model_validator(mode="after")
-    def check_map_iterable(self) -> "Spec":
-        if self.mode == "call" and self.map_iterable:
-            raise ValueError(
-                "In `call` mode, the `iter` field must be empty. "
-                "Specify keyword arguments in the `with` field."
-            )
-        elif self.mode == "map" and not self.map_iterable:
-            raise ValueError(
-                "In `map` mode, the `iter` field must be specified with an iterable."
-            )
-        if len(self.map_iterable) > 1:
-            raise ValueError(
-                "The `iter` field must have only one key-value pair. "
-                "To pass additional keyword arguments to each mapped invocation, "
-                "provide them in the `with` field."
-            )
         return self
 
     @computed_field  # type: ignore[misc]
