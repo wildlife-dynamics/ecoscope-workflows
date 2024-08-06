@@ -46,6 +46,8 @@ class Task(Generic[P, R, K, V]):
     >>> f.validate().partial(a="1").mapvalues("b", [("x", "2"), ("y", "3")])
     [('x', 3), ('y', 4)]
 
+    ```
+
     """
 
     func: Callable[P, R]
@@ -75,6 +77,7 @@ class Task(Generic[P, R, K, V]):
         [('x', 3), ('y', 4)]
 
         ```
+
         """
         return replace(self, func=functools.partial(self.func, **kwargs))
 
