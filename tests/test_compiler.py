@@ -266,7 +266,7 @@ def test_invaild_spec_name_raises(invalid_name: str, raises_match: str):
         _ = Spec(**yaml.safe_load(s))
 
 
-def test_mode_default():
+def test_method_default():
     s = dedent(
         """\
         id: calculate_time_density
@@ -277,7 +277,7 @@ def test_mode_default():
         """
     )
     spec = Spec(**yaml.safe_load(s))
-    assert spec.workflow[0].mode == "call"
+    assert spec.workflow[0].method == "call"
 
 
 def test_depends_on_self_raises():

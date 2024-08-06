@@ -176,6 +176,8 @@ class TaskInstance(_ForbidExtra):
         invocation of the task.
         """,
     )
+    map: dict | None = Field(default_factory=dict)
+    mapvalues: dict | None = Field(default_factory=dict)
 
     @model_validator(mode="after")
     def check_does_not_depend_on_self(self) -> "Spec":
@@ -196,6 +198,17 @@ class TaskInstance(_ForbidExtra):
         kt = known_tasks[self.known_task_name]
         assert self.known_task_name == kt.function
         return kt
+
+    @computed_field  # type: ignore[misc]
+    @property
+    def method(self) -> str:
+        return (
+            "map"
+            if self.map
+            else None or "mapvalues"
+            if self.mapvalues
+            else None or "call"
+        )
 
 
 def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
