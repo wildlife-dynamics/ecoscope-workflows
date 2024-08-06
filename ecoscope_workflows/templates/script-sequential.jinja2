@@ -1,4 +1,4 @@
-{% import 'call-method-macros.jinja' as call_method_macros %}
+{% import 'call-task-macros.jinja' as call_task_macros %}
 
 {%- if testing %}
 """WARNING: This file is generated in a testing context and should not be used in production.
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     {% for t in spec.workflow %}
     {% set params = 'params["' ~ t.id ~ '"]' %}
     {% set indent = '    ' %}
-    {{ call_method_macros.handle_task(t, params, indent) }}
+    {{ call_task_macros.handle_task(t, params, indent) }}
     {% if loop.last %}
     print({{ t.id }})
     {% endif %}

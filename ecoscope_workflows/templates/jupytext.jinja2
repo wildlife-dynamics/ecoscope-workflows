@@ -1,4 +1,4 @@
-{% import 'call-method-macros.jinja' as call_method_macros %}
+{% import 'call-task-macros.jinja' as call_task_macros %}
 # ruff: noqa: E402
 
 # %% [markdown]
@@ -27,5 +27,5 @@ import os
 # call the task
 {% set params = t.id ~ '_params' %}
 {% set indent = '' %}
-{{ call_method_macros.handle_task(t, params, indent) }}
+{{ call_task_macros.handle_task(t, params, indent) }}
 {% endfor -%}
