@@ -28,7 +28,7 @@ def test_dag_compiler_from_spec():
           - name: Process Relocations
             id: relocs
             task: process_relocations
-            with:
+            partial:
               observations: ${{ workflow.obs.return }}
         """
     )
@@ -40,7 +40,7 @@ def test_dag_compiler_from_spec():
 def test_extra_forbid_raises():
     s = dedent(
         # this workflow has an extra key, `observations` in the second task
-        # this is a mistake, as this should be nested under a `with` block
+        # this is a mistake, as this should be nested under a `partial` block
         """\
         id: calculate_time_density
         workflow:
@@ -164,7 +164,7 @@ def test_arg_deps_must_be_valid_id_of_another_task(
           - name: Process Relocations
             id: relocs
             task: process_relocations
-            with:
+            partial:
                 observations: ${{{{ workflow.{arg_dep_id}.return }}}}
         """
     )
@@ -211,7 +211,7 @@ def test_all_arg_deps_array_members_must_be_valid_id_of_another_task(
           - name: Gather Dashboard
             id: dashboard
             task: gather_dashboard
-            with:
+            partial:
               widgets:
                 - ${{{{ workflow.{arg_dep_ids[0]}.return }}}}
                 - ${{{{ workflow.{arg_dep_ids[1]}.return }}}}
@@ -280,80 +280,6 @@ def test_mode_default():
     assert spec.workflow[0].mode == "call"
 
 
-@pytest.mark.parametrize(
-    "mode, valid_mode",
-    [
-        ("call", True),
-        ("Call", False),
-    ],
-)
-def test_set_mode_call(mode: str, valid_mode: bool):
-    s = dedent(
-        f"""\
-        id: calculate_time_density
-        workflow:
-          - name: Get Subjectgroup Observations
-            id: obs
-            task: get_subjectgroup_observations
-            mode: {mode}
-        """
-    )
-    if valid_mode:
-        spec = Spec(**yaml.safe_load(s))
-        assert spec.workflow[0].mode == mode
-    else:
-        with pytest.raises(
-            ValidationError,
-            match=re.escape(
-                f"Input should be 'call' or 'map' [type=literal_error, input_value='{mode}',"
-            ),
-        ):
-            _ = Spec(**yaml.safe_load(s))
-
-
-@pytest.mark.parametrize(
-    "mode, valid_mode",
-    [
-        ("map", True),
-        ("maptuple", False),
-        ("flatmap", False),
-        ("flatmaptuple", False),
-    ],
-)
-def test_set_mode_map(mode: str, valid_mode: bool):
-    s = dedent(
-        f"""\
-        id: calculate_time_density
-        workflow:
-          - name: Get Subjectgroup Observations A
-            id: obs_a
-            task: get_subjectgroup_observations
-          - name: Get Subjectgroup Observations B
-            id: obs_b
-            task: get_subjectgroup_observations
-          - name: Draw Ecomaps
-            id: ecomaps
-            task: draw_ecomap
-            mode: {mode}
-            iter:
-              geodataframe:
-                - ${{{{ workflow.obs_a.return }}}}
-                - ${{{{ workflow.obs_b.return }}}}
-        """
-    )
-    if valid_mode:
-        spec = Spec(**yaml.safe_load(s))
-        assert spec.workflow[2].mode == mode
-    else:
-        with pytest.raises(
-            ValidationError,
-            match=re.escape(
-                f"Input should be 'call' or 'map' [type=literal_error, input_value='{mode}',"
-            ),
-        ):
-            _ = Spec(**yaml.safe_load(s))
-
-
 def test_depends_on_self_raises():
     s = dedent(
         """\
@@ -365,7 +291,7 @@ def test_depends_on_self_raises():
           - name: Process Relocations
             id: relocs
             task: process_relocations
-            with:
+            partial:
               observations: ${{ workflow.relocs.return }}
         """
     )
@@ -413,12 +339,12 @@ def test_task_instance_dependencies_property():
           - name: Process Relocations
             id: relocs
             task: process_relocations
-            with:
+            partial:
               observations: ${{ workflow.obs.return }}
           - name: Transform Relocations to Trajectories
             id: traj
             task: relocations_to_trajectory
-            with:
+            partial:
               relocations: ${{ workflow.relocs.return }}
         """
     )
@@ -438,7 +364,7 @@ def test_wrong_topological_order_raises():
           - name: Process Relocations
             id: relocs
             task: process_relocations
-            with:
+            partial:
               observations: ${{ workflow.obs.return }}
           - name: Get Subjectgroup Observations
             id: obs
