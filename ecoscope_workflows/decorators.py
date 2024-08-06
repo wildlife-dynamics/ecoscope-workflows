@@ -115,7 +115,7 @@ class Task(Generic[P, R, K, V]):
         argnames. If the argvalues are single values, argnames must be a single string,
         or a sequence of length 1. If the argvalues are tuples, the length of each tuple
         must match the length of the sequence of argnames. To statically set one or more
-        arguments, before mapping, chain with the `partial` method.
+        arguments before mapping, chain with the `partial` method.
 
         Examples:
 
@@ -164,6 +164,33 @@ class Task(Generic[P, R, K, V]):
     def mapvalues(
         self, argnames: str | Sequence[str], argvalues: Sequence[tuple[K, V]]
     ) -> Sequence[tuple[K, R]]:
+        """Map the task function over an iterable of key-value pairs, applying the
+        task function to the values while keeping the keys unchanged. The argvalues
+        must be a sequence of tuples where the first element of each tuple is the
+        key to passthrough, and the second element is the value to transform.
+        The argnames must be a single string, or a sequence of length 1, that
+        corresponds to the name of the value in the task function signature.
+        Compare to `pyspark.RDD.mapValues`: https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.RDD.mapValues.html.
+
+        To statically set one or more arguments before mapping values, chain with `partial`.
+
+        Examples:
+
+        ```python
+        >>> @task
+        ... def f(x: str) -> int:
+        ...     return len(x)
+        >>> f.mapvalues("x", [("a", ["apple", "banana", "lemon"]), ("b", ["grapes"])])
+        [('a', 3), ('b', 1)]
+        >>> @task
+        ... def g(x: str, y: int) -> int:
+        ...     return len(x) * y
+        >>> g.partial(y=2).mapvalues("x", [("a", "apple"), ("b", "banana")])
+        [('a', 10), ('b', 12)]
+
+        ```
+
+        """
         if not isinstance(argnames, str) and len(argnames) > 1:
             raise NotImplementedError(
                 "Arg unpacking is not yet supported for `mapvalues`."
