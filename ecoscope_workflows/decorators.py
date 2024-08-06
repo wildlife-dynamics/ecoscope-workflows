@@ -83,7 +83,26 @@ class Task(Generic[P, R, K, V]):
         return self.executor.call(self.func, *args, **kwargs)
 
     def call(self, *args: P.args, **kwargs: P.kwargs) -> R:
-        """Alias for `self.__call__` for more readable method chaining."""
+        """Alias for `self.__call__` for more readable method chaining.
+
+        Examples:
+
+        ```python
+        >>> @task
+        ... def f(a: int, b: int) -> int:
+        ...     return a + b
+        >>> f(1, 2)
+        3
+        >>> f.call(1, 2)
+        3
+        >>> f.partial(a=1)(b=2)  # this works but is less readable
+        3
+        >>> f.partial(a=1).call(b=2)  # this is more readable
+        3
+
+        ```
+
+        """
         return self(*args, **kwargs)
 
     def map(
