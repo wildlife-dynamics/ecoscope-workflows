@@ -1,3 +1,4 @@
+import functools
 from dataclasses import FrozenInstanceError, dataclass, field, replace
 from typing import Callable, Generic, Sequence, cast, overload
 
@@ -25,7 +26,7 @@ class Task(Generic[P, R, K, V]):
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> "Task[P, R, K, V]":
-        return replace(self, func=lambda *a, **kw: self.func(*args, *a, **kwargs, **kw))
+        return replace(self, func=functools.partial(self.func, *args, **kwargs))
 
     def validate(self) -> "Task[P, R, K, V]":
         return replace(
