@@ -29,9 +29,9 @@ obs_a_params = dict(
 # %%
 # call the task
 
-obs_a = get_subjectgroup_observations(
-    **obs_a_params,
-)
+
+obs_a = get_subjectgroup_observations.validate().call(**obs_a_params)
+
 
 # %% [markdown]
 # ## Get Observations B
@@ -50,9 +50,9 @@ obs_b_params = dict(
 # %%
 # call the task
 
-obs_b = get_subjectgroup_observations(
-    **obs_b_params,
-)
+
+obs_b = get_subjectgroup_observations.validate().call(**obs_b_params)
+
 
 # %% [markdown]
 # ## Get Observations C
@@ -71,9 +71,9 @@ obs_c_params = dict(
 # %%
 # call the task
 
-obs_c = get_subjectgroup_observations(
-    **obs_c_params,
-)
+
+obs_c = get_subjectgroup_observations.validate().call(**obs_c_params)
+
 
 # %% [markdown]
 # ## Creat EcoMap For Each Group
@@ -95,17 +95,10 @@ ecomaps_params = dict(
 # %%
 # call the task
 
-ecomaps_mapped_iterable = map(
-    lambda kw: draw_ecomap(**kw),
-    [
-        {
-            "geodataframe": i,
-        }
-        | ecomaps_params
-        for i in [obs_a, obs_b, obs_c]
-    ],
+
+ecomaps = draw_ecomap.validate().map(
+    argnames=["geodataframe"], argvalues=[obs_a, obs_b, obs_c]
 )
-ecomaps = list(ecomaps_mapped_iterable)
 
 
 # %% [markdown]
@@ -121,15 +114,11 @@ td_ecomap_html_url_params = dict(
 # %%
 # call the task
 
-td_ecomap_html_url_mapped_iterable = map(
-    lambda kw: persist_text(**kw),
-    [
-        {
-            "text": i,
-            "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-        }
-        | td_ecomap_html_url_params
-        for i in ecomaps
-    ],
+
+td_ecomap_html_url = (
+    persist_text.validate()
+    .partial(
+        root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"], **td_ecomap_html_url_params
+    )
+    .map(argnames=["text"], argvalues=ecomaps)
 )
-td_ecomap_html_url = list(td_ecomap_html_url_mapped_iterable)

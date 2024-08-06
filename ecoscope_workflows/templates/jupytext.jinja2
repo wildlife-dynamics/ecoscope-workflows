@@ -1,4 +1,4 @@
-{% import 'jupytext-macros.jinja' as macros %}
+{% import 'call-method-macros.jinja' as call_method_macros %}
 # ruff: noqa: E402
 
 # %% [markdown]
@@ -15,5 +15,17 @@ import os
 {% endif -%}
 {% endfor -%}
 {%- for t in spec.workflow -%}
-{{ macros.handle_task(t) }}
+# %% [markdown]
+# ## {{ t.name }}
+
+# %%
+# parameters
+
+{{ t.id }}_params = {{ t.known_task.importable_reference.params_notebook }}
+
+# %%
+# call the task
+{% set params = t.id ~ '_params' %}
+{% set indent = '' %}
+{{ call_method_macros.handle_task(t, params, indent) }}
 {% endfor -%}

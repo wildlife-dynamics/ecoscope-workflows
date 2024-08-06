@@ -1,4 +1,4 @@
-{% import 'script-sequential-macros.jinja' as macros %}
+{% import 'call-method-macros.jinja' as call_method_macros %}
 
 {%- if testing %}
 """WARNING: This file is generated in a testing context and should not be used in production.
@@ -36,7 +36,8 @@ if __name__ == "__main__":
     {% endif %}
     {% for t in spec.workflow %}
     {% set params = 'params["' ~ t.id ~ '"]' %}
-    {{ macros.handle_task(t, params) }}
+    {% set indent = '    ' %}
+    {{ call_method_macros.handle_task(t, params, indent) }}
     {% if loop.last %}
     print({{ t.id }})
     {% endif %}

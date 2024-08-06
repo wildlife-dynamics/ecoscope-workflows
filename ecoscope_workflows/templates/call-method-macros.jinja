@@ -1,5 +1,5 @@
-{% macro handle_call_method(t, params) %}
-    {{ t.id }} = (
+{% macro handle_call_method(t, params, indent) %}
+{{ indent }}{{ t.id }} = (
         {{ t.known_task.importable_reference.function }}
         .validate()
         {%- if t.partial %}
@@ -11,8 +11,8 @@
 {% endmacro %}
 
 
-{% macro handle_map_method(t, params) %}
-    {{ t.id }} = (
+{% macro handle_map_method(t, params, indent) %}
+{{ indent }}{{ t.id }} = (
         {{ t.known_task.importable_reference.function }}
         .validate()
         {%- if t.partial %}
@@ -23,10 +23,10 @@
 {% endmacro %}
 
 
-{% macro handle_task(t, params) %}
+{% macro handle_task(t, params, indent) %}
 {% if t.method == "call" %}
-    {{ handle_call_method(t, params) }}
+    {{ handle_call_method(t, params, indent) }}
 {% elif t.method == "map" %}
-    {{ handle_map_method(t, params) }}
+    {{ handle_map_method(t, params, indent) }}
 {% endif %}
 {% endmacro %}
