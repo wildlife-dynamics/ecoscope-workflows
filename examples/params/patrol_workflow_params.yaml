@@ -46,7 +46,8 @@ patrol_traj_ecomap:
   north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist Ecomap as Text' using task `persist_text`.
-patrol_traj_ecomap_html_url: {}
+patrol_traj_ecomap_html_url:
+  filename: "patrol_traj_ecomap.html"  # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
 # Parameters for 'Create Map Widget for Patrols' using task `create_map_widget_single_view`.
 patrol_traj_map_widget:
@@ -84,7 +85,8 @@ patrol_events_ecomap:
   north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist Patrols Ecomap as Text' using task `persist_text`.
-patrol_events_ecomap_html_url: {}
+patrol_events_ecomap_html_url:
+  filename: "patrol_events_ecomap.html"  # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
 # Parameters for 'Create Map Widget for Patrol Events' using task `create_map_widget_single_view`.
 patrol_events_map_widget:
@@ -108,7 +110,8 @@ patrol_events_bar_chart:
   layout_kws: { "xaxis_dtick": 86400000 }  # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Style arguments passed to plotly.graph_objects.Figure.'))
 
 # Parameters for 'Persist Patrols Bar Chart as Text' using task `persist_text`.
-patrol_events_bar_chart_html_url: {}
+patrol_events_bar_chart_html_url:
+  filename: "patrol_events_bar_chart.html"  # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
 # Parameters for 'Create Plot Widget for Patrol Events' using task `create_plot_widget_single_view`.
 patrol_events_bar_chart_widget:
@@ -121,7 +124,8 @@ patrol_events_pie_chart:
   layout_kws: {}  # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Additional kwargs passed to plotly.go.Figure(layout).'))
 
 # Parameters for 'Persist Patrols Pie Chart as Text' using task `persist_text`.
-patrol_events_pie_chart_html_url: {}
+patrol_events_pie_chart_html_url:
+  filename: "patrol_events_pie_chart.html"  # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
 # Parameters for 'Create Plot Widget for Patrol Events' using task `create_plot_widget_single_view`.
 patrol_events_pie_Chart_widget:
@@ -152,7 +156,8 @@ td_ecomap:
   north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist Ecomap as Text' using task `persist_text`.
-td_ecomap_html_url: {}
+td_ecomap_html_url:
+  filename: "td_ecomap.html"  # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
 # Parameters for 'Create Time Density Map Widget' using task `create_map_widget_single_view`.
 td_map_widget:
