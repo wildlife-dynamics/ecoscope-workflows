@@ -107,7 +107,29 @@ def _is_valid_spec_name(s: str):
     return s
 
 
-Variable = Annotated[TaskIdVariable | EnvVariable, BeforeValidator(_parse_variables)]
+Variable = Annotated[
+    TaskIdVariable | EnvVariable,
+    BeforeValidator(_parse_variables),
+]
+
+
+def _serialize_variables(v: list[Variable]) -> str:
+    return (
+        v[0].model_dump()
+        if len(v) == 1
+        else f"[{', '.join(var.model_dump() for var in v)}]"
+    )
+
+
+def _vars_as_list(v: Variable | list[Variable]) -> list[Variable]:
+    return [v] if not isinstance(v, list) else v
+
+
+VarOrVars = Annotated[
+    Variable | list[Variable],
+    AfterValidator(_vars_as_list),
+    PlainSerializer(_serialize_variables, return_type=str),
+]
 TaskInstanceId = Annotated[
     str,
     AfterValidator(_is_not_reserved),
@@ -115,36 +137,15 @@ TaskInstanceId = Annotated[
 ]
 KnownTaskName = Annotated[str, AfterValidator(_is_known_task_name)]
 KnownTaskArgName: TypeAlias = str
-_ArgDependenciesTypeAlias: TypeAlias = dict[KnownTaskArgName, Variable | list[Variable]]
-
-
-def _serialize_arg_deps(arg_deps: _ArgDependenciesTypeAlias) -> dict[str, str]:
-    return {
-        arg: (
-            dep.model_dump()
-            if not isinstance(dep, list)
-            else f"[{', '.join(d.model_dump() for d in dep)}]"
-        )
-        for arg, dep in arg_deps.items()
-    }
-
-
-ArgDependencies = Annotated[
-    _ArgDependenciesTypeAlias,
-    PlainSerializer(_serialize_arg_deps, return_type=dict[str, str]),
-]
+ArgDependencies: TypeAlias = dict[KnownTaskArgName, VarOrVars]
 SpecId = Annotated[
     str, AfterValidator(_is_not_reserved), AfterValidator(_is_valid_spec_name)
 ]
 
 
-def _dep_as_list(dep: Variable | list[Variable]) -> list[Variable]:
-    return [dep] if not isinstance(dep, list) else dep
-
-
 class _ParallelOperation(_ForbidExtra):
     argnames: KnownTaskArgName | list[KnownTaskArgName] = Field(default_factory=list)
-    argvalues: Variable | list[Variable] = Field(default_factory=list)
+    argvalues: VarOrVars = Field(default_factory=list)
 
     def __bool__(self):
         """Return False if both `argnames` and `argvalues` are empty. Otherwise, return True.
@@ -165,8 +166,15 @@ class _ParallelOperation(_ForbidExtra):
                 yield arg
 
     @model_serializer
-    def serialize(self) -> str | None:
-        return None if not self else self.model_dump()
+    def serialize(self) -> None | dict:
+        return (
+            None
+            if not self
+            else {
+                "argnames": self.argnames,
+                "argvalues": self.argvalues,
+            }
+        )
 
 
 class MapOperation(_ParallelOperation):
@@ -225,7 +233,7 @@ class TaskInstance(_ForbidExtra):
     def check_does_not_depend_on_self(self) -> "Spec":
         # TODO: check `call`/`map`/`mapvalues` args as well
         for arg, dep in self.partial.items():
-            for d in _dep_as_list(dep):
+            for d in dep:
                 if isinstance(d, TaskIdVariable) and d.value == self.id:
                     raise ValueError(
                         f"Task `{self.name}` has an arg dependency that references itself: "
@@ -334,7 +342,7 @@ class Spec(_ForbidExtra):
         all_ids = [task_instance.id for task_instance in self.workflow]
         for task_instance in self.workflow:
             for dep in task_instance.partial.values():
-                for d in _dep_as_list(dep):
+                for d in dep:
                     if isinstance(d, TaskIdVariable) and d.value not in all_ids:
                         raise ValueError(
                             f"Task `{task_instance.name}` has an arg dependency `{d.value}` that is "
@@ -349,7 +357,7 @@ class Spec(_ForbidExtra):
                 [
                     d.value
                     for dep in task_instance.partial.values()
-                    for d in _dep_as_list(dep)
+                    for d in dep
                     if isinstance(d, TaskIdVariable)
                 ]
                 # TODO: check `call`/`map`/`mapvalues` args as well
