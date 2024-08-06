@@ -194,7 +194,7 @@ def test_arg_deps_must_be_valid_id_of_another_task(
         (["map_widget", "draw_ecoplot"], False),
     ],
 )
-def test_all_arg_deps_array_members_must_be_valid_id_of_another_task(
+def test_all_partial_array_members_must_be_valid_id_of_another_task(
     arg_dep_ids: list[str],
     all_valid_ids_of_another_task: bool,
 ):
@@ -219,7 +219,7 @@ def test_all_arg_deps_array_members_must_be_valid_id_of_another_task(
     )
     if all_valid_ids_of_another_task:
         spec = Spec(**yaml.safe_load(s))
-        assert spec.workflow[2].arg_dependencies == {
+        assert spec.workflow[2].partial == {
             "widgets": [TaskIdVariable(value=v, suffix="return") for v in arg_dep_ids]
         }
     else:

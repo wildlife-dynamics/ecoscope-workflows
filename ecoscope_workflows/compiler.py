@@ -266,10 +266,10 @@ class Spec(_ForbidExtra):
         return self
 
     @model_validator(mode="after")
-    def check_all_arg_deps_are_ids_of_other_tasks(self) -> "Spec":
+    def check_all_partial_args_are_ids_of_other_tasks(self) -> "Spec":
         all_ids = [task_instance.id for task_instance in self.workflow]
         for task_instance in self.workflow:
-            for dep in task_instance.arg_dependencies.values():
+            for dep in task_instance.partial.values():
                 for d in _dep_as_list(dep):
                     if isinstance(d, TaskIdVariable) and d.value not in all_ids:
                         raise ValueError(
@@ -284,16 +284,11 @@ class Spec(_ForbidExtra):
             task_instance.id: (
                 [
                     d.value
-                    for dep in task_instance.arg_dependencies.values()
+                    for dep in task_instance.partial.values()
                     for d in _dep_as_list(dep)
                     if isinstance(d, TaskIdVariable)
                 ]
-                + [
-                    d.value
-                    for dep in task_instance.map_iterable.values()
-                    for d in _dep_as_list(dep)
-                    if isinstance(d, TaskIdVariable)
-                ]
+                # TODO: check `call`/`map`/`mapvalues` args as well
             )
             for task_instance in self.workflow
         }
