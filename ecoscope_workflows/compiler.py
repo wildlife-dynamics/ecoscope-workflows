@@ -121,13 +121,13 @@ def _serialize_variables(v: list[Variable]) -> str:
     )
 
 
-def _vars_as_list(v: Variable | list[Variable]) -> list[Variable]:
-    return [v] if not isinstance(v, list) else v
+def _str_or_list_of_strs_as_list(s: str | list[str]) -> list[str]:
+    return [s] if not isinstance(s, list) else s
 
 
 VarOrVars = Annotated[
     Variable | list[Variable],
-    AfterValidator(_vars_as_list),
+    AfterValidator(_str_or_list_of_strs_as_list),
     PlainSerializer(_serialize_variables, return_type=str),
 ]
 TaskInstanceId = Annotated[
@@ -143,8 +143,19 @@ SpecId = Annotated[
 ]
 
 
+def _serialize_parallel_op_argnames(args: list[KnownTaskArgName]) -> str:
+    return f"[{', '.join(a for a in args)}]"
+
+
+ParallelOpArgNames = Annotated[
+    KnownTaskArgName | list[KnownTaskArgName],
+    AfterValidator(_str_or_list_of_strs_as_list),
+    PlainSerializer(_serialize_parallel_op_argnames, return_type=str),
+]
+
+
 class _ParallelOperation(_ForbidExtra):
-    argnames: KnownTaskArgName | list[KnownTaskArgName] = Field(default_factory=list)
+    argnames: ParallelOpArgNames = Field(default_factory=list)
     argvalues: VarOrVars = Field(default_factory=list)
 
     def __bool__(self):
