@@ -349,24 +349,11 @@ class Spec(_ForbidExtra):
     @property
     def task_instance_dependencies(self) -> dict[str, list[str]]:
         return {
-            task_instance.id: (
-                [
-                    d.value
-                    for dep in task_instance.partial.values()
-                    for d in dep
-                    if isinstance(d, TaskIdVariable)
-                ]
-                + [
-                    d.value
-                    for d in task_instance.map.argvalues
-                    if isinstance(d, TaskIdVariable)
-                ]
-                + [
-                    d.value
-                    for d in task_instance.mapvalues.argvalues
-                    if isinstance(d, TaskIdVariable)
-                ]
-            )
+            task_instance.id: [
+                d.value
+                for d in task_instance.all_dependencies
+                if isinstance(d, TaskIdVariable)
+            ]
             for task_instance in self.workflow
         }
 
