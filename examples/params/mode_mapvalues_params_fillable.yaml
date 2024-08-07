@@ -1,0 +1,38 @@
+# Parameters for 'Get Observations' using task `get_subjectgroup_observations`.
+obs:
+  client:   # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
+  subject_group_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of EarthRanger Subject'))
+  include_inactive:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether or not to include inactive subjects'))
+  since:   # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
+  until:   # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
+
+# Parameters for 'Set Groupers' using task `set_groupers`.
+groupers:
+
+# Parameters for 'Split Observations' using task `split_groups`.
+split_obs:
+
+# Parameters for 'Create EcoMap For Each Group' using task `draw_ecomap`.
+ecomaps:
+  data_type:   # (typing.Literal['Scatterplot', 'Path', 'Polygon'], FieldInfo(annotation=NoneType, required=True, description='The type of visualization.'))
+  style_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the data visualization.'))
+  tile_layer:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A named tile layer, ie OpenStreetMap.'))
+  static:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Set to true to disable map pan/zoom.'))
+  title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The map title.'))
+  title_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Title.'))
+  scale_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Scale Bar.'))
+  north_arrow_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the North Arrow.'))
+
+# Parameters for 'Persist EcoMaps' using task `persist_text`.
+ecomaps_persist:
+  filename:   # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
+
+# Parameters for 'Create EcoMap Widgets' using task `create_map_widget_single_view`.
+ecomap_widgets:
+  title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+  data:   # (pathlib.Path | pydantic_core._pydantic_core.Url, FieldInfo(annotation=NoneType, required=True, description='Path to precomputed HTML'))
+
+# Parameters for 'Create EcoMap Dashboard' using task `gather_dashboard`.
+dashboard:
+  title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the dashboard'))
+  description:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The description of the dashboard'))
