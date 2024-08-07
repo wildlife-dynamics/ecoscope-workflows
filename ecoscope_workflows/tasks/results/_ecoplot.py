@@ -78,7 +78,7 @@ def draw_time_series_bar_chart(
         Field(description="The aggregate function to apply to the group."),
     ],
     time_interval: Annotated[
-        Literal["year", "month", "week", "day", "hour"] | None,
+        Literal["year", "month", "week", "day", "hour"],
         Field(description="Sets the time interval of the x axis."),
     ],
     groupby_style_kws: Annotated[
