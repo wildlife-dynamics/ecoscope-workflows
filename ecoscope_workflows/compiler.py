@@ -427,16 +427,19 @@ class DagCompiler(BaseModel):
         )
 
     @property
-    def _omit_args(self) -> list[str]:
+    def per_task_omit_args(self) -> dict[TaskInstanceId, list[KnownTaskArgName]]:
         # for a given task arg, if it is dependent on another task's return value,
         # we don't need to include it in the `dag_params_schema`,
         # because we don't need it to be passed as a parameter by the user.
-        return (
-            ["return"]
-            + [arg for t in self.spec.workflow for arg in t.partial]
-            + [arg for t in self.spec.workflow for arg in t.map.argnames]
-            + [arg for t in self.spec.workflow for arg in t.mapvalues.argnames]
-        )
+        return {
+            t.id: (
+                ["return"]
+                + [arg for arg in t.partial]
+                + [arg for arg in t.map.argnames]
+                + [arg for arg in t.mapvalues.argnames]
+            )
+            for t in self.spec.workflow
+        }
 
     def get_params_jsonschema(self) -> dict[str, dict]:
         return {

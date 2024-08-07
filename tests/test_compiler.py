@@ -573,6 +573,34 @@ def test_map_both_fields_required_if_either_given(
         _ = Spec(**yaml.safe_load(s))
 
 
+def test_per_task_omit_args():
+    s = dedent(
+        """\
+        id: mapvalues_example
+        workflow:
+          - name: Get Observations
+            id: obs
+            task: get_subjectgroup_observations
+          - name: Set Groupers
+            id: groupers
+            task: set_groupers
+          - name: Split Observations
+            id: split_obs
+            task: split_groups
+            partial:
+              df: ${{ workflow.obs.return }}
+              groupers: ${{ workflow.groupers.return }}
+        """
+    )
+    spec = Spec(**yaml.safe_load(s))
+    dc = DagCompiler(spec=spec)
+    assert dc.per_task_omit_args == {
+        "obs": ["return"],
+        "groupers": ["return"],
+        "split_obs": ["return", "df", "groupers"],
+    }
+
+
 def test_duplicate_argnames_dont_result_in_omissions():
     s = dedent(
         """\
