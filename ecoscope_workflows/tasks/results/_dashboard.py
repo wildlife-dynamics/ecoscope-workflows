@@ -1,26 +1,22 @@
 import json
 from dataclasses import dataclass
-from typing import Annotated, Any, Generator
-
+from typing import Annotated, Any, Generator, Union
 from pydantic import BaseModel, Field, model_serializer
+from pydantic.json_schema import SkipJsonSchema
 
 from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.indexes import CompositeFilter, IndexName, IndexValue
 from ecoscope_workflows.jsonschema import (
     ReactJSONSchemaFormFilters,
     RJSFFilter,
     RJSFFilterProperty,
     RJSFFilterUiSchema,
 )
-from ecoscope_workflows.indexes import (
-    CompositeFilter,
-    IndexName,
-    IndexValue,
-)
 from ecoscope_workflows.tasks.results._widget_types import (
     GroupedWidget,
+    WidgetBase,
     WidgetData,
     WidgetSingleView,
-    WidgetBase,
 )
 
 
@@ -197,9 +193,13 @@ def composite_filters_to_grouper_choices_dict(
 def gather_dashboard(
     title: Annotated[str, Field(description="The title of the dashboard")],
     description: Annotated[str, Field(description="The description of the dashboard")],
-    widgets: Annotated[
-        list[GroupedWidget] | list[WidgetSingleView] | GroupedWidget | WidgetSingleView,
-        Field(description="The widgets to display."),
+    widgets: SkipJsonSchema[
+        Union[
+            list[GroupedWidget],
+            list[WidgetSingleView],
+            GroupedWidget,
+            WidgetSingleView,
+        ]
     ],
     groupers: Annotated[
         list | None,
