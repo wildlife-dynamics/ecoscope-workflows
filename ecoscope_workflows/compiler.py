@@ -352,7 +352,11 @@ class Spec(_ForbidExtra):
                     for d in dep
                     if isinstance(d, TaskIdVariable)
                 ]
-                # TODO: check `call`/`map`/`mapvalues` args as well
+                # + [
+                #     d.value
+                #     for d in task_instance.map.argvalues
+                #     if isinstance(d, TaskIdVariable)
+                # ]
             )
             for task_instance in self.workflow
         }

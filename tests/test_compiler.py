@@ -382,7 +382,7 @@ def test_task_instance_dependencies_property():
     }
 
 
-def test_wrong_topological_order_raises():
+def test_wrong_topological_order_partial_raises():
     s = dedent(
         """\
         id: calculate_time_density
@@ -392,6 +392,33 @@ def test_wrong_topological_order_raises():
             task: process_relocations
             partial:
               observations: ${{ workflow.obs.return }}
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape(
+            "Task instances are not in topological order. "
+            "`Process Relocations` depends on `Get Subjectgroup Observations`, "
+            "but `Get Subjectgroup Observations` is defined after `Process Relocations`."
+        ),
+    ):
+        _ = Spec(**yaml.safe_load(s))
+
+
+def test_wrong_topological_order_map_raises():
+    s = dedent(
+        """\
+        id: calculate_time_density
+        workflow:
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            map:
+              argnames: observations
+              argvalues: ${{ workflow.obs.return }}
           - name: Get Subjectgroup Observations
             id: obs
             task: get_subjectgroup_observations
