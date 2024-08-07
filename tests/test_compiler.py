@@ -435,6 +435,33 @@ def test_wrong_topological_order_map_raises():
         _ = Spec(**yaml.safe_load(s))
 
 
+def test_wrong_topological_order_mapvalues_raises():
+    s = dedent(
+        """\
+        id: calculate_time_density
+        workflow:
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            mapvalues:
+              argnames: observations
+              argvalues: ${{ workflow.obs.return }}
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape(
+            "Task instances are not in topological order. "
+            "`Process Relocations` depends on `Get Subjectgroup Observations`, "
+            "but `Get Subjectgroup Observations` is defined after `Process Relocations`."
+        ),
+    ):
+        _ = Spec(**yaml.safe_load(s))
+
+
 def test_generate_dag_smoke():
     s = dedent(
         """\
