@@ -2,25 +2,25 @@
 obs_a:
   client:   # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
   subject_group_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of EarthRanger Subject'))
-  include_inactive:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether or not to include inactive subjects'))
   since:   # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
   until:   # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
+  include_inactive:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether or not to include inactive subjects'))
 
 # Parameters for 'Get Observations B' using task `get_subjectgroup_observations`.
 obs_b:
   client:   # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
   subject_group_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of EarthRanger Subject'))
-  include_inactive:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether or not to include inactive subjects'))
   since:   # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
   until:   # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
+  include_inactive:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether or not to include inactive subjects'))
 
 # Parameters for 'Get Observations C' using task `get_subjectgroup_observations`.
 obs_c:
   client:   # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
   subject_group_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of EarthRanger Subject'))
-  include_inactive:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether or not to include inactive subjects'))
   since:   # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
   until:   # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
+  include_inactive:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether or not to include inactive subjects'))
 
 # Parameters for 'Create Map Layer For Each Group' using task `create_map_layer`.
 map_layers:
@@ -32,9 +32,9 @@ ecomaps:
   tile_layer:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A named tile layer, ie OpenStreetMap.'))
   static:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Set to true to disable map pan/zoom.'))
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The map title.'))
-  title_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Title.'))
-  scale_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Scale Bar.'))
-  north_arrow_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the North Arrow.'))
+  title_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Title.'))
+  scale_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Scale Bar.'))
+  north_arrow_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the North Arrow.'))
 
 # Parameters for 'Persist Ecomaps as Text' using task `persist_text`.
 td_ecomap_html_url:

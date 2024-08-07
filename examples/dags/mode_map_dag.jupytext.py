@@ -22,9 +22,9 @@ from ecoscope_workflows.tasks.io import persist_text
 obs_a_params = dict(
     client=...,
     subject_group_name=...,
-    include_inactive=...,
     since=...,
     until=...,
+    include_inactive=...,
 )
 
 # %%
@@ -43,9 +43,9 @@ obs_a = get_subjectgroup_observations(
 obs_b_params = dict(
     client=...,
     subject_group_name=...,
-    include_inactive=...,
     since=...,
     until=...,
+    include_inactive=...,
 )
 
 # %%
@@ -64,9 +64,9 @@ obs_b = get_subjectgroup_observations(
 obs_c_params = dict(
     client=...,
     subject_group_name=...,
-    include_inactive=...,
     since=...,
     until=...,
+    include_inactive=...,
 )
 
 # %%
