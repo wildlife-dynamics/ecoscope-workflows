@@ -17,6 +17,7 @@ from pydantic import (
 )
 from pydantic.functional_validators import AfterValidator, BeforeValidator
 
+from ecoscope_workflows.jsonschema import ReactJSONSchemaFormConfiguration
 from ecoscope_workflows.registry import KnownTask, known_tasks
 
 TEMPLATES = pathlib.Path(__file__).parent / "templates"
@@ -394,13 +395,19 @@ class DagCompiler(BaseModel):
         )
 
     def get_params_jsonschema(self) -> dict[str, Any]:
-        schema: dict[str, Any] = {}
-        schema["title"] = "Ecoscope Workflow Configurations Form"
-        schema["properties"] = {
-            t.name: t.known_task.parameters_jsonschema(omit_args=self._omit_args)
-            for t in self.spec.workflow
-        }
-        return schema
+        return ReactJSONSchemaFormConfiguration(
+            properties={
+                t.name: t.known_task.parameters_jsonschema(omit_args=self._omit_args)
+                for t in self.spec.workflow
+            }
+        ).model_dump()
+        # schema: dict[str, Any] = {}
+        # schema["title"] = "Ecoscope Workflow Configurations Form"
+        # schema["properties"] = {
+        #     t.name: t.known_task.parameters_jsonschema(omit_args=self._omit_args)
+        #     for t in self.spec.workflow
+        # }
+        # return schema
 
     def get_params_fillable_yaml(self) -> str:
         yaml_str = ""

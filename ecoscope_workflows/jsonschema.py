@@ -88,3 +88,8 @@ class ReactJSONSchemaFormFilters(BaseModel):
     @model_serializer
     def ser_model(self) -> dict[str, Any]:
         return {"schema": self._schema}
+
+
+class ReactJSONSchemaFormConfiguration(BaseModel):
+    title: str = "Ecoscope Workflow Configurations Form"
+    properties: dict[str, Any]
