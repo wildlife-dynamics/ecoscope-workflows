@@ -8,6 +8,7 @@ obs:
 
 # Parameters for 'Set Groupers' using task `set_groupers`.
 groupers:
+  groupers:   # (list[str], FieldInfo(annotation=NoneType, required=True, description='Index(es) and/or column(s) to group by'))
 
 # Parameters for 'Split Observations' using task `split_groups`.
 split_obs:

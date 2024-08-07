@@ -41,8 +41,19 @@
     },
     "groupers": {
         "additionalProperties": false,
-        "properties": {},
-        "required": [],
+        "properties": {
+            "groupers": {
+                "items": {
+                    "type": "string"
+                },
+                "title": "Groupers",
+                "type": "array",
+                "description": "Index(es) and/or column(s) to group by"
+            }
+        },
+        "required": [
+            "groupers"
+        ],
         "type": "object"
     },
     "split_obs": {
