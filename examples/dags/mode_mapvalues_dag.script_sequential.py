@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     dashboard = (
         gather_dashboard.validate()
-        .partial(widgets=ecomap_widgets)
+        .partial(widgets=ecomap_widgets, groupers=groupers)
         .call(**params["dashboard"])
     )
 

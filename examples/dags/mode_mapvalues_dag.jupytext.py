@@ -147,4 +147,6 @@ dashboard_params = dict(
 # call the task
 
 
-dashboard = gather_dashboard.partial(widgets=ecomap_widgets).call(**dashboard_params)
+dashboard = gather_dashboard.partial(widgets=ecomap_widgets, groupers=groupers).call(
+    **dashboard_params
+)

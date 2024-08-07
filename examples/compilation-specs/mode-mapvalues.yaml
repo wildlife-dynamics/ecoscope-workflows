@@ -47,3 +47,4 @@ workflow:
     task: gather_dashboard
     partial:
       widgets: ${{ workflow.ecomap_widgets.return }}
+      groupers: ${{ workflow.groupers.return }}
