@@ -288,6 +288,9 @@ def test_only_oneof_map_or_mapvalues():
           - name: Get Subjectgroup Observations
             id: obs
             task: get_subjectgroup_observations
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
             map:
               argnames: [a, b]
               argvalues: ${{ workflow.obs.return }}  # this is nonsense, but it's not what's being tested
@@ -299,14 +302,14 @@ def test_only_oneof_map_or_mapvalues():
     with pytest.raises(
         ValidationError,
         match=re.escape(
-            "Task `Get Subjectgroup Observations` cannot have both `map` and `mapvalues` set. "
+            "Task `Process Relocations` cannot have both `map` and `mapvalues` set. "
             "Please choose one or the other."
         ),
     ):
         _ = Spec(**yaml.safe_load(s))
 
 
-def test_depends_on_self_partial_raises():
+def test_depends_on_self_in_partial_raises():
     s = dedent(
         """\
         id: calculate_time_density
@@ -331,7 +334,7 @@ def test_depends_on_self_partial_raises():
         _ = Spec(**yaml.safe_load(s))
 
 
-def test_depends_on_self_map_raises():
+def test_depends_on_self_in_map_raises():
     s = dedent(
         """\
         id: calculate_time_density
@@ -343,6 +346,32 @@ def test_depends_on_self_map_raises():
             id: relocs
             task: process_relocations
             map:
+              argnames: observations
+              argvalues: ${{ workflow.relocs.return }}
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape(
+            "Task `Process Relocations` has an arg dependency that references itself: "
+            "`relocs`. Task instances cannot depend on their own return values."
+        ),
+    ):
+        _ = Spec(**yaml.safe_load(s))
+
+
+def test_depends_on_self_in_mapvalues_raises():
+    s = dedent(
+        """\
+        id: calculate_time_density
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            mapvalues:
               argnames: observations
               argvalues: ${{ workflow.relocs.return }}
         """
