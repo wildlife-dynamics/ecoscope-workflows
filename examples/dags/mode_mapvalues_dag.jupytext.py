@@ -14,6 +14,7 @@ from ecoscope_workflows.tasks.groupby import split_groups
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
+from ecoscope_workflows.tasks.results import gather_dashboard
 
 # %% [markdown]
 # ## Get Observations
@@ -129,3 +130,21 @@ ecomap_widgets_params = dict(
 ecomap_widgets = create_map_widget_single_view.partial(**ecomap_widgets_params).map(
     argnames=["view", 'data"'], argvalues=ecomaps_persist
 )
+
+
+# %% [markdown]
+# ## Create EcoMap Dashboard
+
+# %%
+# parameters
+
+dashboard_params = dict(
+    title=...,
+    description=...,
+)
+
+# %%
+# call the task
+
+
+dashboard = gather_dashboard.partial(widgets=ecomap_widgets).call(**dashboard_params)
