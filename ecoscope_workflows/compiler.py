@@ -216,11 +216,21 @@ class TaskInstance(_ForbidExtra):
     map: MapOperation = MapOperation()
     mapvalues: MapValuesOperation = MapValuesOperation()
 
+    @property
+    def flattened_partial_values(self) -> list[Variable]:
+        return [var for dep in self.partial.values() for var in dep]
+
+    @property
+    def all_dependencies(self) -> list[Variable]:
+        return (
+            self.flattened_partial_values
+            + self.map.argvalues
+            + self.mapvalues.argvalues
+        )
+
     @model_validator(mode="after")
     def check_does_not_depend_on_self(self) -> "Spec":
-        for dep in (
-            list(self.partial.values()) + self.map.argvalues + self.mapvalues.argvalues
-        ):
+        for dep in self.all_dependencies:
             if isinstance(dep, TaskIdVariable) and dep.value == self.id:
                 raise ValueError(
                     f"Task `{self.name}` has an arg dependency that references itself: "
