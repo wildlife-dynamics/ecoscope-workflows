@@ -12,6 +12,8 @@ class SurfacesDescriptionSchema(GenerateJsonSchema):
         json_schema = super().generate(schema, mode=mode)
         if "schema" in schema:
             schema = schema["schema"]
+        if "function" not in schema:
+            print("C")
         if "function" in schema and "properties" in json_schema:
             for p in json_schema["properties"].copy():
                 if p == "groupers":
