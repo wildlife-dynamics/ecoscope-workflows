@@ -160,8 +160,8 @@ class _ParallelOperation(_ForbidExtra):
 
     def __bool__(self):
         """Return False if both `argnames` and `argvalues` are empty. Otherwise, return True.
-        Let's us use operation models as their own defaults in the `TaskInstance` model, while
-        still allowing boolean checks such as `if self.map`, `if self.mapvalues`, etc.
+        Lets us empty `_ParallelOperation` models as their own defaults in the `TaskInstance` model,
+        while still allowing boolean checks such as `if self.map`, `if self.mapvalues`, etc.
         """
         return bool(self.argnames) and bool(self.argvalues)
 
