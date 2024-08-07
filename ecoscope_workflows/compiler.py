@@ -363,16 +363,15 @@ class Spec(_ForbidExtra):
         return self
 
     @model_validator(mode="after")
-    def check_all_partial_args_are_ids_of_other_tasks(self) -> "Spec":
+    def check_all_task_id_deps_use_actual_ids_of_other_tasks(self) -> "Spec":
         all_ids = [task_instance.id for task_instance in self.workflow]
-        for task_instance in self.workflow:
-            for dep in task_instance.partial.values():
-                for d in dep:
-                    if isinstance(d, TaskIdVariable) and d.value not in all_ids:
-                        raise ValueError(
-                            f"Task `{task_instance.name}` has an arg dependency `{d.value}` that is "
-                            f"not a valid task id. Valid task ids for this workflow are: {all_ids}"
-                        )
+        for ti_id, deps in self.task_instance_dependencies.items():
+            for d in deps:
+                if d not in all_ids:
+                    raise ValueError(
+                        f"Task `{ti_id}` has an arg dependency `{d}` that is "
+                        f"not a valid task id. Valid task ids for this workflow are: {all_ids}"
+                    )
         return self
 
     @property

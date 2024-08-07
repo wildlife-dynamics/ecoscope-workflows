@@ -177,7 +177,7 @@ def test_partial_args_must_be_valid_id_of_another_task(
         with pytest.raises(
             ValidationError,
             match=re.escape(
-                f"Task `Process Relocations` has an arg dependency `{arg_dep_id}` that is "
+                f"Task `relocs` has an arg dependency `{arg_dep_id}` that is "
                 "not a valid task id. Valid task ids for this workflow are: ['obs', 'relocs']",
             ),
         ):
@@ -226,7 +226,7 @@ def test_all_partial_array_members_must_be_valid_id_of_another_task(
         with pytest.raises(
             ValidationError,
             match=re.escape(
-                f"Task `Gather Dashboard` has an arg dependency `{arg_dep_ids[1]}` that is not a "
+                f"Task `dashboard` has an arg dependency `{arg_dep_ids[1]}` that is not a "
                 "valid task id. Valid task ids for this workflow are: "
                 "['map_widget', 'plot_widget', 'dashboard']",
             ),
@@ -543,8 +543,16 @@ def test_generate_dag_smoke():
 
 
 @pytest.mark.parametrize("parallel_op_name", ["map", "mapvalues"])
-@pytest.mark.parametrize("field_name", ["argnames", "argvalues"])
-def test_map_both_fields_required_if_either_given(parallel_op_name, field_name):
+@pytest.mark.parametrize(
+    "field_name, field_value",
+    [
+        ("argnames", "a"),
+        ("argvalues", "${{ workflow.obs.return }}"),
+    ],
+)
+def test_map_both_fields_required_if_either_given(
+    parallel_op_name, field_name, field_value
+):
     s = dedent(
         f"""\
         id: calculate_time_density
@@ -553,7 +561,7 @@ def test_map_both_fields_required_if_either_given(parallel_op_name, field_name):
             id: relocs
             task: process_relocations
             {parallel_op_name}:
-              {field_name}: a
+              {field_name}: {field_value}
         """
     )
     with pytest.raises(
