@@ -411,20 +411,23 @@ class DagCompiler(BaseModel):
     testing: bool = False
     mock_tasks: list[str] = Field(default_factory=list)
 
-    @property
-    def dag_config(self) -> dict:
+    def get_dag_config(self) -> dict:
         if self.mock_tasks and not self.testing:
             raise ValueError(
                 "If you provide mocks, you must set `testing=True` to use them."
             )
-        return self.model_dump(
+        dag_config = self.model_dump(
             exclude={"template", "template_dir"},
             context={
                 "testing": self.testing,
                 "mocks": self.mock_tasks,
-                "omit_args": self._omit_args,
             },
         )
+        if self.template == "jupytext.jinja2":
+            dag_config |= {
+                "per_taskinstance_params_notebook": self.get_per_taskinstance_params_notebook(),
+            }
+        return dag_config
 
     @property
     def per_taskinstance_omit_args(
@@ -462,8 +465,16 @@ class DagCompiler(BaseModel):
             )
         return yaml_str
 
+    def get_per_taskinstance_params_notebook(self) -> dict[str, str]:
+        return {
+            t.id: t.known_task.parameters_notebook(
+                omit_args=self.per_taskinstance_omit_args.get(t.id, []),
+            )
+            for t in self.spec.workflow
+        }
+
     @ruff_formatted
     def generate_dag(self) -> str:
         env = Environment(loader=FileSystemLoader(self.template_dir))
         template = env.get_template(self.template)
-        return template.render(self.dag_config)
+        return template.render(self.get_dag_config())

@@ -8,7 +8,7 @@
 # ## Imports
 
 import os
-from ecoscope_workflows.tasks.io import get_subjectgroup_observations
+from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.groupby import set_groupers
 from ecoscope_workflows.tasks.groupby import split_groups
 from ecoscope_workflows.tasks.results import draw_ecomap
@@ -17,24 +17,24 @@ from ecoscope_workflows.tasks.results import create_map_widget_single_view
 from ecoscope_workflows.tasks.results import gather_dashboard
 
 # %% [markdown]
-# ## Get Observations
+# ## Get Patrol Events from EarthRanger
 
 # %%
 # parameters
 
-obs_params = dict(
+patrol_events_params = dict(
     client=...,
-    subject_group_name=...,
-    include_inactive=...,
     since=...,
     until=...,
+    patrol_type=...,
+    status=...,
 )
 
 # %%
 # call the task
 
 
-obs = get_subjectgroup_observations.call(**obs_params)
+patrol_events = get_patrol_events.call(**patrol_events_params)
 
 
 # %% [markdown]
@@ -43,7 +43,9 @@ obs = get_subjectgroup_observations.call(**obs_params)
 # %%
 # parameters
 
-groupers_params = dict()
+groupers_params = dict(
+    groupers=...,
+)
 
 # %%
 # call the task
@@ -64,7 +66,9 @@ split_obs_params = dict()
 # call the task
 
 
-split_obs = split_groups.partial(df=obs, groupers=groupers).call(**split_obs_params)
+split_obs = split_groups.partial(df=patrol_events, groupers=groupers).call(
+    **split_obs_params
+)
 
 
 # %% [markdown]

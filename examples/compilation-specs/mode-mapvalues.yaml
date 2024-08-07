@@ -4,9 +4,9 @@ workflow:
   # Mapping over a groups split from a single data source, which are keyed
   # ----------------------------------------------------------------------
   # Step 1 - Fetching a single data source
-  - name: Get Observations
-    id: obs
-    task: get_subjectgroup_observations
+  - name: Get Patrol Events from EarthRanger
+    id: patrol_events
+    task: get_patrol_events
   # Step 2 - Setting the groupers
   - name: Set Groupers
     id: groupers
@@ -16,7 +16,7 @@ workflow:
     id: split_obs
     task: split_groups
     partial:
-      df: ${{ workflow.obs.return }}
+      df: ${{ workflow.patrol_events.return }}
       groupers: ${{ workflow.groupers.return }}
   # Step 4 - Mapping over the groups
   - name: Create EcoMap For Each Group
