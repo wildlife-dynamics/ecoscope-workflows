@@ -1,10 +1,10 @@
-# Parameters for 'Get Observations' using task `get_subjectgroup_observations`.
-obs:
+# Parameters for 'Get Patrol Events from EarthRanger' using task `get_patrol_events`.
+patrol_events:
   client:   # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
-  subject_group_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of EarthRanger Subject'))
-  include_inactive:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether or not to include inactive subjects'))
-  since:   # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
-  until:   # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
+  since:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
+  until:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
+  patrol_type:   # (list[str], FieldInfo(annotation=NoneType, required=True, description='list of UUID of patrol types'))
+  status:   # (list[str], FieldInfo(annotation=NoneType, required=True, description="list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"))
 
 # Parameters for 'Set Groupers' using task `set_groupers`.
 groupers:

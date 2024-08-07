@@ -1,5 +1,5 @@
 {
-    "obs": {
+    "patrol_events": {
         "additionalProperties": false,
         "properties": {
             "client": {
@@ -7,35 +7,39 @@
                 "title": "Client",
                 "type": "string"
             },
-            "subject_group_name": {
-                "title": "Subject Group Name",
-                "type": "string",
-                "description": "Name of EarthRanger Subject"
-            },
-            "include_inactive": {
-                "title": "Include Inactive",
-                "type": "boolean",
-                "description": "Whether or not to include inactive subjects"
-            },
             "since": {
-                "format": "date-time",
                 "title": "Since",
                 "type": "string",
                 "description": "Start date"
             },
             "until": {
-                "format": "date-time",
                 "title": "Until",
                 "type": "string",
                 "description": "End date"
+            },
+            "patrol_type": {
+                "items": {
+                    "type": "string"
+                },
+                "title": "Patrol Type",
+                "type": "array",
+                "description": "list of UUID of patrol types"
+            },
+            "status": {
+                "items": {
+                    "type": "string"
+                },
+                "title": "Status",
+                "type": "array",
+                "description": "list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"
             }
         },
         "required": [
             "client",
-            "subject_group_name",
-            "include_inactive",
             "since",
-            "until"
+            "until",
+            "patrol_type",
+            "status"
         ],
         "type": "object"
     },
