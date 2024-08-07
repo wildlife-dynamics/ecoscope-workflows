@@ -3,7 +3,7 @@ import functools
 import keyword
 import pathlib
 import subprocess
-from typing import Annotated, Callable, Generator, Literal, TypeAlias, TypeVar
+from typing import Annotated, Callable, Literal, TypeAlias, TypeVar
 
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
@@ -164,10 +164,6 @@ class _ParallelOperation(_ForbidExtra):
         still allowing boolean checks such as `if self.map`, `if self.mapvalues`, etc.
         """
         return bool(self.argnames) and bool(self.argvalues)
-
-    def iterargs(self) -> Generator[KnownTaskArgName, None, None]:
-        for arg in self.argnames:
-            yield arg
 
 
 class MapOperation(_ParallelOperation):
@@ -438,8 +434,8 @@ class DagCompiler(BaseModel):
         return (
             ["return"]
             + [arg for t in self.spec.workflow for arg in t.partial]
-            + [arg for t in self.spec.workflow for arg in t.map.iterargs()]
-            + [arg for t in self.spec.workflow for arg in t.mapvalues.iterargs()]
+            + [arg for t in self.spec.workflow for arg in t.map.argnames]
+            + [arg for t in self.spec.workflow for arg in t.mapvalues.argnames]
         )
 
     def get_params_jsonschema(self) -> dict[str, dict]:
