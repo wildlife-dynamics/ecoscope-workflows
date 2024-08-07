@@ -108,13 +108,12 @@ def _is_valid_spec_name(s: str):
     return s
 
 
-Variable = Annotated[
-    TaskIdVariable | EnvVariable,
-    BeforeValidator(_parse_variables),
+WorkflowVariable = Annotated[
+    TaskIdVariable | EnvVariable, BeforeValidator(_parse_variables)
 ]
 
 
-def _serialize_variables(v: list[Variable]) -> str:
+def _serialize_variables(v: list[WorkflowVariable]) -> str:
     return (
         v[0].model_dump()
         if len(v) == 1
@@ -127,7 +126,7 @@ def _singleton_or_list_aslist(s: T | list[T]) -> list[T]:
 
 
 Vars = Annotated[
-    list[Variable],
+    list[WorkflowVariable],
     BeforeValidator(_singleton_or_list_aslist),
     PlainSerializer(_serialize_variables, return_type=str),
 ]
@@ -143,8 +142,7 @@ SpecId = Annotated[
     str, AfterValidator(_is_not_reserved), AfterValidator(_is_valid_spec_name)
 ]
 ParallelOpArgNames = Annotated[
-    KnownTaskArgName | list[KnownTaskArgName],
-    AfterValidator(_singleton_or_list_aslist),
+    list[KnownTaskArgName], BeforeValidator(_singleton_or_list_aslist)
 ]
 
 
@@ -240,11 +238,11 @@ class TaskInstance(_ForbidExtra):
     )
 
     @property
-    def flattened_partial_values(self) -> list[Variable]:
+    def flattened_partial_values(self) -> list[WorkflowVariable]:
         return [var for dep in self.partial.values() for var in dep]
 
     @property
-    def all_dependencies(self) -> list[Variable]:
+    def all_dependencies(self) -> list[WorkflowVariable]:
         return (
             self.flattened_partial_values
             + self.map.argvalues
