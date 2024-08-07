@@ -573,7 +573,7 @@ def test_map_both_fields_required_if_either_given(
         _ = Spec(**yaml.safe_load(s))
 
 
-def test_per_task_omit_args():
+def test_per_taskinstance_omit_args():
     s = dedent(
         """\
         id: mapvalues_example
@@ -594,7 +594,7 @@ def test_per_task_omit_args():
     )
     spec = Spec(**yaml.safe_load(s))
     dc = DagCompiler(spec=spec)
-    assert dc.per_task_omit_args == {
+    assert dc.per_taskinstance_omit_args == {
         "obs": ["return"],
         "groupers": ["return"],
         "split_obs": ["return", "df", "groupers"],

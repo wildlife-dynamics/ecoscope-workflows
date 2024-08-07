@@ -427,10 +427,13 @@ class DagCompiler(BaseModel):
         )
 
     @property
-    def per_task_omit_args(self) -> dict[TaskInstanceId, list[KnownTaskArgName]]:
-        # for a given task arg, if it is dependent on another task's return value,
-        # we don't need to include it in the `dag_params_schema`,
-        # because we don't need it to be passed as a parameter by the user.
+    def per_taskinstance_omit_args(
+        self,
+    ) -> dict[TaskInstanceId, list[KnownTaskArgName]]:
+        """For a given arg on a task instance, if it is dependent on another task's return
+        value, we omit it from the user-facing parameters, so that it's not set twice (once
+        as a dependency in the spec, and a second time by the user via the parameter form).
+        """
         return {
             t.id: (
                 ["return"]
@@ -443,7 +446,9 @@ class DagCompiler(BaseModel):
 
     def get_params_jsonschema(self) -> dict[str, dict]:
         return {
-            t.id: t.known_task.parameters_jsonschema(omit_args=self._omit_args)
+            t.id: t.known_task.parameters_jsonschema(
+                omit_args=self.per_taskinstance_omit_args.get(t.id, []),
+            )
             for t in self.spec.workflow
         }
 
@@ -453,7 +458,7 @@ class DagCompiler(BaseModel):
             yaml_str += t.known_task.parameters_annotation_yaml_str(
                 title=t.id,
                 description=f"# Parameters for '{t.name}' using task `{t.known_task_name}`.",
-                omit_args=self._omit_args,
+                omit_args=self.per_taskinstance_omit_args.get(t.id, []),
             )
         return yaml_str
 
