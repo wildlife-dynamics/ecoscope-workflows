@@ -17,7 +17,7 @@ def draw_ecomap(
     ],
     style_kws: Annotated[
         dict, Field(description="Style arguments for the data visualization.")
-    ],
+    ] = {},
     tile_layer: Annotated[
         str, Field(description="A named tile layer, ie OpenStreetMap.")
     ] = "",
