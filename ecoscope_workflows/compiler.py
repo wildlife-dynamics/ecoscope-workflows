@@ -3,7 +3,7 @@ import functools
 import keyword
 import pathlib
 import subprocess
-from typing import Annotated, Callable, Generator, Literal, TypeAlias
+from typing import Annotated, Callable, Generator, Literal, TypeAlias, TypeVar
 
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
@@ -20,6 +20,7 @@ from pydantic.functional_validators import AfterValidator, BeforeValidator
 
 from ecoscope_workflows.registry import KnownTask, known_tasks
 
+T = TypeVar("T")
 
 TEMPLATES = pathlib.Path(__file__).parent / "templates"
 
@@ -28,13 +29,13 @@ class _ForbidExtra(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
-class WorkflowVariableBase(BaseModel):
+class _WorkflowVariable(BaseModel):
     """Base class for workflow variables."""
 
     value: str
 
 
-class TaskIdVariable(WorkflowVariableBase):
+class TaskIdVariable(_WorkflowVariable):
     """A variable that references the return value of another task in the workflow."""
 
     suffix: Literal["return"]
@@ -44,7 +45,7 @@ class TaskIdVariable(WorkflowVariableBase):
         return self.value
 
 
-class EnvVariable(WorkflowVariableBase):
+class EnvVariable(_WorkflowVariable):
     """A variable that references an environment variable."""
 
     @model_serializer
@@ -121,13 +122,13 @@ def _serialize_variables(v: list[Variable]) -> str:
     )
 
 
-def _str_or_list_of_strs_as_list(s: str | list[str]) -> list[str]:
+def _singleton_or_list_aslist(s: T | list[T]) -> list[T]:
     return [s] if not isinstance(s, list) else s
 
 
-VarOrVars = Annotated[
-    Variable | list[Variable],
-    AfterValidator(_str_or_list_of_strs_as_list),
+Vars = Annotated[
+    list[Variable],
+    BeforeValidator(_singleton_or_list_aslist),
     PlainSerializer(_serialize_variables, return_type=str),
 ]
 TaskInstanceId = Annotated[
@@ -137,19 +138,19 @@ TaskInstanceId = Annotated[
 ]
 KnownTaskName = Annotated[str, AfterValidator(_is_known_task_name)]
 KnownTaskArgName: TypeAlias = str
-ArgDependencies: TypeAlias = dict[KnownTaskArgName, VarOrVars]
+ArgDependencies: TypeAlias = dict[KnownTaskArgName, Vars]
 SpecId = Annotated[
     str, AfterValidator(_is_not_reserved), AfterValidator(_is_valid_spec_name)
 ]
 ParallelOpArgNames = Annotated[
     KnownTaskArgName | list[KnownTaskArgName],
-    AfterValidator(_str_or_list_of_strs_as_list),
+    AfterValidator(_singleton_or_list_aslist),
 ]
 
 
 class _ParallelOperation(_ForbidExtra):
     argnames: ParallelOpArgNames = Field(default_factory=list)
-    argvalues: VarOrVars = Field(default_factory=list)
+    argvalues: Vars = Field(default_factory=list)
 
     def __bool__(self):
         """Return False if both `argnames` and `argvalues` are empty. Otherwise, return True.
@@ -220,12 +221,11 @@ class TaskInstance(_ForbidExtra):
         for dep in (
             list(self.partial.values()) + self.map.argvalues + self.mapvalues.argvalues
         ):
-            for d in dep:
-                if isinstance(d, TaskIdVariable) and d.value == self.id:
-                    raise ValueError(
-                        f"Task `{self.name}` has an arg dependency that references itself: "
-                        f"`{d.value}`. Task instances cannot depend on their own return values."
-                    )
+            if isinstance(dep, TaskIdVariable) and dep.value == self.id:
+                raise ValueError(
+                    f"Task `{self.name}` has an arg dependency that references itself: "
+                    f"`{dep.value}`. Task instances cannot depend on their own return values."
+                )
         return self
 
     @model_validator(mode="after")
