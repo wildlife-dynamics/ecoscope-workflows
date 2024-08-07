@@ -2,7 +2,7 @@ import argparse
 import os
 import yaml
 
-from ecoscope_workflows.tasks.io import get_subjectgroup_observations
+from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.groupby import set_groupers
 from ecoscope_workflows.tasks.groupby import split_groups
 from ecoscope_workflows.tasks.results import draw_ecomap
@@ -22,13 +22,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
     params = yaml.safe_load(args.config_file)
 
-    obs = get_subjectgroup_observations.validate().call(**params["obs"])
+    patrol_events = get_patrol_events.validate().call(**params["patrol_events"])
 
     groupers = set_groupers.validate().call(**params["groupers"])
 
     split_obs = (
         split_groups.validate()
-        .partial(df=obs, groupers=groupers)
+        .partial(df=patrol_events, groupers=groupers)
         .call(**params["split_obs"])
     )
 
