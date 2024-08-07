@@ -159,15 +159,8 @@ class _ParallelOperation(_ForbidExtra):
         return bool(self.argnames) and bool(self.argvalues)
 
     def iterargs(self) -> Generator[KnownTaskArgName, None, None]:
-        """Yield each argname in the operation's argnames field,
-        whether it is a single argname or a list of argnames.
-        """
-        if isinstance(self.argnames, str):
-            yield self.argnames
-            return
-        if isinstance(self.argnames, list):
-            for arg in self.argnames:
-                yield arg
+        for arg in self.argnames:
+            yield arg
 
 
 class MapOperation(_ParallelOperation):
@@ -224,13 +217,14 @@ class TaskInstance(_ForbidExtra):
 
     @model_validator(mode="after")
     def check_does_not_depend_on_self(self) -> "Spec":
-        for arg, dep in self.partial.items():
+        for dep in (
+            list(self.partial.values()) + self.map.argvalues + self.mapvalues.argvalues
+        ):
             for d in dep:
                 if isinstance(d, TaskIdVariable) and d.value == self.id:
                     raise ValueError(
                         f"Task `{self.name}` has an arg dependency that references itself: "
-                        f"`{arg}` is set to depend on the return value of `{d.value}`. "
-                        "Task instances cannot depend on their own return values."
+                        f"`{d.value}`. Task instances cannot depend on their own return values."
                     )
         return self
 

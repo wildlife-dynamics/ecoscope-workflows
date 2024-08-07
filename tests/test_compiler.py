@@ -306,7 +306,7 @@ def test_only_oneof_map_or_mapvalues():
         _ = Spec(**yaml.safe_load(s))
 
 
-def test_depends_on_self_raises():
+def test_depends_on_self_partial_raises():
     s = dedent(
         """\
         id: calculate_time_density
@@ -325,8 +325,33 @@ def test_depends_on_self_raises():
         ValidationError,
         match=re.escape(
             "Task `Process Relocations` has an arg dependency that references itself: "
-            "`observations` is set to depend on the return value of `relocs`. "
-            "Task instances cannot depend on their own return values."
+            "`relocs`. Task instances cannot depend on their own return values."
+        ),
+    ):
+        _ = Spec(**yaml.safe_load(s))
+
+
+def test_depends_on_self_map_raises():
+    s = dedent(
+        """\
+        id: calculate_time_density
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            map:
+              argnames: observations
+              argvalues: ${{ workflow.relocs.return }}
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape(
+            "Task `Process Relocations` has an arg dependency that references itself: "
+            "`relocs`. Task instances cannot depend on their own return values."
         ),
     ):
         _ = Spec(**yaml.safe_load(s))
