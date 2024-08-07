@@ -1,4 +1,4 @@
-{% import 'script-sequential-macros.jinja' as macros %}
+{% import 'call-task-macros.jinja' as call_task_macros %}
 
 {%- if testing %}
 """WARNING: This file is generated in a testing context and should not be used in production.
@@ -34,9 +34,11 @@ if __name__ == "__main__":
     {%- if testing %}
     warnings.warn("This test script should not be used in production!")  # 🧪
     {% endif %}
-    # FIXME: first pass assumes tasks are already in topological order
     {% for t in spec.workflow %}
-    {{ macros.handle_task(t, params) }}
+    {% set validate = true %}
+    {% set params = 'params["' ~ t.id ~ '"]' %}
+    {% set indent = '    ' %}
+    {{ call_task_macros.handle_task(t, validate, params, indent) }}
     {% if loop.last %}
     print({{ t.id }})
     {% endif %}

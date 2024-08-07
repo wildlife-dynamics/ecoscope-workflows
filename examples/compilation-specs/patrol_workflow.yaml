@@ -7,30 +7,30 @@ workflow:
   - name: Transform Observations to Relocations
     id: patrol_reloc
     task: process_relocations
-    with:
+    partial:
       observations: ${{ workflow.patrol_obs.return }}
   - name: Transform Relocations to Trajectories
     id: patrol_traj
     task: relocations_to_trajectory
-    with:
+    partial:
       relocations: ${{ workflow.patrol_reloc.return }}
 
   # patrol trajectories ecomap
   - name: Draw Ecomap from Trajectories
     id: patrol_traj_ecomap
     task: draw_ecomap
-    with:
+    partial:
       geodataframe: ${{ workflow.patrol_traj.return }}
   - name: Persist Patrol Trajectories Ecomap as Text
     id: patrol_traj_ecomap_html_url
     task: persist_text
-    with:
+    partial:
       text: ${{ workflow.patrol_traj_ecomap.return }}
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
   - name: Create Map Widget for Patrols Trajectories
     id: patrol_traj_map_widget
     task: create_map_widget_single_view
-    with:
+    partial:
       data: ${{ workflow.patrol_traj_ecomap_html_url.return }}
 
   # patrol events
@@ -40,53 +40,53 @@ workflow:
   - name: Apply Relocation Coordinate Filter
     id: filter_patrol_events
     task: apply_reloc_coord_filter
-    with:
+    partial:
       df: ${{ workflow.patrol_events.return }}
   - name: Draw Ecomap for Patrols Events
     id: patrol_events_ecomap
     task: draw_ecomap
-    with:
+    partial:
       geodataframe: ${{ workflow.filter_patrol_events.return }}
   - name: Persist Patrols Ecomap as Text
     id: patrol_events_ecomap_html_url
     task: persist_text
-    with:
+    partial:
       text: ${{ workflow.patrol_events_ecomap.return }}
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
   - name: Create Map Widget for Patrol Events
     id: patrol_events_map_widget
     task: create_map_widget_single_view
-    with:
+    partial:
       data: ${{ workflow.patrol_events_ecomap_html_url.return }}
 
   # time density
   - name: Calculate Time Density from Trajectory
     id: td
     task: calculate_time_density
-    with:
+    partial:
       trajectory_gdf: ${{ workflow.patrol_traj.return }}
   - name: Draw Ecomap from Time Density
     id: td_ecomap
     task: draw_ecomap
-    with:
+    partial:
       geodataframe: ${{ workflow.td.return }}
   - name: Persist Ecomap as Text
     id: td_ecomap_html_url
     task: persist_text
-    with:
+    partial:
       text: ${{ workflow.td_ecomap.return }}
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
   - name: Create Time Density Map Widget
     id: td_map_widget
     task: create_map_widget_single_view
-    with:
+    partial:
       data: ${{ workflow.td_ecomap_html_url.return }}
 
   # dashboard
   - name: Create Dashboard with Patrol Map Widgets
     id: patrol_dashboard
     task: gather_dashboard
-    with:
+    partial:
       widgets:
         - ${{ workflow.patrol_traj_map_widget.return }}
         - ${{ workflow.patrol_events_map_widget.return }}

@@ -37,9 +37,9 @@ patrol_obs_params = dict(
 # %%
 # call the task
 
-patrol_obs = get_patrol_observations(
-    **patrol_obs_params,
-)
+
+patrol_obs = get_patrol_observations.call(**patrol_obs_params)
+
 
 # %% [markdown]
 # ## Transform Observations to Relocations
@@ -55,10 +55,11 @@ patrol_reloc_params = dict(
 # %%
 # call the task
 
-patrol_reloc = process_relocations(
-    observations=patrol_obs,
-    **patrol_reloc_params,
+
+patrol_reloc = process_relocations.partial(observations=patrol_obs).call(
+    **patrol_reloc_params
 )
+
 
 # %% [markdown]
 # ## Transform Relocations to Trajectories
@@ -78,10 +79,11 @@ patrol_traj_params = dict(
 # %%
 # call the task
 
-patrol_traj = relocations_to_trajectory(
-    relocations=patrol_reloc,
-    **patrol_traj_params,
+
+patrol_traj = relocations_to_trajectory.partial(relocations=patrol_reloc).call(
+    **patrol_traj_params
 )
+
 
 # %% [markdown]
 # ## Draw Ecomap from Trajectories
@@ -103,10 +105,11 @@ patrol_traj_ecomap_params = dict(
 # %%
 # call the task
 
-patrol_traj_ecomap = draw_ecomap(
-    geodataframe=patrol_traj,
-    **patrol_traj_ecomap_params,
+
+patrol_traj_ecomap = draw_ecomap.partial(geodataframe=patrol_traj).call(
+    **patrol_traj_ecomap_params
 )
+
 
 # %% [markdown]
 # ## Persist Patrol Trajectories Ecomap as Text
@@ -121,11 +124,11 @@ patrol_traj_ecomap_html_url_params = dict(
 # %%
 # call the task
 
-patrol_traj_ecomap_html_url = persist_text(
-    text=patrol_traj_ecomap,
-    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-    **patrol_traj_ecomap_html_url_params,
-)
+
+patrol_traj_ecomap_html_url = persist_text.partial(
+    text=patrol_traj_ecomap, root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"]
+).call(**patrol_traj_ecomap_html_url_params)
+
 
 # %% [markdown]
 # ## Create Map Widget for Patrols Trajectories
@@ -141,10 +144,11 @@ patrol_traj_map_widget_params = dict(
 # %%
 # call the task
 
-patrol_traj_map_widget = create_map_widget_single_view(
-    data=patrol_traj_ecomap_html_url,
-    **patrol_traj_map_widget_params,
-)
+
+patrol_traj_map_widget = create_map_widget_single_view.partial(
+    data=patrol_traj_ecomap_html_url
+).call(**patrol_traj_map_widget_params)
+
 
 # %% [markdown]
 # ## Get Patrol Events from EarthRanger
@@ -163,9 +167,9 @@ patrol_events_params = dict(
 # %%
 # call the task
 
-patrol_events = get_patrol_events(
-    **patrol_events_params,
-)
+
+patrol_events = get_patrol_events.call(**patrol_events_params)
+
 
 # %% [markdown]
 # ## Apply Relocation Coordinate Filter
@@ -184,10 +188,11 @@ filter_patrol_events_params = dict(
 # %%
 # call the task
 
-filter_patrol_events = apply_reloc_coord_filter(
-    df=patrol_events,
-    **filter_patrol_events_params,
+
+filter_patrol_events = apply_reloc_coord_filter.partial(df=patrol_events).call(
+    **filter_patrol_events_params
 )
+
 
 # %% [markdown]
 # ## Draw Ecomap for Patrols Events
@@ -209,10 +214,11 @@ patrol_events_ecomap_params = dict(
 # %%
 # call the task
 
-patrol_events_ecomap = draw_ecomap(
-    geodataframe=filter_patrol_events,
-    **patrol_events_ecomap_params,
+
+patrol_events_ecomap = draw_ecomap.partial(geodataframe=filter_patrol_events).call(
+    **patrol_events_ecomap_params
 )
+
 
 # %% [markdown]
 # ## Persist Patrols Ecomap as Text
@@ -227,11 +233,11 @@ patrol_events_ecomap_html_url_params = dict(
 # %%
 # call the task
 
-patrol_events_ecomap_html_url = persist_text(
-    text=patrol_events_ecomap,
-    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-    **patrol_events_ecomap_html_url_params,
-)
+
+patrol_events_ecomap_html_url = persist_text.partial(
+    text=patrol_events_ecomap, root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"]
+).call(**patrol_events_ecomap_html_url_params)
+
 
 # %% [markdown]
 # ## Create Map Widget for Patrol Events
@@ -247,10 +253,11 @@ patrol_events_map_widget_params = dict(
 # %%
 # call the task
 
-patrol_events_map_widget = create_map_widget_single_view(
-    data=patrol_events_ecomap_html_url,
-    **patrol_events_map_widget_params,
-)
+
+patrol_events_map_widget = create_map_widget_single_view.partial(
+    data=patrol_events_ecomap_html_url
+).call(**patrol_events_map_widget_params)
+
 
 # %% [markdown]
 # ## Calculate Time Density from Trajectory
@@ -271,10 +278,9 @@ td_params = dict(
 # %%
 # call the task
 
-td = calculate_time_density(
-    trajectory_gdf=patrol_traj,
-    **td_params,
-)
+
+td = calculate_time_density.partial(trajectory_gdf=patrol_traj).call(**td_params)
+
 
 # %% [markdown]
 # ## Draw Ecomap from Time Density
@@ -296,10 +302,9 @@ td_ecomap_params = dict(
 # %%
 # call the task
 
-td_ecomap = draw_ecomap(
-    geodataframe=td,
-    **td_ecomap_params,
-)
+
+td_ecomap = draw_ecomap.partial(geodataframe=td).call(**td_ecomap_params)
+
 
 # %% [markdown]
 # ## Persist Ecomap as Text
@@ -314,11 +319,11 @@ td_ecomap_html_url_params = dict(
 # %%
 # call the task
 
-td_ecomap_html_url = persist_text(
-    text=td_ecomap,
-    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-    **td_ecomap_html_url_params,
-)
+
+td_ecomap_html_url = persist_text.partial(
+    text=td_ecomap, root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"]
+).call(**td_ecomap_html_url_params)
+
 
 # %% [markdown]
 # ## Create Time Density Map Widget
@@ -334,10 +339,11 @@ td_map_widget_params = dict(
 # %%
 # call the task
 
-td_map_widget = create_map_widget_single_view(
-    data=td_ecomap_html_url,
-    **td_map_widget_params,
+
+td_map_widget = create_map_widget_single_view.partial(data=td_ecomap_html_url).call(
+    **td_map_widget_params
 )
+
 
 # %% [markdown]
 # ## Create Dashboard with Patrol Map Widgets
@@ -354,7 +360,7 @@ patrol_dashboard_params = dict(
 # %%
 # call the task
 
-patrol_dashboard = gather_dashboard(
-    widgets=[patrol_traj_map_widget, patrol_events_map_widget, td_map_widget],
-    **patrol_dashboard_params,
-)
+
+patrol_dashboard = gather_dashboard.partial(
+    widgets=[patrol_traj_map_widget, patrol_events_map_widget, td_map_widget]
+).call(**patrol_dashboard_params)
