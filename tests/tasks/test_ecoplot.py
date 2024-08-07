@@ -3,7 +3,7 @@ import pandas as pd
 
 from ecoscope_workflows.tasks.results._ecoplot import (
     draw_ecoplot,
-    draw_stacked_bar_chart,
+    draw_time_series_bar_chart,
     draw_pie_chart,
 )
 
@@ -27,19 +27,52 @@ def sample_dataframe():
 
 
 @pytest.fixture
-def stacked_dataframe():
+def time_series_dataframe(time_interval):
     """Fixture to provide a sample DataFrame for testing."""
     data = {
-        "value": [500, 200, 300, 150, 400],
         "category": ["A", "B", "A", "B", "B"],
-        "time": [
-            pd.to_datetime("2024-06-01", utc=True),
-            pd.to_datetime("2024-06-01", utc=True),
-            pd.to_datetime("2024-06-02", utc=True),
-            pd.to_datetime("2024-06-02", utc=True),
-            pd.to_datetime("2024-06-02", utc=True),
-        ],
     }
+    match time_interval:
+        case "year":
+            data["time"] = [
+                pd.to_datetime("2023-06-01 15:33:00", utc=True),
+                pd.to_datetime("2023-06-01 15:34:00", utc=True),
+                pd.to_datetime("2024-06-02 15:36:00", utc=True),
+                pd.to_datetime("2024-06-02 15:37:00", utc=True),
+                pd.to_datetime("2024-06-02 15:38:00", utc=True),
+            ]
+        case "month":
+            data["time"] = [
+                pd.to_datetime("2024-05-01 15:33:00", utc=True),
+                pd.to_datetime("2024-05-01 15:34:00", utc=True),
+                pd.to_datetime("2024-06-02 15:36:00", utc=True),
+                pd.to_datetime("2024-06-02 15:37:00", utc=True),
+                pd.to_datetime("2024-06-02 15:38:00", utc=True),
+            ]
+        case "week":
+            data["time"] = [
+                pd.to_datetime("2024-05-06 15:33:00", utc=True),
+                pd.to_datetime("2024-05-06 15:34:00", utc=True),
+                pd.to_datetime("2024-05-14 15:36:00", utc=True),
+                pd.to_datetime("2024-05-14 15:37:00", utc=True),
+                pd.to_datetime("2024-05-14 15:38:00", utc=True),
+            ]
+        case "day":
+            data["time"] = [
+                pd.to_datetime("2024-05-01 15:33:00", utc=True),
+                pd.to_datetime("2024-05-01 15:34:00", utc=True),
+                pd.to_datetime("2024-05-02 15:36:00", utc=True),
+                pd.to_datetime("2024-05-02 15:37:00", utc=True),
+                pd.to_datetime("2024-05-02 15:38:00", utc=True),
+            ]
+        case "hour":
+            data["time"] = [
+                pd.to_datetime("2024-05-01 15:33:00", utc=True),
+                pd.to_datetime("2024-05-01 15:34:00", utc=True),
+                pd.to_datetime("2024-05-01 16:36:00", utc=True),
+                pd.to_datetime("2024-05-01 16:37:00", utc=True),
+                pd.to_datetime("2024-05-01 16:38:00", utc=True),
+            ]
 
     return pd.DataFrame(data)
 
@@ -71,19 +104,31 @@ def test_draw_ecoplot(sample_dataframe):
     assert isinstance(plot, str)
 
 
-def test_draw_stacked_bar_chart(stacked_dataframe):
-    plot = draw_stacked_bar_chart(
-        stacked_dataframe,
+@pytest.mark.parametrize(
+    "time_series_dataframe, time_interval",
+    [
+        ("year", "year"),
+        ("month", "month"),
+        ("week", "week"),
+        ("day", "day"),
+        ("hour", "hour"),
+    ],
+    indirect=["time_series_dataframe"],
+)
+def test_draw_time_series_bar_chart(time_series_dataframe, time_interval):
+    plot = draw_time_series_bar_chart(
+        time_series_dataframe,
         x_axis="time",
         y_axis="category",
-        stack_column="category",
+        category="category",
         agg_function="count",
+        time_interval=time_interval,
         groupby_style_kws={"A": {"marker_color": "red"}, "B": {"marker_color": "blue"}},
         style_kws={"xperiodalignment": "middle"},
-        layout_kws={"xaxis_dtick": 86400000},
     )
 
     assert isinstance(plot, str)
+    open(f"test_bins_{time_interval}.html", "w").write(plot)
 
 
 def test_draw_pie_chart(pie_dataframe):

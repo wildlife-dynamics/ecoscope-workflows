@@ -62,20 +62,24 @@ def draw_ecoplot(
 
 
 @distributed
-def draw_stacked_bar_chart(
+def draw_time_series_bar_chart(
     dataframe: DataFrame[JsonSerializableDataFrameModel],
     x_axis: Annotated[
-        str, Field(description="The dataframe column to plot in the x axis.")
+        str, Field(description="The dataframe column to plot in the x/time axis.")
     ],
     y_axis: Annotated[
         str, Field(description="The dataframe column to plot in the y axis.")
     ],
-    stack_column: Annotated[
+    category: Annotated[
         str, Field(description="The dataframe column to stack in the y axis.")
     ],
     agg_function: Annotated[
         Literal["count", "mean", "sum", "min", "max"],
         Field(description="The aggregate function to apply to the group."),
+    ],
+    time_interval: Annotated[
+        Literal["year", "month", "week", "day", "hour"] | None,
+        Field(description="Sets the time interval of the x axis."),
     ],
     groupby_style_kws: Annotated[
         dict | None,
@@ -95,7 +99,7 @@ def draw_stacked_bar_chart(
     ] = None,
 ) -> Annotated[str, Field()]:
     """
-    Generates a stacked bar chart from the provided params
+    Generates a stacked time series bar chart from the provided params
 
     Args:
     dataframe (pd.DataFrame): The input dataframe.
@@ -103,6 +107,7 @@ def draw_stacked_bar_chart(
     y_axis (str): The dataframe column to plot in the y axis.
     stack_column (str): The dataframe column to stack in the y axis.
     agg_function (str): The aggregate function to apply to the group.
+    agg_function (str): Sets the time interval of the x axis.
     groupby_style_kws (dict): Style arguments passed to plotly.graph_objects.Bar and applied to individual groups.
     style_kws (dict): Style arguments passed to plotly.graph_objects.Bar and applied to all groups.
     layout_kws (dict): Additional kwargs passed to plotly.go.Figure(layout).
@@ -110,13 +115,43 @@ def draw_stacked_bar_chart(
     Returns:
     The generated chart html as a string
     """
+    import datetime
     from ecoscope.plotting import stacked_bar_chart, EcoPlotData
 
-    grouped = dataframe.groupby([x_axis, stack_column])
+    layout_kws = layout_kws if layout_kws else {}
+
+    match time_interval:
+        case "year":
+            dataframe["truncated_time"] = dataframe[x_axis].apply(
+                lambda x: datetime.datetime(x.year, 1, 1)
+            )
+            layout_kws["xaxis_dtick"] = "M12"
+        case "month":
+            dataframe["truncated_time"] = dataframe[x_axis].apply(
+                lambda x: datetime.datetime(x.year, x.month, 1)
+            )
+            layout_kws["xaxis_dtick"] = "M1"
+        case "week":
+            dataframe["truncated_time"] = dataframe[x_axis].apply(
+                lambda x: datetime.datetime(x.year, x.month, x.day)
+            )
+            layout_kws["xaxis_dtick"] = 604800000
+        case "day":
+            dataframe["truncated_time"] = dataframe[x_axis].apply(
+                lambda x: datetime.datetime(x.year, x.month, x.day)
+            )
+            layout_kws["xaxis_dtick"] = 86400000
+        case "hour":
+            dataframe["truncated_time"] = dataframe[x_axis].apply(
+                lambda x: datetime.datetime(x.year, x.month, x.day, x.hour)
+            )
+            layout_kws["xaxis_dtick"] = 3600000
+
+    grouped = dataframe.groupby(["truncated_time", category])
 
     data = EcoPlotData(
         grouped=grouped,
-        x_col=x_axis,
+        x_col="truncated_time",
         y_col=y_axis,
         groupby_style=groupby_style_kws,
         **(style_kws or {}),
@@ -125,7 +160,7 @@ def draw_stacked_bar_chart(
     plot = stacked_bar_chart(
         data=data,
         agg_function=agg_function,
-        stack_column=stack_column,
+        stack_column=category,
         layout_kwargs=layout_kws,
     )
 
