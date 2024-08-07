@@ -401,13 +401,6 @@ class DagCompiler(BaseModel):
                 for t in self.spec.workflow
             }
         ).model_dump()
-        # schema: dict[str, Any] = {}
-        # schema["title"] = "Ecoscope Workflow Configurations Form"
-        # schema["properties"] = {
-        #     t.name: t.known_task.parameters_jsonschema(omit_args=self._omit_args)
-        #     for t in self.spec.workflow
-        # }
-        # return schema
 
     def get_params_fillable_yaml(self) -> str:
         yaml_str = ""
