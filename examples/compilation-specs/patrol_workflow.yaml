@@ -15,23 +15,12 @@ workflow:
     with:
       relocations: ${{ workflow.patrol_reloc.return }}
 
-  # patrol trajectories ecomap
-  - name: Draw Ecomap from Trajectories
-    id: patrol_traj_ecomap
-    task: draw_ecomap
+  # patrol trajectories map layers
+  - name: Create map layer from Trajectories
+    id: patrol_traj_map_layer
+    task: create_map_layer
     with:
       geodataframe: ${{ workflow.patrol_traj.return }}
-  - name: Persist Patrol Trajectories Ecomap as Text
-    id: patrol_traj_ecomap_html_url
-    task: persist_text
-    with:
-      text: ${{ workflow.patrol_traj_ecomap.return }}
-      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
-  - name: Create Map Widget for Patrols Trajectories
-    id: patrol_traj_map_widget
-    task: create_map_widget_single_view
-    with:
-      data: ${{ workflow.patrol_traj_ecomap_html_url.return }}
 
   # patrol events
   - name: Get Patrol Events from EarthRanger
@@ -42,22 +31,69 @@ workflow:
     task: apply_reloc_coord_filter
     with:
       df: ${{ workflow.patrol_events.return }}
-  - name: Draw Ecomap for Patrols Events
-    id: patrol_events_ecomap
-    task: draw_ecomap
+
+  # patrol events map layers
+  - name: Create map layer from Patrols Events
+    id: patrol_events_map_layer
+    task: create_map_layer
     with:
       geodataframe: ${{ workflow.filter_patrol_events.return }}
+
+  # Combined trajectories + patrol events EcoMap
+  - name: Draw Ecomap for Trajectories and Patrol Events
+    id: traj_patrol_events_ecomap
+    task: draw_ecomap
+    with:
+      geo_layers:
+        - ${{ workflow.patrol_traj_map_layer.return }}
+        - ${{ workflow.patrol_events_map_layer.return }}
   - name: Persist Patrols Ecomap as Text
-    id: patrol_events_ecomap_html_url
+    id: traj_pe_ecomap_html_url
     task: persist_text
     with:
-      text: ${{ workflow.patrol_events_ecomap.return }}
+      text: ${{ workflow.traj_patrol_events_ecomap.return }}
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
   - name: Create Map Widget for Patrol Events
-    id: patrol_events_map_widget
+    id: traj_patrol_events_map_widget
     task: create_map_widget_single_view
     with:
-      data: ${{ workflow.patrol_events_ecomap_html_url.return }}
+      data: ${{ workflow.traj_pe_ecomap_html_url.return }}
+
+  #patrol events bar chart
+  - name: Draw Time Series Bar Chart for Patrols Events
+    id: patrol_events_bar_chart
+    task: draw_time_series_bar_chart
+    with:
+      dataframe: ${{ workflow.filter_patrol_events.return }}
+  - name: Persist Patrols Bar Chart as Text
+    id: patrol_events_bar_chart_html_url
+    task: persist_text
+    with:
+      text: ${{ workflow.patrol_events_bar_chart.return }}
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+  - name: Create Plot Widget for Patrol Events
+    id: patrol_events_bar_chart_widget
+    task: create_plot_widget_single_view
+    with:
+      data: ${{ workflow.patrol_events_bar_chart_html_url.return }}
+
+  #patrol events pie chart
+  - name: Draw Pie Chart for Patrols Events
+    id: patrol_events_pie_chart
+    task: draw_pie_chart
+    with:
+      dataframe: ${{ workflow.filter_patrol_events.return }}
+  - name: Persist Patrols Pie Chart as Text
+    id: patrol_events_pie_chart_html_url
+    task: persist_text
+    with:
+      text: ${{ workflow.patrol_events_pie_chart.return }}
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+  - name: Create Plot Widget for Patrol Events
+    id: patrol_events_pie_chart_widget
+    task: create_plot_widget_single_view
+    with:
+      data: ${{ workflow.patrol_events_pie_chart_html_url.return }}
 
   # time density
   - name: Calculate Time Density from Trajectory
@@ -65,11 +101,17 @@ workflow:
     task: calculate_time_density
     with:
       trajectory_gdf: ${{ workflow.patrol_traj.return }}
+  - name: Create map layer from Time Density
+    id: td_map_layer
+    task: create_map_layer
+    with:
+      geodataframe: ${{ workflow.td.return }}
   - name: Draw Ecomap from Time Density
     id: td_ecomap
     task: draw_ecomap
     with:
-      geodataframe: ${{ workflow.td.return }}
+      geo_layers:
+        - ${{ workflow.td_map_layer.return }}
   - name: Persist Ecomap as Text
     id: td_ecomap_html_url
     task: persist_text
@@ -88,6 +130,7 @@ workflow:
     task: gather_dashboard
     with:
       widgets:
-        - ${{ workflow.patrol_traj_map_widget.return }}
-        - ${{ workflow.patrol_events_map_widget.return }}
+        - ${{ workflow.traj_patrol_events_map_widget.return }}
         - ${{ workflow.td_map_widget.return }}
+        - ${{ workflow.patrol_events_bar_chart_widget.return }}
+        - ${{ workflow.patrol_events_pie_chart_widget.return }}

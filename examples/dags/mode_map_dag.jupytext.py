@@ -9,6 +9,7 @@
 
 import os
 from ecoscope_workflows.tasks.io import get_subjectgroup_observations
+from ecoscope_workflows.tasks.results import create_map_layer
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 
@@ -76,14 +77,39 @@ obs_c = get_subjectgroup_observations(
 )
 
 # %% [markdown]
-# ## Creat EcoMap For Each Group
+# ## Create Map Layer For Each Group
+
+# %%
+# parameters
+
+map_layers_params = dict(
+    data_type=...,
+    style_kws=...,
+)
+
+# %%
+# call the task
+
+map_layers_mapped_iterable = map(
+    lambda kw: create_map_layer.replace(validate=True)(**kw),
+    [
+        {
+            "geodataframe": i,
+        }
+        | map_layers_params
+        for i in [obs_a, obs_b, obs_c]
+    ],
+)
+map_layers = list(map_layers_mapped_iterable)
+
+
+# %% [markdown]
+# ## Create EcoMap For Each Group
 
 # %%
 # parameters
 
 ecomaps_params = dict(
-    data_type=...,
-    style_kws=...,
     tile_layer=...,
     static=...,
     title=...,
@@ -99,10 +125,10 @@ ecomaps_mapped_iterable = map(
     lambda kw: draw_ecomap.replace(validate=True)(**kw),
     [
         {
-            "geodataframe": i,
+            "geo_layers": i,
         }
         | ecomaps_params
-        for i in [obs_a, obs_b, obs_c]
+        for i in [map_layers]
     ],
 )
 ecomaps = list(ecomaps_mapped_iterable)

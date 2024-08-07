@@ -9,15 +9,22 @@ workflow:
   - name: Get Observations C
     id: obs_c
     task: get_subjectgroup_observations
-  - name: Creat EcoMap For Each Group
-    id: ecomaps
-    task: draw_ecomap
+  - name: Create Map Layer For Each Group
+    id: map_layers
+    task: create_map_layer
     mode: map
     iter:
       geodataframe:
         - ${{ workflow.obs_a.return }}
         - ${{ workflow.obs_b.return }}
         - ${{ workflow.obs_c.return }}
+  - name: Create EcoMap For Each Group
+    id: ecomaps
+    task: draw_ecomap
+    mode: map
+    iter:
+      geo_layers:
+        - ${{ workflow.map_layers.return }}
   - name: Persist Ecomaps as Text
     id: td_ecomap_html_url
     task: persist_text

@@ -5,11 +5,15 @@ import yaml
 from ecoscope_workflows.tasks.io import get_patrol_observations
 from ecoscope_workflows.tasks.preprocessing import process_relocations
 from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
+from ecoscope_workflows.tasks.results import create_map_layer
+from ecoscope_workflows.tasks.io import get_patrol_events
+from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
-from ecoscope_workflows.tasks.io import get_patrol_events
-from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
+from ecoscope_workflows.tasks.results import draw_time_series_bar_chart
+from ecoscope_workflows.tasks.results import create_plot_widget_single_view
+from ecoscope_workflows.tasks.results import draw_pie_chart
 from ecoscope_workflows.tasks.analysis import calculate_time_density
 from ecoscope_workflows.tasks.results import gather_dashboard
 
@@ -40,20 +44,9 @@ if __name__ == "__main__":
         **params["patrol_traj"],
     )
 
-    patrol_traj_ecomap = draw_ecomap.replace(validate=True)(
+    patrol_traj_map_layer = create_map_layer.replace(validate=True)(
         geodataframe=patrol_traj,
-        **params["patrol_traj_ecomap"],
-    )
-
-    patrol_traj_ecomap_html_url = persist_text.replace(validate=True)(
-        text=patrol_traj_ecomap,
-        root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-        **params["patrol_traj_ecomap_html_url"],
-    )
-
-    patrol_traj_map_widget = create_map_widget_single_view.replace(validate=True)(
-        data=patrol_traj_ecomap_html_url,
-        **params["patrol_traj_map_widget"],
+        **params["patrol_traj_map_layer"],
     )
 
     patrol_events = get_patrol_events.replace(validate=True)(
@@ -65,20 +58,63 @@ if __name__ == "__main__":
         **params["filter_patrol_events"],
     )
 
-    patrol_events_ecomap = draw_ecomap.replace(validate=True)(
+    patrol_events_map_layer = create_map_layer.replace(validate=True)(
         geodataframe=filter_patrol_events,
-        **params["patrol_events_ecomap"],
+        **params["patrol_events_map_layer"],
     )
 
-    patrol_events_ecomap_html_url = persist_text.replace(validate=True)(
-        text=patrol_events_ecomap,
+    traj_patrol_events_ecomap = draw_ecomap.replace(validate=True)(
+        geo_layers=[patrol_traj_map_layer, patrol_events_map_layer],
+        **params["traj_patrol_events_ecomap"],
+    )
+
+    traj_pe_ecomap_html_url = persist_text.replace(validate=True)(
+        text=traj_patrol_events_ecomap,
         root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-        **params["patrol_events_ecomap_html_url"],
+        **params["traj_pe_ecomap_html_url"],
     )
 
-    patrol_events_map_widget = create_map_widget_single_view.replace(validate=True)(
-        data=patrol_events_ecomap_html_url,
-        **params["patrol_events_map_widget"],
+    traj_patrol_events_map_widget = create_map_widget_single_view.replace(
+        validate=True
+    )(
+        data=traj_pe_ecomap_html_url,
+        **params["traj_patrol_events_map_widget"],
+    )
+
+    patrol_events_bar_chart = draw_time_series_bar_chart.replace(validate=True)(
+        dataframe=filter_patrol_events,
+        **params["patrol_events_bar_chart"],
+    )
+
+    patrol_events_bar_chart_html_url = persist_text.replace(validate=True)(
+        text=patrol_events_bar_chart,
+        root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+        **params["patrol_events_bar_chart_html_url"],
+    )
+
+    patrol_events_bar_chart_widget = create_plot_widget_single_view.replace(
+        validate=True
+    )(
+        data=patrol_events_bar_chart_html_url,
+        **params["patrol_events_bar_chart_widget"],
+    )
+
+    patrol_events_pie_chart = draw_pie_chart.replace(validate=True)(
+        dataframe=filter_patrol_events,
+        **params["patrol_events_pie_chart"],
+    )
+
+    patrol_events_pie_chart_html_url = persist_text.replace(validate=True)(
+        text=patrol_events_pie_chart,
+        root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+        **params["patrol_events_pie_chart_html_url"],
+    )
+
+    patrol_events_pie_chart_widget = create_plot_widget_single_view.replace(
+        validate=True
+    )(
+        data=patrol_events_pie_chart_html_url,
+        **params["patrol_events_pie_chart_widget"],
     )
 
     td = calculate_time_density.replace(validate=True)(
@@ -86,8 +122,13 @@ if __name__ == "__main__":
         **params["td"],
     )
 
-    td_ecomap = draw_ecomap.replace(validate=True)(
+    td_map_layer = create_map_layer.replace(validate=True)(
         geodataframe=td,
+        **params["td_map_layer"],
+    )
+
+    td_ecomap = draw_ecomap.replace(validate=True)(
+        geo_layers=[td_map_layer],
         **params["td_ecomap"],
     )
 
@@ -103,7 +144,12 @@ if __name__ == "__main__":
     )
 
     patrol_dashboard = gather_dashboard.replace(validate=True)(
-        widgets=[patrol_traj_map_widget, patrol_events_map_widget, td_map_widget],
+        widgets=[
+            traj_patrol_events_map_widget,
+            td_map_widget,
+            patrol_events_bar_chart_widget,
+            patrol_events_pie_chart_widget,
+        ],
         **params["patrol_dashboard"],
     )
 
