@@ -1,0 +1,50 @@
+id: mapvalues_example
+workflow:
+  # ----------------------------------------------------------------------
+  # Mapping over a groups split from a single data source, which are keyed
+  # ----------------------------------------------------------------------
+  # Step 1 - Fetching a single data source
+  - name: Get Observations
+    id: obs
+    task: get_subjectgroup_observations
+  # Step 2 - Setting the groupers
+  - name: Set Groupers
+    id: groupers
+    task: set_groupers
+  # Step 3 - Splitting the data source into groups
+  - name: Split Observations
+    id: split_obs
+    task: split_groups
+    with:
+      df: ${{ workflow.obs.return }}
+      groupers: ${{ workflow.groupers.return }}
+  # Step 4 - Mapping over the groups
+  - name: Create EcoMap For Each Group
+    id: ecomaps
+    task: draw_ecomap
+    mode: mapvalues
+    iter:
+      geodataframe: ${{ workflow.split_obs.return }}  # or ...return[*][1]
+  # Step 5 - Persisting the EcoMaps
+  - name: Persist EcoMaps
+    id: ecomaps_persist
+    task: persist_text
+    mode: mapvalues
+    iter:
+      text: ${{ workflow.ecomaps.return }}  # or ...return[*][1]
+    with:
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+  # Step 6 - Creating Widgets for Each EcoMap
+  # This is actuall a _map_ (not mapvalues) because the key is passed into
+  # the map widget creation directly, not carried along outside as a sidecar
+  - name: Create EcoMap Widgets
+    id: ecomap_widgets
+    task: create_map_widget_single_view
+    mode: map
+    # 'workflow.ecomaps_persist.return' is an iterable of 2-tuples
+    # Each tuple is unpacked such that:
+    # - 'view' receives the first element
+    # - 'data' receives the second element
+    iter:
+      view: ${{ workflow.ecomaps_persist.return[0] }}
+      data: ${{ workflow.ecomaps_persist.return[1] }}

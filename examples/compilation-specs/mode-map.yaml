@@ -1,5 +1,9 @@
 id: map_example
 workflow:
+  # ------------------------------------------------------
+  # Mapping over a manually defined list, which is unkeyed
+  # ------------------------------------------------------
+  # Step 1 - Fetching three independent data sources
   - name: Get Observations A
     id: obs_a
     task: get_subjectgroup_observations
@@ -9,6 +13,7 @@ workflow:
   - name: Get Observations C
     id: obs_c
     task: get_subjectgroup_observations
+  # Step 2 - Mapping over the three data sources
   - name: Creat EcoMap For Each Group
     id: ecomaps
     task: draw_ecomap
@@ -18,6 +23,7 @@ workflow:
         - ${{ workflow.obs_a.return }}
         - ${{ workflow.obs_b.return }}
         - ${{ workflow.obs_c.return }}
+  # Step 3 - Chained map over the iterable returned by the previous step
   - name: Persist Ecomaps as Text
     id: td_ecomap_html_url
     task: persist_text
