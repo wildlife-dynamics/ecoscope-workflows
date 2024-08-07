@@ -224,7 +224,6 @@ class TaskInstance(_ForbidExtra):
 
     @model_validator(mode="after")
     def check_does_not_depend_on_self(self) -> "Spec":
-        # TODO: check `call`/`map`/`mapvalues` args as well
         for arg, dep in self.partial.items():
             for d in dep:
                 if isinstance(d, TaskIdVariable) and d.value == self.id:

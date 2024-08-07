@@ -171,7 +171,7 @@ def test_partial_args_must_be_valid_id_of_another_task(
     if valid_id_of_another_task:
         spec = Spec(**yaml.safe_load(s))
         assert spec.workflow[1].partial == {
-            "observations": TaskIdVariable(value="obs", suffix="return")
+            "observations": [TaskIdVariable(value="obs", suffix="return")]
         }
     else:
         with pytest.raises(
