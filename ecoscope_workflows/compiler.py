@@ -204,17 +204,40 @@ class TaskInstance(_ForbidExtra):
     partial: ArgDependencies = Field(
         default_factory=dict,
         description="""\
-        Keyword arguments to be passed to the task. This must be a dictionary where the keys
-        are the names of the arguments on the known task that will receive the values, and the
-        values are the values to be passed. The values can be variable references or lists of
-        variable references. The variable reference(s) may be in the form
-        `${{ workflow.<task_id>.return }}` for task return values, or `${{ env.<ENV_VAR_NAME> }}`
-        for environment variables. In mode `map` these keyword arguments will be passed to each
-        invocation of the task.
+        Static keyword arguments to be passed to every invocation of the the task. This is a
+        dict with keys which are the names of the arguments on the known task, and values which
+        are the values to be passed. The values can be variable references or lists of variable
+        references. The variable reference(s) may be in the form `${{ workflow.<task_id>.return }}`
+        for task return values, or `${{ env.<ENV_VAR_NAME> }}` for environment variables.
+
+        For more details, see `Task.partial` in the `decorators` module.
         """,
     )
-    map: MapOperation = MapOperation()
-    mapvalues: MapValuesOperation = MapValuesOperation()
+    map: MapOperation = Field(
+        default_factory=MapOperation,
+        description="""\
+        A `map` operation to apply the task to an iterable of values. The `argnames` must be a
+        single string, or a list of strings, which correspond to name(s) of argument(s) in the
+        task function signature. The `argvalues` must be a variable reference of form
+        `${{ workflow.<task_id>.return }}` (where the task id is the id of another task in the
+        workflow with an iterable return), or a list of such references (where each reference is
+        non-iterable, such that the combination of those references is a flat iterable).
+
+        For more details, see `Task.map` in the `decorators` module.
+        """,
+    )
+    mapvalues: MapValuesOperation = Field(
+        default_factory=MapValuesOperation,
+        description="""\
+        A `mapvalues` operation to apply the task to an iterable of key-value pairs. The `argnames`
+        must be a single string, or a single-element list of strings, which correspond to the name
+        of an argument on the task function signature. The `argvalues` must be a list of tuples where
+        the first element of each tuple is the key to passthrough, and the second element is the value
+        to transform.
+
+        For more details, see `Task.mapvalues` in the `decorators` module.
+        """,
+    )
 
     @property
     def flattened_partial_values(self) -> list[Variable]:
