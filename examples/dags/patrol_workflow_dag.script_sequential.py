@@ -11,7 +11,7 @@ from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
-from ecoscope_workflows.tasks.results import draw_stacked_bar_chart
+from ecoscope_workflows.tasks.results import draw_time_series_bar_chart
 from ecoscope_workflows.tasks.results import create_plot_widget_single_view
 from ecoscope_workflows.tasks.results import draw_pie_chart
 from ecoscope_workflows.tasks.analysis import calculate_time_density
@@ -81,7 +81,7 @@ if __name__ == "__main__":
         **params["traj_patrol_events_map_widget"],
     )
 
-    patrol_events_bar_chart = draw_stacked_bar_chart.replace(validate=True)(
+    patrol_events_bar_chart = draw_time_series_bar_chart.replace(validate=True)(
         dataframe=filter_patrol_events,
         **params["patrol_events_bar_chart"],
     )

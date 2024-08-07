@@ -413,15 +413,15 @@
             "x_axis": {
                 "title": "X Axis",
                 "type": "string",
-                "description": "The dataframe column to plot in the x axis."
+                "description": "The dataframe column to plot in the x/time axis."
             },
             "y_axis": {
                 "title": "Y Axis",
                 "type": "string",
                 "description": "The dataframe column to plot in the y axis."
             },
-            "stack_column": {
-                "title": "Stack Column",
+            "category": {
+                "title": "Category",
                 "type": "string",
                 "description": "The dataframe column to stack in the y axis."
             },
@@ -436,6 +436,18 @@
                 "title": "Agg Function",
                 "type": "string",
                 "description": "The aggregate function to apply to the group."
+            },
+            "time_interval": {
+                "enum": [
+                    "year",
+                    "month",
+                    "week",
+                    "day",
+                    "hour"
+                ],
+                "title": "Time Interval",
+                "type": "string",
+                "description": "Sets the time interval of the x axis."
             },
             "groupby_style_kws": {
                 "anyOf": [
@@ -480,8 +492,9 @@
         "required": [
             "x_axis",
             "y_axis",
-            "stack_column",
-            "agg_function"
+            "category",
+            "agg_function",
+            "time_interval"
         ],
         "type": "object"
     },

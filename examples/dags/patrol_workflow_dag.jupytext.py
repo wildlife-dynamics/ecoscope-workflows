@@ -17,7 +17,7 @@ from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
-from ecoscope_workflows.tasks.results import draw_stacked_bar_chart
+from ecoscope_workflows.tasks.results import draw_time_series_bar_chart
 from ecoscope_workflows.tasks.results import create_plot_widget_single_view
 from ecoscope_workflows.tasks.results import draw_pie_chart
 from ecoscope_workflows.tasks.analysis import calculate_time_density
@@ -230,7 +230,7 @@ traj_patrol_events_map_widget = create_map_widget_single_view(
 )
 
 # %% [markdown]
-# ## Draw Stacked Bar Chart for Patrols Events
+# ## Draw Time Series Bar Chart for Patrols Events
 
 # %%
 # parameters
@@ -238,8 +238,9 @@ traj_patrol_events_map_widget = create_map_widget_single_view(
 patrol_events_bar_chart_params = dict(
     x_axis=...,
     y_axis=...,
-    stack_column=...,
+    category=...,
     agg_function=...,
+    time_interval=...,
     groupby_style_kws=...,
     style_kws=...,
     layout_kws=...,
@@ -248,7 +249,7 @@ patrol_events_bar_chart_params = dict(
 # %%
 # call the task
 
-patrol_events_bar_chart = draw_stacked_bar_chart(
+patrol_events_bar_chart = draw_time_series_bar_chart(
     dataframe=filter_patrol_events,
     **patrol_events_bar_chart_params,
 )

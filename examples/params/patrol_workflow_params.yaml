@@ -83,12 +83,13 @@ traj_pe_ecomap_html_url:
 traj_patrol_events_map_widget:
   title: "Trajectories & Patrol Events Map"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
 
-# Parameters for 'Draw Stacked Bar Chart for Patrols Events' using task `draw_stacked_bar_chart`.
+# Parameters for 'Draw Time Series Bar Chart for Patrols Events' using task `draw_time_series_bar_chart`.
 patrol_events_bar_chart:
   x_axis: "updated_at"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the x axis.'))
   y_axis: "event_type"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the y axis.'))
-  stack_column: "event_type"   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to stack in the y axis.'))
+  category: "event_type"   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to stack in the y axis.'))
   agg_function: "count"  # (typing.Literal['count', 'mean', 'sum', 'min', 'max'], FieldInfo(annotation=NoneType, required=True, description='The aggregate function to apply to the group.'))
+  time_interval: "day"  # (typing.Literal['year', 'month', 'week', 'day', 'hour'], FieldInfo(annotation=NoneType, required=True, description='Sets the time interval of the x axis.'))
   groupby_style_kws: {
        "wildlife_sighting_rep": {"marker_color": "#3e35a3"},
        "radio_rep": {"marker_color": "#b62879"},

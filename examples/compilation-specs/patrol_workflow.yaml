@@ -60,9 +60,9 @@ workflow:
       data: ${{ workflow.traj_pe_ecomap_html_url.return }}
 
   #patrol events bar chart
-  - name: Draw Stacked Bar Chart for Patrols Events
+  - name: Draw Time Series Bar Chart for Patrols Events
     id: patrol_events_bar_chart
-    task: draw_stacked_bar_chart
+    task: draw_time_series_bar_chart
     with:
       dataframe: ${{ workflow.filter_patrol_events.return }}
   - name: Persist Patrols Bar Chart as Text

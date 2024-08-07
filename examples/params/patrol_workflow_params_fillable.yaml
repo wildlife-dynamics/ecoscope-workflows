@@ -65,12 +65,13 @@ traj_patrol_events_map_widget:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
   view:   # (tuple[tuple[str, typing.Literal['='], str], ...] | None, FieldInfo(annotation=NoneType, required=True, description='If grouped, the view of the widget'))
 
-# Parameters for 'Draw Stacked Bar Chart for Patrols Events' using task `draw_stacked_bar_chart`.
+# Parameters for 'Draw Time Series Bar Chart for Patrols Events' using task `draw_time_series_bar_chart`.
 patrol_events_bar_chart:
-  x_axis:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the x axis.'))
+  x_axis:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the x/time axis.'))
   y_axis:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the y axis.'))
-  stack_column:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to stack in the y axis.'))
+  category:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to stack in the y axis.'))
   agg_function:   # (typing.Literal['count', 'mean', 'sum', 'min', 'max'], FieldInfo(annotation=NoneType, required=True, description='The aggregate function to apply to the group.'))
+  time_interval:   # (typing.Literal['year', 'month', 'week', 'day', 'hour'], FieldInfo(annotation=NoneType, required=True, description='Sets the time interval of the x axis.'))
   groupby_style_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Style arguments passed to plotly.graph_objects.Bar and applied to individual groups.'))
   style_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Style arguments passed to plotly.graph_objects.Bar and applied to all groups.'))
   layout_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Style arguments passed to plotly.graph_objects.Figure.'))
