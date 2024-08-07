@@ -290,10 +290,10 @@ def test_only_oneof_map_or_mapvalues():
             task: get_subjectgroup_observations
             map:
               argnames: [a, b]
-              argvalues: [[1, 2], [3, 4]]
+              argvalues: ${{ workflow.obs.return }}  # this is nonsense, but it's not what's being tested
             mapvalues:
               argnames: c
-              argvalues: [("h", 1), ("i", 2)]
+              argvalues: ${{ workflow.obs.return }}  # this is nonsense, but it's not what's being tested
         """
     )
     with pytest.raises(
