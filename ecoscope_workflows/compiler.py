@@ -150,6 +150,14 @@ class _ParallelOperation(_ForbidExtra):
     argnames: ParallelOpArgNames = Field(default_factory=list)
     argvalues: Vars = Field(default_factory=list)
 
+    @model_validator(mode="after")
+    def both_fields_required_if_either_given(self) -> "_ParallelOperation":
+        if bool(self.argnames) != bool(self.argvalues):
+            raise ValueError(
+                "Both `argnames` and `argvalues` must be provided if either is given."
+            )
+        return self
+
     def __bool__(self):
         """Return False if both `argnames` and `argvalues` are empty. Otherwise, return True.
         Let's us use operation models as their own defaults in the `TaskInstance` model, while

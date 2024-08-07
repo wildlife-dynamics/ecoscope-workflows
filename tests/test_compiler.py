@@ -540,3 +540,26 @@ def test_generate_dag_smoke():
     dc = DagCompiler(spec=spec)
     dag = dc.generate_dag()
     assert isinstance(dag, str)
+
+
+@pytest.mark.parametrize("parallel_op_name", ["map", "mapvalues"])
+@pytest.mark.parametrize("field_name", ["argnames", "argvalues"])
+def test_map_both_fields_required_if_either_given(parallel_op_name, field_name):
+    s = dedent(
+        f"""\
+        id: calculate_time_density
+        workflow:
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            {parallel_op_name}:
+              {field_name}: a
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape(
+            "Both `argnames` and `argvalues` must be provided if either is given."
+        ),
+    ):
+        _ = Spec(**yaml.safe_load(s))
