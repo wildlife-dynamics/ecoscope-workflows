@@ -3,7 +3,7 @@ import functools
 import keyword
 import pathlib
 import subprocess
-from typing import Annotated, Callable, Literal, TypeAlias, TypeVar
+from typing import Annotated, Any, Callable, Literal, TypeAlias, TypeVar
 
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
@@ -18,6 +18,7 @@ from pydantic import (
 )
 from pydantic.functional_validators import AfterValidator, BeforeValidator
 
+from ecoscope_workflows.jsonschema import ReactJSONSchemaFormConfiguration
 from ecoscope_workflows.registry import KnownTask, known_tasks
 
 T = TypeVar("T")
@@ -452,13 +453,15 @@ class DagCompiler(BaseModel):
             for t in self.spec.workflow
         }
 
-    def get_params_jsonschema(self) -> dict[str, dict]:
-        return {
-            t.id: t.known_task.parameters_jsonschema(
-                omit_args=self.per_taskinstance_omit_args.get(t.id, []),
-            )
-            for t in self.spec.workflow
-        }
+    def get_params_jsonschema(self) -> dict[str, Any]:
+        return ReactJSONSchemaFormConfiguration(
+            properties={
+                t.name: t.known_task.parameters_jsonschema(
+                    omit_args=self.per_taskinstance_omit_args.get(t.id, []),
+                )
+                for t in self.spec.workflow
+            }
+        ).model_dump()
 
     def get_params_fillable_yaml(self) -> str:
         yaml_str = ""
