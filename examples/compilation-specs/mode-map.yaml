@@ -18,14 +18,17 @@ workflow:
         - ${{ workflow.obs_a.return }}
         - ${{ workflow.obs_b.return }}
         - ${{ workflow.obs_c.return }}
-  - name: Create EcoMap With All Layers
+  - name: Create EcoMap For Each Group
     id: ecomaps
     task: draw_ecomap
-    partial:
-      geo_layers: ${{ workflow.map_layers.return }}
-  - name: Persist Ecomap as Text
+    map:
+      argnames: geo_layers
+      argvalues: ${{ workflow.map_layers.return }}
+  - name: Persist Ecomaps as Text
     id: td_ecomap_html_url
     task: persist_text
     partial:
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
-      text: ${{ workflow.ecomaps.return }}
+    map:
+      argnames: "text"
+      argvalues: ${{ workflow.ecomaps.return }}
