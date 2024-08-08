@@ -1,203 +1,253 @@
 {
-    "obs_a": {
-        "additionalProperties": false,
-        "properties": {
-            "client": {
-                "description": "A named EarthRanger connection.",
-                "title": "Client",
-                "type": "string"
+    "title": "Ecoscope Workflow Configurations Form",
+    "properties": {
+        "Get Observations A": {
+            "additionalProperties": false,
+            "properties": {
+                "client": {
+                    "description": "A named EarthRanger connection.",
+                    "title": "Client",
+                    "type": "string"
+                },
+                "subject_group_name": {
+                    "title": "Subject Group Name",
+                    "type": "string",
+                    "description": "Name of EarthRanger Subject"
+                },
+                "since": {
+                    "format": "date-time",
+                    "title": "Since",
+                    "type": "string",
+                    "description": "Start date"
+                },
+                "until": {
+                    "format": "date-time",
+                    "title": "Until",
+                    "type": "string",
+                    "description": "End date"
+                },
+                "include_inactive": {
+                    "default": true,
+                    "title": "Include Inactive",
+                    "type": "boolean",
+                    "description": "Whether or not to include inactive subjects"
+                }
             },
-            "subject_group_name": {
-                "title": "Subject Group Name",
-                "type": "string",
-                "description": "Name of EarthRanger Subject"
-            },
-            "include_inactive": {
-                "title": "Include Inactive",
-                "type": "boolean",
-                "description": "Whether or not to include inactive subjects"
-            },
-            "since": {
-                "format": "date-time",
-                "title": "Since",
-                "type": "string",
-                "description": "Start date"
-            },
-            "until": {
-                "format": "date-time",
-                "title": "Until",
-                "type": "string",
-                "description": "End date"
-            }
+            "required": [
+                "client",
+                "subject_group_name",
+                "since",
+                "until"
+            ],
+            "type": "object"
         },
-        "required": [
-            "client",
-            "subject_group_name",
-            "include_inactive",
-            "since",
-            "until"
-        ],
-        "type": "object"
-    },
-    "obs_b": {
-        "additionalProperties": false,
-        "properties": {
-            "client": {
-                "description": "A named EarthRanger connection.",
-                "title": "Client",
-                "type": "string"
+        "Get Observations B": {
+            "additionalProperties": false,
+            "properties": {
+                "client": {
+                    "description": "A named EarthRanger connection.",
+                    "title": "Client",
+                    "type": "string"
+                },
+                "subject_group_name": {
+                    "title": "Subject Group Name",
+                    "type": "string",
+                    "description": "Name of EarthRanger Subject"
+                },
+                "since": {
+                    "format": "date-time",
+                    "title": "Since",
+                    "type": "string",
+                    "description": "Start date"
+                },
+                "until": {
+                    "format": "date-time",
+                    "title": "Until",
+                    "type": "string",
+                    "description": "End date"
+                },
+                "include_inactive": {
+                    "default": true,
+                    "title": "Include Inactive",
+                    "type": "boolean",
+                    "description": "Whether or not to include inactive subjects"
+                }
             },
-            "subject_group_name": {
-                "title": "Subject Group Name",
-                "type": "string",
-                "description": "Name of EarthRanger Subject"
-            },
-            "include_inactive": {
-                "title": "Include Inactive",
-                "type": "boolean",
-                "description": "Whether or not to include inactive subjects"
-            },
-            "since": {
-                "format": "date-time",
-                "title": "Since",
-                "type": "string",
-                "description": "Start date"
-            },
-            "until": {
-                "format": "date-time",
-                "title": "Until",
-                "type": "string",
-                "description": "End date"
-            }
+            "required": [
+                "client",
+                "subject_group_name",
+                "since",
+                "until"
+            ],
+            "type": "object"
         },
-        "required": [
-            "client",
-            "subject_group_name",
-            "include_inactive",
-            "since",
-            "until"
-        ],
-        "type": "object"
-    },
-    "obs_c": {
-        "additionalProperties": false,
-        "properties": {
-            "client": {
-                "description": "A named EarthRanger connection.",
-                "title": "Client",
-                "type": "string"
+        "Get Observations C": {
+            "additionalProperties": false,
+            "properties": {
+                "client": {
+                    "description": "A named EarthRanger connection.",
+                    "title": "Client",
+                    "type": "string"
+                },
+                "subject_group_name": {
+                    "title": "Subject Group Name",
+                    "type": "string",
+                    "description": "Name of EarthRanger Subject"
+                },
+                "since": {
+                    "format": "date-time",
+                    "title": "Since",
+                    "type": "string",
+                    "description": "Start date"
+                },
+                "until": {
+                    "format": "date-time",
+                    "title": "Until",
+                    "type": "string",
+                    "description": "End date"
+                },
+                "include_inactive": {
+                    "default": true,
+                    "title": "Include Inactive",
+                    "type": "boolean",
+                    "description": "Whether or not to include inactive subjects"
+                }
             },
-            "subject_group_name": {
-                "title": "Subject Group Name",
-                "type": "string",
-                "description": "Name of EarthRanger Subject"
-            },
-            "include_inactive": {
-                "title": "Include Inactive",
-                "type": "boolean",
-                "description": "Whether or not to include inactive subjects"
-            },
-            "since": {
-                "format": "date-time",
-                "title": "Since",
-                "type": "string",
-                "description": "Start date"
-            },
-            "until": {
-                "format": "date-time",
-                "title": "Until",
-                "type": "string",
-                "description": "End date"
-            }
+            "required": [
+                "client",
+                "subject_group_name",
+                "since",
+                "until"
+            ],
+            "type": "object"
         },
-        "required": [
-            "client",
-            "subject_group_name",
-            "include_inactive",
-            "since",
-            "until"
-        ],
-        "type": "object"
-    },
-    "ecomaps": {
-        "additionalProperties": false,
-        "properties": {
-            "data_type": {
-                "enum": [
-                    "Scatterplot",
-                    "Path",
-                    "Polygon"
-                ],
-                "title": "Data Type",
-                "type": "string",
-                "description": "The type of visualization."
+        "Create Map Layer For Each Group": {
+            "additionalProperties": false,
+            "properties": {
+                "data_type": {
+                    "enum": [
+                        "Point",
+                        "Polyline",
+                        "Polygon"
+                    ],
+                    "title": "Data Type",
+                    "type": "string",
+                    "description": "The type of visualization."
+                },
+                "style_kws": {
+                    "title": "Style Kws",
+                    "type": "object",
+                    "description": "Style arguments for the layer."
+                }
             },
-            "style_kws": {
-                "title": "Style Kws",
-                "type": "object",
-                "description": "Style arguments for the data visualization."
-            },
-            "tile_layer": {
-                "default": "",
-                "title": "Tile Layer",
-                "type": "string",
-                "description": "A named tile layer, ie OpenStreetMap."
-            },
-            "static": {
-                "default": false,
-                "title": "Static",
-                "type": "boolean",
-                "description": "Set to true to disable map pan/zoom."
-            },
-            "title": {
-                "default": "",
-                "title": "Title",
-                "type": "string",
-                "description": "The map title."
-            },
-            "title_kws": {
-                "default": {},
-                "title": "Title Kws",
-                "type": "object",
-                "description": "Additional arguments for configuring the Title."
-            },
-            "scale_kws": {
-                "default": {},
-                "title": "Scale Kws",
-                "type": "object",
-                "description": "Additional arguments for configuring the Scale Bar."
-            },
-            "north_arrow_kws": {
-                "default": {},
-                "title": "North Arrow Kws",
-                "type": "object",
-                "description": "Additional arguments for configuring the North Arrow."
-            }
+            "required": [
+                "data_type",
+                "style_kws"
+            ],
+            "type": "object"
         },
-        "required": [
-            "data_type",
-            "style_kws"
-        ],
-        "type": "object"
-    },
-    "td_ecomap_html_url": {
-        "additionalProperties": false,
-        "properties": {
-            "filename": {
-                "anyOf": [
-                    {
-                        "type": "string"
+        "Create EcoMap For Each Group": {
+            "$defs": {
+                "LayerDefinition": {
+                    "properties": {
+                        "geodataframe": {
+                            "title": "Geodataframe",
+                            "type": "ecoscope_workflows.annotations.DataFrame"
+                        },
+                        "data_type": {
+                            "title": "Data Type",
+                            "type": "string"
+                        },
+                        "style_kws": {
+                            "title": "Style Kws",
+                            "type": "object"
+                        }
                     },
-                    {
-                        "type": "null"
-                    }
-                ],
-                "default": null,
-                "title": "Filename",
-                "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
-            }
+                    "required": [
+                        "geodataframe",
+                        "data_type",
+                        "style_kws"
+                    ],
+                    "title": "LayerDefinition",
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false,
+            "properties": {
+                "tile_layer": {
+                    "default": "",
+                    "title": "Tile Layer",
+                    "type": "string"
+                },
+                "static": {
+                    "default": false,
+                    "title": "Static",
+                    "type": "boolean"
+                },
+                "title": {
+                    "default": "",
+                    "title": "Title",
+                    "type": "string"
+                },
+                "title_kws": {
+                    "anyOf": [
+                        {
+                            "type": "object"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Title Kws"
+                },
+                "scale_kws": {
+                    "anyOf": [
+                        {
+                            "type": "object"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Scale Kws"
+                },
+                "north_arrow_kws": {
+                    "anyOf": [
+                        {
+                            "type": "object"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "North Arrow Kws"
+                }
+            },
+            "required": [],
+            "type": "object"
         },
-        "required": [],
-        "type": "object"
+        "Persist Ecomaps as Text": {
+            "additionalProperties": false,
+            "properties": {
+                "filename": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Filename",
+                    "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+                }
+            },
+            "required": [],
+            "type": "object"
+        }
     }
 }

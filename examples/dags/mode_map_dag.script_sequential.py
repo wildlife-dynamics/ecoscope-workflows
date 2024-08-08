@@ -3,6 +3,7 @@ import os
 import yaml
 
 from ecoscope_workflows.tasks.io import get_subjectgroup_observations
+from ecoscope_workflows.tasks.results import create_map_layer
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 
@@ -24,10 +25,16 @@ if __name__ == "__main__":
 
     obs_c = get_subjectgroup_observations.validate().call(**params["obs_c"])
 
+    map_layers = (
+        create_map_layer.validate()
+        .partial(**params["map_layers"])
+        .map(argnames=["geodataframe"], argvalues=[obs_a, obs_b, obs_c])
+    )
+
     ecomaps = (
         draw_ecomap.validate()
         .partial(**params["ecomaps"])
-        .map(argnames=["geodataframe"], argvalues=[obs_a, obs_b, obs_c])
+        .map(argnames=["geo_layers"], argvalues=map_layers)
     )
 
     td_ecomap_html_url = (

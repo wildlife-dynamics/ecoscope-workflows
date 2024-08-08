@@ -27,6 +27,12 @@
             },
             "status": {
                 "items": {
+                    "enum": [
+                        "active",
+                        "overdue",
+                        "done",
+                        "cancelled"
+                    ],
                     "type": "string"
                 },
                 "title": "Status",
@@ -80,47 +86,46 @@
         "additionalProperties": false,
         "properties": {
             "min_length_meters": {
+                "default": 0.1,
                 "title": "Min Length Meters",
                 "type": "number"
             },
             "max_length_meters": {
+                "default": 10000,
                 "title": "Max Length Meters",
                 "type": "number"
             },
             "max_time_secs": {
+                "default": 3600,
                 "title": "Max Time Secs",
                 "type": "number"
             },
             "min_time_secs": {
+                "default": 1,
                 "title": "Min Time Secs",
                 "type": "number"
             },
             "max_speed_kmhr": {
+                "default": 120,
                 "title": "Max Speed Kmhr",
                 "type": "number"
             },
             "min_speed_kmhr": {
+                "default": 0.0,
                 "title": "Min Speed Kmhr",
                 "type": "number"
             }
         },
-        "required": [
-            "min_length_meters",
-            "max_length_meters",
-            "max_time_secs",
-            "min_time_secs",
-            "max_speed_kmhr",
-            "min_speed_kmhr"
-        ],
+        "required": [],
         "type": "object"
     },
-    "patrol_traj_ecomap": {
+    "patrol_traj_map_layer": {
         "additionalProperties": false,
         "properties": {
             "data_type": {
                 "enum": [
-                    "Scatterplot",
-                    "Path",
+                    "Point",
+                    "Polyline",
                     "Polygon"
                 ],
                 "title": "Data Type",
@@ -130,115 +135,12 @@
             "style_kws": {
                 "title": "Style Kws",
                 "type": "object",
-                "description": "Style arguments for the data visualization."
-            },
-            "tile_layer": {
-                "default": "",
-                "title": "Tile Layer",
-                "type": "string",
-                "description": "A named tile layer, ie OpenStreetMap."
-            },
-            "static": {
-                "default": false,
-                "title": "Static",
-                "type": "boolean",
-                "description": "Set to true to disable map pan/zoom."
-            },
-            "title": {
-                "default": "",
-                "title": "Title",
-                "type": "string",
-                "description": "The map title."
-            },
-            "title_kws": {
-                "default": {},
-                "title": "Title Kws",
-                "type": "object",
-                "description": "Additional arguments for configuring the Title."
-            },
-            "scale_kws": {
-                "default": {},
-                "title": "Scale Kws",
-                "type": "object",
-                "description": "Additional arguments for configuring the Scale Bar."
-            },
-            "north_arrow_kws": {
-                "default": {},
-                "title": "North Arrow Kws",
-                "type": "object",
-                "description": "Additional arguments for configuring the North Arrow."
+                "description": "Style arguments for the layer."
             }
         },
         "required": [
             "data_type",
             "style_kws"
-        ],
-        "type": "object"
-    },
-    "patrol_traj_ecomap_html_url": {
-        "additionalProperties": false,
-        "properties": {
-            "filename": {
-                "anyOf": [
-                    {
-                        "type": "string"
-                    },
-                    {
-                        "type": "null"
-                    }
-                ],
-                "default": null,
-                "title": "Filename",
-                "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
-            }
-        },
-        "required": [],
-        "type": "object"
-    },
-    "patrol_traj_map_widget": {
-        "additionalProperties": false,
-        "properties": {
-            "title": {
-                "title": "Title",
-                "type": "string",
-                "description": "The title of the widget"
-            },
-            "view": {
-                "anyOf": [
-                    {
-                        "items": {
-                            "maxItems": 3,
-                            "minItems": 3,
-                            "prefixItems": [
-                                {
-                                    "type": "string"
-                                },
-                                {
-                                    "const": "=",
-                                    "enum": [
-                                        "="
-                                    ],
-                                    "type": "string"
-                                },
-                                {
-                                    "type": "string"
-                                }
-                            ],
-                            "type": "array"
-                        },
-                        "type": "array"
-                    },
-                    {
-                        "type": "null"
-                    }
-                ],
-                "default": null,
-                "title": "View",
-                "description": "If grouped, the view of the widget"
-            }
-        },
-        "required": [
-            "title"
         ],
         "type": "object"
     },
@@ -329,13 +231,13 @@
         "required": [],
         "type": "object"
     },
-    "patrol_events_ecomap": {
+    "patrol_events_map_layer": {
         "additionalProperties": false,
         "properties": {
             "data_type": {
                 "enum": [
-                    "Scatterplot",
-                    "Path",
+                    "Point",
+                    "Polyline",
                     "Polygon"
                 ],
                 "title": "Data Type",
@@ -345,43 +247,7 @@
             "style_kws": {
                 "title": "Style Kws",
                 "type": "object",
-                "description": "Style arguments for the data visualization."
-            },
-            "tile_layer": {
-                "default": "",
-                "title": "Tile Layer",
-                "type": "string",
-                "description": "A named tile layer, ie OpenStreetMap."
-            },
-            "static": {
-                "default": false,
-                "title": "Static",
-                "type": "boolean",
-                "description": "Set to true to disable map pan/zoom."
-            },
-            "title": {
-                "default": "",
-                "title": "Title",
-                "type": "string",
-                "description": "The map title."
-            },
-            "title_kws": {
-                "default": {},
-                "title": "Title Kws",
-                "type": "object",
-                "description": "Additional arguments for configuring the Title."
-            },
-            "scale_kws": {
-                "default": {},
-                "title": "Scale Kws",
-                "type": "object",
-                "description": "Additional arguments for configuring the Scale Bar."
-            },
-            "north_arrow_kws": {
-                "default": {},
-                "title": "North Arrow Kws",
-                "type": "object",
-                "description": "Additional arguments for configuring the North Arrow."
+                "description": "Style arguments for the layer."
             }
         },
         "required": [
@@ -390,7 +256,90 @@
         ],
         "type": "object"
     },
-    "patrol_events_ecomap_html_url": {
+    "traj_patrol_events_ecomap": {
+        "$defs": {
+            "LayerDefinition": {
+                "properties": {
+                    "geodataframe": {
+                        "title": "Geodataframe",
+                        "type": "ecoscope_workflows.annotations.DataFrame"
+                    },
+                    "data_type": {
+                        "title": "Data Type",
+                        "type": "string"
+                    },
+                    "style_kws": {
+                        "title": "Style Kws",
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "geodataframe",
+                    "data_type",
+                    "style_kws"
+                ],
+                "title": "LayerDefinition",
+                "type": "object"
+            }
+        },
+        "additionalProperties": false,
+        "properties": {
+            "tile_layer": {
+                "default": "",
+                "title": "Tile Layer",
+                "type": "string"
+            },
+            "static": {
+                "default": false,
+                "title": "Static",
+                "type": "boolean"
+            },
+            "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string"
+            },
+            "title_kws": {
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Title Kws"
+            },
+            "scale_kws": {
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Scale Kws"
+            },
+            "north_arrow_kws": {
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "North Arrow Kws"
+            }
+        },
+        "required": [],
+        "type": "object"
+    },
+    "traj_pe_ecomap_html_url": {
         "additionalProperties": false,
         "properties": {
             "filename": {
@@ -410,7 +359,285 @@
         "required": [],
         "type": "object"
     },
-    "patrol_events_map_widget": {
+    "traj_patrol_events_map_widget": {
+        "additionalProperties": false,
+        "properties": {
+            "title": {
+                "title": "Title",
+                "type": "string",
+                "description": "The title of the widget"
+            },
+            "view": {
+                "anyOf": [
+                    {
+                        "items": {
+                            "maxItems": 3,
+                            "minItems": 3,
+                            "prefixItems": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "const": "=",
+                                    "enum": [
+                                        "="
+                                    ],
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "string"
+                                }
+                            ],
+                            "type": "array"
+                        },
+                        "type": "array"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "View",
+                "description": "If grouped, the view of the widget"
+            }
+        },
+        "required": [
+            "title"
+        ],
+        "type": "object"
+    },
+    "patrol_events_bar_chart": {
+        "additionalProperties": false,
+        "properties": {
+            "x_axis": {
+                "title": "X Axis",
+                "type": "string",
+                "description": "The dataframe column to plot in the x/time axis."
+            },
+            "y_axis": {
+                "title": "Y Axis",
+                "type": "string",
+                "description": "The dataframe column to plot in the y axis."
+            },
+            "category": {
+                "title": "Category",
+                "type": "string",
+                "description": "The dataframe column to stack in the y axis."
+            },
+            "agg_function": {
+                "enum": [
+                    "count",
+                    "mean",
+                    "sum",
+                    "min",
+                    "max"
+                ],
+                "title": "Agg Function",
+                "type": "string",
+                "description": "The aggregate function to apply to the group."
+            },
+            "time_interval": {
+                "enum": [
+                    "year",
+                    "month",
+                    "week",
+                    "day",
+                    "hour"
+                ],
+                "title": "Time Interval",
+                "type": "string",
+                "description": "Sets the time interval of the x axis."
+            },
+            "groupby_style_kws": {
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Groupby Style Kws",
+                "description": "Style arguments passed to plotly.graph_objects.Bar and applied to individual groups."
+            },
+            "style_kws": {
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Style Kws",
+                "description": "Style arguments passed to plotly.graph_objects.Bar and applied to all groups."
+            },
+            "layout_kws": {
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Layout Kws",
+                "description": "Style arguments passed to plotly.graph_objects.Figure."
+            }
+        },
+        "required": [
+            "x_axis",
+            "y_axis",
+            "category",
+            "agg_function",
+            "time_interval"
+        ],
+        "type": "object"
+    },
+    "patrol_events_bar_chart_html_url": {
+        "additionalProperties": false,
+        "properties": {
+            "filename": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Filename",
+                "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+            }
+        },
+        "required": [],
+        "type": "object"
+    },
+    "patrol_events_bar_chart_widget": {
+        "additionalProperties": false,
+        "properties": {
+            "title": {
+                "title": "Title",
+                "type": "string",
+                "description": "The title of the widget"
+            },
+            "view": {
+                "anyOf": [
+                    {
+                        "items": {
+                            "maxItems": 3,
+                            "minItems": 3,
+                            "prefixItems": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "const": "=",
+                                    "enum": [
+                                        "="
+                                    ],
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "string"
+                                }
+                            ],
+                            "type": "array"
+                        },
+                        "type": "array"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "View",
+                "description": "If grouped, the view of the widget"
+            }
+        },
+        "required": [
+            "title"
+        ],
+        "type": "object"
+    },
+    "patrol_events_pie_chart": {
+        "additionalProperties": false,
+        "properties": {
+            "value_column": {
+                "title": "Value Column",
+                "type": "string",
+                "description": "The name of the dataframe column to pull slice values from."
+            },
+            "label_column": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Label Column",
+                "description": "The name of the dataframe column to label slices with, required if the data in value_column is numeric."
+            },
+            "style_kws": {
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Style Kws",
+                "description": "Additional style kwargs passed to go.Pie()."
+            },
+            "layout_kws": {
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Layout Kws",
+                "description": "Additional kwargs passed to plotly.go.Figure(layout)."
+            }
+        },
+        "required": [
+            "value_column"
+        ],
+        "type": "object"
+    },
+    "patrol_events_pie_chart_html_url": {
+        "additionalProperties": false,
+        "properties": {
+            "filename": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Filename",
+                "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+            }
+        },
+        "required": [],
+        "type": "object"
+    },
+    "patrol_events_pie_chart_widget": {
         "additionalProperties": false,
         "properties": {
             "title": {
@@ -510,13 +737,13 @@
         "required": [],
         "type": "object"
     },
-    "td_ecomap": {
+    "td_map_layer": {
         "additionalProperties": false,
         "properties": {
             "data_type": {
                 "enum": [
-                    "Scatterplot",
-                    "Path",
+                    "Point",
+                    "Polyline",
                     "Polygon"
                 ],
                 "title": "Data Type",
@@ -526,49 +753,96 @@
             "style_kws": {
                 "title": "Style Kws",
                 "type": "object",
-                "description": "Style arguments for the data visualization."
-            },
-            "tile_layer": {
-                "default": "",
-                "title": "Tile Layer",
-                "type": "string",
-                "description": "A named tile layer, ie OpenStreetMap."
-            },
-            "static": {
-                "default": false,
-                "title": "Static",
-                "type": "boolean",
-                "description": "Set to true to disable map pan/zoom."
-            },
-            "title": {
-                "default": "",
-                "title": "Title",
-                "type": "string",
-                "description": "The map title."
-            },
-            "title_kws": {
-                "default": {},
-                "title": "Title Kws",
-                "type": "object",
-                "description": "Additional arguments for configuring the Title."
-            },
-            "scale_kws": {
-                "default": {},
-                "title": "Scale Kws",
-                "type": "object",
-                "description": "Additional arguments for configuring the Scale Bar."
-            },
-            "north_arrow_kws": {
-                "default": {},
-                "title": "North Arrow Kws",
-                "type": "object",
-                "description": "Additional arguments for configuring the North Arrow."
+                "description": "Style arguments for the layer."
             }
         },
         "required": [
             "data_type",
             "style_kws"
         ],
+        "type": "object"
+    },
+    "td_ecomap": {
+        "$defs": {
+            "LayerDefinition": {
+                "properties": {
+                    "geodataframe": {
+                        "title": "Geodataframe",
+                        "type": "ecoscope_workflows.annotations.DataFrame"
+                    },
+                    "data_type": {
+                        "title": "Data Type",
+                        "type": "string"
+                    },
+                    "style_kws": {
+                        "title": "Style Kws",
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "geodataframe",
+                    "data_type",
+                    "style_kws"
+                ],
+                "title": "LayerDefinition",
+                "type": "object"
+            }
+        },
+        "additionalProperties": false,
+        "properties": {
+            "tile_layer": {
+                "default": "",
+                "title": "Tile Layer",
+                "type": "string"
+            },
+            "static": {
+                "default": false,
+                "title": "Static",
+                "type": "boolean"
+            },
+            "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string"
+            },
+            "title_kws": {
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Title Kws"
+            },
+            "scale_kws": {
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "Scale Kws"
+            },
+            "north_arrow_kws": {
+                "anyOf": [
+                    {
+                        "type": "object"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "default": null,
+                "title": "North Arrow Kws"
+            }
+        },
+        "required": [],
         "type": "object"
     },
     "td_ecomap_html_url": {
