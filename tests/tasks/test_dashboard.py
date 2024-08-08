@@ -1,5 +1,6 @@
 import pytest
 
+from ecoscope_workflows.tasks.groupby._groupby import Grouper
 from ecoscope_workflows.tasks.results import gather_dashboard
 from ecoscope_workflows.tasks.results._dashboard import (
     Dashboard,
@@ -56,7 +57,7 @@ def test_gather_dashboard(single_filter_dashboard: DashboardFixture):
         title="A Great Dashboard",
         description="A dashboard with a map and a plot",
         widgets=grouped_widgets,
-        groupers=["month"],
+        groupers=[Grouper(index_name="month")],
     )
     assert_dashboards_equal(dashboard, expected_dashboard)
 
@@ -183,7 +184,7 @@ def test_gather_dashboard_two_filter(two_filter_dashboard: DashboardFixture):
         title="A Great Dashboard",
         description="A dashboard with a map",
         widgets=grouped_widgets,
-        groupers=["month", "year"],
+        groupers=[Grouper(index_name="month"), Grouper(index_name="year")],
     )
     assert_dashboards_equal(dashboard, expected_dashboard)
 
@@ -297,7 +298,11 @@ def test_gather_dashboard_three_filter(three_filter_dashboard: DashboardFixture)
         title="A Great Dashboard",
         description="A dashboard with a map",
         widgets=grouped_widgets,
-        groupers=["month", "year", "subject_name"],
+        groupers=[
+            Grouper(index_name="month"),
+            Grouper(index_name="year"),
+            Grouper(index_name="subject_name"),
+        ],
     )
     assert_dashboards_equal(dashboard, expected_dashboard)
 
@@ -425,7 +430,7 @@ def test_gather_dashboard_with_none_views(dashboard_with_none_views: DashboardFi
         title="A Great Dashboard",
         description="A dashboard with a map and a plot",
         widgets=grouped_widgets,
-        groupers=["month"],
+        groupers=[Grouper(index_name="month")],
     )
     assert_dashboards_equal(dashboard, expected_dashboard)
 
