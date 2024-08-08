@@ -289,17 +289,20 @@
                 "tile_layer": {
                     "default": "",
                     "title": "Tile Layer",
-                    "type": "string"
+                    "type": "string",
+                    "description": "A named tile layer, ie OpenStreetMap."
                 },
                 "static": {
                     "default": false,
                     "title": "Static",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "Set to true to disable map pan/zoom."
                 },
                 "title": {
                     "default": "",
                     "title": "Title",
-                    "type": "string"
+                    "type": "string",
+                    "description": "The map title."
                 },
                 "title_kws": {
                     "anyOf": [
@@ -311,7 +314,8 @@
                         }
                     ],
                     "default": null,
-                    "title": "Title Kws"
+                    "title": "Title Kws",
+                    "description": "Additional arguments for configuring the Title."
                 },
                 "scale_kws": {
                     "anyOf": [
@@ -323,7 +327,8 @@
                         }
                     ],
                     "default": null,
-                    "title": "Scale Kws"
+                    "title": "Scale Kws",
+                    "description": "Additional arguments for configuring the Scale Bar."
                 },
                 "north_arrow_kws": {
                     "anyOf": [
@@ -335,7 +340,8 @@
                         }
                     ],
                     "default": null,
-                    "title": "North Arrow Kws"
+                    "title": "North Arrow Kws",
+                    "description": "Additional arguments for configuring the North Arrow."
                 }
             },
             "required": [],
@@ -368,39 +374,6 @@
                     "title": "Title",
                     "type": "string",
                     "description": "The title of the widget"
-                },
-                "view": {
-                    "anyOf": [
-                        {
-                            "items": {
-                                "maxItems": 3,
-                                "minItems": 3,
-                                "prefixItems": [
-                                    {
-                                        "type": "string"
-                                    },
-                                    {
-                                        "const": "=",
-                                        "enum": [
-                                            "="
-                                        ],
-                                        "type": "string"
-                                    },
-                                    {
-                                        "type": "string"
-                                    }
-                                ],
-                                "type": "array"
-                            },
-                            "type": "array"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
-                    "default": null,
-                    "title": "View",
-                    "description": "If grouped, the view of the widget"
                 }
             },
             "required": [
@@ -526,39 +499,6 @@
                     "title": "Title",
                     "type": "string",
                     "description": "The title of the widget"
-                },
-                "view": {
-                    "anyOf": [
-                        {
-                            "items": {
-                                "maxItems": 3,
-                                "minItems": 3,
-                                "prefixItems": [
-                                    {
-                                        "type": "string"
-                                    },
-                                    {
-                                        "const": "=",
-                                        "enum": [
-                                            "="
-                                        ],
-                                        "type": "string"
-                                    },
-                                    {
-                                        "type": "string"
-                                    }
-                                ],
-                                "type": "array"
-                            },
-                            "type": "array"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
-                    "default": null,
-                    "title": "View",
-                    "description": "If grouped, the view of the widget"
                 }
             },
             "required": [
@@ -748,17 +688,20 @@
                 "tile_layer": {
                     "default": "",
                     "title": "Tile Layer",
-                    "type": "string"
+                    "type": "string",
+                    "description": "A named tile layer, ie OpenStreetMap."
                 },
                 "static": {
                     "default": false,
                     "title": "Static",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "Set to true to disable map pan/zoom."
                 },
                 "title": {
                     "default": "",
                     "title": "Title",
-                    "type": "string"
+                    "type": "string",
+                    "description": "The map title."
                 },
                 "title_kws": {
                     "anyOf": [
@@ -770,7 +713,8 @@
                         }
                     ],
                     "default": null,
-                    "title": "Title Kws"
+                    "title": "Title Kws",
+                    "description": "Additional arguments for configuring the Title."
                 },
                 "scale_kws": {
                     "anyOf": [
@@ -782,7 +726,8 @@
                         }
                     ],
                     "default": null,
-                    "title": "Scale Kws"
+                    "title": "Scale Kws",
+                    "description": "Additional arguments for configuring the Scale Bar."
                 },
                 "north_arrow_kws": {
                     "anyOf": [
@@ -794,7 +739,8 @@
                         }
                     ],
                     "default": null,
-                    "title": "North Arrow Kws"
+                    "title": "North Arrow Kws",
+                    "description": "Additional arguments for configuring the North Arrow."
                 }
             },
             "required": [],
@@ -827,39 +773,6 @@
                     "title": "Title",
                     "type": "string",
                     "description": "The title of the widget"
-                },
-                "view": {
-                    "anyOf": [
-                        {
-                            "items": {
-                                "maxItems": 3,
-                                "minItems": 3,
-                                "prefixItems": [
-                                    {
-                                        "type": "string"
-                                    },
-                                    {
-                                        "const": "=",
-                                        "enum": [
-                                            "="
-                                        ],
-                                        "type": "string"
-                                    },
-                                    {
-                                        "type": "string"
-                                    }
-                                ],
-                                "type": "array"
-                            },
-                            "type": "array"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
-                    "default": null,
-                    "title": "View",
-                    "description": "If grouped, the view of the widget"
                 }
             },
             "required": [
@@ -1042,26 +955,13 @@
             "properties": {
                 "title": {
                     "title": "Title",
-                    "type": "string"
+                    "type": "string",
+                    "description": "The title of the dashboard"
                 },
                 "description": {
                     "title": "Description",
-                    "type": "string"
-                },
-                "groupers": {
-                    "anyOf": [
-                        {
-                            "items": {
-                                "$ref": "#/$defs/Grouper"
-                            },
-                            "type": "array"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
-                    "default": null,
-                    "title": "Groupers"
+                    "type": "string",
+                    "description": "The description of the dashboard"
                 }
             },
             "required": [

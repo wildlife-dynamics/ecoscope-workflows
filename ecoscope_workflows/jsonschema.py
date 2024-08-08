@@ -10,8 +10,10 @@ from pydantic.json_schema import GenerateJsonSchema
 class SurfacesDescriptionSchema(GenerateJsonSchema):
     def generate(self, schema, mode="validation"):
         json_schema = super().generate(schema, mode=mode)
+        if "schema" in schema:
+            schema = schema["schema"]
         if "function" in schema and "properties" in json_schema:
-            for p in json_schema["properties"]:
+            for p in json_schema["properties"].copy():
                 annotation_args = get_args(
                     signature(schema["function"]).parameters[p].annotation
                 )
@@ -21,6 +23,8 @@ class SurfacesDescriptionSchema(GenerateJsonSchema):
                     ][0]
                     if Field.description:
                         json_schema["properties"][p]["description"] = Field.description
+                    if Field.exclude:
+                        del json_schema["properties"][p]
         return json_schema
 
 

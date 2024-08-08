@@ -21,7 +21,8 @@ def create_map_widget_single_view(
         PrecomputedHTMLWidgetData, Field(description="Path to precomputed HTML")
     ],
     view: Annotated[
-        CompositeFilter | None, Field(description="If grouped, the view of the widget")
+        CompositeFilter | None,
+        Field(description="If grouped, the view of the widget", exclude=True),
     ] = None,
 ) -> Annotated[WidgetSingleView, Field(description="The widget")]:
     """Create a map widget with a single view.
@@ -49,7 +50,8 @@ def create_plot_widget_single_view(
         PrecomputedHTMLWidgetData, Field(description="Path to precomputed HTML")
     ],
     view: Annotated[
-        CompositeFilter | None, Field(description="If grouped, the view of the widget")
+        CompositeFilter | None,
+        Field(description="If grouped, the view of the widget", exclude=True),
     ] = None,
 ) -> Annotated[WidgetSingleView, Field(description="The widget")]:
     """Create a plot widget with a single view.
@@ -75,7 +77,8 @@ def create_text_widget_single_view(
     title: Annotated[str, Field(description="The title of the widget")],
     data: Annotated[TextWidgetData, Field(description="Text to display.")],
     view: Annotated[
-        CompositeFilter | None, Field(description="If grouped, the view of the widget")
+        CompositeFilter | None,
+        Field(description="If grouped, the view of the widget", exclude=True),
     ] = None,
 ) -> Annotated[WidgetSingleView, Field(description="The widget")]:
     """Create a text widget with a single view.
@@ -101,7 +104,8 @@ def create_single_value_widget_single_view(
     title: Annotated[str, Field(description="The title of the widget")],
     data: Annotated[SingleValueWidgetData, Field(description="Value to display.")],
     view: Annotated[
-        CompositeFilter | None, Field(description="If grouped, the view of the widget")
+        CompositeFilter | None,
+        Field(description="If grouped, the view of the widget", exclude=True),
     ] = None,
 ) -> Annotated[WidgetSingleView, Field(description="The widget")]:
     """Create a single value widget with a single view.
@@ -126,7 +130,7 @@ def create_single_value_widget_single_view(
 def merge_widget_views(
     widgets: Annotated[
         list[WidgetSingleView],
-        Field(description="The widgets to merge"),
+        Field(description="The widgets to merge", exclude=True),
     ],
 ) -> Annotated[list[GroupedWidget], Field(description="The merged widgets")]:
     """Merge widgets with the same `title` and `widget_type`.
