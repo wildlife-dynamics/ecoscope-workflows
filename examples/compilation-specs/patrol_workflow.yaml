@@ -30,7 +30,7 @@ workflow:
     id: split_patrol_traj_groups
     task: split_groups
     partial:
-      df: ${{ workflow.patrol_traj.return }}
+      df: ${{ workflow.traj_add_temporal_index.return }}
       groupers: ${{ workflow.groupers.return }}
   - name: Create map layer for each Patrol Trajectories group
     id: patrol_traj_map_layers
@@ -59,7 +59,7 @@ workflow:
     id: split_pe_groups
     task: split_groups
     partial:
-      df: ${{ workflow.filter_patrol_events.return }}
+      df: ${{ workflow.pe_add_temporal_index.return }}
       groupers: ${{ workflow.groupers.return }}
   - name: Create map layers for each Patrols Events group
     id: patrol_events_map_layers
