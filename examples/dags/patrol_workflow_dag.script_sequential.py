@@ -28,129 +28,145 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     params = yaml.safe_load(args.config_file)
-    # FIXME: first pass assumes tasks are already in topological order
 
-    patrol_obs = get_patrol_observations.replace(validate=True)(
-        **params["patrol_obs"],
+    patrol_obs = get_patrol_observations.validate().call(**params["patrol_obs"])
+
+    patrol_reloc = (
+        process_relocations.validate()
+        .partial(observations=patrol_obs)
+        .call(**params["patrol_reloc"])
     )
 
-    patrol_reloc = process_relocations.replace(validate=True)(
-        observations=patrol_obs,
-        **params["patrol_reloc"],
+    patrol_traj = (
+        relocations_to_trajectory.validate()
+        .partial(relocations=patrol_reloc)
+        .call(**params["patrol_traj"])
     )
 
-    patrol_traj = relocations_to_trajectory.replace(validate=True)(
-        relocations=patrol_reloc,
-        **params["patrol_traj"],
+    patrol_traj_map_layer = (
+        create_map_layer.validate()
+        .partial(geodataframe=patrol_traj)
+        .call(**params["patrol_traj_map_layer"])
     )
 
-    patrol_traj_map_layer = create_map_layer.replace(validate=True)(
-        geodataframe=patrol_traj,
-        **params["patrol_traj_map_layer"],
+    patrol_events = get_patrol_events.validate().call(**params["patrol_events"])
+
+    filter_patrol_events = (
+        apply_reloc_coord_filter.validate()
+        .partial(df=patrol_events)
+        .call(**params["filter_patrol_events"])
     )
 
-    patrol_events = get_patrol_events.replace(validate=True)(
-        **params["patrol_events"],
+    patrol_events_map_layer = (
+        create_map_layer.validate()
+        .partial(geodataframe=filter_patrol_events)
+        .call(**params["patrol_events_map_layer"])
     )
 
-    filter_patrol_events = apply_reloc_coord_filter.replace(validate=True)(
-        df=patrol_events,
-        **params["filter_patrol_events"],
+    traj_patrol_events_ecomap = (
+        draw_ecomap.validate()
+        .partial(geo_layers=[patrol_traj_map_layer, patrol_events_map_layer])
+        .call(**params["traj_patrol_events_ecomap"])
     )
 
-    patrol_events_map_layer = create_map_layer.replace(validate=True)(
-        geodataframe=filter_patrol_events,
-        **params["patrol_events_map_layer"],
+    traj_pe_ecomap_html_url = (
+        persist_text.validate()
+        .partial(
+            text=traj_patrol_events_ecomap,
+            root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+        )
+        .call(**params["traj_pe_ecomap_html_url"])
     )
 
-    traj_patrol_events_ecomap = draw_ecomap.replace(validate=True)(
-        geo_layers=[patrol_traj_map_layer, patrol_events_map_layer],
-        **params["traj_patrol_events_ecomap"],
+    traj_patrol_events_map_widget = (
+        create_map_widget_single_view.validate()
+        .partial(data=traj_pe_ecomap_html_url)
+        .call(**params["traj_patrol_events_map_widget"])
     )
 
-    traj_pe_ecomap_html_url = persist_text.replace(validate=True)(
-        text=traj_patrol_events_ecomap,
-        root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-        **params["traj_pe_ecomap_html_url"],
+    patrol_events_bar_chart = (
+        draw_time_series_bar_chart.validate()
+        .partial(dataframe=filter_patrol_events)
+        .call(**params["patrol_events_bar_chart"])
     )
 
-    traj_patrol_events_map_widget = create_map_widget_single_view.replace(
-        validate=True
-    )(
-        data=traj_pe_ecomap_html_url,
-        **params["traj_patrol_events_map_widget"],
+    patrol_events_bar_chart_html_url = (
+        persist_text.validate()
+        .partial(
+            text=patrol_events_bar_chart,
+            root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+        )
+        .call(**params["patrol_events_bar_chart_html_url"])
     )
 
-    patrol_events_bar_chart = draw_time_series_bar_chart.replace(validate=True)(
-        dataframe=filter_patrol_events,
-        **params["patrol_events_bar_chart"],
+    patrol_events_bar_chart_widget = (
+        create_plot_widget_single_view.validate()
+        .partial(data=patrol_events_bar_chart_html_url)
+        .call(**params["patrol_events_bar_chart_widget"])
     )
 
-    patrol_events_bar_chart_html_url = persist_text.replace(validate=True)(
-        text=patrol_events_bar_chart,
-        root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-        **params["patrol_events_bar_chart_html_url"],
+    patrol_events_pie_chart = (
+        draw_pie_chart.validate()
+        .partial(dataframe=filter_patrol_events)
+        .call(**params["patrol_events_pie_chart"])
     )
 
-    patrol_events_bar_chart_widget = create_plot_widget_single_view.replace(
-        validate=True
-    )(
-        data=patrol_events_bar_chart_html_url,
-        **params["patrol_events_bar_chart_widget"],
+    patrol_events_pie_chart_html_url = (
+        persist_text.validate()
+        .partial(
+            text=patrol_events_pie_chart,
+            root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+        )
+        .call(**params["patrol_events_pie_chart_html_url"])
     )
 
-    patrol_events_pie_chart = draw_pie_chart.replace(validate=True)(
-        dataframe=filter_patrol_events,
-        **params["patrol_events_pie_chart"],
+    patrol_events_pie_chart_widget = (
+        create_plot_widget_single_view.validate()
+        .partial(data=patrol_events_pie_chart_html_url)
+        .call(**params["patrol_events_pie_chart_widget"])
     )
 
-    patrol_events_pie_chart_html_url = persist_text.replace(validate=True)(
-        text=patrol_events_pie_chart,
-        root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-        **params["patrol_events_pie_chart_html_url"],
+    td = (
+        calculate_time_density.validate()
+        .partial(trajectory_gdf=patrol_traj)
+        .call(**params["td"])
     )
 
-    patrol_events_pie_chart_widget = create_plot_widget_single_view.replace(
-        validate=True
-    )(
-        data=patrol_events_pie_chart_html_url,
-        **params["patrol_events_pie_chart_widget"],
+    td_map_layer = (
+        create_map_layer.validate()
+        .partial(geodataframe=td)
+        .call(**params["td_map_layer"])
     )
 
-    td = calculate_time_density.replace(validate=True)(
-        trajectory_gdf=patrol_traj,
-        **params["td"],
+    td_ecomap = (
+        draw_ecomap.validate()
+        .partial(geo_layers=td_map_layer)
+        .call(**params["td_ecomap"])
     )
 
-    td_map_layer = create_map_layer.replace(validate=True)(
-        geodataframe=td,
-        **params["td_map_layer"],
+    td_ecomap_html_url = (
+        persist_text.validate()
+        .partial(text=td_ecomap, root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"])
+        .call(**params["td_ecomap_html_url"])
     )
 
-    td_ecomap = draw_ecomap.replace(validate=True)(
-        geo_layers=[td_map_layer],
-        **params["td_ecomap"],
+    td_map_widget = (
+        create_map_widget_single_view.validate()
+        .partial(data=td_ecomap_html_url)
+        .call(**params["td_map_widget"])
     )
 
-    td_ecomap_html_url = persist_text.replace(validate=True)(
-        text=td_ecomap,
-        root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-        **params["td_ecomap_html_url"],
-    )
-
-    td_map_widget = create_map_widget_single_view.replace(validate=True)(
-        data=td_ecomap_html_url,
-        **params["td_map_widget"],
-    )
-
-    patrol_dashboard = gather_dashboard.replace(validate=True)(
-        widgets=[
-            traj_patrol_events_map_widget,
-            td_map_widget,
-            patrol_events_bar_chart_widget,
-            patrol_events_pie_chart_widget,
-        ],
-        **params["patrol_dashboard"],
+    patrol_dashboard = (
+        gather_dashboard.validate()
+        .partial(
+            widgets=[
+                traj_patrol_events_map_widget,
+                td_map_widget,
+                patrol_events_bar_chart_widget,
+                patrol_events_pie_chart_widget,
+            ]
+        )
+        .call(**params["patrol_dashboard"])
     )
 
     print(patrol_dashboard)

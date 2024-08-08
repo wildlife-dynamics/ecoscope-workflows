@@ -12,7 +12,6 @@ from inspect import getmembers, ismodule
 from typing import Annotated, Any, Generator, get_args
 
 import ruamel.yaml
-import pandera as pa
 from pydantic import (
     BaseModel,
     Field,
@@ -26,12 +25,10 @@ from ecoscope_workflows.annotations import (
     JsonSerializableDataFrameModel,
 )
 from ecoscope_workflows.connections import EarthRangerConnection
-from ecoscope_workflows.decorators import DistributedTask
+from ecoscope_workflows.decorators import Task
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
-from ecoscope_workflows.operators import OperatorKws
-from ecoscope_workflows.serde import gpd_from_parquet_uri
 from ecoscope_workflows.util import (
-    import_distributed_task_from_reference,
+    import_task_from_reference,
     rsplit_importable_reference,
     validate_importable_reference,
 )
@@ -41,22 +38,20 @@ from ecoscope_workflows.util import (
 class _KnownTaskArgs:
     name: str
     anchor: str
-    operator_kws: dict
     tags: list[str]
 
 
 def recurse_into_tasks(
     module: types.ModuleType,
 ) -> Generator[_KnownTaskArgs, None, None]:
-    """Recursively yield `@distributed` task names from the given module (i.e. package)."""
+    """Recursively yield `@task` names from the given module (i.e. package)."""
     for name, obj in [
         m for m in getmembers(module) if not m[0].startswith(("__", "_"))
     ]:
-        if isinstance(obj, DistributedTask):
+        if isinstance(obj, Task):
             yield _KnownTaskArgs(
                 name=name,
                 anchor=module.__name__,
-                operator_kws=obj.operator_kws.model_dump(),
                 tags=obj.tags or [],
             )
         elif ismodule(obj):
@@ -73,7 +68,7 @@ def collect_task_entries() -> dict[str, "KnownTask"]:
     ecoscope_workflows_eps = eps.select(group="ecoscope_workflows")
     known_tasks: dict[str, "KnownTask"] = {}
     for ep in ecoscope_workflows_eps:
-        # a bit redundant with `util.import_distributed_task_from_reference`
+        # a bit redundant with `util.import_task_from_reference`
         root_pkg_name, tasks_pkg_name = ep.value.rsplit(".", 1)
         assert "." not in root_pkg_name, (
             "Tasks must be top-level in root (e.g. `pkg.tasks`, not `pkg.foo.tasks`). "
@@ -89,7 +84,6 @@ def collect_task_entries() -> dict[str, "KnownTask"]:
                 # perhaps the fact that anchor and function names are properties
                 # of KnownTask is strange? Maybe we should just pass them directly.
                 importable_reference=f"{kta.anchor}.{kta.name}",
-                operator_kws=kta.operator_kws,
                 tags=kta.tags,
             )
             for kta in known_task_args
@@ -106,7 +100,6 @@ class TaskTag(str, Enum):
 
 class KnownTask(BaseModel):
     importable_reference: ImportableReference
-    operator_kws: OperatorKws
     tags: list[TaskTag] = Field(default_factory=list)
 
     @field_serializer("importable_reference")
@@ -121,7 +114,7 @@ class KnownTask(BaseModel):
             "statement": (
                 (
                     # if this is a testing context, and a mock was requested:
-                    f"{self.function} = create_distributed_task_magicmock(  # 🧪\n"
+                    f"{self.function} = create_task_magicmock(  # 🧪\n"
                     f"    anchor='{self.anchor}',  # 🧪\n"
                     f"    func_name='{self.function}',  # 🧪\n"
                     ")  # 🧪"
@@ -142,8 +135,8 @@ class KnownTask(BaseModel):
         return rsplit_importable_reference(self.importable_reference)[1]
 
     @property
-    def task(self) -> DistributedTask:
-        return import_distributed_task_from_reference(self.anchor, self.function)
+    def task(self) -> Task:
+        return import_task_from_reference(self.anchor, self.function)
 
     def parameters_jsonschema(self, omit_args: list[str] | None = None) -> dict:
         # NOTE: SurfacesDescriptionSchema is a workaround for https://github.com/pydantic/pydantic/issues/9404
@@ -221,8 +214,4 @@ known_tasks = types.MappingProxyType(_known_tasks)  # external, immutable
 
 known_connections = {
     conn.__ecoscope_connection_type__: conn for conn in (EarthRangerConnection,)
-}
-
-known_deserializers = {
-    pa.typing.DataFrame: gpd_from_parquet_uri,
 }

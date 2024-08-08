@@ -4,12 +4,12 @@ from typing import Annotated
 from pydantic import Field
 
 from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import task
 
 logger = logging.getLogger(__name__)
 
 
-@distributed
+@task
 def map_values(
     df: DataFrame[JsonSerializableDataFrameModel],
     column_name: Annotated[str, Field(description="The column name to map.")],
@@ -28,7 +28,7 @@ def map_values(
     return df
 
 
-@distributed
+@task
 def map_columns(
     df: DataFrame[JsonSerializableDataFrameModel],
     drop_columns: Annotated[
@@ -86,7 +86,7 @@ def map_columns(
     return df
 
 
-@distributed
+@task
 def color_map(
     df: DataFrame[JsonSerializableDataFrameModel],
     column_name: Annotated[

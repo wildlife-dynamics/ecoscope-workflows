@@ -1,91 +1,150 @@
-from dataclasses import FrozenInstanceError
-from typing import Annotated
-
 import pytest
 
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import task
 
 
-def test_call_simple_default_operator_kws():
-    @distributed
-    def f(a: int, b: int) -> int:
-        return a + b
-
-    assert f.func(1, 2) == 3
-    assert f(1, 2) == 3
-    assert f.operator_kws.image == "ecoscope-workflows:latest"
-    assert f.operator_kws.container_resources == {
-        "request_memory": "128Mi",
-        "request_cpu": "500m",
-        "limit_memory": "500Mi",
-        "limit_cpu": 1,
-    }
-
-
-def test_call_simple_custom_operator_kws():
-    @distributed(
-        image="my-custom-image:abc123",
-        container_resources={
-            "request_memory": "400M",
-            "request_cpu": 16,
-            "limit_memory": "800M",
-            "limit_cpu": 32,
-        },
-    )
-    def f(a: int, b: int) -> int:
-        return a + b
-
-    assert f.func(1, 2) == 3
-    assert f(1, 2) == 3
-    assert f.operator_kws.image == "my-custom-image:abc123"
-    assert f.operator_kws.container_resources == {
-        "request_memory": "400M",
-        "request_cpu": 16,
-        "limit_memory": "800M",
-        "limit_cpu": 32,
-    }
-
-
-def test_frozen_instance():
-    @distributed
+def test_call_simple():
+    @task
     def f(a: int) -> int:
         return a
 
-    assert not f.validate
-    with pytest.raises(FrozenInstanceError):
-        f.validate = True
-
-    f_new = f.replace(validate=True)
-    assert f_new.validate
+    assert f(1) == 1
+    assert f(2) == 2
 
 
-def test_arg_prevalidators():
-    @distributed
-    def f(a: Annotated[int, "some metadata field"]) -> int:
+def test_call_alias_simple():
+    @task
+    def f(a: int) -> int:
         return a
 
-    def a_prevalidator(x):
-        return x + 1
-
-    f_new = f.replace(arg_prevalidators={"a": a_prevalidator})
-    # the prevalidator's behavior
-    assert a_prevalidator(1) == 2
-    # without `validate=True` we still get normal behavior from the function itself
-    assert f_new(1) == 1
-    # only when we set validate=True do we finally see the prevalidator is invoked
-    assert f_new.replace(validate=True)(1) == 2
+    assert f.call(1) == 1
+    assert f.call(2) == 2
 
 
-def test_return_postvalidator():
-    @distributed
-    def f(a) -> Annotated[int, "some metadata field"]:
+def test_map_simple():
+    @task
+    def f(a: int) -> int:
         return a
 
-    assert f(4) == 4
+    assert f.map("a", [1, 2, 3]) == [1, 2, 3]
 
-    def postvalidator(x):
-        return x + 1
+    @task
+    def double(a: int) -> int:
+        return a * 2
 
-    # note that the postvalidator will not be invoked unless `validate=True`
-    f_new = f.replace(return_postvalidator=postvalidator, validate=True)
-    assert f_new(4) == 5
+    assert double.map("a", [1, 2, 3]) == [2, 4, 6]
+
+
+def test_mapvalues_simple():
+    @task
+    def double(a: int) -> int:
+        return a * 2
+
+    keyed_input = [("h", 1), ("i", 2), ("j", 3)]
+    expected_output = [("h", 2), ("i", 4), ("j", 6)]
+    assert double.mapvalues("a", keyed_input) == expected_output
+
+
+def test_map_args_unpacking():
+    @task
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    assert f.map(["a", "b"], [(1, 2), (3, 4), (5, 6)]) == [3, 7, 11]
+
+
+def test_mapvalues_args_unpacking():
+    @task
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    keyed_input = [("h", (1, 2)), ("i", (3, 4)), ("j", (5, 6))]
+    expected_output = [("h", 3), ("i", 7), ("j", 11)]
+    with pytest.raises(
+        NotImplementedError,
+        match="Arg unpacking is not yet supported for `mapvalues`.",
+    ):
+        assert f.mapvalues(["a", "b"], keyed_input) == expected_output
+
+
+def test_partial_call():
+    @task
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    # make a copy first
+    f_partial = f.partial(a=1)
+    assert f_partial(b=2) == 3
+    assert f_partial(b=3) == 4
+
+    # or direct call with parens
+    assert f.partial(a=1)(b=2) == 3
+    assert f.partial(a=1)(b=3) == 4
+
+    # or direct call with dotted call alias
+    # (same as parens, just more readable)
+    assert f.partial(a=1).call(b=2) == 3
+    assert f.partial(a=1).call(b=3) == 4
+
+
+def test_partial_map():
+    @task
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    assert f.partial(a=1).map("b", [2, 3]) == [3, 4]
+    assert f.partial(a=1).map("b", [4, 5]) == [5, 6]
+
+
+def test_partial_mapvalues():
+    @task
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    assert f.partial(a=1).mapvalues("b", [("h", 2), ("i", 3)]) == [("h", 3), ("i", 4)]
+
+
+def test_partial_repeated_args_raises():
+    @task
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    # we just follow functools.partial behavior here,
+    # so kwarg overrides are allowed
+    assert f.partial(a=1).call(a=2, b=3) == 5
+    # but arg overrides are not allowed
+    with pytest.raises(TypeError, match="got multiple values for argument 'a'"):
+        f.partial(a=1).call(2, b=3)
+
+
+def test_validate():
+    @task
+    def f(a: int) -> int:
+        return a
+
+    assert f.validate().call(1) == 1
+    assert f.validate().call(2) == 2
+
+    # no parsing without validate
+    assert f("1") == "1"
+    assert f("2") == "2"
+
+    # with validate, we get input parsing
+    assert f.validate().call("1") == 1
+    assert f.validate().call("2") == 2
+
+
+def test_validate_partial_chain():
+    @task
+    def f(a: int) -> int:
+        return a
+
+    assert f.validate().partial(a="1").call() == 1
+
+
+def test_partial_validate_chain():
+    @task
+    def f(a: int) -> int:
+        return a
+
+    assert f.partial(a="1").validate().call() == 1

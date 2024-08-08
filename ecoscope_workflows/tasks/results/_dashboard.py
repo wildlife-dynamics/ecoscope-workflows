@@ -4,7 +4,7 @@ from typing import Annotated, Any, Generator
 
 from pydantic import BaseModel, Field, model_serializer
 
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import task
 from ecoscope_workflows.jsonschema import (
     ReactJSONSchemaFormFilters,
     RJSFFilter,
@@ -16,6 +16,7 @@ from ecoscope_workflows.indexes import (
     IndexName,
     IndexValue,
 )
+from ecoscope_workflows.tasks.groupby._groupby import Grouper
 from ecoscope_workflows.tasks.results._widget_types import (
     GroupedWidget,
     WidgetData,
@@ -60,7 +61,7 @@ class Dashboard(BaseModel):
 
     Args:
         widgets: A list of grouped widgets.
-        groupers: A dictionary of groupers and their possible values.
+        grouper_choices: A dictionary of groupers and their possible values.
             If all widgets are ungrouped, this field is `None`.
         keys: A list of composite filters that represent the possible views for the grouped widgets.
             If all widgets are ungrouped, this field is `None`.
@@ -68,7 +69,7 @@ class Dashboard(BaseModel):
     """
 
     widgets: list[GroupedWidget]
-    groupers: dict[IndexName, list[IndexValue]] | None = None
+    grouper_choices: dict[Grouper, list[IndexValue]] | None = None
     keys: list[CompositeFilter] | None = None
     metadata: Metadata = Field(default_factory=Metadata)
 
@@ -128,23 +129,24 @@ class Dashboard(BaseModel):
         return (
             ReactJSONSchemaFormFilters(
                 options={
-                    grouper_name: RJSFFilter(
+                    g.index_name: RJSFFilter(
                         property=RJSFFilterProperty(
                             type="string",
-                            enum=grouper_choices,
-                            enumNames=[choice.title() for choice in grouper_choices],
-                            default=grouper_choices[0],
+                            enum=choices,
+                            enumNames=[choice.title() for choice in choices],
+                            default=choices[0],
                         ),
                         uiSchema=RJSFFilterUiSchema(
-                            title=grouper_name.title().replace("_", " "),
-                            # TODO: allow specifying help text
-                            # _help=f"Select a {grouper_name} to filter by.",
+                            title=(
+                                g.display_name or g.index_name.title().replace("_", " ")
+                            ),
+                            help=g.help_text or None,
                         ),
                     )
-                    for grouper_name, grouper_choices in self.groupers.items()
+                    for g, choices in self.grouper_choices.items()
                 }
             ).model_dump()
-            if self.groupers is not None
+            if self.grouper_choices is not None
             else None
         )
 
@@ -160,40 +162,49 @@ class Dashboard(BaseModel):
 
 
 def composite_filters_to_grouper_choices_dict(
+    groupers: list[Grouper],
     keys: list[CompositeFilter | None],
-) -> dict[IndexName, list[IndexValue]]:
-    """Converts a list of composite filters to a dict of grouper choices.
-    For example:
-    ```
-    [
-        (('animal_name', '=', 'Ao'), ('month', '=', 'February')),
-        (('animal_name', '=', 'Ao'), ('month', '=', 'January')),
-        (('animal_name', '=', 'Bo'), ('month', '=', 'February')),
-        (('animal_name', '=', 'Bo'), ('month', '=', 'January')),
-    ]
-    ```
-    Becomes:
-    ```
+) -> dict[Grouper, list[IndexValue]]:
+    """Converts a set of Groupers and a list of composite filters
+    to a dict of grouper choices.
+
+    Examples:
+
+    ```python
+    >>> groupers = [Grouper(index_name="animal_name"), Grouper(index_name="month")]
+    >>> keys = [
+    ...     (('animal_name', '=', 'Ao'), ('month', '=', 'February')),
+    ...     (('animal_name', '=', 'Ao'), ('month', '=', 'January')),
+    ...     (('animal_name', '=', 'Bo'), ('month', '=', 'February')),
+    ...     (('animal_name', '=', 'Bo'), ('month', '=', 'January')),
+    ... ]
+    >>> choices = composite_filters_to_grouper_choices_dict(groupers, keys)
+    >>> {g.index_name: c for g, c in choices.items()}
     {'animal_name': ['Ao', 'Bo'], 'month': ['February', 'January']}
+
     ```
     """
-    choices: dict[IndexName, list[IndexValue]] = {}
+    choices: dict[Grouper, list[IndexValue]] = {}
+
+    def get_grouper(index_name: IndexName) -> Grouper:
+        return next(g for g in groupers if g.index_name == index_name)
+
     for k in keys:
         if k is not None:
-            for filter, _, value in k:
-                if filter not in choices:
-                    choices[filter] = []
-                if value not in choices[filter]:
-                    choices[filter].append(value)
+            for index_name, _, value in k:
+                if get_grouper(index_name) not in choices:
+                    choices[get_grouper(index_name)] = []
+                if value not in choices[get_grouper(index_name)]:
+                    choices[get_grouper(index_name)].append(value)
 
-    for filter in choices:
+    for g in choices:
         # TODO: sort by logical order for the type of grouper (e.g. month names, not alphabetically)
-        choices[filter].sort()
+        choices[g].sort()
 
     return choices
 
 
-@distributed
+@task
 def gather_dashboard(
     title: Annotated[str, Field(description="The title of the dashboard")],
     description: Annotated[str, Field(description="The description of the dashboard")],
@@ -202,7 +213,7 @@ def gather_dashboard(
         Field(description="The widgets to display."),
     ],
     groupers: Annotated[
-        list | None,
+        list[Grouper] | None,
         Field(
             description="""\
             A list of groupers that are used to group the widgets.
@@ -244,14 +255,12 @@ def gather_dashboard(
                 assert (
                     list(gw.views) == keys_sample
                 ), "All grouped widgets must have the same keys"
-        grouper_choices = composite_filters_to_grouper_choices_dict(keys_sample)
-        # make sure we didn't lose track of any groupers inflight
-        assert set(groupers) == set(
-            list(grouper_choices.keys())
-        ), "All groupers must be present in the keys"
+        grouper_choices = composite_filters_to_grouper_choices_dict(
+            groupers, keys_sample
+        )
     return Dashboard(
         widgets=grouped_widgets,
-        groupers=(grouper_choices if groupers else None),
+        grouper_choices=(grouper_choices if groupers else None),
         keys=(keys_sample if groupers else None),
         metadata=Metadata(title=title, description=description),
     )

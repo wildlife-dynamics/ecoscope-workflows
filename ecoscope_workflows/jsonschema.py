@@ -50,21 +50,16 @@ class RJSFFilterUiSchema(BaseModel):
     This model is used to generate the `uiSchema` field for a filter schema in a dashboard.
 
     Args:
-        _title: The title of the filter.
-        _help: The help text for the filter.
+        title: The title of the filter.
+        help: The help text for the filter.
     """
 
     title: str
-    # TODO: allow specifying help text
-    # _help: str
+    help: str | None = None
 
     @model_serializer
     def ser_model(self) -> dict[str, Any]:
-        return {
-            "ui:title": self.title,
-            # TODO: allow specifying help text
-            # "ui:help": self._help,
-        }
+        return {"ui:title": self.title} | ({"ui:help": self.help} if self.help else {})
 
 
 class RJSFFilter(BaseModel):

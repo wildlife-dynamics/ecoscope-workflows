@@ -7,19 +7,19 @@ workflow:
   - name: Transform Observations to Relocations
     id: patrol_reloc
     task: process_relocations
-    with:
+    partial:
       observations: ${{ workflow.patrol_obs.return }}
   - name: Transform Relocations to Trajectories
     id: patrol_traj
     task: relocations_to_trajectory
-    with:
+    partial:
       relocations: ${{ workflow.patrol_reloc.return }}
 
   # patrol trajectories map layers
   - name: Create map layer from Trajectories
     id: patrol_traj_map_layer
     task: create_map_layer
-    with:
+    partial:
       geodataframe: ${{ workflow.patrol_traj.return }}
 
   # patrol events
@@ -29,106 +29,106 @@ workflow:
   - name: Apply Relocation Coordinate Filter
     id: filter_patrol_events
     task: apply_reloc_coord_filter
-    with:
+    partial:
       df: ${{ workflow.patrol_events.return }}
 
   # patrol events map layers
   - name: Create map layer from Patrols Events
     id: patrol_events_map_layer
     task: create_map_layer
-    with:
+    partial:
       geodataframe: ${{ workflow.filter_patrol_events.return }}
 
   # Combined trajectories + patrol events EcoMap
   - name: Draw Ecomap for Trajectories and Patrol Events
     id: traj_patrol_events_ecomap
     task: draw_ecomap
-    with:
+    partial:
       geo_layers:
         - ${{ workflow.patrol_traj_map_layer.return }}
         - ${{ workflow.patrol_events_map_layer.return }}
   - name: Persist Patrols Ecomap as Text
     id: traj_pe_ecomap_html_url
     task: persist_text
-    with:
+    partial:
       text: ${{ workflow.traj_patrol_events_ecomap.return }}
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
   - name: Create Map Widget for Patrol Events
     id: traj_patrol_events_map_widget
     task: create_map_widget_single_view
-    with:
+    partial:
       data: ${{ workflow.traj_pe_ecomap_html_url.return }}
 
-  #patrol events bar chart
+  # patrol events bar chart
   - name: Draw Time Series Bar Chart for Patrols Events
     id: patrol_events_bar_chart
     task: draw_time_series_bar_chart
-    with:
+    partial:
       dataframe: ${{ workflow.filter_patrol_events.return }}
   - name: Persist Patrols Bar Chart as Text
     id: patrol_events_bar_chart_html_url
     task: persist_text
-    with:
+    partial:
       text: ${{ workflow.patrol_events_bar_chart.return }}
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
   - name: Create Plot Widget for Patrol Events
     id: patrol_events_bar_chart_widget
     task: create_plot_widget_single_view
-    with:
+    partial:
       data: ${{ workflow.patrol_events_bar_chart_html_url.return }}
 
   #patrol events pie chart
   - name: Draw Pie Chart for Patrols Events
     id: patrol_events_pie_chart
     task: draw_pie_chart
-    with:
+    partial:
       dataframe: ${{ workflow.filter_patrol_events.return }}
   - name: Persist Patrols Pie Chart as Text
     id: patrol_events_pie_chart_html_url
     task: persist_text
-    with:
+    partial:
       text: ${{ workflow.patrol_events_pie_chart.return }}
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
   - name: Create Plot Widget for Patrol Events
     id: patrol_events_pie_chart_widget
     task: create_plot_widget_single_view
-    with:
+    partial:
       data: ${{ workflow.patrol_events_pie_chart_html_url.return }}
 
   # time density
   - name: Calculate Time Density from Trajectory
     id: td
     task: calculate_time_density
-    with:
+    partial:
       trajectory_gdf: ${{ workflow.patrol_traj.return }}
   - name: Create map layer from Time Density
     id: td_map_layer
     task: create_map_layer
-    with:
+    partial:
       geodataframe: ${{ workflow.td.return }}
   - name: Draw Ecomap from Time Density
     id: td_ecomap
     task: draw_ecomap
-    with:
+    partial:
       geo_layers:
         - ${{ workflow.td_map_layer.return }}
   - name: Persist Ecomap as Text
     id: td_ecomap_html_url
     task: persist_text
-    with:
+    partial:
       text: ${{ workflow.td_ecomap.return }}
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
   - name: Create Time Density Map Widget
     id: td_map_widget
     task: create_map_widget_single_view
-    with:
+    partial:
       data: ${{ workflow.td_ecomap_html_url.return }}
 
   # dashboard
   - name: Create Dashboard with Patrol Map Widgets
     id: patrol_dashboard
     task: gather_dashboard
-    with:
+    partial:
       widgets:
         - ${{ workflow.traj_patrol_events_map_widget.return }}
         - ${{ workflow.td_map_widget.return }}

@@ -21,7 +21,6 @@ classifiers = [
 # license = { text = "" }
 # keywords = []
 dependencies = [
-    "dill",  # for function deep-copies (maybe there's a better way to do this)
     "jinja2",
     "pandera",
     "pydantic",
@@ -29,7 +28,6 @@ dependencies = [
     "ruamel.yaml",
     "ruff",  # for linting compiled workflows
     "tomli-w",
-    "numexpr",
 ]
 
 [project.optional-dependencies]

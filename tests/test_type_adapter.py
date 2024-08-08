@@ -4,7 +4,7 @@ import numpy as np
 import pandera as pa
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import task
 from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
 from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
 
@@ -24,14 +24,14 @@ def test_jsonschema_from_signature_basic():
     assert from_func == from_model
 
 
-def test_jsonschema_from_signature_basic_distributed():
+def test_jsonschema_from_signature_basic_task():
     class FuncSignature(BaseModel):
         model_config = ConfigDict(extra="forbid")
 
         foo: int
         bar: str
 
-    @distributed
+    @task
     def func(foo: int, bar: str): ...
 
     from_func = TypeAdapter(func.func).json_schema()
@@ -54,7 +54,7 @@ def test_DataFrame_generate_schema():
 
     Foo = DataFrame[Schema]
     schema = TypeAdapter(Foo).json_schema()
-    assert schema == {"type": "ecoscope.distributed.types.DataFrame"}
+    assert schema == {"type": "ecoscope_workflows.annotations.DataFrame"}
 
 
 def test_jsonschema_from_signature_nontrivial():

@@ -18,55 +18,32 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     params = yaml.safe_load(args.config_file)
-    # FIXME: first pass assumes tasks are already in topological order
 
-    obs_a = get_subjectgroup_observations.replace(validate=True)(
-        **params["obs_a"],
+    obs_a = get_subjectgroup_observations.validate().call(**params["obs_a"])
+
+    obs_b = get_subjectgroup_observations.validate().call(**params["obs_b"])
+
+    obs_c = get_subjectgroup_observations.validate().call(**params["obs_c"])
+
+    map_layers = (
+        create_map_layer.validate()
+        .partial(**params["map_layers"])
+        .map(argnames=["geodataframe"], argvalues=[obs_a, obs_b, obs_c])
     )
 
-    obs_b = get_subjectgroup_observations.replace(validate=True)(
-        **params["obs_b"],
+    ecomaps = (
+        draw_ecomap.validate()
+        .partial(**params["ecomaps"])
+        .map(argnames=["geo_layers"], argvalues=map_layers)
     )
 
-    obs_c = get_subjectgroup_observations.replace(validate=True)(
-        **params["obs_c"],
+    td_ecomap_html_url = (
+        persist_text.validate()
+        .partial(
+            root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            **params["td_ecomap_html_url"],
+        )
+        .map(argnames=["text"], argvalues=ecomaps)
     )
-
-    map_layers_mapped_iterable = map(
-        lambda kw: create_map_layer.replace(validate=True)(**kw),
-        [
-            {
-                "geodataframe": i,
-            }
-            | params["map_layers"]
-            for i in [obs_a, obs_b, obs_c]
-        ],
-    )
-    map_layers = list(map_layers_mapped_iterable)
-
-    ecomaps_mapped_iterable = map(
-        lambda kw: draw_ecomap.replace(validate=True)(**kw),
-        [
-            {
-                "geo_layers": i,
-            }
-            | params["ecomaps"]
-            for i in [map_layers]
-        ],
-    )
-    ecomaps = list(ecomaps_mapped_iterable)
-
-    td_ecomap_html_url_mapped_iterable = map(
-        lambda kw: persist_text.replace(validate=True)(**kw),
-        [
-            {
-                "text": i,
-                "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-            }
-            | params["td_ecomap_html_url"]
-            for i in ecomaps
-        ],
-    )
-    td_ecomap_html_url = list(td_ecomap_html_url_mapped_iterable)
 
     print(td_ecomap_html_url)

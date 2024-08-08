@@ -264,7 +264,7 @@
                     "properties": {
                         "geodataframe": {
                             "title": "Geodataframe",
-                            "type": "ecoscope.distributed.types.DataFrame"
+                            "type": "ecoscope_workflows.annotations.DataFrame"
                         },
                         "data_type": {
                             "title": "Data Type",
@@ -663,7 +663,7 @@
                     "properties": {
                         "geodataframe": {
                             "title": "Geodataframe",
-                            "type": "ecoscope.distributed.types.DataFrame"
+                            "type": "ecoscope_workflows.annotations.DataFrame"
                         },
                         "data_type": {
                             "title": "Data Type",
@@ -831,6 +831,43 @@
                         "views"
                     ],
                     "title": "GroupedWidget",
+                    "type": "object"
+                },
+                "Grouper": {
+                    "properties": {
+                        "index_name": {
+                            "title": "Index Name",
+                            "type": "string"
+                        },
+                        "display_name": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Display Name"
+                        },
+                        "help_text": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Help Text"
+                        }
+                    },
+                    "required": [
+                        "index_name"
+                    ],
+                    "title": "Grouper",
                     "type": "object"
                 },
                 "WidgetSingleView": {

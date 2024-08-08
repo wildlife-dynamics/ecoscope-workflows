@@ -5,7 +5,7 @@ import pandera as pa
 from pydantic import Field
 
 from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import task
 from ecoscope_workflows.tasks.io import SubjectGroupObservationsGDFSchema
 
 
@@ -14,7 +14,7 @@ class RelocationsGDFSchema(SubjectGroupObservationsGDFSchema):
     pass
 
 
-@distributed
+@task
 def process_relocations(
     observations: DataFrame[SubjectGroupObservationsGDFSchema],
     filter_point_coords: Annotated[list[list[float]], Field()],
@@ -60,7 +60,7 @@ class TrajectoryGDFSchema(JsonSerializableDataFrameModel):
     geometry: pa.typing.Series[Any] = pa.Field()
 
 
-@distributed
+@task
 def relocations_to_trajectory(
     relocations: DataFrame[RelocationsGDFSchema],
     min_length_meters: Annotated[float, Field()] = 0.1,

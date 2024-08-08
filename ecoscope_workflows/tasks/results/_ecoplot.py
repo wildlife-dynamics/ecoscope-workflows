@@ -3,10 +3,10 @@ from typing import Annotated, Literal
 from pydantic import Field
 
 from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import task
 
 
-@distributed
+@task
 def draw_ecoplot(
     dataframe: DataFrame[JsonSerializableDataFrameModel],
     group_by: Annotated[str, Field(description="The dataframe column to group by.")],
@@ -61,7 +61,7 @@ def draw_ecoplot(
     )
 
 
-@distributed
+@task
 def draw_time_series_bar_chart(
     dataframe: DataFrame[JsonSerializableDataFrameModel],
     x_axis: Annotated[
@@ -176,7 +176,7 @@ def draw_time_series_bar_chart(
     )
 
 
-@distributed
+@task
 def draw_pie_chart(
     dataframe: DataFrame[JsonSerializableDataFrameModel],
     value_column: Annotated[
