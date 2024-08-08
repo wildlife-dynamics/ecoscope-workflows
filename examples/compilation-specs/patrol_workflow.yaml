@@ -23,7 +23,7 @@ workflow:
   # patrol trajectories map layers
   - name: Split Patrol Trajectories by Group
     id: split_patrol_traj_groups
-    task: split_patrol_events
+    task: split_groups
     partial:
       df: ${{ workflow.filter_patrol_events.return }}
       groupers: ${{ workflow.groupers.return }}
@@ -47,7 +47,7 @@ workflow:
   # patrol events map layers
   - name: Split Patrol Events by Group
     id: split_pe_groups
-    task: split_patrol_events
+    task: split_groups
     partial:
       df: ${{ workflow.filter_patrol_events.return }}
       groupers: ${{ workflow.groupers.return }}
@@ -83,16 +83,16 @@ workflow:
       argnames: text
       argvalues: ${{ workflow.traj_patrol_events_ecomap.return }}
   - name: Create Map Widgets for Patrol Events
-    id: traj_patrol_events_map_widgets_single_views
+    id: traj_pe_map_widgets_single_views
     task: create_map_widget_single_view
     map:
       argnames: [view, data]
       argvalues: ${{ workflow.traj_pe_ecomap_html_urls.return }}
   - name: Merge EcoMap Widget Views
-    id: traj_patrol_events_grouped_map_widget
+    id: traj_pe_grouped_map_widget
     task: merge_widget_views
     partial:
-      widgets: ${{ workflow.traj_patrol_events_map_widgets_single_views.return }}
+      widgets: ${{ workflow.traj_pe_map_widgets_single_views.return }}
 
   # patrol events bar chart
   - name: Draw Time Series Bar Chart for Patrols Events
@@ -165,7 +165,7 @@ workflow:
     task: gather_dashboard
     partial:
       widgets:
-        - ${{ workflow.traj_patrol_events_grouped_map_widget.return }}
+        - ${{ workflow.traj_pe_grouped_map_widget.return }}
         - ${{ workflow.td_map_widget.return }}
         - ${{ workflow.patrol_events_bar_chart_widget.return }}
         - ${{ workflow.patrol_events_pie_chart_widget.return }}
