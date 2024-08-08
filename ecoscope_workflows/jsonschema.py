@@ -51,14 +51,11 @@ class RJSFFilterUiSchema(BaseModel):
     """
 
     title: str
-    help: str
+    help: str | None = None
 
     @model_serializer
     def ser_model(self) -> dict[str, Any]:
-        return {
-            "ui:title": self.title,
-            "ui:help": self.help,
-        }
+        return {"ui:title": self.title} | ({"ui:help": self.help} if self.help else {})
 
 
 class RJSFFilter(BaseModel):
