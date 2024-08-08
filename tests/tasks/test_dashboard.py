@@ -424,7 +424,7 @@ def dashboard_with_none_views() -> DashboardFixture:
     )
     widgets = [great_map, none_view_plot]
     dashboard = Dashboard(
-        groupers={Grouper(index_name="month"): ["january", "february"]},
+        grouper_choices={Grouper(index_name="month"): ["january", "february"]},
         keys=[
             (("month", "=", "january"),),
             (("month", "=", "february"),),
