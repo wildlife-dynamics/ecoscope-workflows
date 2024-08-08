@@ -11,6 +11,7 @@ import os
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.groupby import set_groupers
 from ecoscope_workflows.tasks.groupby import split_groups
+from ecoscope_workflows.tasks.results import create_map_layer
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
@@ -73,14 +74,32 @@ split_obs = split_groups.partial(df=patrol_events, groupers=groupers).call(
 
 
 # %% [markdown]
+# ## Create Map Layer For Each Group
+
+# %%
+# parameters
+
+map_layers_params = dict(
+    data_type=...,
+    style_kws=...,
+)
+
+# %%
+# call the task
+
+
+map_layers = create_map_layer.partial(**map_layers_params).mapvalues(
+    argnames=["geodataframe"], argvalues=split_obs
+)
+
+
+# %% [markdown]
 # ## Create EcoMap For Each Group
 
 # %%
 # parameters
 
 ecomaps_params = dict(
-    data_type=...,
-    style_kws=...,
     tile_layer=...,
     static=...,
     title=...,
@@ -94,7 +113,7 @@ ecomaps_params = dict(
 
 
 ecomaps = draw_ecomap.partial(**ecomaps_params).mapvalues(
-    argnames=["geodataframe"], argvalues=split_obs
+    argnames=["geo_layers"], argvalues=map_layers
 )
 
 

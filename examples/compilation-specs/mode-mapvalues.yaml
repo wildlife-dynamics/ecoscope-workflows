@@ -18,13 +18,19 @@ workflow:
     partial:
       df: ${{ workflow.patrol_events.return }}
       groupers: ${{ workflow.groupers.return }}
-  # Step 4 - Mapping over the groups
+  # Step 4 - Create a map for each groups
+  - name: Create Map Layer For Each Group
+    id: map_layers
+    task: create_map_layer
+    mapvalues:
+      argnames: geodataframe
+      argvalues: ${{ workflow.split_obs.return }}
   - name: Create EcoMap For Each Group
     id: ecomaps
     task: draw_ecomap
     mapvalues:
-      argnames: "geodataframe"
-      argvalues: ${{ workflow.split_obs.return }}
+      argnames: "geo_layers"
+      argvalues: ${{ workflow.map_layers.return }}
   # Step 5 - Persisting the EcoMaps
   - name: Persist EcoMaps
     id: ecomaps_persist

@@ -5,6 +5,7 @@ import yaml
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.groupby import set_groupers
 from ecoscope_workflows.tasks.groupby import split_groups
+from ecoscope_workflows.tasks.results import create_map_layer
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
@@ -33,10 +34,16 @@ if __name__ == "__main__":
         .call(**params["split_obs"])
     )
 
+    map_layers = (
+        create_map_layer.validate()
+        .partial(**params["map_layers"])
+        .mapvalues(argnames=["geodataframe"], argvalues=split_obs)
+    )
+
     ecomaps = (
         draw_ecomap.validate()
         .partial(**params["ecomaps"])
-        .mapvalues(argnames=["geodataframe"], argvalues=split_obs)
+        .mapvalues(argnames=["geo_layers"], argvalues=map_layers)
     )
 
     ecomaps_persist = (
