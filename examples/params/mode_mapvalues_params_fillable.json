@@ -341,6 +341,43 @@
                 "title": "GroupedWidget",
                 "type": "object"
             },
+            "Grouper": {
+                "properties": {
+                    "index_name": {
+                        "title": "Index Name",
+                        "type": "string"
+                    },
+                    "display_name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Display Name"
+                    },
+                    "help_text": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Help Text"
+                    }
+                },
+                "required": [
+                    "index_name"
+                ],
+                "title": "Grouper",
+                "type": "object"
+            },
             "WidgetSingleView": {
                 "properties": {
                     "widget_type": {
