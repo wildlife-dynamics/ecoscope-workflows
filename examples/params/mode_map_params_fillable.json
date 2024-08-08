@@ -152,7 +152,7 @@
                     "properties": {
                         "geodataframe": {
                             "title": "Geodataframe",
-                            "type": "ecoscope.distributed.types.DataFrame"
+                            "type": "ecoscope_workflows.annotations.DataFrame"
                         },
                         "data_type": {
                             "title": "Data Type",
@@ -177,20 +177,17 @@
                 "tile_layer": {
                     "default": "",
                     "title": "Tile Layer",
-                    "type": "string",
-                    "description": "A named tile layer, ie OpenStreetMap."
+                    "type": "string"
                 },
                 "static": {
                     "default": false,
                     "title": "Static",
-                    "type": "boolean",
-                    "description": "Set to true to disable map pan/zoom."
+                    "type": "boolean"
                 },
                 "title": {
                     "default": "",
                     "title": "Title",
-                    "type": "string",
-                    "description": "The map title."
+                    "type": "string"
                 },
                 "title_kws": {
                     "anyOf": [
@@ -202,8 +199,7 @@
                         }
                     ],
                     "default": null,
-                    "title": "Title Kws",
-                    "description": "Additional arguments for configuring the Title."
+                    "title": "Title Kws"
                 },
                 "scale_kws": {
                     "anyOf": [
@@ -215,8 +211,7 @@
                         }
                     ],
                     "default": null,
-                    "title": "Scale Kws",
-                    "description": "Additional arguments for configuring the Scale Bar."
+                    "title": "Scale Kws"
                 },
                 "north_arrow_kws": {
                     "anyOf": [
@@ -228,8 +223,7 @@
                         }
                     ],
                     "default": null,
-                    "title": "North Arrow Kws",
-                    "description": "Additional arguments for configuring the North Arrow."
+                    "title": "North Arrow Kws"
                 }
             },
             "required": [],

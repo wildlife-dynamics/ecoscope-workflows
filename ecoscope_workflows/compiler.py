@@ -3,7 +3,7 @@ import functools
 import keyword
 import pathlib
 import subprocess
-from typing import Annotated, Any, Callable, Literal, TypeAlias
+from typing import Annotated, Any, Callable, Literal, TypeAlias, TypeVar
 
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
@@ -12,6 +12,7 @@ from pydantic import (
     Field,
     PlainSerializer,
     computed_field,
+    field_validator,
     model_serializer,
     model_validator,
 )
@@ -20,6 +21,8 @@ from pydantic.functional_validators import AfterValidator, BeforeValidator
 from ecoscope_workflows.jsonschema import ReactJSONSchemaFormConfiguration
 from ecoscope_workflows.registry import KnownTask, known_tasks
 
+T = TypeVar("T")
+
 TEMPLATES = pathlib.Path(__file__).parent / "templates"
 
 
@@ -27,13 +30,13 @@ class _ForbidExtra(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
-class WorkflowVariableBase(BaseModel):
+class _WorkflowVariable(BaseModel):
     """Base class for workflow variables."""
 
     value: str
 
 
-class TaskIdVariable(WorkflowVariableBase):
+class TaskIdVariable(_WorkflowVariable):
     """A variable that references the return value of another task in the workflow."""
 
     suffix: Literal["return"]
@@ -43,7 +46,7 @@ class TaskIdVariable(WorkflowVariableBase):
         return self.value
 
 
-class EnvVariable(WorkflowVariableBase):
+class EnvVariable(_WorkflowVariable):
     """A variable that references an environment variable."""
 
     @model_serializer
@@ -106,7 +109,28 @@ def _is_valid_spec_name(s: str):
     return s
 
 
-Variable = Annotated[TaskIdVariable | EnvVariable, BeforeValidator(_parse_variables)]
+WorkflowVariable = Annotated[
+    TaskIdVariable | EnvVariable, BeforeValidator(_parse_variables)
+]
+
+
+def _serialize_variables(v: list[WorkflowVariable]) -> str:
+    return (
+        v[0].model_dump()
+        if len(v) == 1
+        else f"[{', '.join(var.model_dump() for var in v)}]"
+    )
+
+
+def _singleton_or_list_aslist(s: T | list[T]) -> list[T]:
+    return [s] if not isinstance(s, list) else s
+
+
+Vars = Annotated[
+    list[WorkflowVariable],
+    BeforeValidator(_singleton_or_list_aslist),
+    PlainSerializer(_serialize_variables, return_type=str),
+]
 TaskInstanceId = Annotated[
     str,
     AfterValidator(_is_not_reserved),
@@ -114,31 +138,47 @@ TaskInstanceId = Annotated[
 ]
 KnownTaskName = Annotated[str, AfterValidator(_is_known_task_name)]
 KnownTaskArgName: TypeAlias = str
-_ArgDependenciesTypeAlias: TypeAlias = dict[KnownTaskArgName, Variable | list[Variable]]
-
-
-def _serialize_arg_deps(arg_deps: _ArgDependenciesTypeAlias) -> dict[str, str]:
-    return {
-        arg: (
-            dep.model_dump()
-            if not isinstance(dep, list)
-            else f"[{', '.join(d.model_dump() for d in dep)}]"
-        )
-        for arg, dep in arg_deps.items()
-    }
-
-
-ArgDependencies = Annotated[
-    _ArgDependenciesTypeAlias,
-    PlainSerializer(_serialize_arg_deps, return_type=dict[str, str]),
-]
+ArgDependencies: TypeAlias = dict[KnownTaskArgName, Vars]
 SpecId = Annotated[
     str, AfterValidator(_is_not_reserved), AfterValidator(_is_valid_spec_name)
 ]
+ParallelOpArgNames = Annotated[
+    list[KnownTaskArgName], BeforeValidator(_singleton_or_list_aslist)
+]
 
 
-def _dep_as_list(dep: Variable | list[Variable]) -> list[Variable]:
-    return [dep] if not isinstance(dep, list) else dep
+class _ParallelOperation(_ForbidExtra):
+    argnames: ParallelOpArgNames = Field(default_factory=list)
+    argvalues: Vars = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def both_fields_required_if_either_given(self) -> "_ParallelOperation":
+        if bool(self.argnames) != bool(self.argvalues):
+            raise ValueError(
+                "Both `argnames` and `argvalues` must be provided if either is given."
+            )
+        return self
+
+    def __bool__(self):
+        """Return False if both `argnames` and `argvalues` are empty. Otherwise, return True.
+        Lets us use empty `_ParallelOperation` models as their own defaults in `TaskInstance`,
+        while still allowing boolean checks such as `if self.map`, `if self.mapvalues`, etc.
+        """
+        return bool(self.argnames) and bool(self.argvalues)
+
+
+class MapOperation(_ParallelOperation):
+    pass
+
+
+class MapValuesOperation(_ParallelOperation):
+    @field_validator("argnames")
+    def check_argnames(cls, v: str | list) -> str | list:
+        if isinstance(v, list) and len(v) > 1:
+            raise NotImplementedError(
+                "Unpacking mutiple `argnames` is not yet implemented for `mapvalues`."
+            )
+        return v
 
 
 class TaskInstance(_ForbidExtra):
@@ -164,69 +204,72 @@ class TaskInstance(_ForbidExtra):
         The name of the known task to be executed. This must be a registered known task name.
         """,
     )
-    mode: Literal["call", "map"] = Field(
-        default="call",
-        description="""\
-        The mode in which this task will be executed. In `call` mode, the task will be
-        called directly. In `map` mode, the task will be called in parallel for each
-        element of an iterable. The iterable is the return value of the task specified
-        in the `with` field.
-        """,
-    )
-    map_iterable: ArgDependencies = Field(
+    partial: ArgDependencies = Field(
         default_factory=dict,
-        alias="iter",
         description="""\
-        The iterable to be passed to the task in `map` mode. This must be a single key-value
-        pair where the key is the name of the argument on the known task that will receive
-        each element of the iterable, and the value is the iterable itself. The value can be
-        a variable reference or a list of variable references. The variable reference(s) must be
-        in the form `${{ workflow.<task_id>.return }}` where `<task_id>` is the `id` of another
-        task instance in the workflow.
+        Static keyword arguments to be passed to every invocation of the the task. This is a
+        dict with keys which are the names of the arguments on the known task, and values which
+        are the values to be passed. The values can be variable references or lists of variable
+        references. The variable reference(s) may be in the form `${{ workflow.<task_id>.return }}`
+        for task return values, or `${{ env.<ENV_VAR_NAME> }}` for environment variables.
+
+        For more details, see `Task.partial` in the `decorators` module.
         """,
     )
-    arg_dependencies: ArgDependencies = Field(
-        default_factory=dict,
-        alias="with",
+    map: MapOperation = Field(
+        default_factory=MapOperation,
         description="""\
-        Keyword arguments to be passed to the task. This must be a dictionary where the keys
-        are the names of the arguments on the known task that will receive the values, and the
-        values are the values to be passed. The values can be variable references or lists of
-        variable references. The variable reference(s) may be in the form
-        `${{ workflow.<task_id>.return }}` for task return values, or `${{ env.<ENV_VAR_NAME> }}`
-        for environment variables. In mode `map` these keyword arguments will be passed to each
-        invocation of the task.
+        A `map` operation to apply the task to an iterable of values. The `argnames` must be a
+        single string, or a list of strings, which correspond to name(s) of argument(s) in the
+        task function signature. The `argvalues` must be a variable reference of form
+        `${{ workflow.<task_id>.return }}` (where the task id is the id of another task in the
+        workflow with an iterable return), or a list of such references (where each reference is
+        non-iterable, such that the combination of those references is a flat iterable).
+
+        For more details, see `Task.map` in the `decorators` module.
         """,
     )
+    mapvalues: MapValuesOperation = Field(
+        default_factory=MapValuesOperation,
+        description="""\
+        A `mapvalues` operation to apply the task to an iterable of key-value pairs. The `argnames`
+        must be a single string, or a single-element list of strings, which correspond to the name
+        of an argument on the task function signature. The `argvalues` must be a list of tuples where
+        the first element of each tuple is the key to passthrough, and the second element is the value
+        to transform.
+
+        For more details, see `Task.mapvalues` in the `decorators` module.
+        """,
+    )
+
+    @property
+    def flattened_partial_values(self) -> list[WorkflowVariable]:
+        return [var for dep in self.partial.values() for var in dep]
+
+    @property
+    def all_dependencies(self) -> list[WorkflowVariable]:
+        return (
+            self.flattened_partial_values
+            + self.map.argvalues
+            + self.mapvalues.argvalues
+        )
 
     @model_validator(mode="after")
     def check_does_not_depend_on_self(self) -> "Spec":
-        for arg, dep in (self.arg_dependencies | self.map_iterable).items():
-            for d in _dep_as_list(dep):
-                if isinstance(d, TaskIdVariable) and d.value == self.id:
-                    raise ValueError(
-                        f"Task `{self.name}` has an arg dependency that references itself: "
-                        f"`{arg}` is set to depend on the return value of `{d.value}`. "
-                        "Task instances cannot depend on their own return values."
-                    )
+        for dep in self.all_dependencies:
+            if isinstance(dep, TaskIdVariable) and dep.value == self.id:
+                raise ValueError(
+                    f"Task `{self.name}` has an arg dependency that references itself: "
+                    f"`{dep.value}`. Task instances cannot depend on their own return values."
+                )
         return self
 
     @model_validator(mode="after")
-    def check_map_iterable(self) -> "Spec":
-        if self.mode == "call" and self.map_iterable:
+    def check_only_oneof_map_or_mapvalues(self) -> "Spec":
+        if self.map and self.mapvalues:
             raise ValueError(
-                "In `call` mode, the `iter` field must be empty. "
-                "Specify keyword arguments in the `with` field."
-            )
-        elif self.mode == "map" and not self.map_iterable:
-            raise ValueError(
-                "In `map` mode, the `iter` field must be specified with an iterable."
-            )
-        if len(self.map_iterable) > 1:
-            raise ValueError(
-                "The `iter` field must have only one key-value pair. "
-                "To pass additional keyword arguments to each mapped invocation, "
-                "provide them in the `with` field."
+                f"Task `{self.name}` cannot have both `map` and `mapvalues` set. "
+                "Please choose one or the other."
             )
         return self
 
@@ -236,6 +279,17 @@ class TaskInstance(_ForbidExtra):
         kt = known_tasks[self.known_task_name]
         assert self.known_task_name == kt.function
         return kt
+
+    @computed_field  # type: ignore[misc]
+    @property
+    def method(self) -> str:
+        return (
+            "map"
+            if self.map
+            else None or "mapvalues"
+            if self.mapvalues
+            else None or "call"
+        )
 
 
 def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
@@ -306,35 +360,25 @@ class Spec(_ForbidExtra):
         return self
 
     @model_validator(mode="after")
-    def check_all_arg_deps_are_ids_of_other_tasks(self) -> "Spec":
+    def check_all_task_id_deps_use_actual_ids_of_other_tasks(self) -> "Spec":
         all_ids = [task_instance.id for task_instance in self.workflow]
-        for task_instance in self.workflow:
-            for dep in task_instance.arg_dependencies.values():
-                for d in _dep_as_list(dep):
-                    if isinstance(d, TaskIdVariable) and d.value not in all_ids:
-                        raise ValueError(
-                            f"Task `{task_instance.name}` has an arg dependency `{d.value}` that is "
-                            f"not a valid task id. Valid task ids for this workflow are: {all_ids}"
-                        )
+        for ti_id, deps in self.task_instance_dependencies.items():
+            for d in deps:
+                if d not in all_ids:
+                    raise ValueError(
+                        f"Task `{ti_id}` has an arg dependency `{d}` that is "
+                        f"not a valid task id. Valid task ids for this workflow are: {all_ids}"
+                    )
         return self
 
     @property
     def task_instance_dependencies(self) -> dict[str, list[str]]:
         return {
-            task_instance.id: (
-                [
-                    d.value
-                    for dep in task_instance.arg_dependencies.values()
-                    for d in _dep_as_list(dep)
-                    if isinstance(d, TaskIdVariable)
-                ]
-                + [
-                    d.value
-                    for dep in task_instance.map_iterable.values()
-                    for d in _dep_as_list(dep)
-                    if isinstance(d, TaskIdVariable)
-                ]
-            )
+            task_instance.id: [
+                d.value
+                for d in task_instance.all_dependencies
+                if isinstance(d, TaskIdVariable)
+            ]
             for task_instance in self.workflow
         }
 
@@ -390,8 +434,9 @@ class DagCompiler(BaseModel):
         # because we don't need it to be passed as a parameter by the user.
         return (
             ["return"]
-            + [arg for t in self.spec.workflow for arg in t.arg_dependencies]
-            + [arg for t in self.spec.workflow for arg in t.map_iterable]
+            + [arg for t in self.spec.workflow for arg in t.partial]
+            + [arg for t in self.spec.workflow for arg in t.map.argnames]
+            + [arg for t in self.spec.workflow for arg in t.mapvalues.argnames]
         )
 
     def get_params_jsonschema(self) -> dict[str, Any]:

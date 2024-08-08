@@ -28,7 +28,7 @@ def test_dag_compiler_from_spec():
           - name: Process Relocations
             id: relocs
             task: process_relocations
-            with:
+            partial:
               observations: ${{ workflow.obs.return }}
         """
     )
@@ -40,7 +40,7 @@ def test_dag_compiler_from_spec():
 def test_extra_forbid_raises():
     s = dedent(
         # this workflow has an extra key, `observations` in the second task
-        # this is a mistake, as this should be nested under a `with` block
+        # this is a mistake, as this should be nested under a `partial` block
         """\
         id: calculate_time_density
         workflow:
@@ -150,7 +150,7 @@ def test_invalid_known_task_name_raises(task: str, valid_known_task_name: bool):
         ("get_subjectgroup_observations", False),
     ],
 )
-def test_arg_deps_must_be_valid_id_of_another_task(
+def test_partial_args_must_be_valid_id_of_another_task(
     arg_dep_id: str,
     valid_id_of_another_task: bool,
 ):
@@ -164,20 +164,20 @@ def test_arg_deps_must_be_valid_id_of_another_task(
           - name: Process Relocations
             id: relocs
             task: process_relocations
-            with:
+            partial:
                 observations: ${{{{ workflow.{arg_dep_id}.return }}}}
         """
     )
     if valid_id_of_another_task:
         spec = Spec(**yaml.safe_load(s))
-        assert spec.workflow[1].arg_dependencies == {
-            "observations": TaskIdVariable(value="obs", suffix="return")
+        assert spec.workflow[1].partial == {
+            "observations": [TaskIdVariable(value="obs", suffix="return")]
         }
     else:
         with pytest.raises(
             ValidationError,
             match=re.escape(
-                f"Task `Process Relocations` has an arg dependency `{arg_dep_id}` that is "
+                f"Task `relocs` has an arg dependency `{arg_dep_id}` that is "
                 "not a valid task id. Valid task ids for this workflow are: ['obs', 'relocs']",
             ),
         ):
@@ -194,7 +194,7 @@ def test_arg_deps_must_be_valid_id_of_another_task(
         (["map_widget", "draw_ecoplot"], False),
     ],
 )
-def test_all_arg_deps_array_members_must_be_valid_id_of_another_task(
+def test_all_partial_array_members_must_be_valid_id_of_another_task(
     arg_dep_ids: list[str],
     all_valid_ids_of_another_task: bool,
 ):
@@ -211,7 +211,7 @@ def test_all_arg_deps_array_members_must_be_valid_id_of_another_task(
           - name: Gather Dashboard
             id: dashboard
             task: gather_dashboard
-            with:
+            partial:
               widgets:
                 - ${{{{ workflow.{arg_dep_ids[0]}.return }}}}
                 - ${{{{ workflow.{arg_dep_ids[1]}.return }}}}
@@ -219,14 +219,14 @@ def test_all_arg_deps_array_members_must_be_valid_id_of_another_task(
     )
     if all_valid_ids_of_another_task:
         spec = Spec(**yaml.safe_load(s))
-        assert spec.workflow[2].arg_dependencies == {
+        assert spec.workflow[2].partial == {
             "widgets": [TaskIdVariable(value=v, suffix="return") for v in arg_dep_ids]
         }
     else:
         with pytest.raises(
             ValidationError,
             match=re.escape(
-                f"Task `Gather Dashboard` has an arg dependency `{arg_dep_ids[1]}` that is not a "
+                f"Task `dashboard` has an arg dependency `{arg_dep_ids[1]}` that is not a "
                 "valid task id. Valid task ids for this workflow are: "
                 "['map_widget', 'plot_widget', 'dashboard']",
             ),
@@ -266,7 +266,7 @@ def test_invaild_spec_name_raises(invalid_name: str, raises_match: str):
         _ = Spec(**yaml.safe_load(s))
 
 
-def test_mode_default():
+def test_method_default():
     s = dedent(
         """\
         id: calculate_time_density
@@ -277,84 +277,10 @@ def test_mode_default():
         """
     )
     spec = Spec(**yaml.safe_load(s))
-    assert spec.workflow[0].mode == "call"
+    assert spec.workflow[0].method == "call"
 
 
-@pytest.mark.parametrize(
-    "mode, valid_mode",
-    [
-        ("call", True),
-        ("Call", False),
-    ],
-)
-def test_set_mode_call(mode: str, valid_mode: bool):
-    s = dedent(
-        f"""\
-        id: calculate_time_density
-        workflow:
-          - name: Get Subjectgroup Observations
-            id: obs
-            task: get_subjectgroup_observations
-            mode: {mode}
-        """
-    )
-    if valid_mode:
-        spec = Spec(**yaml.safe_load(s))
-        assert spec.workflow[0].mode == mode
-    else:
-        with pytest.raises(
-            ValidationError,
-            match=re.escape(
-                f"Input should be 'call' or 'map' [type=literal_error, input_value='{mode}',"
-            ),
-        ):
-            _ = Spec(**yaml.safe_load(s))
-
-
-@pytest.mark.parametrize(
-    "mode, valid_mode",
-    [
-        ("map", True),
-        ("maptuple", False),
-        ("flatmap", False),
-        ("flatmaptuple", False),
-    ],
-)
-def test_set_mode_map(mode: str, valid_mode: bool):
-    s = dedent(
-        f"""\
-        id: calculate_time_density
-        workflow:
-          - name: Get Subjectgroup Observations A
-            id: obs_a
-            task: get_subjectgroup_observations
-          - name: Get Subjectgroup Observations B
-            id: obs_b
-            task: get_subjectgroup_observations
-          - name: Draw Ecomaps
-            id: ecomaps
-            task: draw_ecomap
-            mode: {mode}
-            iter:
-              geodataframe:
-                - ${{{{ workflow.obs_a.return }}}}
-                - ${{{{ workflow.obs_b.return }}}}
-        """
-    )
-    if valid_mode:
-        spec = Spec(**yaml.safe_load(s))
-        assert spec.workflow[2].mode == mode
-    else:
-        with pytest.raises(
-            ValidationError,
-            match=re.escape(
-                f"Input should be 'call' or 'map' [type=literal_error, input_value='{mode}',"
-            ),
-        ):
-            _ = Spec(**yaml.safe_load(s))
-
-
-def test_depends_on_self_raises():
+def test_only_oneof_map_or_mapvalues():
     s = dedent(
         """\
         id: calculate_time_density
@@ -365,7 +291,36 @@ def test_depends_on_self_raises():
           - name: Process Relocations
             id: relocs
             task: process_relocations
-            with:
+            map:
+              argnames: [a, b]
+              argvalues: ${{ workflow.obs.return }}  # this is nonsense, but it's not what's being tested
+            mapvalues:
+              argnames: c
+              argvalues: ${{ workflow.obs.return }}  # this is nonsense, but it's not what's being tested
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape(
+            "Task `Process Relocations` cannot have both `map` and `mapvalues` set. "
+            "Please choose one or the other."
+        ),
+    ):
+        _ = Spec(**yaml.safe_load(s))
+
+
+def test_depends_on_self_in_partial_raises():
+    s = dedent(
+        """\
+        id: calculate_time_density
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            partial:
               observations: ${{ workflow.relocs.return }}
         """
     )
@@ -373,8 +328,59 @@ def test_depends_on_self_raises():
         ValidationError,
         match=re.escape(
             "Task `Process Relocations` has an arg dependency that references itself: "
-            "`observations` is set to depend on the return value of `relocs`. "
-            "Task instances cannot depend on their own return values."
+            "`relocs`. Task instances cannot depend on their own return values."
+        ),
+    ):
+        _ = Spec(**yaml.safe_load(s))
+
+
+def test_depends_on_self_in_map_raises():
+    s = dedent(
+        """\
+        id: calculate_time_density
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            map:
+              argnames: observations
+              argvalues: ${{ workflow.relocs.return }}
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape(
+            "Task `Process Relocations` has an arg dependency that references itself: "
+            "`relocs`. Task instances cannot depend on their own return values."
+        ),
+    ):
+        _ = Spec(**yaml.safe_load(s))
+
+
+def test_depends_on_self_in_mapvalues_raises():
+    s = dedent(
+        """\
+        id: calculate_time_density
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            mapvalues:
+              argnames: observations
+              argvalues: ${{ workflow.relocs.return }}
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape(
+            "Task `Process Relocations` has an arg dependency that references itself: "
+            "`relocs`. Task instances cannot depend on their own return values."
         ),
     ):
         _ = Spec(**yaml.safe_load(s))
@@ -413,12 +419,12 @@ def test_task_instance_dependencies_property():
           - name: Process Relocations
             id: relocs
             task: process_relocations
-            with:
+            partial:
               observations: ${{ workflow.obs.return }}
           - name: Transform Relocations to Trajectories
             id: traj
             task: relocations_to_trajectory
-            with:
+            partial:
               relocations: ${{ workflow.relocs.return }}
         """
     )
@@ -430,7 +436,7 @@ def test_task_instance_dependencies_property():
     }
 
 
-def test_wrong_topological_order_raises():
+def test_wrong_topological_order_partial_raises():
     s = dedent(
         """\
         id: calculate_time_density
@@ -438,7 +444,7 @@ def test_wrong_topological_order_raises():
           - name: Process Relocations
             id: relocs
             task: process_relocations
-            with:
+            partial:
               observations: ${{ workflow.obs.return }}
           - name: Get Subjectgroup Observations
             id: obs
@@ -451,6 +457,117 @@ def test_wrong_topological_order_raises():
             "Task instances are not in topological order. "
             "`Process Relocations` depends on `Get Subjectgroup Observations`, "
             "but `Get Subjectgroup Observations` is defined after `Process Relocations`."
+        ),
+    ):
+        _ = Spec(**yaml.safe_load(s))
+
+
+def test_wrong_topological_order_map_raises():
+    s = dedent(
+        """\
+        id: calculate_time_density
+        workflow:
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            map:
+              argnames: observations
+              argvalues: ${{ workflow.obs.return }}
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape(
+            "Task instances are not in topological order. "
+            "`Process Relocations` depends on `Get Subjectgroup Observations`, "
+            "but `Get Subjectgroup Observations` is defined after `Process Relocations`."
+        ),
+    ):
+        _ = Spec(**yaml.safe_load(s))
+
+
+def test_wrong_topological_order_mapvalues_raises():
+    s = dedent(
+        """\
+        id: calculate_time_density
+        workflow:
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            mapvalues:
+              argnames: observations
+              argvalues: ${{ workflow.obs.return }}
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape(
+            "Task instances are not in topological order. "
+            "`Process Relocations` depends on `Get Subjectgroup Observations`, "
+            "but `Get Subjectgroup Observations` is defined after `Process Relocations`."
+        ),
+    ):
+        _ = Spec(**yaml.safe_load(s))
+
+
+def test_generate_dag_smoke():
+    s = dedent(
+        """\
+        id: calculate_time_density
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            partial:
+              observations: ${{ workflow.obs.return }}
+          - name: Transform Relocations to Trajectories
+            id: traj
+            task: relocations_to_trajectory
+            partial:
+              relocations: ${{ workflow.relocs.return }}
+        """
+    )
+    spec = Spec(**yaml.safe_load(s))
+    dc = DagCompiler(spec=spec)
+    dag = dc.generate_dag()
+    assert isinstance(dag, str)
+
+
+@pytest.mark.parametrize("parallel_op_name", ["map", "mapvalues"])
+@pytest.mark.parametrize(
+    "field_name, field_value",
+    [
+        ("argnames", "a"),
+        ("argvalues", "${{ workflow.obs.return }}"),
+    ],
+)
+def test_map_both_fields_required_if_either_given(
+    parallel_op_name, field_name, field_value
+):
+    s = dedent(
+        f"""\
+        id: calculate_time_density
+        workflow:
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            {parallel_op_name}:
+              {field_name}: {field_value}
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape(
+            "Both `argnames` and `argvalues` must be provided if either is given."
         ),
     ):
         _ = Spec(**yaml.safe_load(s))

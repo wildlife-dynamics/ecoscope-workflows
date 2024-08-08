@@ -30,9 +30,9 @@ obs_a_params = dict(
 # %%
 # call the task
 
-obs_a = get_subjectgroup_observations(
-    **obs_a_params,
-)
+
+obs_a = get_subjectgroup_observations.call(**obs_a_params)
+
 
 # %% [markdown]
 # ## Get Observations B
@@ -51,9 +51,9 @@ obs_b_params = dict(
 # %%
 # call the task
 
-obs_b = get_subjectgroup_observations(
-    **obs_b_params,
-)
+
+obs_b = get_subjectgroup_observations.call(**obs_b_params)
+
 
 # %% [markdown]
 # ## Get Observations C
@@ -72,9 +72,9 @@ obs_c_params = dict(
 # %%
 # call the task
 
-obs_c = get_subjectgroup_observations(
-    **obs_c_params,
-)
+
+obs_c = get_subjectgroup_observations.call(**obs_c_params)
+
 
 # %% [markdown]
 # ## Create Map Layer For Each Group
@@ -90,17 +90,10 @@ map_layers_params = dict(
 # %%
 # call the task
 
-map_layers_mapped_iterable = map(
-    lambda kw: create_map_layer.replace(validate=True)(**kw),
-    [
-        {
-            "geodataframe": i,
-        }
-        | map_layers_params
-        for i in [obs_a, obs_b, obs_c]
-    ],
+
+map_layers = create_map_layer.partial(**map_layers_params).map(
+    argnames=["geodataframe"], argvalues=[obs_a, obs_b, obs_c]
 )
-map_layers = list(map_layers_mapped_iterable)
 
 
 # %% [markdown]
@@ -121,17 +114,10 @@ ecomaps_params = dict(
 # %%
 # call the task
 
-ecomaps_mapped_iterable = map(
-    lambda kw: draw_ecomap.replace(validate=True)(**kw),
-    [
-        {
-            "geo_layers": i,
-        }
-        | ecomaps_params
-        for i in [map_layers]
-    ],
+
+ecomaps = draw_ecomap.partial(**ecomaps_params).map(
+    argnames=["geo_layers"], argvalues=map_layers
 )
-ecomaps = list(ecomaps_mapped_iterable)
 
 
 # %% [markdown]
@@ -147,15 +133,7 @@ td_ecomap_html_url_params = dict(
 # %%
 # call the task
 
-td_ecomap_html_url_mapped_iterable = map(
-    lambda kw: persist_text.replace(validate=True)(**kw),
-    [
-        {
-            "text": i,
-            "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-        }
-        | td_ecomap_html_url_params
-        for i in ecomaps
-    ],
-)
-td_ecomap_html_url = list(td_ecomap_html_url_mapped_iterable)
+
+td_ecomap_html_url = persist_text.partial(
+    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"], **td_ecomap_html_url_params
+).map(argnames=["text"], argvalues=ecomaps)

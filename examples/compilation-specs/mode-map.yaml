@@ -12,24 +12,23 @@ workflow:
   - name: Create Map Layer For Each Group
     id: map_layers
     task: create_map_layer
-    mode: map
-    iter:
-      geodataframe:
+    map:
+      argnames: geodataframe
+      argvalues:
         - ${{ workflow.obs_a.return }}
         - ${{ workflow.obs_b.return }}
         - ${{ workflow.obs_c.return }}
   - name: Create EcoMap For Each Group
     id: ecomaps
     task: draw_ecomap
-    mode: map
-    iter:
-      geo_layers:
-        - ${{ workflow.map_layers.return }}
+    map:
+      argnames: geo_layers
+      argvalues: ${{ workflow.map_layers.return }}
   - name: Persist Ecomaps as Text
     id: td_ecomap_html_url
     task: persist_text
-    mode: map
-    iter:
-      text: ${{ workflow.ecomaps.return }}
-    with:
+    partial:
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+    map:
+      argnames: "text"
+      argvalues: ${{ workflow.ecomaps.return }}

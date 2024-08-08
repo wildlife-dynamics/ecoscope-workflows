@@ -4,10 +4,10 @@ import pandas as pd
 from pydantic import Field
 
 from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import task
 
 
-@distributed
+@task
 def aggregate(
     df: DataFrame[JsonSerializableDataFrameModel],
     column_name: Annotated[str, Field(description="Column to aggregate")],

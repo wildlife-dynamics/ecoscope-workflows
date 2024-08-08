@@ -10,7 +10,7 @@ from ecoscope_workflows.annotations import (
     EarthRangerClient,
     JsonSerializableDataFrameModel,
 )
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import task
 
 
 class SubjectGroupObservationsGDFSchema(JsonSerializableDataFrameModel):
@@ -31,7 +31,7 @@ class EventGDFSchema(JsonSerializableDataFrameModel):
     event_type: pa.typing.Series[str] = pa.Field()
 
 
-@distributed(tags=["io"])
+@task(tags=["io"])
 def get_subjectgroup_observations(
     client: EarthRangerClient,
     subject_group_name: Annotated[
@@ -54,7 +54,7 @@ def get_subjectgroup_observations(
     )
 
 
-@distributed(tags=["io"])
+@task(tags=["io"])
 def get_patrol_observations(
     client: EarthRangerClient,
     since: Annotated[str, Field(description="Start date")],
@@ -81,7 +81,7 @@ def get_patrol_observations(
     )
 
 
-@distributed(tags=["io"])
+@task(tags=["io"])
 def get_patrol_events(
     client: EarthRangerClient,
     since: Annotated[str, Field(description="Start date")],

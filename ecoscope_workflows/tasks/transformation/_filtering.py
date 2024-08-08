@@ -4,12 +4,12 @@ from typing import Annotated
 from pydantic import Field
 
 from ecoscope_workflows.annotations import AnyGeoDataFrameSchema, DataFrame
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import task
 
 logger = logging.getLogger(__name__)
 
 
-@distributed
+@task
 def apply_reloc_coord_filter(
     df: DataFrame[AnyGeoDataFrameSchema],
     min_x: Annotated[float, Field(default=-180.0)] = -180.0,

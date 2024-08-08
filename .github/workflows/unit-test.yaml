@@ -27,6 +27,10 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[test]"
 
+      - name: Run doctests
+        run: |
+          python3 -m pytest -v ecoscope_workflows/ --doctest-modules
+
       - name: Test with pytest
         env:
           EARTHRANGER_SERVER: ${{ secrets.EARTHRANGER_SERVER }}

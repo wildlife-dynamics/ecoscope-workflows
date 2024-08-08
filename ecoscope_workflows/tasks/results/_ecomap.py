@@ -4,7 +4,7 @@ from typing import Annotated, Literal
 from pydantic import Field
 
 from ecoscope_workflows.annotations import AnyGeoDataFrame
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import task
 
 
 @dataclass
@@ -14,7 +14,7 @@ class LayerDefinition:
     style_kws: dict
 
 
-@distributed
+@task
 def create_map_layer(
     geodataframe: Annotated[
         AnyGeoDataFrame, Field(description="The geodataframe to visualize.")
@@ -44,10 +44,10 @@ def create_map_layer(
     )
 
 
-@distributed
+@task
 def draw_ecomap(
     geo_layers: Annotated[
-        list[LayerDefinition],
+        LayerDefinition | list[LayerDefinition],
         Field(description="A list of map layers to add to the map."),
     ],
     tile_layer: Annotated[
@@ -101,6 +101,7 @@ def draw_ecomap(
     if tile_layer:
         m.add_layer(EcoMap.get_named_tile_layer(tile_layer))
 
+    geo_layers = [geo_layers] if not isinstance(geo_layers, list) else geo_layers
     for layer_def in geo_layers:
         match layer_def.data_type:
             case "Point":

@@ -4,7 +4,7 @@ from typing import Annotated, Any, Generator
 
 from pydantic import BaseModel, Field, model_serializer
 
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import task
 from ecoscope_workflows.jsonschema import (
     ReactJSONSchemaFormFilters,
     RJSFFilter,
@@ -193,7 +193,7 @@ def composite_filters_to_grouper_choices_dict(
     return choices
 
 
-@distributed
+@task
 def gather_dashboard(
     title: Annotated[str, Field(description="The title of the dashboard")],
     description: Annotated[str, Field(description="The description of the dashboard")],
