@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Annotated
+from typing import Any, Annotated
 
 from pydantic import Field
 
@@ -59,8 +59,9 @@ def set_groupers(
     return groupers
 
 
-KeyedIterable = list[tuple[CompositeFilter, AnyDataFrame]]
-CombinedKeyedIterable = list[tuple[CompositeFilter, list[AnyDataFrame]]]
+KeyedIterableOfDataFrames = list[tuple[CompositeFilter, AnyDataFrame]]
+KeyedIterableOfAny = list[tuple[CompositeFilter, Any]]
+CombinedKeyedIterable = list[tuple[CompositeFilter, list[Any]]]
 
 
 @task
@@ -70,7 +71,7 @@ def split_groups(
         list[Grouper], Field(description="Index(es) and/or column(s) to group by")
     ],
 ) -> Annotated[
-    KeyedIterable,
+    KeyedIterableOfDataFrames,
     Field(
         description="""\
         List of 2-tuples of key:value pairs. Each key:value pair consists of a composite
@@ -90,7 +91,7 @@ def split_groups(
 @task
 def groupbykey(
     iterables: Annotated[
-        list[KeyedIterable], Field(description="List of keyed iterables")
+        list[KeyedIterableOfAny], Field(description="List of keyed iterables")
     ],
 ) -> Annotated[
     CombinedKeyedIterable,
