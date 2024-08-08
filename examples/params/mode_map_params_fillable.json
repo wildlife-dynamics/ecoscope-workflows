@@ -121,13 +121,13 @@
             ],
             "type": "object"
         },
-        "Creat EcoMap For Each Group": {
+        "Create Map Layer For Each Group": {
             "additionalProperties": false,
             "properties": {
                 "data_type": {
                     "enum": [
-                        "Scatterplot",
-                        "Path",
+                        "Point",
+                        "Polyline",
                         "Polygon"
                     ],
                     "title": "Data Type",
@@ -135,11 +135,45 @@
                     "description": "The type of visualization."
                 },
                 "style_kws": {
-                    "default": {},
                     "title": "Style Kws",
                     "type": "object",
-                    "description": "Style arguments for the data visualization."
-                },
+                    "description": "Style arguments for the layer."
+                }
+            },
+            "required": [
+                "data_type",
+                "style_kws"
+            ],
+            "type": "object"
+        },
+        "Create EcoMap For Each Group": {
+            "$defs": {
+                "LayerDefinition": {
+                    "properties": {
+                        "geodataframe": {
+                            "title": "Geodataframe",
+                            "type": "ecoscope.distributed.types.DataFrame"
+                        },
+                        "data_type": {
+                            "title": "Data Type",
+                            "type": "string"
+                        },
+                        "style_kws": {
+                            "title": "Style Kws",
+                            "type": "object"
+                        }
+                    },
+                    "required": [
+                        "geodataframe",
+                        "data_type",
+                        "style_kws"
+                    ],
+                    "title": "LayerDefinition",
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false,
+            "properties": {
                 "tile_layer": {
                     "default": "",
                     "title": "Tile Layer",
@@ -159,27 +193,46 @@
                     "description": "The map title."
                 },
                 "title_kws": {
-                    "default": {},
+                    "anyOf": [
+                        {
+                            "type": "object"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
                     "title": "Title Kws",
-                    "type": "object",
                     "description": "Additional arguments for configuring the Title."
                 },
                 "scale_kws": {
-                    "default": {},
+                    "anyOf": [
+                        {
+                            "type": "object"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
                     "title": "Scale Kws",
-                    "type": "object",
                     "description": "Additional arguments for configuring the Scale Bar."
                 },
                 "north_arrow_kws": {
-                    "default": {},
+                    "anyOf": [
+                        {
+                            "type": "object"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
                     "title": "North Arrow Kws",
-                    "type": "object",
                     "description": "Additional arguments for configuring the North Arrow."
                 }
             },
-            "required": [
-                "data_type"
-            ],
+            "required": [],
             "type": "object"
         },
         "Persist Ecomaps as Text": {
