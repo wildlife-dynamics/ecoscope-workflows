@@ -21,6 +21,7 @@ classifiers = [
 # license = { text = "" }
 # keywords = []
 dependencies = [
+    "jinja2",
     "pandera",
     "pydantic",
     "pydantic-settings",
