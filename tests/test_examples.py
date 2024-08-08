@@ -116,8 +116,9 @@ assert_that_stdout = {
         lambda out: "A dashboard demonstrating grouped data." in out,
         lambda out: "GroupedWidget(widget_type='map', title='Grouped Ecomaps'" in out,
         lambda out: (
-            "groupers={'event_type': ['fence_rep', 'fire_rep', 'radio_rep', "
-            "'rainfall_rep', 'traffic_rep', 'wildlife_sighting_rep']"
+            "grouper_choices={Grouper(index_name='event_type', display_name='Event Type', "
+            "help_text='The type of event that occurred.'): ['fence_rep', 'fire_rep', 'radio_rep', "
+            "'rainfall_rep', 'traffic_rep', 'wildlife_sighting_rep']}"
         )
         in out,
     ],
