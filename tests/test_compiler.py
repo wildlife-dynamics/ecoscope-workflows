@@ -633,9 +633,18 @@ def test_duplicate_argnames_dont_result_in_omissions():
     assert "groupers" in fillable_yaml_form_params["groupers"]
 
 
-def test_partial_argnames_not_identifiers_raises():
+@pytest.mark.parametrize(
+    "invalid_argname",
+    [
+        "1observations",  # starts with a number
+        "obser-vations",  # has a dash
+        "obser vations",  # has a space
+        "observations'",  # unclosed single quote
+    ],
+)
+def test_partial_argnames_not_identifiers_raises(invalid_argname):
     s = dedent(
-        """\
+        f"""\
         id: calculate_time_density
         workflow:
           - name: Get Subjectgroup Observations
@@ -645,19 +654,29 @@ def test_partial_argnames_not_identifiers_raises():
             id: relocs
             task: process_relocations
             partial:
-              observations': ${{ workflow.obs.return }}
+              {invalid_argname}: ${{{{ workflow.obs.return }}}}
         """
     )
     with pytest.raises(
         ValidationError,
-        match=re.escape("`observations'` is not a valid python identifier."),
+        match=re.escape(f"`{invalid_argname}` is not a valid python identifier."),
     ):
         _ = Spec(**yaml.safe_load(s))
 
 
-def test_parallel_op_argnames_not_identifiers_raises():
+@pytest.mark.parametrize(
+    "invalid_argname",
+    [
+        "1observations",  # starts with a number
+        "obser-vations",  # has a dash
+        "obser vations",  # has a space
+        "observations'",  # unclosed single quote
+    ],
+)
+@pytest.mark.parametrize("method", ["map", "mapvalues"])
+def test_parallel_op_argnames_not_identifiers_raises(method, invalid_argname):
     s = dedent(
-        """\
+        f"""\
         id: calculate_time_density
         workflow:
           - name: Get Subjectgroup Observations
@@ -666,13 +685,13 @@ def test_parallel_op_argnames_not_identifiers_raises():
           - name: Process Relocations
             id: relocs
             task: process_relocations
-            map:
-              argnames: ['a', b']
-              argvalues: ${{ workflow.obs.return }}  # this is nonsense, but it's not what's being tested
+            {method}:
+              argnames: ['a', {invalid_argname}]
+              argvalues: ${{{{ workflow.obs.return }}}}  # this is nonsense, but it's not what's being tested
         """
     )
     with pytest.raises(
         ValidationError,
-        match=re.escape("`b'` is not a valid python identifier."),
+        match=re.escape(f"`{invalid_argname}` is not a valid python identifier."),
     ):
         _ = Spec(**yaml.safe_load(s))
