@@ -2,6 +2,7 @@ from inspect import ismethod
 from typing import Annotated, Any, TypeVar, get_args, get_origin
 
 import pandera as pa
+import pandera.typing as pa_typing
 from pydantic import GetJsonSchemaHandler
 from pydantic.functional_validators import BeforeValidator
 from pydantic.json_schema import JsonSchemaValue, WithJsonSchema
@@ -25,7 +26,7 @@ class JsonSerializableDataFrameModel(pa.DataFrameModel):
 DataFrameSchema = TypeVar("DataFrameSchema", bound=JsonSerializableDataFrameModel)
 
 DataFrame = Annotated[
-    pa.typing.DataFrame[DataFrameSchema],
+    pa_typing.DataFrame[DataFrameSchema],
     # pa.typing.DataFrame is very hard to meaningfully serialize to JSON. Pandera itself
     # does not yet support this, see: https://github.com/unionai-oss/pandera/issues/421.
     # The "ideal" workaround I think involves overriding `__get_pydantic_json_schema__`,
@@ -47,6 +48,7 @@ class AnyGeoDataFrameSchema(JsonSerializableDataFrameModel):
     geometry: pa.typing.Series[Any] = pa.Field()
 
 
+AnyDataFrame = DataFrame[JsonSerializableDataFrameModel]
 AnyGeoDataFrame = DataFrame[AnyGeoDataFrameSchema]
 
 

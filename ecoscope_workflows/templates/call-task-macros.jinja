@@ -13,7 +13,7 @@
 {% endmacro %}
 
 
-{% macro handle_map_method(t, validate, params, indent) %}
+{% macro handle_parallel_method(t, validate, params, indent, argnames, argvalues) %}
 {{ indent }}{{ t.id }} = (
         {{ t.known_task.importable_reference.function }}
         {% if validate %}
@@ -24,7 +24,7 @@
         {% else %}
         .partial(**{{ params }})
         {% endif %}
-        .map(argnames={{ t.map.argnames }}, argvalues={{ t.map.argvalues }})
+        .{{ t.method }}(argnames={{ argnames }}, argvalues={{ argvalues }})
     )
 {% endmacro %}
 
@@ -32,7 +32,14 @@
 {% macro handle_task(t, validate, params, indent) %}
 {% if t.method == "call" %}
     {{ handle_call_method(t, validate, params, indent) }}
-{% elif t.method == "map" %}
-    {{ handle_map_method(t, validate, params, indent) }}
+{% else %}
+    {% if t.method == "map" %}
+        {% set argnames = t.map.argnames %}
+        {% set argvalues = t.map.argvalues %}
+    {% elif t.method == "mapvalues" %}
+        {% set argnames = t.mapvalues.argnames %}
+        {% set argvalues = t.mapvalues.argvalues %}
+    {% endif %}
+    {{ handle_parallel_method(t, validate, params, indent, argnames, argvalues) }}
 {% endif %}
 {% endmacro %}

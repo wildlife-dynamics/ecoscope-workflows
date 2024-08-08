@@ -1,0 +1,50 @@
+# Parameters for 'Get Patrol Events from EarthRanger' using task `get_patrol_events`.
+patrol_events:
+  client: "mep_dev" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
+  since: "2011-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
+  until: "2023-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
+  patrol_type: [
+      "804c75f0-ed55-4bf5-b6fc-1aaf166bcf84",
+      "fde19413-cb55-443e-9be6-d10e4a48c668",
+      "0ef3bf48-b44c-4a4e-a145-7ab2e38c9a57",
+    ] # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default=None, description='Comma-separated list of type of patrol UUID'))
+  status: ["active", "done"]
+
+# Parameters for 'Set Groupers' using task `set_groupers`.
+groupers:
+  groupers:  # (list[ecoscope_workflows.tasks.groupby._groupby.Grouper], FieldInfo(annotation=NoneType, required=True, description='            Index(es) and/or column(s) to group by, along with\n            optional display names and help text.\n            '))
+    - index_name: "event_type"
+      display_name: "Event Type"
+      help_text: "The type of event that occurred."
+
+# Parameters for 'Split Observations' using task `split_groups`.
+split_obs: {}
+
+# Parameters for 'Create Map Layer For Each Group' using task `create_map_layer`.
+map_layers:
+  data_type: Point  # (typing.Literal['Point', 'Polyline', 'Polygon'], FieldInfo(annotation=NoneType, required=True, description='The type of visualization.'))
+  style_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
+
+# Parameters for 'Create EcoMap For Each Group' using task `draw_ecomap`.
+ecomaps:
+  tile_layer: OpenStreetMap # (str, FieldInfo(annotation=NoneType, required=False))
+  static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
+  title: "Great Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
+  title_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
+  scale_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
+  north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
+
+# Parameters for 'Persist EcoMaps' using task `persist_text`.
+ecomaps_persist: {}
+
+# Parameters for 'Create EcoMap Widgets' using task `create_map_widget_single_view`.
+ecomap_widgets:
+  title: "Grouped Ecomaps"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Merge EcoMap Widget Views' using task `merge_widget_views`.
+ecomap_widgets_merged: {}
+
+# Parameters for 'Create EcoMap Dashboard' using task `gather_dashboard`.
+dashboard:
+  title: "Grouped Dashboard of Observations"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the dashboard'))
+  description: "A dashboard demonstrating grouped data." # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The description of the dashboard'))

@@ -79,9 +79,14 @@ def _parse_variables(s: str | list[str]) -> str | list[str]:
     return [_parse_variable(v) for v in s]
 
 
-def _is_not_reserved(s: str):
+def _is_identifier(s: str):
     if not s.isidentifier():
         raise ValueError(f"`{s}` is not a valid python identifier.")
+    return s
+
+
+def _is_not_reserved(s: str):
+    assert _is_identifier(s)
     if keyword.iskeyword(s):
         raise ValueError(f"`{s}` is a python keyword.")
     if s in dir(builtins):
@@ -137,7 +142,7 @@ TaskInstanceId = Annotated[
     AfterValidator(_is_valid_task_instance_id),
 ]
 KnownTaskName = Annotated[str, AfterValidator(_is_known_task_name)]
-KnownTaskArgName: TypeAlias = str
+KnownTaskArgName = Annotated[str, AfterValidator(_is_identifier)]
 ArgDependencies: TypeAlias = dict[KnownTaskArgName, Vars]
 SpecId = Annotated[
     str, AfterValidator(_is_not_reserved), AfterValidator(_is_valid_spec_name)
@@ -412,37 +417,48 @@ class DagCompiler(BaseModel):
     testing: bool = False
     mock_tasks: list[str] = Field(default_factory=list)
 
-    @property
-    def dag_config(self) -> dict:
+    def get_dag_config(self) -> dict:
         if self.mock_tasks and not self.testing:
             raise ValueError(
                 "If you provide mocks, you must set `testing=True` to use them."
             )
-        return self.model_dump(
+        dag_config = self.model_dump(
             exclude={"template", "template_dir"},
             context={
                 "testing": self.testing,
                 "mocks": self.mock_tasks,
-                "omit_args": self._omit_args,
             },
         )
+        if self.template == "jupytext.jinja2":
+            dag_config |= {
+                "per_taskinstance_params_notebook": self.get_per_taskinstance_params_notebook(),
+            }
+        return dag_config
 
     @property
-    def _omit_args(self) -> list[str]:
-        # for a given task arg, if it is dependent on another task's return value,
-        # we don't need to include it in the `dag_params_schema`,
-        # because we don't need it to be passed as a parameter by the user.
-        return (
-            ["return"]
-            + [arg for t in self.spec.workflow for arg in t.partial]
-            + [arg for t in self.spec.workflow for arg in t.map.argnames]
-            + [arg for t in self.spec.workflow for arg in t.mapvalues.argnames]
-        )
+    def per_taskinstance_omit_args(
+        self,
+    ) -> dict[TaskInstanceId, list[KnownTaskArgName]]:
+        """For a given arg on a task instance, if it is dependent on another task's return
+        value, we omit it from the user-facing parameters, so that it's not set twice (once
+        as a dependency in the spec, and a second time by the user via the parameter form).
+        """
+        return {
+            t.id: (
+                ["return"]
+                + [arg for arg in t.partial]
+                + [arg for arg in t.map.argnames]
+                + [arg for arg in t.mapvalues.argnames]
+            )
+            for t in self.spec.workflow
+        }
 
     def get_params_jsonschema(self) -> dict[str, Any]:
         return ReactJSONSchemaFormConfiguration(
             properties={
-                t.name: t.known_task.parameters_jsonschema(omit_args=self._omit_args)
+                t.name: t.known_task.parameters_jsonschema(
+                    omit_args=self.per_taskinstance_omit_args.get(t.id, []),
+                )
                 for t in self.spec.workflow
             }
         ).model_dump()
@@ -453,12 +469,20 @@ class DagCompiler(BaseModel):
             yaml_str += t.known_task.parameters_annotation_yaml_str(
                 title=t.id,
                 description=f"# Parameters for '{t.name}' using task `{t.known_task_name}`.",
-                omit_args=self._omit_args,
+                omit_args=self.per_taskinstance_omit_args.get(t.id, []),
             )
         return yaml_str
+
+    def get_per_taskinstance_params_notebook(self) -> dict[str, str]:
+        return {
+            t.id: t.known_task.parameters_notebook(
+                omit_args=self.per_taskinstance_omit_args.get(t.id, []),
+            )
+            for t in self.spec.workflow
+        }
 
     @ruff_formatted
     def generate_dag(self) -> str:
         env = Environment(loader=FileSystemLoader(self.template_dir))
         template = env.get_template(self.template)
-        return template.render(self.dag_config)
+        return template.render(self.get_dag_config())

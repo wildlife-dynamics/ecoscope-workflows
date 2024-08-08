@@ -571,3 +571,127 @@ def test_map_both_fields_required_if_either_given(
         ),
     ):
         _ = Spec(**yaml.safe_load(s))
+
+
+def test_per_taskinstance_omit_args():
+    s = dedent(
+        """\
+        id: mapvalues_example
+        workflow:
+          - name: Get Observations
+            id: obs
+            task: get_subjectgroup_observations
+          - name: Set Groupers
+            id: groupers
+            task: set_groupers
+          - name: Split Observations
+            id: split_obs
+            task: split_groups
+            partial:
+              df: ${{ workflow.obs.return }}
+              groupers: ${{ workflow.groupers.return }}
+        """
+    )
+    spec = Spec(**yaml.safe_load(s))
+    dc = DagCompiler(spec=spec)
+    assert dc.per_taskinstance_omit_args == {
+        "obs": ["return"],
+        "groupers": ["return"],
+        "split_obs": ["return", "df", "groupers"],
+    }
+
+
+def test_duplicate_argnames_dont_result_in_omissions():
+    s = dedent(
+        """\
+        id: mapvalues_example
+        workflow:
+          - name: Get Observations
+            id: obs
+            task: get_subjectgroup_observations
+          - name: Set Groupers
+            id: groupers
+            task: set_groupers
+          - name: Split Observations
+            id: split_obs
+            task: split_groups
+            partial:
+              df: ${{ workflow.obs.return }}
+              groupers: ${{ workflow.groupers.return }}
+        """
+    )
+    spec = Spec(**yaml.safe_load(s))
+    dc = DagCompiler(spec=spec)
+    params = dc.get_params_fillable_yaml()
+    fillable_yaml_form_params = yaml.safe_load(params)
+    # we _did_ set partial dependencies for all args on task id `split_obs`,
+    # (including for `groupers` ) so the params for that field should be empty
+    assert fillable_yaml_form_params["split_obs"] is None
+    # but what we don't want is for the `groupers` field to be omitted from the
+    # params for task id `groupers` as well (since it's a valid arg for that task)
+    assert fillable_yaml_form_params["groupers"] is not None
+    assert "groupers" in fillable_yaml_form_params["groupers"]
+
+
+@pytest.mark.parametrize(
+    "invalid_argname",
+    [
+        "1observations",  # starts with a number
+        "obser-vations",  # has a dash
+        "obser vations",  # has a space
+        "observations'",  # unclosed single quote
+    ],
+)
+def test_partial_argnames_not_identifiers_raises(invalid_argname):
+    s = dedent(
+        f"""\
+        id: calculate_time_density
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            partial:
+              {invalid_argname}: ${{{{ workflow.obs.return }}}}
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape(f"`{invalid_argname}` is not a valid python identifier."),
+    ):
+        _ = Spec(**yaml.safe_load(s))
+
+
+@pytest.mark.parametrize(
+    "invalid_argname",
+    [
+        "1observations",  # starts with a number
+        "obser-vations",  # has a dash
+        "obser vations",  # has a space
+        "observations'",  # unclosed single quote
+    ],
+)
+@pytest.mark.parametrize("method", ["map", "mapvalues"])
+def test_parallel_op_argnames_not_identifiers_raises(method, invalid_argname):
+    s = dedent(
+        f"""\
+        id: calculate_time_density
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            {method}:
+              argnames: ['a', {invalid_argname}]
+              argvalues: ${{{{ workflow.obs.return }}}}  # this is nonsense, but it's not what's being tested
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape(f"`{invalid_argname}` is not a valid python identifier."),
+    ):
+        _ = Spec(**yaml.safe_load(s))
