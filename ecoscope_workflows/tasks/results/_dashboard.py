@@ -137,7 +137,9 @@ class Dashboard(BaseModel):
                             default=choices[0],
                         ),
                         uiSchema=RJSFFilterUiSchema(
-                            title=g.display_name or g.index_name.title(),
+                            title=(
+                                g.display_name or g.index_name.title().replace("_", " ")
+                            ),
                             help=g.help_text or None,
                         ),
                     )

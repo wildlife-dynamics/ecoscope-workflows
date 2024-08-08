@@ -171,7 +171,7 @@ def two_filter_dashboard() -> DashboardFixture:
     )
     widgets = [great_map]
     dashboard = Dashboard(
-        groupers_choices={
+        grouper_choices={
             Grouper(index_name="month"): ["jan"],
             Grouper(index_name="year"): ["2022", "2023"],
         },
@@ -288,7 +288,7 @@ def three_filter_dashboard() -> DashboardFixture:
     )
     widgets = [great_map]
     dashboard = Dashboard(
-        groupers={
+        grouper_choices={
             Grouper(index_name="month"): ["jan"],
             Grouper(index_name="year"): ["2022"],
             Grouper(index_name="subject_name"): ["jo", "zo"],
