@@ -264,7 +264,7 @@
                     "properties": {
                         "geodataframe": {
                             "title": "Geodataframe",
-                            "type": "ecoscope.distributed.types.DataFrame"
+                            "type": "ecoscope_workflows.annotations.DataFrame"
                         },
                         "data_type": {
                             "title": "Data Type",
@@ -729,7 +729,7 @@
                     "properties": {
                         "geodataframe": {
                             "title": "Geodataframe",
-                            "type": "ecoscope.distributed.types.DataFrame"
+                            "type": "ecoscope_workflows.annotations.DataFrame"
                         },
                         "data_type": {
                             "title": "Data Type",
