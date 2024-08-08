@@ -76,6 +76,26 @@ def add_temporal_index(
     directive: Annotated[
         Directives, Field(description="A directive for formatting the time data.")
     ],
-):
+    cast_to_datetime: Annotated[
+        bool,
+        Field(
+            description="Whether to attempt casting `time_col` to datetime.",
+        ),
+    ] = True,
+    format: Annotated[
+        str,
+        Field(
+            description="""\
+            If `cast_to_datetime=True`, the format to pass to `pd.to_datetime`
+            when attempting to cast `time_col` to datetime. Defaults to "mixed".
+            """,
+        ),
+    ] = "mixed",
+) -> AnyDataFrame:
+    import pandas as pd
+
+    if cast_to_datetime:
+        df[time_col] = pd.to_datetime(df[time_col], format=format)
+
     df[index_name] = df[time_col].dt.strftime(directive)
     return df.set_index(index_name, append=True)
