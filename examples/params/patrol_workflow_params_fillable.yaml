@@ -1,3 +1,10 @@
+# Parameters for 'Set Groupers' using task `set_groupers`.
+groupers:
+  groupers:   # (list[ecoscope_workflows.tasks.groupby._groupby.Grouper], FieldInfo(annotation=NoneType, required=True, description='            Index(es) and/or column(s) to group by, along with\n            optional display names and help text.\n            '))
+    - index_name: "event_type"
+      display_name: "Event Type"
+      help_text: "The type of event that occurred."
+
 # Parameters for 'Get Patrol Observations from EarthRanger' using task `get_patrol_observations`.
 patrol_obs:
   client:   # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
@@ -21,8 +28,12 @@ patrol_traj:
   max_speed_kmhr:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
   min_speed_kmhr:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
 
-# Parameters for 'Create map layer from Trajectories' using task `create_map_layer`.
-patrol_traj_map_layer:
+# Parameters for 'Split Patrol Trajectories by Group' using task `split_groups`.
+# CAN THE TRAJ BE SPLIT BY EVENT_TYPE?!
+split_patrol_traj_groups:
+
+# Parameters for 'Create map layer for each Patrol Trajectories group' using task `create_map_layer`.
+patrol_traj_map_layers:
   data_type:   # (typing.Literal['Point', 'Polyline', 'Polygon'], FieldInfo(annotation=NoneType, required=True, description='The type of visualization.'))
   style_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
 
@@ -42,12 +53,18 @@ filter_patrol_events:
   max_y:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=90.0))
   filter_point_coords:   # (list[list[float]], FieldInfo(annotation=NoneType, required=False, default=[[0.0, 0.0]]))
 
-# Parameters for 'Create map layer from Patrols Events' using task `create_map_layer`.
-patrol_events_map_layer:
+# Parameters for 'Split Patrol Events by Group' using task `split_groups`.
+split_pe_groups:
+
+# Parameters for 'Create map layers for each Patrols Events group' using task `create_map_layer`.
+patrol_events_map_layers:
   data_type:   # (typing.Literal['Point', 'Polyline', 'Polygon'], FieldInfo(annotation=NoneType, required=True, description='The type of visualization.'))
   style_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
 
-# Parameters for 'Draw Ecomap for Trajectories and Patrol Events' using task `draw_ecomap`.
+# Parameters for 'Combine Trajectories and Patrol Events layers' using task `groupbykey`.
+combined_traj_and_pe_map_layers:
+
+# Parameters for 'Draw Ecomaps for each combined Trajectory and Patrol Events group' using task `draw_ecomap`.
 traj_patrol_events_ecomap:
   tile_layer:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A named tile layer, ie OpenStreetMap.'))
   static:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Set to true to disable map pan/zoom.'))
@@ -57,13 +74,15 @@ traj_patrol_events_ecomap:
   north_arrow_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the North Arrow.'))
 
 # Parameters for 'Persist Patrols Ecomap as Text' using task `persist_text`.
-traj_pe_ecomap_html_url:
+traj_pe_ecomap_html_urls:
   filename:   # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
-# Parameters for 'Create Map Widget for Patrol Events' using task `create_map_widget_single_view`.
-traj_patrol_events_map_widget:
+# Parameters for 'Create Map Widgets for Patrol Events' using task `create_map_widget_single_view`.
+traj_pe_map_widgets_single_views:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
-  view:   # (tuple[tuple[str, typing.Literal['='], str], ...] | None, FieldInfo(annotation=NoneType, required=True, description='If grouped, the view of the widget'))
+
+# Parameters for 'Merge EcoMap Widget Views' using task `merge_widget_views`.
+traj_pe_grouped_map_widget:
 
 # Parameters for 'Draw Time Series Bar Chart for Patrols Events' using task `draw_time_series_bar_chart`.
 patrol_events_bar_chart:
@@ -83,7 +102,7 @@ patrol_events_bar_chart_html_url:
 # Parameters for 'Create Plot Widget for Patrol Events' using task `create_plot_widget_single_view`.
 patrol_events_bar_chart_widget:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
-  view:   # (tuple[tuple[str, typing.Literal['='], str], ...] | None, FieldInfo(annotation=NoneType, required=True, description='If grouped, the view of the widget'))
+  view:   # (tuple[tuple[str, typing.Literal['='], str], ...] | None, FieldInfo(annotation=NoneType, required=True, description='If grouped, the view of the widget', exclude=True))
 
 # Parameters for 'Draw Pie Chart for Patrols Events' using task `draw_pie_chart`.
 patrol_events_pie_chart:
@@ -99,7 +118,7 @@ patrol_events_pie_chart_html_url:
 # Parameters for 'Create Plot Widget for Patrol Events' using task `create_plot_widget_single_view`.
 patrol_events_pie_chart_widget:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
-  view:   # (tuple[tuple[str, typing.Literal['='], str], ...] | None, FieldInfo(annotation=NoneType, required=True, description='If grouped, the view of the widget'))
+  view:   # (tuple[tuple[str, typing.Literal['='], str], ...] | None, FieldInfo(annotation=NoneType, required=True, description='If grouped, the view of the widget', exclude=True))
 
 # Parameters for 'Calculate Time Density from Trajectory' using task `calculate_time_density`.
 td:
@@ -132,10 +151,9 @@ td_ecomap_html_url:
 # Parameters for 'Create Time Density Map Widget' using task `create_map_widget_single_view`.
 td_map_widget:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
-  view:   # (tuple[tuple[str, typing.Literal['='], str], ...] | None, FieldInfo(annotation=NoneType, required=True, description='If grouped, the view of the widget'))
+  view:   # (tuple[tuple[str, typing.Literal['='], str], ...] | None, FieldInfo(annotation=NoneType, required=True, description='If grouped, the view of the widget', exclude=True))
 
 # Parameters for 'Create Dashboard with Patrol Map Widgets' using task `gather_dashboard`.
 patrol_dashboard:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the dashboard'))
   description:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The description of the dashboard'))
-  groupers:   # (list | None, FieldInfo(annotation=NoneType, required=True, description='            A list of groupers that are used to group the widgets.\n            If all widgets are ungrouped, this field defaults to `None`.\n            '))
