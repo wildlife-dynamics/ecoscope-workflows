@@ -13,6 +13,21 @@ def _groupkey_to_composite_filter(
 ) -> CompositeFilter:
     """Given the list of `groupers` used to group a dataframe, convert a group key
     tuple (the pandas native representation) to a composite filter (our representation).
+
+    Examples:
+
+    ```python
+    >>> groupers = ["month", "year"]
+    >>> index_values = (1, 2021)
+    >>> _groupkey_to_composite_filter(groupers, index_values)
+    (('month', '=', 1), ('year', '=', 2021))
+    >>> groupers = ["animal_name", "species"]
+    >>> index_values = ("Jo", "Elephas maximus")
+    >>> _groupkey_to_composite_filter(groupers, index_values)
+    (('animal_name', '=', 'Jo'), ('species', '=', 'Elephas maximus'))
+
+    ```
+
     """
     return tuple((index, "=", value) for index, value in zip(groupers, index_values))
 
