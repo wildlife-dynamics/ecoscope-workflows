@@ -78,9 +78,14 @@ def _parse_variables(s: str | list[str]) -> str | list[str]:
     return [_parse_variable(v) for v in s]
 
 
-def _is_not_reserved(s: str):
+def _is_identifier(s: str):
     if not s.isidentifier():
         raise ValueError(f"`{s}` is not a valid python identifier.")
+    return s
+
+
+def _is_not_reserved(s: str):
+    assert _is_identifier(s)
     if keyword.iskeyword(s):
         raise ValueError(f"`{s}` is a python keyword.")
     if s in dir(builtins):
@@ -136,7 +141,7 @@ TaskInstanceId = Annotated[
     AfterValidator(_is_valid_task_instance_id),
 ]
 KnownTaskName = Annotated[str, AfterValidator(_is_known_task_name)]
-KnownTaskArgName: TypeAlias = str
+KnownTaskArgName = Annotated[str, AfterValidator(_is_identifier)]
 ArgDependencies: TypeAlias = dict[KnownTaskArgName, Vars]
 SpecId = Annotated[
     str, AfterValidator(_is_not_reserved), AfterValidator(_is_valid_spec_name)

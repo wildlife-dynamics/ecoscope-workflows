@@ -631,3 +631,48 @@ def test_duplicate_argnames_dont_result_in_omissions():
     # params for task id `groupers` as well (since it's a valid arg for that task)
     assert fillable_yaml_form_params["groupers"] is not None
     assert "groupers" in fillable_yaml_form_params["groupers"]
+
+
+def test_partial_argnames_not_identifiers_raises():
+    s = dedent(
+        """\
+        id: calculate_time_density
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            partial:
+              observations': ${{ workflow.obs.return }}
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape("`observations'` is not a valid python identifier."),
+    ):
+        _ = Spec(**yaml.safe_load(s))
+
+
+def test_parallel_op_argnames_not_identifiers_raises():
+    s = dedent(
+        """\
+        id: calculate_time_density
+        workflow:
+          - name: Get Subjectgroup Observations
+            id: obs
+            task: get_subjectgroup_observations
+          - name: Process Relocations
+            id: relocs
+            task: process_relocations
+            map:
+              argnames: ['a', b']
+              argvalues: ${{ workflow.obs.return }}  # this is nonsense, but it's not what's being tested
+        """
+    )
+    with pytest.raises(
+        ValidationError,
+        match=re.escape("`b'` is not a valid python identifier."),
+    ):
+        _ = Spec(**yaml.safe_load(s))
