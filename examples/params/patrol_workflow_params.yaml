@@ -31,19 +31,14 @@ patrol_traj:
   max_speed_kmhr: 120 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
   min_speed_kmhr: 0.0 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
 
-# Parameters for 'Draw Ecomap from Trajectories' using task `draw_ecomap`.
-patrol_traj_ecomap:
-  data_type: Path # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
+# Parameters for 'Create map layer from Trajectories' using task `create_map_layer`.
+patrol_traj_map_layer:
+  data_type: Polyline # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
   style_kws: { get_width: 200 } # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
-  tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
-  static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
-  title: "Patrol Trajectory Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
-  title_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
-  scale_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
-  north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist Ecomap as Text' using task `persist_text`.
-patrol_traj_ecomap_html_url: {}
+patrol_traj_ecomap_html_url:
+  filename: "patrol_traj_ecomap.html"  # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
 # Parameters for 'Create Map Widget for Patrols' using task `create_map_widget_single_view`.
 patrol_traj_map_widget:
@@ -66,23 +61,67 @@ filter_patrol_events:
   max_y: 0.0 # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=90.0))
   filter_point_coords: [[180, 90], [0, 0]] # (list[list[float]], FieldInfo(annotation=NoneType, required=True))
 
-# Parameters for 'Draw Ecomap for Patrols Events' using task `draw_ecomap`.
-patrol_events_ecomap:
-  data_type: Scatterplot # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
+# Parameters for 'Create map layer from Patrols Events' using task `create_map_layer`.
+patrol_events_map_layer:
+  data_type: Point # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
   style_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
+
+# Parameters for 'Draw Ecomap for Patrols Events' using task `draw_ecomap`.
+traj_patrol_events_ecomap:
   tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
   static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
-  title: "Patrol Events Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
+  title: "Trajectories & Patrol Events" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
   title_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
   scale_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
   north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist Patrols Ecomap as Text' using task `persist_text`.
-patrol_events_ecomap_html_url: {}
+traj_pe_ecomap_html_url:
+  filename: "traj_patrol_events_ecomap.html"  # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
 # Parameters for 'Create Map Widget for Patrol Events' using task `create_map_widget_single_view`.
-patrol_events_map_widget:
-  title: "Patrol Events Map"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+traj_patrol_events_map_widget:
+  title: "Trajectories & Patrol Events Map"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Draw Time Series Bar Chart for Patrols Events' using task `draw_time_series_bar_chart`.
+patrol_events_bar_chart:
+  x_axis: "updated_at"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the x axis.'))
+  y_axis: "event_type"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the y axis.'))
+  category: "event_type"   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to stack in the y axis.'))
+  agg_function: "count"  # (typing.Literal['count', 'mean', 'sum', 'min', 'max'], FieldInfo(annotation=NoneType, required=True, description='The aggregate function to apply to the group.'))
+  time_interval: "day"  # (typing.Literal['year', 'month', 'week', 'day', 'hour'], FieldInfo(annotation=NoneType, required=True, description='Sets the time interval of the x axis.'))
+  groupby_style_kws: {
+       "wildlife_sighting_rep": {"marker_color": "#3e35a3"},
+       "radio_rep": {"marker_color": "#b62879"},
+       "fence_rep": {"marker_color": "#ff9600"},
+       "rainfall_rep": {"marker_color": "#f04564"},
+       "traffic_rep" : {"marker_color": "#3089ff"},
+       "fire_rep" : {"marker_color": "#8c1700"}
+  } # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Style arguments passed to plotly.graph_objects.Bar and applied to individual groups.'))
+  style_kws: { "xperiodalignment": "middle" }  # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Style arguments passed to plotly.graph_objects.Bar and applied to all groups.'))
+  layout_kws: { "xaxis_dtick": 86400000 }  # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Style arguments passed to plotly.graph_objects.Figure.'))
+
+# Parameters for 'Persist Patrols Bar Chart as Text' using task `persist_text`.
+patrol_events_bar_chart_html_url:
+  filename: "patrol_events_bar_chart.html"  # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
+
+# Parameters for 'Create Plot Widget for Patrol Events' using task `create_plot_widget_single_view`.
+patrol_events_bar_chart_widget:
+  title: "Patrol Events Bar Chart"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Draw Pie Chart for Patrols Events' using task `draw_pie_chart`.
+patrol_events_pie_chart:
+  value_column: "event_type"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the dataframe column to pull slice values from.'))
+  style_kws: { "textinfo": "value" }   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Additional style kwargs passed to go.Pie().'))
+  layout_kws: {}  # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Additional kwargs passed to plotly.go.Figure(layout).'))
+
+# Parameters for 'Persist Patrols Pie Chart as Text' using task `persist_text`.
+patrol_events_pie_chart_html_url:
+  filename: "patrol_events_pie_chart.html"  # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
+
+# Parameters for 'Create Plot Widget for Patrol Events' using task `create_plot_widget_single_view`.
+patrol_events_pie_chart_widget:
+  title: "Patrol Events Pie Chart"   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
 
 # Parameters for 'Calculate Time Density from Trajectory' using task `calculate_time_density`.
 td:
@@ -94,10 +133,13 @@ td:
   expansion_factor: 1.3 # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=1.3))
   percentiles: [50.0, 60.0, 70.0, 80.0, 90.0, 95.0] # (list[float], FieldInfo(annotation=NoneType, required=False, default=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0]))
 
-# Parameters for 'Draw Ecomap from Time Density' using task `draw_ecomap`.
-td_ecomap:
+# Parameters for 'Create map layer from Time Density' using task `create_map_layer`.
+td_map_layer:
   data_type: Polygon # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True))
   style_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True))
+
+# Parameters for 'Draw Ecomap from Time Density' using task `draw_ecomap`.
+td_ecomap:
   tile_layer: OpenStreetMap # (str, FieldInfo(annotation=NoneType, required=False))
   static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
   title: "Great Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
@@ -106,7 +148,8 @@ td_ecomap:
   north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist Ecomap as Text' using task `persist_text`.
-td_ecomap_html_url: {}
+td_ecomap_html_url:
+  filename: "td_ecomap.html"  # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
 # Parameters for 'Create Time Density Map Widget' using task `create_map_widget_single_view`.
 td_map_widget:

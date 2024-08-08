@@ -1,12 +1,12 @@
-from typing import Any, Annotated
+from typing import Annotated, Any
 
 import pandas as pd
 import pandera as pa
 from pydantic import Field
 
+from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
 from ecoscope_workflows.decorators import task
 from ecoscope_workflows.tasks.io import SubjectGroupObservationsGDFSchema
-from ecoscope_workflows.annotations import JsonSerializableDataFrameModel, DataFrame
 
 
 class RelocationsGDFSchema(SubjectGroupObservationsGDFSchema):
@@ -20,7 +20,7 @@ def process_relocations(
     filter_point_coords: Annotated[list[list[float]], Field()],
     relocs_columns: Annotated[list[str], Field()],
 ) -> DataFrame[RelocationsGDFSchema]:
-    from ecoscope.base import RelocsCoordinateFilter, Relocations
+    from ecoscope.base import Relocations, RelocsCoordinateFilter
 
     relocs = Relocations(observations)
 
@@ -63,15 +63,14 @@ class TrajectoryGDFSchema(JsonSerializableDataFrameModel):
 @task
 def relocations_to_trajectory(
     relocations: DataFrame[RelocationsGDFSchema],
-    min_length_meters: Annotated[float, Field()],
-    max_length_meters: Annotated[float, Field()],
-    max_time_secs: Annotated[float, Field()],
-    min_time_secs: Annotated[float, Field()],
-    max_speed_kmhr: Annotated[float, Field()],
-    min_speed_kmhr: Annotated[float, Field()],
+    min_length_meters: Annotated[float, Field()] = 0.1,
+    max_length_meters: Annotated[float, Field()] = 10000,
+    max_time_secs: Annotated[float, Field()] = 3600,
+    min_time_secs: Annotated[float, Field()] = 1,
+    max_speed_kmhr: Annotated[float, Field()] = 120,
+    min_speed_kmhr: Annotated[float, Field()] = 0.0,
 ) -> DataFrame[TrajectoryGDFSchema]:
-    from ecoscope.base import Relocations
-    from ecoscope.base import Trajectory, TrajSegFilter
+    from ecoscope.base import Relocations, Trajectory, TrajSegFilter
 
     # trajectory creation
     traj = Trajectory.from_relocations(Relocations(relocations))
