@@ -374,39 +374,6 @@
                     "title": "Title",
                     "type": "string",
                     "description": "The title of the widget"
-                },
-                "view": {
-                    "anyOf": [
-                        {
-                            "items": {
-                                "maxItems": 3,
-                                "minItems": 3,
-                                "prefixItems": [
-                                    {
-                                        "type": "string"
-                                    },
-                                    {
-                                        "const": "=",
-                                        "enum": [
-                                            "="
-                                        ],
-                                        "type": "string"
-                                    },
-                                    {
-                                        "type": "string"
-                                    }
-                                ],
-                                "type": "array"
-                            },
-                            "type": "array"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
-                    "default": null,
-                    "title": "View",
-                    "description": "If grouped, the view of the widget"
                 }
             },
             "required": [
@@ -532,39 +499,6 @@
                     "title": "Title",
                     "type": "string",
                     "description": "The title of the widget"
-                },
-                "view": {
-                    "anyOf": [
-                        {
-                            "items": {
-                                "maxItems": 3,
-                                "minItems": 3,
-                                "prefixItems": [
-                                    {
-                                        "type": "string"
-                                    },
-                                    {
-                                        "const": "=",
-                                        "enum": [
-                                            "="
-                                        ],
-                                        "type": "string"
-                                    },
-                                    {
-                                        "type": "string"
-                                    }
-                                ],
-                                "type": "array"
-                            },
-                            "type": "array"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
-                    "default": null,
-                    "title": "View",
-                    "description": "If grouped, the view of the widget"
                 }
             },
             "required": [
@@ -839,39 +773,6 @@
                     "title": "Title",
                     "type": "string",
                     "description": "The title of the widget"
-                },
-                "view": {
-                    "anyOf": [
-                        {
-                            "items": {
-                                "maxItems": 3,
-                                "minItems": 3,
-                                "prefixItems": [
-                                    {
-                                        "type": "string"
-                                    },
-                                    {
-                                        "const": "=",
-                                        "enum": [
-                                            "="
-                                        ],
-                                        "type": "string"
-                                    },
-                                    {
-                                        "type": "string"
-                                    }
-                                ],
-                                "type": "array"
-                            },
-                            "type": "array"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
-                    "default": null,
-                    "title": "View",
-                    "description": "If grouped, the view of the widget"
                 }
             },
             "required": [
@@ -1017,24 +918,13 @@
             "properties": {
                 "title": {
                     "title": "Title",
-                    "type": "string"
+                    "type": "string",
+                    "description": "The title of the dashboard"
                 },
                 "description": {
                     "title": "Description",
-                    "type": "string"
-                },
-                "groupers": {
-                    "anyOf": [
-                        {
-                            "items": {},
-                            "type": "array"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
-                    "default": null,
-                    "title": "Groupers"
+                    "type": "string",
+                    "description": "The description of the dashboard"
                 }
             },
             "required": [

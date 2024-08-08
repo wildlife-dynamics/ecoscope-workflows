@@ -207,7 +207,8 @@ def gather_dashboard(
             description="""\
             A list of groupers that are used to group the widgets.
             If all widgets are ungrouped, this field defaults to `None`.
-            """
+            """,
+            exclude=True,
         ),
     ] = None,
 ) -> Annotated[Dashboard, Field()]:
