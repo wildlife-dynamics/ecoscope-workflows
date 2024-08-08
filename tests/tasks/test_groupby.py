@@ -4,11 +4,17 @@ import pandas as pd
 import pytest
 
 from ecoscope_workflows.indexes import CompositeFilter, IndexName, IndexValue
-from ecoscope_workflows.tasks.groupby import set_groupers, split_groups
+from ecoscope_workflows.tasks.groupby import groupbykey, set_groupers, split_groups
 from ecoscope_workflows.tasks.groupby._groupby import (
     Grouper,
+    KeyedIterable,
     _groupkey_to_composite_filter,
 )
+
+
+def getvalue(key: CompositeFilter, groups: KeyedIterable) -> pd.DataFrame:
+    """Convenience function to get the values for a given key in a KeyedIterable."""
+    return next(iter([v for (k, v) in groups if k == key]))
 
 
 def test_set_groupers():
@@ -64,16 +70,13 @@ def test_split_groups():
     ]
     assert all(isinstance(group, pd.DataFrame) for group in [v for (_, v) in groups])
 
-    def get_actual(key: CompositeFilter) -> pd.DataFrame:
-        return next(iter([v for (k, v) in groups if k == key]))
-
     class_bird_order_falconiformes_expected_df = pd.DataFrame(
         [("bird", "Falconiformes", 389.0)],
         index=["falcon"],
         columns=("class", "order", "max_speed"),
     )
     pd.testing.assert_frame_equal(
-        get_actual((("class", "=", "bird"), ("order", "=", "Falconiformes"))),
+        getvalue((("class", "=", "bird"), ("order", "=", "Falconiformes")), groups),
         class_bird_order_falconiformes_expected_df,
     )
     class_bird_order_psittaciformes_expected_df = pd.DataFrame(
@@ -82,6 +85,44 @@ def test_split_groups():
         columns=("class", "order", "max_speed"),
     )
     pd.testing.assert_frame_equal(
-        get_actual((("class", "=", "bird"), ("order", "=", "Psittaciformes"))),
+        getvalue((("class", "=", "bird"), ("order", "=", "Psittaciformes")), groups),
         class_bird_order_psittaciformes_expected_df,
     )
+
+
+def test_groupbykey():
+    falcon = pd.DataFrame([("falcon", 389.0)], index=["falcon"])
+    parrot = pd.DataFrame([("parrot", 24.0)], index=["parrot"])
+    lion = pd.DataFrame([("lion", 80.2)], index=["lion"])
+    monkey = pd.DataFrame([("monkey", np.nan)], index=["monkey"])
+
+    output = groupbykey(
+        iterables=[
+            # each iterable contains two keyed dataframes, one for each class
+            [
+                ((("class", "=", "bird")), falcon),
+                ((("class", "=", "mammal")), lion),
+            ],
+            [
+                ((("class", "=", "bird")), parrot),
+                ((("class", "=", "mammal")), monkey),
+            ],
+        ]
+    )
+    # the output should have the same keys as the input, but with the values combined
+    assert [k for (k, _) in output] == [
+        (("class", "=", "bird"),),
+        (("class", "=", "mammal"),),
+    ]
+    for k, v in output:
+        # each value should be a len-2 list of dataframes
+        assert isinstance(v, list)
+        assert len(v) == 2
+        assert all(isinstance(e, pd.DataFrame) for e in v)
+
+        if k[0][-1] == "bird":
+            assert set(v[0].index + v[1].index) == {"falcon", "parrot"}
+        elif k[0][-1] == "mammal":
+            assert set(v[0].index + v[1].index) == {"lion", "monkey"}
+        else:
+            raise ValueError("Unexpected class value in key")
