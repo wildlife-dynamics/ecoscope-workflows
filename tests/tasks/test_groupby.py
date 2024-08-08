@@ -96,33 +96,18 @@ def test_groupbykey():
     lion = pd.DataFrame([("lion", 80.2)], index=["lion"])
     monkey = pd.DataFrame([("monkey", np.nan)], index=["monkey"])
 
-    output = groupbykey(
-        iterables=[
-            # each iterable contains two keyed dataframes, one for each class
-            [
-                ((("class", "=", "bird"),), falcon),
-                ((("class", "=", "mammal"),), lion),
-            ],
-            [
-                ((("class", "=", "bird"),), parrot),
-                ((("class", "=", "mammal"),), monkey),
-            ],
-        ]
-    )
-    # the output should have the same keys as the input, but with the values combined
-    assert [k for (k, _) in output] == [
-        (("class", "=", "bird"),),
-        (("class", "=", "mammal"),),
+    iterable_0 = [
+        ((("class", "=", "bird"),), falcon),
+        ((("class", "=", "mammal"),), lion),
     ]
-    for k, v in output:
-        # each value should be a len-2 list of dataframes
-        assert isinstance(v, list)
-        assert len(v) == 2
-        assert all(isinstance(e, pd.DataFrame) for e in v)
+    iterable_1 = [
+        ((("class", "=", "bird"),), parrot),
+        ((("class", "=", "mammal"),), monkey),
+    ]
+    output = groupbykey(iterables=[iterable_0, iterable_1])
 
-        if k[0][-1] == "bird":
-            assert (v[0].index, v[1].index) == ("falcon", "parrot")
-        elif k[0][-1] == "mammal":
-            assert (v[0].index, v[1].index) == ("lion", "monkey")
-        else:
-            raise ValueError("Unexpected class value in key")
+    # bird and mammal groups are combined
+    assert output == [
+        ((("class", "=", "bird"),), [falcon, parrot]),
+        ((("class", "=", "mammal"),), [lion, monkey]),
+    ]
