@@ -39,7 +39,7 @@ workflow:
     id: ecomap_widgets
     task: create_map_widget_single_view
     map:
-      argnames: ["view", data"]
+      argnames: [view, data]
       argvalues: ${{ workflow.ecomaps_persist.return }}
   # Step 7 - A dashboard to display the widgets
   - name: Create EcoMap Dashboard

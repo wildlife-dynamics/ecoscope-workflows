@@ -112,6 +112,9 @@ assert_that_stdout = {
     "mode-map.yaml": [
         lambda out: ".html" in out,
     ],
+    "mode-mapvalues.yaml": [
+        lambda out: "A dashboard demonstrating grouped data." in out,
+    ],
 }
 
 

@@ -39,15 +39,21 @@ def set_groupers(
 def split_groups(
     df: AnyDataFrame,
     groupers: Annotated[
-        list[str], Field(description="Index(es) and/or column(s) to group by")
+        list[Grouper], Field(description="Index(es) and/or column(s) to group by")
     ],
 ) -> Annotated[
-    dict[CompositeFilter, AnyDataFrame],
-    Field(description="Dictionary of indexed groups"),
+    list[tuple[CompositeFilter, AnyDataFrame]],
+    Field(
+        description="""\
+        List of 2-tuples of key:value pairs. Each key:value pair consists of a composite
+        filter (the key) and the corresponding subset of the input dataframe (the value).
+        """
+    ),
 ]:
     # TODO: configurable cardinality constraint with a default?
-    grouped = df.groupby(groupers)
-    return {
-        _groupkey_to_composite_filter(groupers, index_value): group
+    grouper_index_names = [g.index_name for g in groupers]
+    grouped = df.groupby(grouper_index_names)
+    return [
+        (_groupkey_to_composite_filter(grouper_index_names, index_value), group)
         for index_value, group in grouped
-    }
+    ]
