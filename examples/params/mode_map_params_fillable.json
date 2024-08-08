@@ -177,17 +177,20 @@
                 "tile_layer": {
                     "default": "",
                     "title": "Tile Layer",
-                    "type": "string"
+                    "type": "string",
+                    "description": "A named tile layer, ie OpenStreetMap."
                 },
                 "static": {
                     "default": false,
                     "title": "Static",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "Set to true to disable map pan/zoom."
                 },
                 "title": {
                     "default": "",
                     "title": "Title",
-                    "type": "string"
+                    "type": "string",
+                    "description": "The map title."
                 },
                 "title_kws": {
                     "anyOf": [
@@ -199,7 +202,8 @@
                         }
                     ],
                     "default": null,
-                    "title": "Title Kws"
+                    "title": "Title Kws",
+                    "description": "Additional arguments for configuring the Title."
                 },
                 "scale_kws": {
                     "anyOf": [
@@ -211,7 +215,8 @@
                         }
                     ],
                     "default": null,
-                    "title": "Scale Kws"
+                    "title": "Scale Kws",
+                    "description": "Additional arguments for configuring the Scale Bar."
                 },
                 "north_arrow_kws": {
                     "anyOf": [
@@ -223,7 +228,8 @@
                         }
                     ],
                     "default": null,
-                    "title": "North Arrow Kws"
+                    "title": "North Arrow Kws",
+                    "description": "Additional arguments for configuring the North Arrow."
                 }
             },
             "required": [],
