@@ -120,6 +120,23 @@ WorkflowVariable = Annotated[
 
 
 def _serialize_variables(v: list[WorkflowVariable]) -> str:
+    """Serialize a list of workflow variables to a string for use in templating.
+
+    Examples:
+
+    ```python
+    >>> _serialize_variables([TaskIdVariable(value="task1", suffix="return")])
+    'task1'
+    >>> _serialize_variables([EnvVariable(value="ENV_VAR")])
+    'os.environ["ENV_VAR"]'
+    >>> _serialize_variables([TaskIdVariable(value="task1", suffix="return"), TaskIdVariable(value="task2", suffix="return")])
+    '[task1, task2]'
+    >>> _serialize_variables([TaskIdVariable(value="task1", suffix="return"), EnvVariable(value="ENV_VAR")])
+    '[task1, os.environ["ENV_VAR"]]'
+
+    ```
+
+    """
     return (
         v[0].model_dump()
         if len(v) == 1
