@@ -61,6 +61,45 @@
         "type": "object"
     },
     "split_obs": {
+        "$defs": {
+            "Grouper": {
+                "properties": {
+                    "index_name": {
+                        "title": "Index Name",
+                        "type": "string"
+                    },
+                    "display_name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Display Name"
+                    },
+                    "help_text": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Help Text"
+                    }
+                },
+                "required": [
+                    "index_name"
+                ],
+                "title": "Grouper",
+                "type": "object"
+            }
+        },
         "additionalProperties": false,
         "properties": {},
         "required": [],
@@ -154,27 +193,99 @@
                 "title": "Title",
                 "type": "string",
                 "description": "The title of the widget"
-            },
-            "data": {
-                "anyOf": [
-                    {
-                        "format": "path",
-                        "type": "string"
-                    },
-                    {
-                        "format": "uri",
-                        "minLength": 1,
-                        "type": "string"
-                    }
-                ],
-                "title": "Data",
-                "description": "Path to precomputed HTML"
             }
         },
         "required": [
-            "title",
-            "data"
+            "title"
         ],
+        "type": "object"
+    },
+    "ecomap_widgets_merged": {
+        "$defs": {
+            "WidgetSingleView": {
+                "properties": {
+                    "widget_type": {
+                        "enum": [
+                            "plot",
+                            "map",
+                            "text",
+                            "single_value"
+                        ],
+                        "title": "Widget Type",
+                        "type": "string"
+                    },
+                    "title": {
+                        "title": "Title",
+                        "type": "string"
+                    },
+                    "data": {
+                        "anyOf": [
+                            {
+                                "format": "path",
+                                "type": "string"
+                            },
+                            {
+                                "format": "uri",
+                                "minLength": 1,
+                                "type": "string"
+                            },
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "number"
+                            }
+                        ],
+                        "title": "Data"
+                    },
+                    "view": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "maxItems": 3,
+                                    "minItems": 3,
+                                    "prefixItems": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "const": "=",
+                                            "enum": [
+                                                "="
+                                            ],
+                                            "type": "string"
+                                        },
+                                        {
+                                            "type": "string"
+                                        }
+                                    ],
+                                    "type": "array"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "View"
+                    }
+                },
+                "required": [
+                    "widget_type",
+                    "title",
+                    "data"
+                ],
+                "title": "WidgetSingleView",
+                "type": "object"
+            }
+        },
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
         "type": "object"
     },
     "dashboard": {

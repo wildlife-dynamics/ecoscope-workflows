@@ -31,7 +31,9 @@ ecomaps_persist:
 # Parameters for 'Create EcoMap Widgets' using task `create_map_widget_single_view`.
 ecomap_widgets:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
-  data:   # (pathlib.Path | pydantic_core._pydantic_core.Url, FieldInfo(annotation=NoneType, required=True, description='Path to precomputed HTML'))
+
+# Parameters for 'Merge EcoMap Widget Views' using task `merge_widget_views`.
+ecomap_widgets_merged:
 
 # Parameters for 'Create EcoMap Dashboard' using task `gather_dashboard`.
 dashboard:

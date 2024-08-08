@@ -35,6 +35,9 @@ ecomaps_persist: {}
 ecomap_widgets:
   title: "Grouped Ecomaps"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
 
+# Parameters for 'Merge EcoMap Widget Views' using task `merge_widget_views`.
+ecomap_widgets_merged: {}
+
 # Parameters for 'Create EcoMap Dashboard' using task `gather_dashboard`.
 dashboard:
   title: "Grouped Dashboard of Observations"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the dashboard'))

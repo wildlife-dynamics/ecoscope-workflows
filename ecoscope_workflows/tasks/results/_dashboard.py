@@ -16,6 +16,7 @@ from ecoscope_workflows.indexes import (
     IndexName,
     IndexValue,
 )
+from ecoscope_workflows.tasks.groupby._groupby import Grouper
 from ecoscope_workflows.tasks.results._widget_types import (
     GroupedWidget,
     WidgetData,
@@ -202,7 +203,7 @@ def gather_dashboard(
         Field(description="The widgets to display."),
     ],
     groupers: Annotated[
-        list | None,
+        list[Grouper] | None,
         Field(
             description="""\
             A list of groupers that are used to group the widgets.
@@ -245,11 +246,13 @@ def gather_dashboard(
                 ), "All grouped widgets must have the same keys"
         grouper_choices = composite_filters_to_grouper_choices_dict(keys_sample)
         # make sure we didn't lose track of any groupers inflight
-        assert set(groupers) == set(
+        assert set([g.index_name for g in groupers]) == set(
             list(grouper_choices.keys())
         ), "All groupers must be present in the keys"
     return Dashboard(
         widgets=grouped_widgets,
+        # TODO: pass actual Grouper instances instead of just the index names
+        # to allow for display names and help text to be set
         groupers=(grouper_choices if groupers else None),
         keys=(keys_sample if groupers else None),
         metadata=Metadata(title=title, description=description),

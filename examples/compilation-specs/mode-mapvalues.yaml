@@ -41,10 +41,16 @@ workflow:
     map:
       argnames: [view, data]
       argvalues: ${{ workflow.ecomaps_persist.return }}
-  # Step 7 - A dashboard to display the widgets
+  # Step 7 - Merging widget views in a grouped widget
+  - name: Merge EcoMap Widget Views
+    id: ecomap_widgets_merged
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.ecomap_widgets.return }}
+  # Step 8 - A dashboard to display the widgets
   - name: Create EcoMap Dashboard
     id: dashboard
     task: gather_dashboard
     partial:
-      widgets: ${{ workflow.ecomap_widgets.return }}
+      widgets: ${{ workflow.ecomap_widgets_merged.return }}
       groupers: ${{ workflow.groupers.return }}

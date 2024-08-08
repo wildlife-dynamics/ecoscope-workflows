@@ -14,6 +14,7 @@ from ecoscope_workflows.tasks.groupby import split_groups
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
+from ecoscope_workflows.tasks.results import merge_widget_views
 from ecoscope_workflows.tasks.results import gather_dashboard
 
 # %% [markdown]
@@ -124,7 +125,6 @@ ecomaps_persist = persist_text.partial(
 
 ecomap_widgets_params = dict(
     title=...,
-    data=...,
 )
 
 # %%
@@ -132,7 +132,24 @@ ecomap_widgets_params = dict(
 
 
 ecomap_widgets = create_map_widget_single_view.partial(**ecomap_widgets_params).map(
-    argnames=["view", 'data"'], argvalues=ecomaps_persist
+    argnames=["view", "data"], argvalues=ecomaps_persist
+)
+
+
+# %% [markdown]
+# ## Merge EcoMap Widget Views
+
+# %%
+# parameters
+
+ecomap_widgets_merged_params = dict()
+
+# %%
+# call the task
+
+
+ecomap_widgets_merged = merge_widget_views.partial(widgets=ecomap_widgets).call(
+    **ecomap_widgets_merged_params
 )
 
 
@@ -151,6 +168,6 @@ dashboard_params = dict(
 # call the task
 
 
-dashboard = gather_dashboard.partial(widgets=ecomap_widgets, groupers=groupers).call(
-    **dashboard_params
-)
+dashboard = gather_dashboard.partial(
+    widgets=ecomap_widgets_merged, groupers=groupers
+).call(**dashboard_params)
