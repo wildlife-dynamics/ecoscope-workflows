@@ -100,12 +100,12 @@ def test_groupbykey():
         iterables=[
             # each iterable contains two keyed dataframes, one for each class
             [
-                ((("class", "=", "bird")), falcon),
-                ((("class", "=", "mammal")), lion),
+                ((("class", "=", "bird"),), falcon),
+                ((("class", "=", "mammal"),), lion),
             ],
             [
-                ((("class", "=", "bird")), parrot),
-                ((("class", "=", "mammal")), monkey),
+                ((("class", "=", "bird"),), parrot),
+                ((("class", "=", "mammal"),), monkey),
             ],
         ]
     )
@@ -121,8 +121,8 @@ def test_groupbykey():
         assert all(isinstance(e, pd.DataFrame) for e in v)
 
         if k[0][-1] == "bird":
-            assert set(v[0].index + v[1].index) == {"falcon", "parrot"}
+            assert (v[0].index, v[1].index) == ("falcon", "parrot")
         elif k[0][-1] == "mammal":
-            assert set(v[0].index + v[1].index) == {"lion", "monkey"}
+            assert (v[0].index, v[1].index) == ("lion", "monkey")
         else:
             raise ValueError("Unexpected class value in key")

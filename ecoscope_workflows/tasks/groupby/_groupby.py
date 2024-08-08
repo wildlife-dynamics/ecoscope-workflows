@@ -59,6 +59,10 @@ def set_groupers(
     return groupers
 
 
+KeyedIterable = list[tuple[CompositeFilter, AnyDataFrame]]
+CombinedKeyedIterable = list[tuple[CompositeFilter, list[AnyDataFrame]]]
+
+
 @task
 def split_groups(
     df: AnyDataFrame,
@@ -66,7 +70,7 @@ def split_groups(
         list[Grouper], Field(description="Index(es) and/or column(s) to group by")
     ],
 ) -> Annotated[
-    list[tuple[CompositeFilter, AnyDataFrame]],
+    KeyedIterable,
     Field(
         description="""\
         List of 2-tuples of key:value pairs. Each key:value pair consists of a composite
@@ -84,5 +88,25 @@ def split_groups(
 
 
 @task
-def groupbykey():
-    pass
+def groupbykey(
+    iterables: Annotated[
+        list[KeyedIterable], Field(description="List of keyed iterables")
+    ],
+) -> Annotated[
+    CombinedKeyedIterable,
+    Field(
+        description="""
+        Flattened collection of keyed iterables with values associated with matching keys combined.
+        """
+    ),
+]:
+    seen = set()
+    out: dict[CompositeFilter, list] = {}
+    for i in iterables:
+        for key, value in i:
+            if key in seen:
+                out[key].append(value)
+            else:
+                seen.add(key)
+                out[key] = [value]
+    return list(out.items())
