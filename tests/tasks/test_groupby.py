@@ -12,11 +12,9 @@ from ecoscope_workflows.tasks.groupby._groupby import (
 
 
 def test_set_groupers():
-    groupers = set_groupers(["class", "order"])
-    assert len(groupers) == 2
-    assert all(isinstance(g, Grouper) for g in groupers)
-    assert groupers[0].index_name == "class"
-    assert groupers[1].index_name == "order"
+    input_groupers = [Grouper(index_name="class"), Grouper(index_name="order")]
+    output_groupers = set_groupers(input_groupers)
+    assert input_groupers == output_groupers
 
 
 @pytest.mark.parametrize(

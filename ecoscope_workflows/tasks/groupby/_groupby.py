@@ -1,6 +1,7 @@
+from dataclasses import dataclass
 from typing import Annotated
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from ecoscope_workflows.annotations import AnyDataFrame
 from ecoscope_workflows.indexes import CompositeFilter, IndexName, IndexValue
@@ -16,7 +17,8 @@ def _groupkey_to_composite_filter(
     return tuple((index, "=", value) for index, value in zip(groupers, index_values))
 
 
-class Grouper(BaseModel):
+@dataclass(frozen=True)
+class Grouper:
     index_name: IndexName
     display_name: str | None = None
     help_text: str | None = None
