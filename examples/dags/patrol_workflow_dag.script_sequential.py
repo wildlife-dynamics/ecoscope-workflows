@@ -2,15 +2,19 @@ import argparse
 import os
 import yaml
 
+from ecoscope_workflows.tasks.groupby import set_groupers
 from ecoscope_workflows.tasks.io import get_patrol_observations
 from ecoscope_workflows.tasks.preprocessing import process_relocations
 from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
+from ecoscope_workflows.tasks.groupby import split_groups
 from ecoscope_workflows.tasks.results import create_map_layer
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
+from ecoscope_workflows.tasks.groupby import groupbykey
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
+from ecoscope_workflows.tasks.results import merge_widget_views
 from ecoscope_workflows.tasks.results import draw_time_series_bar_chart
 from ecoscope_workflows.tasks.results import create_plot_widget_single_view
 from ecoscope_workflows.tasks.results import draw_pie_chart
@@ -29,6 +33,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     params = yaml.safe_load(args.config_file)
 
+    groupers = set_groupers.validate().call(**params["groupers"])
+
     patrol_obs = get_patrol_observations.validate().call(**params["patrol_obs"])
 
     patrol_reloc = (
@@ -43,10 +49,16 @@ if __name__ == "__main__":
         .call(**params["patrol_traj"])
     )
 
-    patrol_traj_map_layer = (
+    split_patrol_traj_groups = (
+        split_groups.validate()
+        .partial(df=patrol_traj, groupers=groupers)
+        .call(**params["split_patrol_traj_groups"])
+    )
+
+    patrol_traj_map_layers = (
         create_map_layer.validate()
-        .partial(geodataframe=patrol_traj)
-        .call(**params["patrol_traj_map_layer"])
+        .partial(**params["patrol_traj_map_layers"])
+        .mapvalues(argnames=["geodataframe"], argvalues=split_patrol_traj_groups)
     )
 
     patrol_events = get_patrol_events.validate().call(**params["patrol_events"])
@@ -57,31 +69,49 @@ if __name__ == "__main__":
         .call(**params["filter_patrol_events"])
     )
 
-    patrol_events_map_layer = (
+    split_pe_groups = (
+        split_groups.validate()
+        .partial(df=filter_patrol_events, groupers=groupers)
+        .call(**params["split_pe_groups"])
+    )
+
+    patrol_events_map_layers = (
         create_map_layer.validate()
-        .partial(geodataframe=filter_patrol_events)
-        .call(**params["patrol_events_map_layer"])
+        .partial(**params["patrol_events_map_layers"])
+        .mapvalues(argnames=["geodataframe"], argvalues=split_pe_groups)
+    )
+
+    combined_traj_and_pe_map_layers = (
+        groupbykey.validate()
+        .partial(iterables=[patrol_traj_map_layers, patrol_events_map_layers])
+        .call(**params["combined_traj_and_pe_map_layers"])
     )
 
     traj_patrol_events_ecomap = (
         draw_ecomap.validate()
-        .partial(geo_layers=[patrol_traj_map_layer, patrol_events_map_layer])
-        .call(**params["traj_patrol_events_ecomap"])
+        .partial(**params["traj_patrol_events_ecomap"])
+        .mapvalues(argnames=["geo_layers"], argvalues=combined_traj_and_pe_map_layers)
     )
 
-    traj_pe_ecomap_html_url = (
+    traj_pe_ecomap_html_urls = (
         persist_text.validate()
         .partial(
-            text=traj_patrol_events_ecomap,
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            **params["traj_pe_ecomap_html_urls"],
         )
-        .call(**params["traj_pe_ecomap_html_url"])
+        .mapvalues(argnames=["text"], argvalues=traj_patrol_events_ecomap)
     )
 
-    traj_patrol_events_map_widget = (
+    traj_pe_map_widgets_single_views = (
         create_map_widget_single_view.validate()
-        .partial(data=traj_pe_ecomap_html_url)
-        .call(**params["traj_patrol_events_map_widget"])
+        .partial(**params["traj_pe_map_widgets_single_views"])
+        .map(argnames=["view", "data"], argvalues=traj_pe_ecomap_html_urls)
+    )
+
+    traj_pe_grouped_map_widget = (
+        merge_widget_views.validate()
+        .partial(widgets=traj_pe_map_widgets_single_views)
+        .call(**params["traj_pe_grouped_map_widget"])
     )
 
     patrol_events_bar_chart = (
@@ -160,11 +190,12 @@ if __name__ == "__main__":
         gather_dashboard.validate()
         .partial(
             widgets=[
-                traj_patrol_events_map_widget,
+                traj_pe_grouped_map_widget,
                 td_map_widget,
                 patrol_events_bar_chart_widget,
                 patrol_events_pie_chart_widget,
-            ]
+            ],
+            groupers=groupers,
         )
         .call(**params["patrol_dashboard"])
     )

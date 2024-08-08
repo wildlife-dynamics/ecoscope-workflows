@@ -25,7 +25,7 @@ workflow:
     id: split_patrol_traj_groups
     task: split_groups
     partial:
-      df: ${{ workflow.filter_patrol_events.return }}
+      df: ${{ workflow.patrol_traj.return }}
       groupers: ${{ workflow.groupers.return }}
   - name: Create map layer for each Patrol Trajectories group
     id: patrol_traj_map_layers

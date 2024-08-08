@@ -81,3 +81,8 @@ def split_groups(
         (_groupkey_to_composite_filter(grouper_index_names, index_value), group)
         for index_value, group in grouped
     ]
+
+
+@task
+def groupbykey():
+    pass
