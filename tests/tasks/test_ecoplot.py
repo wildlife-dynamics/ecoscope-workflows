@@ -128,7 +128,6 @@ def test_draw_time_series_bar_chart(time_series_dataframe, time_interval):
     )
 
     assert isinstance(plot, str)
-    open(f"test_bins_{time_interval}.html", "w").write(plot)
 
 
 def test_draw_pie_chart(pie_dataframe):
