@@ -1,9 +1,6 @@
 # Parameters for 'Set Groupers' using task `set_groupers`.
 groupers:
   groupers:   # (list[ecoscope_workflows.tasks.groupby._groupby.Grouper], FieldInfo(annotation=NoneType, required=True, description='            Index(es) and/or column(s) to group by, along with\n            optional display names and help text.\n            '))
-    - index_name: "event_type"
-      display_name: "Event Type"
-      help_text: "The type of event that occurred."
 
 # Parameters for 'Get Patrol Observations from EarthRanger' using task `get_patrol_observations`.
 patrol_obs:
@@ -28,8 +25,13 @@ patrol_traj:
   max_speed_kmhr:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
   min_speed_kmhr:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
 
+# Parameters for 'Add temporal index to Patrol Trajectories' using task `add_temporal_index`.
+traj_add_temporal_index:
+  index_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A name for the new index which will be added.'))
+  time_col:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of existing column containing time data.'))
+  directive:   # (typing.Literal['%a', '%A', '%b', '%B', '%c', '%d', '%f', '%H', '%I', '%j', '%m', '%M', '%p', '%S', '%U', '%w', '%W', '%x', '%X', '%y', '%Y', '%z', '%%'], FieldInfo(annotation=NoneType, required=True, description='A directive for formatting the time data.'))
+
 # Parameters for 'Split Patrol Trajectories by Group' using task `split_groups`.
-# CAN THE TRAJ BE SPLIT BY EVENT_TYPE?!
 split_patrol_traj_groups:
 
 # Parameters for 'Create map layer for each Patrol Trajectories group' using task `create_map_layer`.
@@ -52,6 +54,12 @@ filter_patrol_events:
   min_y:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=-90.0))
   max_y:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=90.0))
   filter_point_coords:   # (list[list[float]], FieldInfo(annotation=NoneType, required=False, default=[[0.0, 0.0]]))
+
+# Parameters for 'Add temporal index to Patrol Events' using task `add_temporal_index`.
+pe_add_temporal_index:
+  index_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A name for the new index which will be added.'))
+  time_col:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of existing column containing time data.'))
+  directive:   # (typing.Literal['%a', '%A', '%b', '%B', '%c', '%d', '%f', '%H', '%I', '%j', '%m', '%M', '%p', '%S', '%U', '%w', '%W', '%x', '%X', '%y', '%Y', '%z', '%%'], FieldInfo(annotation=NoneType, required=True, description='A directive for formatting the time data.'))
 
 # Parameters for 'Split Patrol Events by Group' using task `split_groups`.
 split_pe_groups:

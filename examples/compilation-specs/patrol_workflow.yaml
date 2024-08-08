@@ -19,6 +19,11 @@ workflow:
     task: relocations_to_trajectory
     partial:
       relocations: ${{ workflow.patrol_reloc.return }}
+  - name: Add temporal index to Patrol Trajectories
+    id: traj_add_temporal_index
+    task: add_temporal_index
+    partial:
+      df: ${{ workflow.patrol_traj.return }}
 
   # patrol trajectories map layers
   - name: Split Patrol Trajectories by Group
@@ -43,6 +48,11 @@ workflow:
     task: apply_reloc_coord_filter
     partial:
       df: ${{ workflow.patrol_events.return }}
+  - name: Add temporal index to Patrol Events
+    id: pe_add_temporal_index
+    task: add_temporal_index
+    partial:
+      df: ${{ workflow.filter_patrol_events.return }}
 
   # patrol events map layers
   - name: Split Patrol Events by Group
