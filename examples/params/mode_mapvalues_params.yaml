@@ -12,7 +12,10 @@ patrol_events:
 
 # Parameters for 'Set Groupers' using task `set_groupers`.
 groupers:
-  groupers:  ["event_type"]  # (list[str], FieldInfo(annotation=NoneType, required=True, description='Index(es) and/or column(s) to group by'))
+  groupers:  # (list[ecoscope_workflows.tasks.groupby._groupby.Grouper], FieldInfo(annotation=NoneType, required=True, description='            Index(es) and/or column(s) to group by, along with\n            optional display names and help text.\n            '))
+    - index_name: "event_type"
+      display_name: "Event Type"
+      help_text: "The type of event that occurred."
 
 # Parameters for 'Split Observations' using task `split_groups`.
 split_obs: {}

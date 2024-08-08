@@ -44,15 +44,54 @@
         "type": "object"
     },
     "groupers": {
+        "$defs": {
+            "Grouper": {
+                "properties": {
+                    "index_name": {
+                        "title": "Index Name",
+                        "type": "string"
+                    },
+                    "display_name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Display Name"
+                    },
+                    "help_text": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Help Text"
+                    }
+                },
+                "required": [
+                    "index_name"
+                ],
+                "title": "Grouper",
+                "type": "object"
+            }
+        },
         "additionalProperties": false,
         "properties": {
             "groupers": {
                 "items": {
-                    "type": "string"
+                    "$ref": "#/$defs/Grouper"
                 },
                 "title": "Groupers",
                 "type": "array",
-                "description": "Index(es) and/or column(s) to group by"
+                "description": "            Index(es) and/or column(s) to group by, along with\n            optional display names and help text.\n            "
             }
         },
         "required": [

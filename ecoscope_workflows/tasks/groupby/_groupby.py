@@ -25,14 +25,21 @@ class Grouper(BaseModel):
 @task
 def set_groupers(
     groupers: Annotated[
-        list[str], Field(description="Index(es) and/or column(s) to group by")
+        list[Grouper],
+        Field(
+            description="""\
+            Index(es) and/or column(s) to group by, along with
+            optional display names and help text.
+            """,
+        ),
     ],
-    # TODO: support setting display names and help text
 ) -> Annotated[
     list[Grouper],
-    Field(description="Groupers with optional display names and help text"),
+    Field(
+        description="Passthrough of the input groupers, for use in downstream tasks."
+    ),
 ]:
-    return [Grouper(index_name=grouper) for grouper in groupers]
+    return groupers
 
 
 @task
