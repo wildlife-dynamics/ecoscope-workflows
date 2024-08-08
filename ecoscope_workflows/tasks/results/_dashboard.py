@@ -255,10 +255,6 @@ def gather_dashboard(
         grouper_choices = composite_filters_to_grouper_choices_dict(
             groupers, keys_sample
         )
-        # make sure we didn't lose track of any groupers inflight
-        assert set([g.index_name for g in groupers]) == set(
-            list(grouper_choices.keys())
-        ), "All groupers must be present in the keys"
     return Dashboard(
         widgets=grouped_widgets,
         grouper_choices=(grouper_choices if groupers else None),

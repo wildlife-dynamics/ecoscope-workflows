@@ -12,11 +12,14 @@ DashboardFixture = tuple[list[GroupedWidget], Dashboard]
 
 
 def assert_dashboards_equal(d1: Dashboard, d2: Dashboard):
-    assert d1.groupers
-    assert d2.groupers
-    assert d1.groupers.keys() == d2.groupers.keys()
+    assert d1.grouper_choices
+    assert d2.grouper_choices
+    assert d1.grouper_choices.keys() == d2.grouper_choices.keys()
     # Does it matter if the order of the grouper values is different?
-    assert list(d1.groupers.values()).sort() == list(d2.groupers.values()).sort()
+    assert (
+        list(d1.grouper_choices.values()).sort()
+        == list(d2.grouper_choices.values()).sort()
+    )
     assert d1.keys == d2.keys
     assert d1.widgets == d2.widgets
 
@@ -41,7 +44,7 @@ def single_filter_dashboard() -> DashboardFixture:
     )
     widgets = [great_map, cool_plot]
     dashboard = Dashboard(
-        groupers={"month": ["january", "february"]},
+        grouper_choices={Grouper(index_name="month"): ["january", "february"]},
         keys=[
             (("month", "=", "january"),),
             (("month", "=", "february"),),
@@ -168,7 +171,10 @@ def two_filter_dashboard() -> DashboardFixture:
     )
     widgets = [great_map]
     dashboard = Dashboard(
-        groupers={"month": ["jan"], "year": ["2022", "2023"]},
+        groupers_choices={
+            Grouper(index_name="month"): ["jan"],
+            Grouper(index_name="year"): ["2022", "2023"],
+        },
         keys=[
             (("month", "=", "jan"), ("year", "=", "2022")),
             (("month", "=", "jan"), ("year", "=", "2023")),
@@ -282,7 +288,11 @@ def three_filter_dashboard() -> DashboardFixture:
     )
     widgets = [great_map]
     dashboard = Dashboard(
-        groupers={"month": ["jan"], "year": ["2022"], "subject_name": ["jo", "zo"]},
+        groupers={
+            Grouper(index_name="month"): ["jan"],
+            Grouper(index_name="year"): ["2022"],
+            Grouper(index_name="subject_name"): ["jo", "zo"],
+        },
         keys=[
             (("month", "=", "jan"), ("year", "=", "2022"), ("subject_name", "=", "jo")),
             (("month", "=", "jan"), ("year", "=", "2022"), ("subject_name", "=", "zo")),
@@ -414,7 +424,7 @@ def dashboard_with_none_views() -> DashboardFixture:
     )
     widgets = [great_map, none_view_plot]
     dashboard = Dashboard(
-        groupers={"month": ["january", "february"]},
+        groupers={Grouper(index_name="month"): ["january", "february"]},
         keys=[
             (("month", "=", "january"),),
             (("month", "=", "february"),),
