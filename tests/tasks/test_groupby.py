@@ -55,23 +55,27 @@ def test_split_groups():
         index=["falcon", "parrot", "lion", "monkey", "leopard"],
         columns=("class", "order", "max_speed"),
     )
-    groupers = ["class", "order"]
+    groupers = [Grouper(index_name="class"), Grouper(index_name="order")]
     groups = split_groups(df, groupers=groupers)
     assert len(groups) == 4
-    assert list(groups) == [
+    assert [k for (k, _) in groups] == [
         (("class", "=", "bird"), ("order", "=", "Falconiformes")),
         (("class", "=", "bird"), ("order", "=", "Psittaciformes")),
         (("class", "=", "mammal"), ("order", "=", "Carnivora")),
         (("class", "=", "mammal"), ("order", "=", "Primates")),
     ]
-    assert all(isinstance(group, pd.DataFrame) for group in groups.values())
+    assert all(isinstance(group, pd.DataFrame) for group in [v for (_, v) in groups])
+
+    def get_actual(key: CompositeFilter) -> pd.DataFrame:
+        return next(iter([v for (k, v) in groups if k == key]))
+
     class_bird_order_falconiformes_expected_df = pd.DataFrame(
         [("bird", "Falconiformes", 389.0)],
         index=["falcon"],
         columns=("class", "order", "max_speed"),
     )
     pd.testing.assert_frame_equal(
-        groups[(("class", "=", "bird"), ("order", "=", "Falconiformes"))],
+        get_actual((("class", "=", "bird"), ("order", "=", "Falconiformes"))),
         class_bird_order_falconiformes_expected_df,
     )
     class_bird_order_psittaciformes_expected_df = pd.DataFrame(
@@ -80,6 +84,6 @@ def test_split_groups():
         columns=("class", "order", "max_speed"),
     )
     pd.testing.assert_frame_equal(
-        groups[(("class", "=", "bird"), ("order", "=", "Psittaciformes"))],
+        get_actual((("class", "=", "bird"), ("order", "=", "Psittaciformes"))),
         class_bird_order_psittaciformes_expected_df,
     )
