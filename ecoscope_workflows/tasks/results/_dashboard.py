@@ -244,23 +244,12 @@ def gather_dashboard(
 ) -> Annotated[Dashboard, Field()]:
     # if the input is any kind of list, try to flatten it because it might be nested
     # if it is not a list, we will just handle the singleton value as-is with `case`s
-    match _flatten(widgets) if isinstance(widgets, list) else widgets:
-        # Regardless of input type, parse into a list of GroupedWidgets accordingly
-        case list() as widget_list if all(
-            isinstance(w, WidgetSingleView) for w in widget_list
-        ):
-            grouped_widgets = [GroupedWidget.from_single_view(w) for w in widget_list]
-        case list() as widget_list if all(
-            isinstance(w, GroupedWidget) for w in widget_list
-        ):
-            grouped_widgets = widget_list
-        case GroupedWidget() as widget:
-            grouped_widgets = [widget]
-        case WidgetSingleView() as widget:
-            grouped_widgets = [GroupedWidget.from_single_view(widget)]
-        case _:
-            raise ValueError(f"Invalid input {widgets=}")
-
+    as_flat_list = _flatten(widgets) if isinstance(widgets, list) else [widgets]
+    # Regardless of input type, parse into a list of GroupedWidgets accordingly
+    grouped_widgets = [
+        GroupedWidget.from_single_view(w) if isinstance(w, WidgetSingleView) else w
+        for w in as_flat_list
+    ]
     if groupers:
         for gw in grouped_widgets:
             keys_sample = list(gw.views)
