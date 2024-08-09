@@ -1,4 +1,5 @@
 from ._aggregation import (
+    apply_arithmetic_operation,
     dataframe_column_mean,
     dataframe_column_nunique,
     dataframe_column_sum,
@@ -8,6 +9,7 @@ from ._time_density import TimeDensityReturnGDFSchema, calculate_time_density
 
 __all__ = [
     "TimeDensityReturnGDFSchema",
+    "apply_arithmetic_operation",
     "dataframe_column_mean",
     "dataframe_column_nunique",
     "dataframe_column_sum",

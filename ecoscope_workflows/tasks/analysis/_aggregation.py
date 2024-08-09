@@ -1,4 +1,5 @@
-from typing import Annotated
+from operator import add, sub, mul, truediv, floordiv, mod, pow
+from typing import Annotated, Literal
 
 from pydantic import Field
 
@@ -38,3 +39,31 @@ def dataframe_column_nunique(
     column_name: ColumnName,
 ) -> Annotated[int, Field(description="The number of unique values in the column")]:
     return df[column_name].nunique()
+
+
+operations = {
+    "add": add,
+    "subtract": sub,
+    "multiply": mul,
+    "divide": truediv,
+    "floor_divide": floordiv,
+    "modulo": mod,
+    "power": pow,
+}
+
+Operations = Literal[
+    "add", "subtract", "multiply", "divide", "floor_divide", "modulo", "power"
+]
+
+
+@task
+def apply_arithmetic_operation(
+    a: Annotated[float | int, Field(description="The first number")],
+    b: Annotated[float | int, Field(description="The second number")],
+    operation: Annotated[
+        Operations, Field(description="The arithmetic operation to apply")
+    ],
+) -> Annotated[
+    float | int, Field(description="The result of the arithmetic operation")
+]:
+    return operations[operation](a, b)
