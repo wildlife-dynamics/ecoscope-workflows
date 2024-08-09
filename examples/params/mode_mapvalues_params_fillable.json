@@ -218,42 +218,21 @@
                     "description": "The map title."
                 },
                 "title_kws": {
-                    "anyOf": [
-                        {
-                            "type": "object"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "Title Kws",
+                    "type": "object",
                     "description": "Additional arguments for configuring the Title."
                 },
                 "scale_kws": {
-                    "anyOf": [
-                        {
-                            "type": "object"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "Scale Kws",
+                    "type": "object",
                     "description": "Additional arguments for configuring the Scale Bar."
                 },
                 "north_arrow_kws": {
-                    "anyOf": [
-                        {
-                            "type": "object"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "North Arrow Kws",
+                    "type": "object",
                     "description": "Additional arguments for configuring the North Arrow."
                 }
             },
@@ -264,16 +243,9 @@
             "additionalProperties": false,
             "properties": {
                 "filename": {
-                    "anyOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "Filename",
+                    "type": "string",
                     "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
                 }
             },

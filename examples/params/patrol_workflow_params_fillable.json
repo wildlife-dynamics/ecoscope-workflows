@@ -305,42 +305,21 @@
                     "description": "The map title."
                 },
                 "title_kws": {
-                    "anyOf": [
-                        {
-                            "type": "object"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "Title Kws",
+                    "type": "object",
                     "description": "Additional arguments for configuring the Title."
                 },
                 "scale_kws": {
-                    "anyOf": [
-                        {
-                            "type": "object"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "Scale Kws",
+                    "type": "object",
                     "description": "Additional arguments for configuring the Scale Bar."
                 },
                 "north_arrow_kws": {
-                    "anyOf": [
-                        {
-                            "type": "object"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "North Arrow Kws",
+                    "type": "object",
                     "description": "Additional arguments for configuring the North Arrow."
                 }
             },
@@ -351,16 +330,9 @@
             "additionalProperties": false,
             "properties": {
                 "filename": {
-                    "anyOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "Filename",
+                    "type": "string",
                     "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
                 }
             },
@@ -424,42 +396,21 @@
                     "description": "Sets the time interval of the x axis."
                 },
                 "groupby_style_kws": {
-                    "anyOf": [
-                        {
-                            "type": "object"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "Groupby Style Kws",
+                    "type": "object",
                     "description": "Style arguments passed to plotly.graph_objects.Bar and applied to individual groups."
                 },
                 "style_kws": {
-                    "anyOf": [
-                        {
-                            "type": "object"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "Style Kws",
+                    "type": "object",
                     "description": "Style arguments passed to plotly.graph_objects.Bar and applied to all groups."
                 },
                 "layout_kws": {
-                    "anyOf": [
-                        {
-                            "type": "object"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "Layout Kws",
+                    "type": "object",
                     "description": "Style arguments passed to plotly.graph_objects.Figure."
                 }
             },
@@ -476,16 +427,9 @@
             "additionalProperties": false,
             "properties": {
                 "filename": {
-                    "anyOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "Filename",
+                    "type": "string",
                     "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
                 }
             },
@@ -515,42 +459,21 @@
                     "description": "The name of the dataframe column to pull slice values from."
                 },
                 "label_column": {
-                    "anyOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "Label Column",
+                    "type": "string",
                     "description": "The name of the dataframe column to label slices with, required if the data in value_column is numeric."
                 },
                 "style_kws": {
-                    "anyOf": [
-                        {
-                            "type": "object"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "Style Kws",
+                    "type": "object",
                     "description": "Additional style kwargs passed to go.Pie()."
                 },
                 "layout_kws": {
-                    "anyOf": [
-                        {
-                            "type": "object"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "Layout Kws",
+                    "type": "object",
                     "description": "Additional kwargs passed to plotly.go.Figure(layout)."
                 }
             },
@@ -563,16 +486,9 @@
             "additionalProperties": false,
             "properties": {
                 "filename": {
-                    "anyOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "Filename",
+                    "type": "string",
                     "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
                 }
             },
@@ -704,42 +620,21 @@
                     "description": "The map title."
                 },
                 "title_kws": {
-                    "anyOf": [
-                        {
-                            "type": "object"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "Title Kws",
+                    "type": "object",
                     "description": "Additional arguments for configuring the Title."
                 },
                 "scale_kws": {
-                    "anyOf": [
-                        {
-                            "type": "object"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "Scale Kws",
+                    "type": "object",
                     "description": "Additional arguments for configuring the Scale Bar."
                 },
                 "north_arrow_kws": {
-                    "anyOf": [
-                        {
-                            "type": "object"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "North Arrow Kws",
+                    "type": "object",
                     "description": "Additional arguments for configuring the North Arrow."
                 }
             },
@@ -750,16 +645,9 @@
             "additionalProperties": false,
             "properties": {
                 "filename": {
-                    "anyOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "default": null,
                     "title": "Filename",
+                    "type": "string",
                     "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
                 }
             },
