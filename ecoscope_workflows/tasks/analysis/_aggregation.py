@@ -34,6 +34,22 @@ def dataframe_column_sum(
 
 
 @task
+def dataframe_column_max(
+    df: AnyDataFrame,
+    column_name: ColumnName,
+) -> Annotated[float, Field(description="The max of the column")]:
+    return df[column_name].max()
+
+
+@task
+def dataframe_column_min(
+    df: AnyDataFrame,
+    column_name: ColumnName,
+) -> Annotated[float, Field(description="The min of the column")]:
+    return df[column_name].min()
+
+
+@task
 def dataframe_column_nunique(
     df: AnyDataFrame,
     column_name: ColumnName,

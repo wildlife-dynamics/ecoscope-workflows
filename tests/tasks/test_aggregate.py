@@ -4,6 +4,8 @@ import pytest
 from ecoscope_workflows.tasks.analysis import (
     apply_arithmetic_operation,
     dataframe_column_mean,
+    dataframe_column_max,
+    dataframe_column_min,
     dataframe_column_nunique,
     dataframe_column_sum,
     dataframe_count,
@@ -26,6 +28,18 @@ def test_sum():
     df = pd.DataFrame({"data": [1, 2, 3]})
     result = dataframe_column_sum(df, "data")
     assert result == 6
+
+
+def test_max():
+    df = pd.DataFrame({"data": [1, 2, 3]})
+    result = dataframe_column_max(df, "data")
+    assert result == 3
+
+
+def test_min():
+    df = pd.DataFrame({"data": [1, 2, 3]})
+    result = dataframe_column_min(df, "data")
+    assert result == 1
 
 
 def test_nunique():
