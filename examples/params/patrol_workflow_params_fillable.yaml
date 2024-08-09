@@ -120,7 +120,7 @@ total_patrol_time_converted:
 total_patrol_time_sv_widgets:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
 
-# Parameters for 'Merge per group Total Patrol Per Group SV widgets' using task `merge_widget_views`.
+# Parameters for 'Merge per group Total Patrol Time SV widgets' using task `merge_widget_views`.
 patrol_time_grouped_widget:
 
 # Parameters for 'Calculate Total Distance Per Group' using task `dataframe_column_sum`.
@@ -136,8 +136,19 @@ total_patrol_dist_converted:
 total_patrol_dist_sv_widgets:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
 
-# Parameters for 'Merge per group Total Patrol Per Group SV widgets' using task `merge_widget_views`.
+# Parameters for 'Merge per group Total Patrol Distance SV widgets' using task `merge_widget_views`.
 patrol_dist_grouped_widget:
+
+# Parameters for 'Calculate Average Speed Per Group' using task `dataframe_column_mean`.
+avg_speed:
+  column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Column to aggregate'))
+
+# Parameters for 'Create Single Value Widgets for Avg Speed Per Group' using task `create_single_value_widget_single_view`.
+avg_speed_sv_widgets:
+  title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Merge per group Avg Speed SV widgets' using task `merge_widget_views`.
+avg_speed_grouped_widget:
 
 # Parameters for 'Draw Time Series Bar Chart for Patrols Events' using task `draw_time_series_bar_chart`.
 patrol_events_bar_chart:

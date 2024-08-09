@@ -142,7 +142,7 @@ workflow:
     map:
       argnames: [view, data]
       argvalues: ${{ workflow.total_patrol_time_converted.return }}
-  - name: Merge per group Total Patrol Per Group SV widgets
+  - name: Merge per group Total Patrol Time SV widgets
     id: patrol_time_grouped_widget
     task: merge_widget_views
     partial:
@@ -167,11 +167,30 @@ workflow:
     map:
       argnames: [view, data]
       argvalues: ${{ workflow.total_patrol_dist_converted.return }}
-  - name: Merge per group Total Patrol Per Group SV widgets
+  - name: Merge per group Total Patrol Distance SV widgets
     id: patrol_dist_grouped_widget
     task: merge_widget_views
     partial:
       widgets: ${{ workflow.total_patrol_dist_sv_widgets.return }}
+
+  # Grouped single value widget (4) - average speed per group
+  - name: Calculate Average Speed Per Group
+    id: avg_speed
+    task: dataframe_column_mean
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.split_patrol_traj_groups.return }}
+  - name: Create Single Value Widgets for Avg Speed Per Group
+    id: avg_speed_sv_widgets
+    task: create_single_value_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.avg_speed.return }}
+  - name: Merge per group Avg Speed SV widgets
+    id: avg_speed_grouped_widget
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.avg_speed_sv_widgets.return }}
 
   # patrol events bar chart
   - name: Draw Time Series Bar Chart for Patrols Events
@@ -251,6 +270,6 @@ workflow:
         - ${{ workflow.total_patrols_grouped_sv_widget.return }}
         - ${{ workflow.patrol_time_grouped_widget.return }}
         - ${{ workflow.patrol_dist_grouped_widget.return }}
-        # - ${{ workflow.avg_speed_grouped_sv_widget.return }}
+        - ${{ workflow.avg_speed_grouped_widget.return }}
         # - ${{ workflow.max_speed_grouped_sv_widget.return }}
       groupers: ${{ workflow.groupers.return }}

@@ -113,6 +113,7 @@ assert_that_stdout = {
         lambda out: "widget_type='single_value', title='Total Patrols'" in out,
         lambda out: "widget_type='single_value', title='Total Time'" in out,
         lambda out: "widget_type='single_value', title='Total Distance'" in out,
+        lambda out: "widget_type='single_value', title='Average Speed'" in out,
     ],
     "mode-map.yaml": [
         lambda out: ".html" in out,
