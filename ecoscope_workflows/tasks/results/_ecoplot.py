@@ -1,6 +1,7 @@
 from typing import Annotated, Literal
 
 from pydantic import Field
+from pydantic.json_schema import SkipJsonSchema
 
 from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
 from ecoscope_workflows.decorators import task
@@ -82,19 +83,19 @@ def draw_time_series_bar_chart(
         Field(description="Sets the time interval of the x axis."),
     ],
     groupby_style_kws: Annotated[
-        dict | None,
+        dict | SkipJsonSchema[None],
         Field(
             description="Style arguments passed to plotly.graph_objects.Bar and applied to individual groups."
         ),
     ] = None,
     style_kws: Annotated[
-        dict | None,
+        dict | SkipJsonSchema[None],
         Field(
             description="Style arguments passed to plotly.graph_objects.Bar and applied to all groups."
         ),
     ] = None,
     layout_kws: Annotated[
-        dict | None,
+        dict | SkipJsonSchema[None],
         Field(description="Style arguments passed to plotly.graph_objects.Figure."),
     ] = None,
 ) -> Annotated[str, Field()]:
@@ -116,7 +117,8 @@ def draw_time_series_bar_chart(
     The generated chart html as a string
     """
     import datetime
-    from ecoscope.plotting import stacked_bar_chart, EcoPlotData
+
+    from ecoscope.plotting import EcoPlotData, stacked_bar_chart
 
     layout_kws = layout_kws if layout_kws else {}
 
@@ -186,17 +188,17 @@ def draw_pie_chart(
         ),
     ],
     label_column: Annotated[
-        str | None,
+        str | SkipJsonSchema[None],
         Field(
             description="The name of the dataframe column to label slices with, required if the data in value_column is numeric."
         ),
     ] = None,
     style_kws: Annotated[
-        dict | None,
+        dict | SkipJsonSchema[None],
         Field(description="Additional style kwargs passed to go.Pie()."),
     ] = None,
     layout_kws: Annotated[
-        dict | None,
+        dict | SkipJsonSchema[None],
         Field(description="Additional kwargs passed to plotly.go.Figure(layout)."),
     ] = None,
 ) -> Annotated[str, Field()]:
