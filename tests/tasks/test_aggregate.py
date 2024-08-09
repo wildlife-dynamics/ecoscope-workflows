@@ -22,6 +22,12 @@ def test_sum():
     assert result == 6
 
 
+def test_nunique():
+    df = pd.DataFrame({"data": [1, 2, 3, 1]})
+    result = aggregate(df, "data", "nunique")
+    assert result == 3
+
+
 def test_invalid_function():
     df = pd.DataFrame({"data": [1, 2, 3]})
     with pytest.raises(ValueError):

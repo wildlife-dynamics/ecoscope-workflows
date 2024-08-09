@@ -22,7 +22,7 @@ def aggregate(
             return df[column_name].mean()
         case "SUM":
             return df[column_name].sum()
-        # case "NUNIQUE":
-        #     ...
+        case "NUNIQUE":
+            return df[column_name].nunique()
         case _:
             raise ValueError(f"Unknown aggregation function: {func_name}")
