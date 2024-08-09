@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Annotated, Any, Generator
 
 from pydantic import BaseModel, Field, model_serializer
+from pydantic.json_schema import SkipJsonSchema
 
 from ecoscope_workflows.decorators import task
 from ecoscope_workflows.jsonschema import (
@@ -213,7 +214,7 @@ def gather_dashboard(
         Field(description="The widgets to display."),
     ],
     groupers: Annotated[
-        list[Grouper] | None,
+        list[Grouper] | SkipJsonSchema[None],
         Field(
             description="""\
             A list of groupers that are used to group the widgets.

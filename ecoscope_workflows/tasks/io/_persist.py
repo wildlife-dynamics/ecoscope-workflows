@@ -2,6 +2,7 @@ import hashlib
 from typing import Annotated
 
 from pydantic import Field
+from pydantic.json_schema import SkipJsonSchema
 
 from ecoscope_workflows.decorators import task
 
@@ -16,7 +17,7 @@ def persist_text(
     # TODO: get root path from environment variable or other deployment-level config (not user-provided)
     root_path: Annotated[str, Field(description="Root path to persist text to")],
     filename: Annotated[
-        str | None,
+        str | SkipJsonSchema[None],
         Field(
             description="""\
             Optional filename to persist text to within the `root_path`.
