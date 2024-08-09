@@ -205,10 +205,17 @@ def composite_filters_to_grouper_choices_dict(
 
 
 GroupedOrSingleWidget = GroupedWidget | WidgetSingleView
-PossiblyNestedWidgetList = list[list[GroupedOrSingleWidget] | GroupedOrSingleWidget]
+
+FlatWidgetList = (
+    list[GroupedOrSingleWidget] | list[GroupedWidget] | list[WidgetSingleView]
+)
+
+AllNestedWidgetList = list[list[GroupedOrSingleWidget]]
+PartiallyNestedWidgetList = list[list[GroupedOrSingleWidget] | GroupedOrSingleWidget]
+NestedWidgetList = AllNestedWidgetList | PartiallyNestedWidgetList
 
 
-def _flatten(possibly_nested: PossiblyNestedWidgetList) -> list[GroupedOrSingleWidget]:
+def _flatten(possibly_nested: NestedWidgetList | FlatWidgetList) -> FlatWidgetList:
     """Transform a possibly nested list of widgets into a flat list of widgets.
 
     Only works for max depth 2.
@@ -244,7 +251,7 @@ def gather_dashboard(
     title: Annotated[str, Field(description="The title of the dashboard")],
     description: Annotated[str, Field(description="The description of the dashboard")],
     widgets: Annotated[
-        PossiblyNestedWidgetList | GroupedOrSingleWidget,
+        NestedWidgetList | FlatWidgetList | GroupedOrSingleWidget,
         Field(description="The widgets to display."),
     ],
     groupers: Annotated[
