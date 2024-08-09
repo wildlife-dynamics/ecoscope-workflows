@@ -209,7 +209,23 @@ PossiblyNestedWidgetList = list[list[GroupedOrSingleWidget] | GroupedOrSingleWid
 
 
 def _flatten(possibly_nested: PossiblyNestedWidgetList) -> list[GroupedOrSingleWidget]:
-    """ """
+    """Transform a possibly nested list of widgets into a flat list of widgets.
+
+    Only works for max depth 2.
+
+    Examples:
+
+    ```python
+    >>> _flatten([[1, 2], 3, 4])
+    [1, 2, 3, 4]
+    >>> _flatten([1, [2, 3], 4])
+    [1, 2, 3, 4]
+    >>> _flatten([1, 2, 3, 4])
+    [1, 2, 3, 4]
+
+    ```
+
+    """
     flat = []
 
     for item in possibly_nested:
