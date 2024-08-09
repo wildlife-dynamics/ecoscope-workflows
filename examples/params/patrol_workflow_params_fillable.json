@@ -677,6 +677,658 @@
             "required": [],
             "type": "object"
         },
+        "Calculate Total Patrols Per Group": {
+            "additionalProperties": false,
+            "properties": {
+                "column_name": {
+                    "title": "Column Name",
+                    "type": "string",
+                    "description": "Column to aggregate"
+                }
+            },
+            "required": [
+                "column_name"
+            ],
+            "type": "object"
+        },
+        "Create Single Value Widgets for Total Patrols Per Group": {
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "title": "Title",
+                    "type": "string",
+                    "description": "The title of the widget"
+                }
+            },
+            "required": [
+                "title"
+            ],
+            "type": "object"
+        },
+        "Merge per group Total Patrols SV widgets": {
+            "$defs": {
+                "WidgetSingleView": {
+                    "properties": {
+                        "widget_type": {
+                            "enum": [
+                                "plot",
+                                "map",
+                                "text",
+                                "single_value"
+                            ],
+                            "title": "Widget Type",
+                            "type": "string"
+                        },
+                        "title": {
+                            "title": "Title",
+                            "type": "string"
+                        },
+                        "data": {
+                            "anyOf": [
+                                {
+                                    "format": "path",
+                                    "type": "string"
+                                },
+                                {
+                                    "format": "uri",
+                                    "minLength": 1,
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ],
+                            "title": "Data"
+                        },
+                        "view": {
+                            "anyOf": [
+                                {
+                                    "items": {
+                                        "maxItems": 3,
+                                        "minItems": 3,
+                                        "prefixItems": [
+                                            {
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "=",
+                                                "enum": [
+                                                    "="
+                                                ],
+                                                "type": "string"
+                                            },
+                                            {
+                                                "type": "string"
+                                            }
+                                        ],
+                                        "type": "array"
+                                    },
+                                    "type": "array"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "View"
+                        }
+                    },
+                    "required": [
+                        "widget_type",
+                        "title",
+                        "data"
+                    ],
+                    "title": "WidgetSingleView",
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+        },
+        "Calculate Total Patrol Time Per Group": {
+            "additionalProperties": false,
+            "properties": {
+                "column_name": {
+                    "title": "Column Name",
+                    "type": "string",
+                    "description": "Column to aggregate"
+                }
+            },
+            "required": [
+                "column_name"
+            ],
+            "type": "object"
+        },
+        "Convert total patrol time units": {
+            "additionalProperties": false,
+            "properties": {
+                "b": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "B",
+                    "description": "The second number"
+                },
+                "operation": {
+                    "enum": [
+                        "add",
+                        "subtract",
+                        "multiply",
+                        "divide",
+                        "floor_divide",
+                        "modulo",
+                        "power"
+                    ],
+                    "title": "Operation",
+                    "type": "string",
+                    "description": "The arithmetic operation to apply"
+                }
+            },
+            "required": [
+                "b",
+                "operation"
+            ],
+            "type": "object"
+        },
+        "Create Single Value Widgets for Total Patrol Time Per Group": {
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "title": "Title",
+                    "type": "string",
+                    "description": "The title of the widget"
+                }
+            },
+            "required": [
+                "title"
+            ],
+            "type": "object"
+        },
+        "Merge per group Total Patrol Time SV widgets": {
+            "$defs": {
+                "WidgetSingleView": {
+                    "properties": {
+                        "widget_type": {
+                            "enum": [
+                                "plot",
+                                "map",
+                                "text",
+                                "single_value"
+                            ],
+                            "title": "Widget Type",
+                            "type": "string"
+                        },
+                        "title": {
+                            "title": "Title",
+                            "type": "string"
+                        },
+                        "data": {
+                            "anyOf": [
+                                {
+                                    "format": "path",
+                                    "type": "string"
+                                },
+                                {
+                                    "format": "uri",
+                                    "minLength": 1,
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ],
+                            "title": "Data"
+                        },
+                        "view": {
+                            "anyOf": [
+                                {
+                                    "items": {
+                                        "maxItems": 3,
+                                        "minItems": 3,
+                                        "prefixItems": [
+                                            {
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "=",
+                                                "enum": [
+                                                    "="
+                                                ],
+                                                "type": "string"
+                                            },
+                                            {
+                                                "type": "string"
+                                            }
+                                        ],
+                                        "type": "array"
+                                    },
+                                    "type": "array"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "View"
+                        }
+                    },
+                    "required": [
+                        "widget_type",
+                        "title",
+                        "data"
+                    ],
+                    "title": "WidgetSingleView",
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+        },
+        "Calculate Total Distance Per Group": {
+            "additionalProperties": false,
+            "properties": {
+                "column_name": {
+                    "title": "Column Name",
+                    "type": "string",
+                    "description": "Column to aggregate"
+                }
+            },
+            "required": [
+                "column_name"
+            ],
+            "type": "object"
+        },
+        "Convert total patrol distance units": {
+            "additionalProperties": false,
+            "properties": {
+                "b": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "B",
+                    "description": "The second number"
+                },
+                "operation": {
+                    "enum": [
+                        "add",
+                        "subtract",
+                        "multiply",
+                        "divide",
+                        "floor_divide",
+                        "modulo",
+                        "power"
+                    ],
+                    "title": "Operation",
+                    "type": "string",
+                    "description": "The arithmetic operation to apply"
+                }
+            },
+            "required": [
+                "b",
+                "operation"
+            ],
+            "type": "object"
+        },
+        "Create Single Value Widgets for Total Distance Per Group": {
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "title": "Title",
+                    "type": "string",
+                    "description": "The title of the widget"
+                }
+            },
+            "required": [
+                "title"
+            ],
+            "type": "object"
+        },
+        "Merge per group Total Patrol Distance SV widgets": {
+            "$defs": {
+                "WidgetSingleView": {
+                    "properties": {
+                        "widget_type": {
+                            "enum": [
+                                "plot",
+                                "map",
+                                "text",
+                                "single_value"
+                            ],
+                            "title": "Widget Type",
+                            "type": "string"
+                        },
+                        "title": {
+                            "title": "Title",
+                            "type": "string"
+                        },
+                        "data": {
+                            "anyOf": [
+                                {
+                                    "format": "path",
+                                    "type": "string"
+                                },
+                                {
+                                    "format": "uri",
+                                    "minLength": 1,
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ],
+                            "title": "Data"
+                        },
+                        "view": {
+                            "anyOf": [
+                                {
+                                    "items": {
+                                        "maxItems": 3,
+                                        "minItems": 3,
+                                        "prefixItems": [
+                                            {
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "=",
+                                                "enum": [
+                                                    "="
+                                                ],
+                                                "type": "string"
+                                            },
+                                            {
+                                                "type": "string"
+                                            }
+                                        ],
+                                        "type": "array"
+                                    },
+                                    "type": "array"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "View"
+                        }
+                    },
+                    "required": [
+                        "widget_type",
+                        "title",
+                        "data"
+                    ],
+                    "title": "WidgetSingleView",
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+        },
+        "Calculate Average Speed Per Group": {
+            "additionalProperties": false,
+            "properties": {
+                "column_name": {
+                    "title": "Column Name",
+                    "type": "string",
+                    "description": "Column to aggregate"
+                }
+            },
+            "required": [
+                "column_name"
+            ],
+            "type": "object"
+        },
+        "Create Single Value Widgets for Avg Speed Per Group": {
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "title": "Title",
+                    "type": "string",
+                    "description": "The title of the widget"
+                }
+            },
+            "required": [
+                "title"
+            ],
+            "type": "object"
+        },
+        "Merge per group Avg Speed SV widgets": {
+            "$defs": {
+                "WidgetSingleView": {
+                    "properties": {
+                        "widget_type": {
+                            "enum": [
+                                "plot",
+                                "map",
+                                "text",
+                                "single_value"
+                            ],
+                            "title": "Widget Type",
+                            "type": "string"
+                        },
+                        "title": {
+                            "title": "Title",
+                            "type": "string"
+                        },
+                        "data": {
+                            "anyOf": [
+                                {
+                                    "format": "path",
+                                    "type": "string"
+                                },
+                                {
+                                    "format": "uri",
+                                    "minLength": 1,
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ],
+                            "title": "Data"
+                        },
+                        "view": {
+                            "anyOf": [
+                                {
+                                    "items": {
+                                        "maxItems": 3,
+                                        "minItems": 3,
+                                        "prefixItems": [
+                                            {
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "=",
+                                                "enum": [
+                                                    "="
+                                                ],
+                                                "type": "string"
+                                            },
+                                            {
+                                                "type": "string"
+                                            }
+                                        ],
+                                        "type": "array"
+                                    },
+                                    "type": "array"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "View"
+                        }
+                    },
+                    "required": [
+                        "widget_type",
+                        "title",
+                        "data"
+                    ],
+                    "title": "WidgetSingleView",
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+        },
+        "Calculate Max Speed Per Group": {
+            "additionalProperties": false,
+            "properties": {
+                "column_name": {
+                    "title": "Column Name",
+                    "type": "string",
+                    "description": "Column to aggregate"
+                }
+            },
+            "required": [
+                "column_name"
+            ],
+            "type": "object"
+        },
+        "Create Single Value Widgets for Max Speed Per Group": {
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "title": "Title",
+                    "type": "string",
+                    "description": "The title of the widget"
+                }
+            },
+            "required": [
+                "title"
+            ],
+            "type": "object"
+        },
+        "Merge per group Max Speed SV widgets": {
+            "$defs": {
+                "WidgetSingleView": {
+                    "properties": {
+                        "widget_type": {
+                            "enum": [
+                                "plot",
+                                "map",
+                                "text",
+                                "single_value"
+                            ],
+                            "title": "Widget Type",
+                            "type": "string"
+                        },
+                        "title": {
+                            "title": "Title",
+                            "type": "string"
+                        },
+                        "data": {
+                            "anyOf": [
+                                {
+                                    "format": "path",
+                                    "type": "string"
+                                },
+                                {
+                                    "format": "uri",
+                                    "minLength": 1,
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ],
+                            "title": "Data"
+                        },
+                        "view": {
+                            "anyOf": [
+                                {
+                                    "items": {
+                                        "maxItems": 3,
+                                        "minItems": 3,
+                                        "prefixItems": [
+                                            {
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "=",
+                                                "enum": [
+                                                    "="
+                                                ],
+                                                "type": "string"
+                                            },
+                                            {
+                                                "type": "string"
+                                            }
+                                        ],
+                                        "type": "array"
+                                    },
+                                    "type": "array"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "View"
+                        }
+                    },
+                    "required": [
+                        "widget_type",
+                        "title",
+                        "data"
+                    ],
+                    "title": "WidgetSingleView",
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+        },
         "Draw Time Series Bar Chart for Patrols Events": {
             "additionalProperties": false,
             "properties": {

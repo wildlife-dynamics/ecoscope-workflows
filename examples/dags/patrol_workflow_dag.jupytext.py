@@ -22,6 +22,12 @@ from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
 from ecoscope_workflows.tasks.results import merge_widget_views
+from ecoscope_workflows.tasks.analysis import dataframe_column_nunique
+from ecoscope_workflows.tasks.results import create_single_value_widget_single_view
+from ecoscope_workflows.tasks.analysis import dataframe_column_sum
+from ecoscope_workflows.tasks.analysis import apply_arithmetic_operation
+from ecoscope_workflows.tasks.analysis import dataframe_column_mean
+from ecoscope_workflows.tasks.analysis import dataframe_column_max
 from ecoscope_workflows.tasks.results import draw_time_series_bar_chart
 from ecoscope_workflows.tasks.results import create_plot_widget_single_view
 from ecoscope_workflows.tasks.results import draw_pie_chart
@@ -373,6 +379,321 @@ traj_pe_grouped_map_widget = merge_widget_views.partial(
 
 
 # %% [markdown]
+# ## Calculate Total Patrols Per Group
+
+# %%
+# parameters
+
+total_patrols_params = dict(
+    column_name=...,
+)
+
+# %%
+# call the task
+
+
+total_patrols = dataframe_column_nunique.partial(**total_patrols_params).mapvalues(
+    argnames=["df"], argvalues=split_patrol_traj_groups
+)
+
+
+# %% [markdown]
+# ## Create Single Value Widgets for Total Patrols Per Group
+
+# %%
+# parameters
+
+total_patrols_sv_widgets_params = dict(
+    title=...,
+)
+
+# %%
+# call the task
+
+
+total_patrols_sv_widgets = create_single_value_widget_single_view.partial(
+    **total_patrols_sv_widgets_params
+).map(argnames=["view", "data"], argvalues=total_patrols)
+
+
+# %% [markdown]
+# ## Merge per group Total Patrols SV widgets
+
+# %%
+# parameters
+
+total_patrols_grouped_sv_widget_params = dict()
+
+# %%
+# call the task
+
+
+total_patrols_grouped_sv_widget = merge_widget_views.partial(
+    widgets=total_patrols_sv_widgets
+).call(**total_patrols_grouped_sv_widget_params)
+
+
+# %% [markdown]
+# ## Calculate Total Patrol Time Per Group
+
+# %%
+# parameters
+
+total_patrol_time_params = dict(
+    column_name=...,
+)
+
+# %%
+# call the task
+
+
+total_patrol_time = dataframe_column_sum.partial(**total_patrol_time_params).mapvalues(
+    argnames=["df"], argvalues=split_patrol_traj_groups
+)
+
+
+# %% [markdown]
+# ## Convert total patrol time units
+
+# %%
+# parameters
+
+total_patrol_time_converted_params = dict(
+    b=...,
+    operation=...,
+)
+
+# %%
+# call the task
+
+
+total_patrol_time_converted = apply_arithmetic_operation.partial(
+    **total_patrol_time_converted_params
+).mapvalues(argnames=["a"], argvalues=total_patrol_time)
+
+
+# %% [markdown]
+# ## Create Single Value Widgets for Total Patrol Time Per Group
+
+# %%
+# parameters
+
+total_patrol_time_sv_widgets_params = dict(
+    title=...,
+)
+
+# %%
+# call the task
+
+
+total_patrol_time_sv_widgets = create_single_value_widget_single_view.partial(
+    **total_patrol_time_sv_widgets_params
+).map(argnames=["view", "data"], argvalues=total_patrol_time_converted)
+
+
+# %% [markdown]
+# ## Merge per group Total Patrol Time SV widgets
+
+# %%
+# parameters
+
+patrol_time_grouped_widget_params = dict()
+
+# %%
+# call the task
+
+
+patrol_time_grouped_widget = merge_widget_views.partial(
+    widgets=total_patrol_time_sv_widgets
+).call(**patrol_time_grouped_widget_params)
+
+
+# %% [markdown]
+# ## Calculate Total Distance Per Group
+
+# %%
+# parameters
+
+total_patrol_dist_params = dict(
+    column_name=...,
+)
+
+# %%
+# call the task
+
+
+total_patrol_dist = dataframe_column_sum.partial(**total_patrol_dist_params).mapvalues(
+    argnames=["df"], argvalues=split_patrol_traj_groups
+)
+
+
+# %% [markdown]
+# ## Convert total patrol distance units
+
+# %%
+# parameters
+
+total_patrol_dist_converted_params = dict(
+    b=...,
+    operation=...,
+)
+
+# %%
+# call the task
+
+
+total_patrol_dist_converted = apply_arithmetic_operation.partial(
+    **total_patrol_dist_converted_params
+).mapvalues(argnames=["a"], argvalues=total_patrol_dist)
+
+
+# %% [markdown]
+# ## Create Single Value Widgets for Total Distance Per Group
+
+# %%
+# parameters
+
+total_patrol_dist_sv_widgets_params = dict(
+    title=...,
+)
+
+# %%
+# call the task
+
+
+total_patrol_dist_sv_widgets = create_single_value_widget_single_view.partial(
+    **total_patrol_dist_sv_widgets_params
+).map(argnames=["view", "data"], argvalues=total_patrol_dist_converted)
+
+
+# %% [markdown]
+# ## Merge per group Total Patrol Distance SV widgets
+
+# %%
+# parameters
+
+patrol_dist_grouped_widget_params = dict()
+
+# %%
+# call the task
+
+
+patrol_dist_grouped_widget = merge_widget_views.partial(
+    widgets=total_patrol_dist_sv_widgets
+).call(**patrol_dist_grouped_widget_params)
+
+
+# %% [markdown]
+# ## Calculate Average Speed Per Group
+
+# %%
+# parameters
+
+avg_speed_params = dict(
+    column_name=...,
+)
+
+# %%
+# call the task
+
+
+avg_speed = dataframe_column_mean.partial(**avg_speed_params).mapvalues(
+    argnames=["df"], argvalues=split_patrol_traj_groups
+)
+
+
+# %% [markdown]
+# ## Create Single Value Widgets for Avg Speed Per Group
+
+# %%
+# parameters
+
+avg_speed_sv_widgets_params = dict(
+    title=...,
+)
+
+# %%
+# call the task
+
+
+avg_speed_sv_widgets = create_single_value_widget_single_view.partial(
+    **avg_speed_sv_widgets_params
+).map(argnames=["view", "data"], argvalues=avg_speed)
+
+
+# %% [markdown]
+# ## Merge per group Avg Speed SV widgets
+
+# %%
+# parameters
+
+avg_speed_grouped_widget_params = dict()
+
+# %%
+# call the task
+
+
+avg_speed_grouped_widget = merge_widget_views.partial(
+    widgets=avg_speed_sv_widgets
+).call(**avg_speed_grouped_widget_params)
+
+
+# %% [markdown]
+# ## Calculate Max Speed Per Group
+
+# %%
+# parameters
+
+max_speed_params = dict(
+    column_name=...,
+)
+
+# %%
+# call the task
+
+
+max_speed = dataframe_column_max.partial(**max_speed_params).mapvalues(
+    argnames=["df"], argvalues=split_patrol_traj_groups
+)
+
+
+# %% [markdown]
+# ## Create Single Value Widgets for Max Speed Per Group
+
+# %%
+# parameters
+
+max_speed_sv_widgets_params = dict(
+    title=...,
+)
+
+# %%
+# call the task
+
+
+max_speed_sv_widgets = create_single_value_widget_single_view.partial(
+    **max_speed_sv_widgets_params
+).map(argnames=["view", "data"], argvalues=max_speed)
+
+
+# %% [markdown]
+# ## Merge per group Max Speed SV widgets
+
+# %%
+# parameters
+
+max_speed_grouped_widget_params = dict()
+
+# %%
+# call the task
+
+
+max_speed_grouped_widget = merge_widget_views.partial(
+    widgets=max_speed_sv_widgets
+).call(**max_speed_grouped_widget_params)
+
+
+# %% [markdown]
 # ## Draw Time Series Bar Chart for Patrols Events
 
 # %%
@@ -621,6 +942,11 @@ patrol_dashboard = gather_dashboard.partial(
         td_map_widget,
         patrol_events_bar_chart_widget,
         patrol_events_pie_chart_widget,
+        total_patrols_grouped_sv_widget,
+        patrol_time_grouped_widget,
+        patrol_dist_grouped_widget,
+        avg_speed_grouped_widget,
+        max_speed_grouped_widget,
     ],
     groupers=groupers,
 ).call(**patrol_dashboard_params)
