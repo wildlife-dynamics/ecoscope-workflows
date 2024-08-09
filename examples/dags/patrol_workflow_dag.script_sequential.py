@@ -6,6 +6,7 @@ from ecoscope_workflows.tasks.groupby import set_groupers
 from ecoscope_workflows.tasks.io import get_patrol_observations
 from ecoscope_workflows.tasks.preprocessing import process_relocations
 from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
+from ecoscope_workflows.tasks.transformation import add_temporal_index
 from ecoscope_workflows.tasks.groupby import split_groups
 from ecoscope_workflows.tasks.results import create_map_layer
 from ecoscope_workflows.tasks.io import get_patrol_events
@@ -49,9 +50,15 @@ if __name__ == "__main__":
         .call(**params["patrol_traj"])
     )
 
+    traj_add_temporal_index = (
+        add_temporal_index.validate()
+        .partial(df=patrol_traj)
+        .call(**params["traj_add_temporal_index"])
+    )
+
     split_patrol_traj_groups = (
         split_groups.validate()
-        .partial(df=patrol_traj, groupers=groupers)
+        .partial(df=traj_add_temporal_index, groupers=groupers)
         .call(**params["split_patrol_traj_groups"])
     )
 
@@ -69,9 +76,15 @@ if __name__ == "__main__":
         .call(**params["filter_patrol_events"])
     )
 
+    pe_add_temporal_index = (
+        add_temporal_index.validate()
+        .partial(df=filter_patrol_events)
+        .call(**params["pe_add_temporal_index"])
+    )
+
     split_pe_groups = (
         split_groups.validate()
-        .partial(df=filter_patrol_events, groupers=groupers)
+        .partial(df=pe_add_temporal_index, groupers=groupers)
         .call(**params["split_pe_groups"])
     )
 

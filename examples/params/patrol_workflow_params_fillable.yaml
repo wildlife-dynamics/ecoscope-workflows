@@ -30,6 +30,8 @@ traj_add_temporal_index:
   index_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A name for the new index which will be added.'))
   time_col:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of existing column containing time data.'))
   directive:   # (typing.Literal['%a', '%A', '%b', '%B', '%c', '%d', '%f', '%H', '%I', '%j', '%m', '%M', '%p', '%S', '%U', '%w', '%W', '%x', '%X', '%y', '%Y', '%z', '%%'], FieldInfo(annotation=NoneType, required=True, description='A directive for formatting the time data.'))
+  cast_to_datetime:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether to attempt casting `time_col` to datetime.'))
+  format:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='            If `cast_to_datetime=True`, the format to pass to `pd.to_datetime`\n            when attempting to cast `time_col` to datetime. Defaults to "mixed".\n            '))
 
 # Parameters for 'Split Patrol Trajectories by Group' using task `split_groups`.
 split_patrol_traj_groups:
@@ -60,6 +62,8 @@ pe_add_temporal_index:
   index_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A name for the new index which will be added.'))
   time_col:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of existing column containing time data.'))
   directive:   # (typing.Literal['%a', '%A', '%b', '%B', '%c', '%d', '%f', '%H', '%I', '%j', '%m', '%M', '%p', '%S', '%U', '%w', '%W', '%x', '%X', '%y', '%Y', '%z', '%%'], FieldInfo(annotation=NoneType, required=True, description='A directive for formatting the time data.'))
+  cast_to_datetime:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether to attempt casting `time_col` to datetime.'))
+  format:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='            If `cast_to_datetime=True`, the format to pass to `pd.to_datetime`\n            when attempting to cast `time_col` to datetime. Defaults to "mixed".\n            '))
 
 # Parameters for 'Split Patrol Events by Group' using task `split_groups`.
 split_pe_groups:
