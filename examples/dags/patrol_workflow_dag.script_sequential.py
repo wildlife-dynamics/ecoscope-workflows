@@ -164,13 +164,37 @@ if __name__ == "__main__":
     total_patrol_time_sv_widgets = (
         create_single_value_widget_single_view.validate()
         .partial(**params["total_patrol_time_sv_widgets"])
-        .map(argnames=["view", "data"], argvalues=total_patrol_time)
+        .map(argnames=["view", "data"], argvalues=total_patrol_time_converted)
     )
 
     patrol_time_grouped_widget = (
         merge_widget_views.validate()
         .partial(widgets=total_patrol_time_sv_widgets)
         .call(**params["patrol_time_grouped_widget"])
+    )
+
+    total_patrol_dist = (
+        dataframe_column_sum.validate()
+        .partial(**params["total_patrol_dist"])
+        .mapvalues(argnames=["df"], argvalues=split_patrol_traj_groups)
+    )
+
+    total_patrol_dist_converted = (
+        apply_arithmetic_operation.validate()
+        .partial(**params["total_patrol_dist_converted"])
+        .mapvalues(argnames=["a"], argvalues=total_patrol_dist)
+    )
+
+    total_patrol_dist_sv_widgets = (
+        create_single_value_widget_single_view.validate()
+        .partial(**params["total_patrol_dist_sv_widgets"])
+        .map(argnames=["view", "data"], argvalues=total_patrol_dist_converted)
+    )
+
+    patrol_dist_grouped_widget = (
+        merge_widget_views.validate()
+        .partial(widgets=total_patrol_dist_sv_widgets)
+        .call(**params["patrol_dist_grouped_widget"])
     )
 
     patrol_events_bar_chart = (
@@ -255,6 +279,7 @@ if __name__ == "__main__":
                 patrol_events_pie_chart_widget,
                 total_patrols_grouped_sv_widget,
                 patrol_time_grouped_widget,
+                patrol_dist_grouped_widget,
             ],
             groupers=groupers,
         )
