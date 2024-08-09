@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Annotated
 
 from pydantic import Field
 
@@ -6,23 +6,35 @@ from ecoscope_workflows.annotations import AnyDataFrame
 from ecoscope_workflows.decorators import task
 
 
+ColumnName = Annotated[str, Field(description="Column to aggregate")]
+
+
 @task
-def aggregate(
+def dataframe_count(
     df: AnyDataFrame,
-    column_name: Annotated[str, Field(description="Column to aggregate")],
-    func_name: Annotated[
-        Literal["count", "mean", "sum", "nunique"],
-        Field(description="The method of aggregation"),
-    ],
-) -> Annotated[int | float, Field(description="The result of the aggregation")]:
-    match func_name.upper():
-        case "COUNT":
-            return len(df)
-        case "MEAN":
-            return df[column_name].mean()
-        case "SUM":
-            return df[column_name].sum()
-        case "NUNIQUE":
-            return df[column_name].nunique()
-        case _:
-            raise ValueError(f"Unknown aggregation function: {func_name}")
+) -> Annotated[int, Field(description="The number of rows in the DataFrame")]:
+    return len(df)
+
+
+@task
+def dataframe_column_mean(
+    df: AnyDataFrame,
+    column_name: ColumnName,
+) -> Annotated[float, Field(description="The mean of the column")]:
+    return df[column_name].mean()
+
+
+@task
+def dataframe_column_sum(
+    df: AnyDataFrame,
+    column_name: ColumnName,
+) -> Annotated[float, Field(description="The sum of the column")]:
+    return df[column_name].sum()
+
+
+@task
+def dataframe_column_nunique(
+    df: AnyDataFrame,
+    column_name: ColumnName,
+) -> Annotated[int, Field(description="The number of unique values in the column")]:
+    return df[column_name].nunique()
