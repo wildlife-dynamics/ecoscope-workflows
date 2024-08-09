@@ -1,26 +1,28 @@
 from typing import Annotated, Literal
 
-import pandas as pd
 from pydantic import Field
 
-from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
+from ecoscope_workflows.annotations import AnyDataFrame
 from ecoscope_workflows.decorators import task
 
 
 @task
 def aggregate(
-    df: DataFrame[JsonSerializableDataFrameModel],
+    df: AnyDataFrame,
     column_name: Annotated[str, Field(description="Column to aggregate")],
     func_name: Annotated[
-        Literal["count", "mean", "sum"], Field(description="The method of aggregation")
+        Literal["count", "mean", "sum", "nunique"],
+        Field(description="The method of aggregation"),
     ],
-) -> DataFrame[JsonSerializableDataFrameModel]:
+) -> Annotated[int | float, Field(description="The result of the aggregation")]:
     match func_name.upper():
         case "COUNT":
-            return pd.Series({f"{column_name}_count": len(df)})
+            return len(df)
         case "MEAN":
-            return pd.Series({f"{column_name}_mean": df[column_name].mean()})
+            return df[column_name].mean()
         case "SUM":
-            return pd.Series({f"{column_name}_sum": df[column_name].sum()})
+            return df[column_name].sum()
+        # case "NUNIQUE":
+        #     ...
         case _:
             raise ValueError(f"Unknown aggregation function: {func_name}")
