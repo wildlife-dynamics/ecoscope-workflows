@@ -8,20 +8,42 @@
 # ## Imports
 
 import os
+from ecoscope_workflows.tasks.groupby import set_groupers
 from ecoscope_workflows.tasks.io import get_patrol_observations
 from ecoscope_workflows.tasks.preprocessing import process_relocations
 from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
+from ecoscope_workflows.tasks.transformation import add_temporal_index
+from ecoscope_workflows.tasks.groupby import split_groups
 from ecoscope_workflows.tasks.results import create_map_layer
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
+from ecoscope_workflows.tasks.groupby import groupbykey
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
+from ecoscope_workflows.tasks.results import merge_widget_views
 from ecoscope_workflows.tasks.results import draw_time_series_bar_chart
 from ecoscope_workflows.tasks.results import create_plot_widget_single_view
 from ecoscope_workflows.tasks.results import draw_pie_chart
 from ecoscope_workflows.tasks.analysis import calculate_time_density
 from ecoscope_workflows.tasks.results import gather_dashboard
+
+# %% [markdown]
+# ## Set Groupers
+
+# %%
+# parameters
+
+groupers_params = dict(
+    groupers=...,
+)
+
+# %%
+# call the task
+
+
+groupers = set_groupers.call(**groupers_params)
+
 
 # %% [markdown]
 # ## Get Patrol Observations from EarthRanger
@@ -90,12 +112,52 @@ patrol_traj = relocations_to_trajectory.partial(relocations=patrol_reloc).call(
 
 
 # %% [markdown]
-# ## Create map layer from Trajectories
+# ## Add temporal index to Patrol Trajectories
 
 # %%
 # parameters
 
-patrol_traj_map_layer_params = dict(
+traj_add_temporal_index_params = dict(
+    index_name=...,
+    time_col=...,
+    directive=...,
+    cast_to_datetime=...,
+    format=...,
+)
+
+# %%
+# call the task
+
+
+traj_add_temporal_index = add_temporal_index.partial(df=patrol_traj).call(
+    **traj_add_temporal_index_params
+)
+
+
+# %% [markdown]
+# ## Split Patrol Trajectories by Group
+
+# %%
+# parameters
+
+split_patrol_traj_groups_params = dict()
+
+# %%
+# call the task
+
+
+split_patrol_traj_groups = split_groups.partial(
+    df=traj_add_temporal_index, groupers=groupers
+).call(**split_patrol_traj_groups_params)
+
+
+# %% [markdown]
+# ## Create map layer for each Patrol Trajectories group
+
+# %%
+# parameters
+
+patrol_traj_map_layers_params = dict(
     data_type=...,
     style_kws=...,
 )
@@ -104,9 +166,9 @@ patrol_traj_map_layer_params = dict(
 # call the task
 
 
-patrol_traj_map_layer = create_map_layer.partial(geodataframe=patrol_traj).call(
-    **patrol_traj_map_layer_params
-)
+patrol_traj_map_layers = create_map_layer.partial(
+    **patrol_traj_map_layers_params
+).mapvalues(argnames=["geodataframe"], argvalues=split_patrol_traj_groups)
 
 
 # %% [markdown]
@@ -154,12 +216,52 @@ filter_patrol_events = apply_reloc_coord_filter.partial(df=patrol_events).call(
 
 
 # %% [markdown]
-# ## Create map layer from Patrols Events
+# ## Add temporal index to Patrol Events
 
 # %%
 # parameters
 
-patrol_events_map_layer_params = dict(
+pe_add_temporal_index_params = dict(
+    index_name=...,
+    time_col=...,
+    directive=...,
+    cast_to_datetime=...,
+    format=...,
+)
+
+# %%
+# call the task
+
+
+pe_add_temporal_index = add_temporal_index.partial(df=filter_patrol_events).call(
+    **pe_add_temporal_index_params
+)
+
+
+# %% [markdown]
+# ## Split Patrol Events by Group
+
+# %%
+# parameters
+
+split_pe_groups_params = dict()
+
+# %%
+# call the task
+
+
+split_pe_groups = split_groups.partial(
+    df=pe_add_temporal_index, groupers=groupers
+).call(**split_pe_groups_params)
+
+
+# %% [markdown]
+# ## Create map layers for each Patrols Events group
+
+# %%
+# parameters
+
+patrol_events_map_layers_params = dict(
     data_type=...,
     style_kws=...,
 )
@@ -168,13 +270,30 @@ patrol_events_map_layer_params = dict(
 # call the task
 
 
-patrol_events_map_layer = create_map_layer.partial(
-    geodataframe=filter_patrol_events
-).call(**patrol_events_map_layer_params)
+patrol_events_map_layers = create_map_layer.partial(
+    **patrol_events_map_layers_params
+).mapvalues(argnames=["geodataframe"], argvalues=split_pe_groups)
 
 
 # %% [markdown]
-# ## Draw Ecomap for Trajectories and Patrol Events
+# ## Combine Trajectories and Patrol Events layers
+
+# %%
+# parameters
+
+combined_traj_and_pe_map_layers_params = dict()
+
+# %%
+# call the task
+
+
+combined_traj_and_pe_map_layers = groupbykey.partial(
+    iterables=[patrol_traj_map_layers, patrol_events_map_layers]
+).call(**combined_traj_and_pe_map_layers_params)
+
+
+# %% [markdown]
+# ## Draw Ecomaps for each combined Trajectory and Patrol Events group
 
 # %%
 # parameters
@@ -193,8 +312,8 @@ traj_patrol_events_ecomap_params = dict(
 
 
 traj_patrol_events_ecomap = draw_ecomap.partial(
-    geo_layers=[patrol_traj_map_layer, patrol_events_map_layer]
-).call(**traj_patrol_events_ecomap_params)
+    **traj_patrol_events_ecomap_params
+).mapvalues(argnames=["geo_layers"], argvalues=combined_traj_and_pe_map_layers)
 
 
 # %% [markdown]
@@ -203,7 +322,7 @@ traj_patrol_events_ecomap = draw_ecomap.partial(
 # %%
 # parameters
 
-traj_pe_ecomap_html_url_params = dict(
+traj_pe_ecomap_html_urls_params = dict(
     filename=...,
 )
 
@@ -211,29 +330,46 @@ traj_pe_ecomap_html_url_params = dict(
 # call the task
 
 
-traj_pe_ecomap_html_url = persist_text.partial(
-    text=traj_patrol_events_ecomap, root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"]
-).call(**traj_pe_ecomap_html_url_params)
+traj_pe_ecomap_html_urls = persist_text.partial(
+    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+    **traj_pe_ecomap_html_urls_params,
+).mapvalues(argnames=["text"], argvalues=traj_patrol_events_ecomap)
 
 
 # %% [markdown]
-# ## Create Map Widget for Patrol Events
+# ## Create Map Widgets for Patrol Events
 
 # %%
 # parameters
 
-traj_patrol_events_map_widget_params = dict(
+traj_pe_map_widgets_single_views_params = dict(
     title=...,
-    view=...,
 )
 
 # %%
 # call the task
 
 
-traj_patrol_events_map_widget = create_map_widget_single_view.partial(
-    data=traj_pe_ecomap_html_url
-).call(**traj_patrol_events_map_widget_params)
+traj_pe_map_widgets_single_views = create_map_widget_single_view.partial(
+    **traj_pe_map_widgets_single_views_params
+).map(argnames=["view", "data"], argvalues=traj_pe_ecomap_html_urls)
+
+
+# %% [markdown]
+# ## Merge EcoMap Widget Views
+
+# %%
+# parameters
+
+traj_pe_grouped_map_widget_params = dict()
+
+# %%
+# call the task
+
+
+traj_pe_grouped_map_widget = merge_widget_views.partial(
+    widgets=traj_pe_map_widgets_single_views
+).call(**traj_pe_grouped_map_widget_params)
 
 
 # %% [markdown]
@@ -473,7 +609,6 @@ td_map_widget = create_map_widget_single_view.partial(data=td_ecomap_html_url).c
 patrol_dashboard_params = dict(
     title=...,
     description=...,
-    groupers=...,
 )
 
 # %%
@@ -482,9 +617,10 @@ patrol_dashboard_params = dict(
 
 patrol_dashboard = gather_dashboard.partial(
     widgets=[
-        traj_patrol_events_map_widget,
+        traj_pe_grouped_map_widget,
         td_map_widget,
         patrol_events_bar_chart_widget,
         patrol_events_pie_chart_widget,
-    ]
+    ],
+    groupers=groupers,
 ).call(**patrol_dashboard_params)

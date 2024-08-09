@@ -201,12 +201,54 @@ def composite_filters_to_grouper_choices_dict(
     return choices
 
 
+GroupedOrSingleWidget = GroupedWidget | WidgetSingleView
+
+FlatWidgetList = (
+    list[GroupedOrSingleWidget] | list[GroupedWidget] | list[WidgetSingleView]
+)
+
+AllNestedWidgetList = list[list[GroupedOrSingleWidget]]
+PartiallyNestedWidgetList = list[list[GroupedOrSingleWidget] | GroupedOrSingleWidget]
+NestedWidgetList = AllNestedWidgetList | PartiallyNestedWidgetList
+
+
+def _flatten(possibly_nested: NestedWidgetList | FlatWidgetList) -> FlatWidgetList:
+    """Transform a possibly nested list of widgets into a flat list of widgets.
+
+    Only works for max depth 2.
+
+    Examples:
+
+    ```python
+    >>> _flatten([[1, 2], 3, 4])
+    [1, 2, 3, 4]
+    >>> _flatten([1, [2, 3], 4])
+    [1, 2, 3, 4]
+    >>> _flatten([1, 2, 3, 4])
+    [1, 2, 3, 4]
+
+    ```
+
+    """
+    flat = []
+
+    for item in possibly_nested:
+        if isinstance(item, list):
+            flat.extend(
+                item
+            )  # Directly extend with the sublist since we assume max depth 2
+        else:
+            flat.append(item)
+
+    return flat
+
+
 @task
 def gather_dashboard(
     title: Annotated[str, Field(description="The title of the dashboard")],
     description: Annotated[str, Field(description="The description of the dashboard")],
     widgets: Annotated[
-        list[GroupedWidget] | list[WidgetSingleView] | GroupedWidget | WidgetSingleView,
+        NestedWidgetList | FlatWidgetList | GroupedOrSingleWidget,
         Field(description="The widgets to display.", exclude=True),
     ],
     groupers: Annotated[
@@ -220,23 +262,14 @@ def gather_dashboard(
         ),
     ] = None,
 ) -> Annotated[Dashboard, Field()]:
-    match widgets:
-        # Regardless of input type, parse into a list of GroupedWidgets accordingly
-        case list() as widget_list if all(
-            isinstance(w, WidgetSingleView) for w in widget_list
-        ):
-            grouped_widgets = [GroupedWidget.from_single_view(w) for w in widget_list]
-        case list() as widget_list if all(
-            isinstance(w, GroupedWidget) for w in widget_list
-        ):
-            grouped_widgets = widget_list
-        case GroupedWidget() as widget:
-            grouped_widgets = [widget]
-        case WidgetSingleView() as widget:
-            grouped_widgets = [GroupedWidget.from_single_view(widget)]
-        case _:
-            raise ValueError(f"Invalid input {widgets=}")
-
+    # if the input is any kind of list, try to flatten it because it might be nested
+    # if not a list, make it a single-element list to allow uniform handling below
+    as_flat_list = _flatten(widgets) if isinstance(widgets, list) else [widgets]
+    # then regardless of element type(s), parse to uniform flat list of GroupedWidgets
+    grouped_widgets = [
+        GroupedWidget.from_single_view(w) if isinstance(w, WidgetSingleView) else w
+        for w in as_flat_list
+    ]
     if groupers:
         for gw in grouped_widgets:
             keys_sample = list(gw.views)

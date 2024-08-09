@@ -1,6 +1,48 @@
 {
     "title": "Ecoscope Workflow Configurations Form",
     "properties": {
+        "Set Groupers": {
+            "$defs": {
+                "Grouper": {
+                    "properties": {
+                        "index_name": {
+                            "title": "Index Name",
+                            "type": "string"
+                        },
+                        "display_name": {
+                            "default": null,
+                            "title": "Display Name",
+                            "type": "string"
+                        },
+                        "help_text": {
+                            "default": null,
+                            "title": "Help Text",
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "index_name"
+                    ],
+                    "title": "Grouper",
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false,
+            "properties": {
+                "groupers": {
+                    "items": {
+                        "$ref": "#/$defs/Grouper"
+                    },
+                    "title": "Groupers",
+                    "type": "array",
+                    "description": "            Index(es) and/or column(s) to group by, along with\n            optional display names and help text.\n            "
+                }
+            },
+            "required": [
+                "groupers"
+            ],
+            "type": "object"
+        },
         "Get Patrol Observations from EarthRanger": {
             "additionalProperties": false,
             "properties": {
@@ -121,7 +163,101 @@
             "required": [],
             "type": "object"
         },
-        "Create map layer from Trajectories": {
+        "Add temporal index to Patrol Trajectories": {
+            "additionalProperties": false,
+            "properties": {
+                "index_name": {
+                    "title": "Index Name",
+                    "type": "string",
+                    "description": "A name for the new index which will be added."
+                },
+                "time_col": {
+                    "title": "Time Col",
+                    "type": "string",
+                    "description": "Name of existing column containing time data."
+                },
+                "directive": {
+                    "enum": [
+                        "%a",
+                        "%A",
+                        "%b",
+                        "%B",
+                        "%c",
+                        "%d",
+                        "%f",
+                        "%H",
+                        "%I",
+                        "%j",
+                        "%m",
+                        "%M",
+                        "%p",
+                        "%S",
+                        "%U",
+                        "%w",
+                        "%W",
+                        "%x",
+                        "%X",
+                        "%y",
+                        "%Y",
+                        "%z",
+                        "%%"
+                    ],
+                    "title": "Directive",
+                    "type": "string",
+                    "description": "A directive for formatting the time data."
+                },
+                "cast_to_datetime": {
+                    "default": true,
+                    "title": "Cast To Datetime",
+                    "type": "boolean",
+                    "description": "Whether to attempt casting `time_col` to datetime."
+                },
+                "format": {
+                    "default": "mixed",
+                    "title": "Format",
+                    "type": "string",
+                    "description": "            If `cast_to_datetime=True`, the format to pass to `pd.to_datetime`\n            when attempting to cast `time_col` to datetime. Defaults to \"mixed\".\n            "
+                }
+            },
+            "required": [
+                "index_name",
+                "time_col",
+                "directive"
+            ],
+            "type": "object"
+        },
+        "Split Patrol Trajectories by Group": {
+            "$defs": {
+                "Grouper": {
+                    "properties": {
+                        "index_name": {
+                            "title": "Index Name",
+                            "type": "string"
+                        },
+                        "display_name": {
+                            "default": null,
+                            "title": "Display Name",
+                            "type": "string"
+                        },
+                        "help_text": {
+                            "default": null,
+                            "title": "Help Text",
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "index_name"
+                    ],
+                    "title": "Grouper",
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+        },
+        "Create map layer for each Patrol Trajectories group": {
             "additionalProperties": false,
             "properties": {
                 "data_type": {
@@ -233,7 +369,101 @@
             "required": [],
             "type": "object"
         },
-        "Create map layer from Patrols Events": {
+        "Add temporal index to Patrol Events": {
+            "additionalProperties": false,
+            "properties": {
+                "index_name": {
+                    "title": "Index Name",
+                    "type": "string",
+                    "description": "A name for the new index which will be added."
+                },
+                "time_col": {
+                    "title": "Time Col",
+                    "type": "string",
+                    "description": "Name of existing column containing time data."
+                },
+                "directive": {
+                    "enum": [
+                        "%a",
+                        "%A",
+                        "%b",
+                        "%B",
+                        "%c",
+                        "%d",
+                        "%f",
+                        "%H",
+                        "%I",
+                        "%j",
+                        "%m",
+                        "%M",
+                        "%p",
+                        "%S",
+                        "%U",
+                        "%w",
+                        "%W",
+                        "%x",
+                        "%X",
+                        "%y",
+                        "%Y",
+                        "%z",
+                        "%%"
+                    ],
+                    "title": "Directive",
+                    "type": "string",
+                    "description": "A directive for formatting the time data."
+                },
+                "cast_to_datetime": {
+                    "default": true,
+                    "title": "Cast To Datetime",
+                    "type": "boolean",
+                    "description": "Whether to attempt casting `time_col` to datetime."
+                },
+                "format": {
+                    "default": "mixed",
+                    "title": "Format",
+                    "type": "string",
+                    "description": "            If `cast_to_datetime=True`, the format to pass to `pd.to_datetime`\n            when attempting to cast `time_col` to datetime. Defaults to \"mixed\".\n            "
+                }
+            },
+            "required": [
+                "index_name",
+                "time_col",
+                "directive"
+            ],
+            "type": "object"
+        },
+        "Split Patrol Events by Group": {
+            "$defs": {
+                "Grouper": {
+                    "properties": {
+                        "index_name": {
+                            "title": "Index Name",
+                            "type": "string"
+                        },
+                        "display_name": {
+                            "default": null,
+                            "title": "Display Name",
+                            "type": "string"
+                        },
+                        "help_text": {
+                            "default": null,
+                            "title": "Help Text",
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "index_name"
+                    ],
+                    "title": "Grouper",
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+        },
+        "Create map layers for each Patrols Events group": {
             "additionalProperties": false,
             "properties": {
                 "data_type": {
@@ -258,7 +488,13 @@
             ],
             "type": "object"
         },
-        "Draw Ecomap for Trajectories and Patrol Events": {
+        "Combine Trajectories and Patrol Events layers": {
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+        },
+        "Draw Ecomaps for each combined Trajectory and Patrol Events group": {
             "$defs": {
                 "LayerDefinition": {
                     "properties": {
@@ -339,7 +575,7 @@
             "required": [],
             "type": "object"
         },
-        "Create Map Widget for Patrol Events": {
+        "Create Map Widgets for Patrol Events": {
             "additionalProperties": false,
             "properties": {
                 "title": {
@@ -351,6 +587,94 @@
             "required": [
                 "title"
             ],
+            "type": "object"
+        },
+        "Merge EcoMap Widget Views": {
+            "$defs": {
+                "WidgetSingleView": {
+                    "properties": {
+                        "widget_type": {
+                            "enum": [
+                                "plot",
+                                "map",
+                                "text",
+                                "single_value"
+                            ],
+                            "title": "Widget Type",
+                            "type": "string"
+                        },
+                        "title": {
+                            "title": "Title",
+                            "type": "string"
+                        },
+                        "data": {
+                            "anyOf": [
+                                {
+                                    "format": "path",
+                                    "type": "string"
+                                },
+                                {
+                                    "format": "uri",
+                                    "minLength": 1,
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ],
+                            "title": "Data"
+                        },
+                        "view": {
+                            "anyOf": [
+                                {
+                                    "items": {
+                                        "maxItems": 3,
+                                        "minItems": 3,
+                                        "prefixItems": [
+                                            {
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "=",
+                                                "enum": [
+                                                    "="
+                                                ],
+                                                "type": "string"
+                                            },
+                                            {
+                                                "type": "string"
+                                            }
+                                        ],
+                                        "type": "array"
+                                    },
+                                    "type": "array"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "View"
+                        }
+                    },
+                    "required": [
+                        "widget_type",
+                        "title",
+                        "data"
+                    ],
+                    "title": "WidgetSingleView",
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
             "type": "object"
         },
         "Draw Time Series Bar Chart for Patrols Events": {

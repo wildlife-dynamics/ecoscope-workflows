@@ -1,5 +1,10 @@
 id: patrol_workflow
 workflow:
+  # set 'global' groupers
+  - name: Set Groupers
+    id: groupers
+    task: set_groupers
+
   # patrol observations
   - name: Get Patrol Observations from EarthRanger
     id: patrol_obs
@@ -14,13 +19,25 @@ workflow:
     task: relocations_to_trajectory
     partial:
       relocations: ${{ workflow.patrol_reloc.return }}
+  - name: Add temporal index to Patrol Trajectories
+    id: traj_add_temporal_index
+    task: add_temporal_index
+    partial:
+      df: ${{ workflow.patrol_traj.return }}
 
   # patrol trajectories map layers
-  - name: Create map layer from Trajectories
-    id: patrol_traj_map_layer
-    task: create_map_layer
+  - name: Split Patrol Trajectories by Group
+    id: split_patrol_traj_groups
+    task: split_groups
     partial:
-      geodataframe: ${{ workflow.patrol_traj.return }}
+      df: ${{ workflow.traj_add_temporal_index.return }}
+      groupers: ${{ workflow.groupers.return }}
+  - name: Create map layer for each Patrol Trajectories group
+    id: patrol_traj_map_layers
+    task: create_map_layer
+    mapvalues:
+      argnames: geodataframe
+      argvalues: ${{ workflow.split_patrol_traj_groups.return }}
 
   # patrol events
   - name: Get Patrol Events from EarthRanger
@@ -31,33 +48,61 @@ workflow:
     task: apply_reloc_coord_filter
     partial:
       df: ${{ workflow.patrol_events.return }}
+  - name: Add temporal index to Patrol Events
+    id: pe_add_temporal_index
+    task: add_temporal_index
+    partial:
+      df: ${{ workflow.filter_patrol_events.return }}
 
   # patrol events map layers
-  - name: Create map layer from Patrols Events
-    id: patrol_events_map_layer
-    task: create_map_layer
+  - name: Split Patrol Events by Group
+    id: split_pe_groups
+    task: split_groups
     partial:
-      geodataframe: ${{ workflow.filter_patrol_events.return }}
+      df: ${{ workflow.pe_add_temporal_index.return }}
+      groupers: ${{ workflow.groupers.return }}
+  - name: Create map layers for each Patrols Events group
+    id: patrol_events_map_layers
+    task: create_map_layer
+    mapvalues:
+      argnames: geodataframe
+      argvalues: ${{ workflow.split_pe_groups.return }}
+
+  # Combine Trajectories and Patrol Events layers by group key
+  - name: Combine Trajectories and Patrol Events layers
+    id: combined_traj_and_pe_map_layers
+    task: groupbykey
+    partial:
+      iterables:
+        - ${{ workflow.patrol_traj_map_layers.return }}
+        - ${{ workflow.patrol_events_map_layers.return }}
 
   # Combined trajectories + patrol events EcoMap
-  - name: Draw Ecomap for Trajectories and Patrol Events
+  - name: Draw Ecomaps for each combined Trajectory and Patrol Events group
     id: traj_patrol_events_ecomap
     task: draw_ecomap
-    partial:
-      geo_layers:
-        - ${{ workflow.patrol_traj_map_layer.return }}
-        - ${{ workflow.patrol_events_map_layer.return }}
+    mapvalues:
+      argnames: geo_layers
+      argvalues: ${{ workflow.combined_traj_and_pe_map_layers.return }}
   - name: Persist Patrols Ecomap as Text
-    id: traj_pe_ecomap_html_url
+    id: traj_pe_ecomap_html_urls
     task: persist_text
     partial:
-      text: ${{ workflow.traj_patrol_events_ecomap.return }}
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
-  - name: Create Map Widget for Patrol Events
-    id: traj_patrol_events_map_widget
+    mapvalues:
+      argnames: text
+      argvalues: ${{ workflow.traj_patrol_events_ecomap.return }}
+  - name: Create Map Widgets for Patrol Events
+    id: traj_pe_map_widgets_single_views
     task: create_map_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.traj_pe_ecomap_html_urls.return }}
+  - name: Merge EcoMap Widget Views
+    id: traj_pe_grouped_map_widget
+    task: merge_widget_views
     partial:
-      data: ${{ workflow.traj_pe_ecomap_html_url.return }}
+      widgets: ${{ workflow.traj_pe_map_widgets_single_views.return }}
 
   # patrol events bar chart
   - name: Draw Time Series Bar Chart for Patrols Events
@@ -130,7 +175,8 @@ workflow:
     task: gather_dashboard
     partial:
       widgets:
-        - ${{ workflow.traj_patrol_events_map_widget.return }}
+        - ${{ workflow.traj_pe_grouped_map_widget.return }}
         - ${{ workflow.td_map_widget.return }}
         - ${{ workflow.patrol_events_bar_chart_widget.return }}
         - ${{ workflow.patrol_events_pie_chart_widget.return }}
+      groupers: ${{ workflow.groupers.return }}
