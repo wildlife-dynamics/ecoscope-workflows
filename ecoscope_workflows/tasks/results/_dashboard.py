@@ -204,12 +204,31 @@ def composite_filters_to_grouper_choices_dict(
     return choices
 
 
+GroupedOrSingleWidget = GroupedWidget | WidgetSingleView
+PossiblyNestedWidgetList = list[list[GroupedOrSingleWidget] | GroupedOrSingleWidget]
+
+
+def _flatten(possibly_nested: PossiblyNestedWidgetList) -> list[GroupedOrSingleWidget]:
+    """ """
+    flat = []
+
+    for item in possibly_nested:
+        if isinstance(item, list):
+            flat.extend(
+                item
+            )  # Directly extend with the sublist since we assume max depth 2
+        else:
+            flat.append(item)
+
+    return flat
+
+
 @task
 def gather_dashboard(
     title: Annotated[str, Field(description="The title of the dashboard")],
     description: Annotated[str, Field(description="The description of the dashboard")],
     widgets: Annotated[
-        list[GroupedWidget] | list[WidgetSingleView] | GroupedWidget | WidgetSingleView,
+        PossiblyNestedWidgetList | GroupedOrSingleWidget,
         Field(description="The widgets to display."),
     ],
     groupers: Annotated[
@@ -223,7 +242,9 @@ def gather_dashboard(
         ),
     ] = None,
 ) -> Annotated[Dashboard, Field()]:
-    match widgets:
+    # if the input is any kind of list, try to flatten it because it might be nested
+    # if it is not a list, we will just handle the singleton value as-is with `case`s
+    match _flatten(widgets) if isinstance(widgets, list) else widgets:
         # Regardless of input type, parse into a list of GroupedWidgets accordingly
         case list() as widget_list if all(
             isinstance(w, WidgetSingleView) for w in widget_list
