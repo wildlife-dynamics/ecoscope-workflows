@@ -7,12 +7,12 @@ from ecoscope_workflows.indexes import CompositeFilter, IndexName, IndexValue
 from ecoscope_workflows.tasks.groupby import groupbykey, set_groupers, split_groups
 from ecoscope_workflows.tasks.groupby._groupby import (
     Grouper,
-    KeyedIterable,
+    KeyedIterableOfAny,
     _groupkey_to_composite_filter,
 )
 
 
-def getvalue(key: CompositeFilter, groups: KeyedIterable) -> pd.DataFrame:
+def getvalue(key: CompositeFilter, groups: KeyedIterableOfAny) -> pd.DataFrame:
     """Convenience function to get the values for a given key in a KeyedIterable."""
     return next(iter([v for (k, v) in groups if k == key]))
 
