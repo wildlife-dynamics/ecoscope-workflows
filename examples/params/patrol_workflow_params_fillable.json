@@ -728,28 +728,14 @@
                             "type": "string"
                         },
                         "display_name": {
-                            "anyOf": [
-                                {
-                                    "type": "string"
-                                },
-                                {
-                                    "type": "null"
-                                }
-                            ],
                             "default": null,
-                            "title": "Display Name"
+                            "title": "Display Name",
+                            "type": "string"
                         },
                         "help_text": {
-                            "anyOf": [
-                                {
-                                    "type": "string"
-                                },
-                                {
-                                    "type": "null"
-                                }
-                            ],
                             "default": null,
-                            "title": "Help Text"
+                            "title": "Help Text",
+                            "type": "string"
                         }
                     },
                     "required": [

@@ -2,10 +2,11 @@ from dataclasses import dataclass
 from typing import Annotated
 
 from pydantic import Field
+from pydantic.json_schema import SkipJsonSchema
 
 from ecoscope_workflows.annotations import AnyDataFrame
-from ecoscope_workflows.indexes import CompositeFilter, IndexName, IndexValue
 from ecoscope_workflows.decorators import task
+from ecoscope_workflows.indexes import CompositeFilter, IndexName, IndexValue
 
 
 def _groupkey_to_composite_filter(
@@ -35,8 +36,8 @@ def _groupkey_to_composite_filter(
 @dataclass(frozen=True)
 class Grouper:
     index_name: IndexName
-    display_name: str | None = None
-    help_text: str | None = None
+    display_name: str | SkipJsonSchema[None] = None
+    help_text: str | SkipJsonSchema[None] = None
 
 
 @task
