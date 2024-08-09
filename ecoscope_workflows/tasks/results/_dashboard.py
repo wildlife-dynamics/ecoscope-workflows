@@ -266,9 +266,9 @@ def gather_dashboard(
     ] = None,
 ) -> Annotated[Dashboard, Field()]:
     # if the input is any kind of list, try to flatten it because it might be nested
-    # if it is not a list, we will just handle the singleton value as-is with `case`s
+    # if not a list, make it a single-element list to allow uniform handling below
     as_flat_list = _flatten(widgets) if isinstance(widgets, list) else [widgets]
-    # Regardless of input type, parse into a list of GroupedWidgets accordingly
+    # then regardless of element type(s), parse to uniform flat list of GroupedWidgets
     grouped_widgets = [
         GroupedWidget.from_single_view(w) if isinstance(w, WidgetSingleView) else w
         for w in as_flat_list
