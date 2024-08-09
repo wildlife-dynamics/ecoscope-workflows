@@ -109,6 +109,22 @@ total_patrols_sv_widgets:
 # Parameters for 'Merge per group Total Patrols SV widgets into one Grouped Widget' using task `merge_widget_views`.
 total_patrols_grouped_sv_widget: {}
 
+# Parameters for 'Calculate Total Patrol Time Per Group' using task `dataframe_column_sum`.
+total_patrol_time:
+  column_name: "timespan_seconds"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Column to aggregate'))
+
+# Parameters for 'Convert total patrol time units' using task `apply_arithmetic_operation`.
+total_patrol_time_converted:
+  b: 3600  # (float | int, FieldInfo(annotation=NoneType, required=True, description='The second number'))
+  operation: divide  # (typing.Literal['add', 'subtract', 'multiply', 'divide', 'floor_divide', 'modulo', 'power'], FieldInfo(annotation=NoneType, required=True, description='The arithmetic operation to apply'))
+
+# Parameters for 'Create Single Value Widgets for Total Patrol Time Per Group' using task `create_single_value_widget_single_view`.
+total_patrol_time_sv_widgets:
+  title: "Total Time"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Merge per group Total Patrol Per Group SV widgets' using task `merge_widget_views`.
+patrol_time_grouped_widget: {}
+
 # Parameters for 'Draw Time Series Bar Chart for Patrols Events' using task `draw_time_series_bar_chart`.
 patrol_events_bar_chart:
   x_axis: "updated_at"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the x axis.'))

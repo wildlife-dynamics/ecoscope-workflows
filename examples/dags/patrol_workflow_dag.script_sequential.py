@@ -18,6 +18,8 @@ from ecoscope_workflows.tasks.results import create_map_widget_single_view
 from ecoscope_workflows.tasks.results import merge_widget_views
 from ecoscope_workflows.tasks.analysis import dataframe_column_nunique
 from ecoscope_workflows.tasks.results import create_single_value_widget_single_view
+from ecoscope_workflows.tasks.analysis import dataframe_column_sum
+from ecoscope_workflows.tasks.analysis import apply_arithmetic_operation
 from ecoscope_workflows.tasks.results import draw_time_series_bar_chart
 from ecoscope_workflows.tasks.results import create_plot_widget_single_view
 from ecoscope_workflows.tasks.results import draw_pie_chart
@@ -147,6 +149,30 @@ if __name__ == "__main__":
         .call(**params["total_patrols_grouped_sv_widget"])
     )
 
+    total_patrol_time = (
+        dataframe_column_sum.validate()
+        .partial(**params["total_patrol_time"])
+        .mapvalues(argnames=["df"], argvalues=split_patrol_traj_groups)
+    )
+
+    total_patrol_time_converted = (
+        apply_arithmetic_operation.validate()
+        .partial(**params["total_patrol_time_converted"])
+        .mapvalues(argnames=["a"], argvalues=total_patrol_time)
+    )
+
+    total_patrol_time_sv_widgets = (
+        create_single_value_widget_single_view.validate()
+        .partial(**params["total_patrol_time_sv_widgets"])
+        .map(argnames=["view", "data"], argvalues=total_patrol_time)
+    )
+
+    patrol_time_grouped_widget = (
+        merge_widget_views.validate()
+        .partial(widgets=total_patrol_time_sv_widgets)
+        .call(**params["patrol_time_grouped_widget"])
+    )
+
     patrol_events_bar_chart = (
         draw_time_series_bar_chart.validate()
         .partial(dataframe=filter_patrol_events)
@@ -228,6 +254,7 @@ if __name__ == "__main__":
                 patrol_events_bar_chart_widget,
                 patrol_events_pie_chart_widget,
                 total_patrols_grouped_sv_widget,
+                patrol_time_grouped_widget,
             ],
             groupers=groupers,
         )
