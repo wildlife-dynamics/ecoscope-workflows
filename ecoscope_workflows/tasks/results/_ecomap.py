@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Annotated, Literal
 
 from pydantic import Field
+from pydantic.json_schema import SkipJsonSchema
 
 from ecoscope_workflows.annotations import AnyGeoDataFrame
 from ecoscope_workflows.decorators import task
@@ -58,15 +59,15 @@ def draw_ecomap(
     ] = False,
     title: Annotated[str, Field(description="The map title.")] = "",
     title_kws: Annotated[
-        dict | None,
+        dict | SkipJsonSchema[None],
         Field(description="Additional arguments for configuring the Title."),
     ] = None,
     scale_kws: Annotated[
-        dict | None,
+        dict | SkipJsonSchema[None],
         Field(description="Additional arguments for configuring the Scale Bar."),
     ] = None,
     north_arrow_kws: Annotated[
-        dict | None,
+        dict | SkipJsonSchema[None],
         Field(description="Additional arguments for configuring the North Arrow."),
     ] = None,
 ) -> Annotated[str, Field()]:

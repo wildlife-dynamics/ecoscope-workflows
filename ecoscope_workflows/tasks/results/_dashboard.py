@@ -3,25 +3,22 @@ from dataclasses import dataclass
 from typing import Annotated, Any, Generator
 
 from pydantic import BaseModel, Field, model_serializer
+from pydantic.json_schema import SkipJsonSchema
 
 from ecoscope_workflows.decorators import task
+from ecoscope_workflows.indexes import CompositeFilter, IndexName, IndexValue
 from ecoscope_workflows.jsonschema import (
     ReactJSONSchemaFormFilters,
     RJSFFilter,
     RJSFFilterProperty,
     RJSFFilterUiSchema,
 )
-from ecoscope_workflows.indexes import (
-    CompositeFilter,
-    IndexName,
-    IndexValue,
-)
 from ecoscope_workflows.tasks.groupby._groupby import Grouper
 from ecoscope_workflows.tasks.results._widget_types import (
     GroupedWidget,
+    WidgetBase,
     WidgetData,
     WidgetSingleView,
-    WidgetBase,
 )
 
 
@@ -252,10 +249,10 @@ def gather_dashboard(
     description: Annotated[str, Field(description="The description of the dashboard")],
     widgets: Annotated[
         NestedWidgetList | FlatWidgetList | GroupedOrSingleWidget,
-        Field(description="The widgets to display."),
+        Field(description="The widgets to display.", exclude=True),
     ],
     groupers: Annotated[
-        list[Grouper] | None,
+        list[Grouper] | SkipJsonSchema[None],
         Field(
             description="""\
             A list of groupers that are used to group the widgets.
