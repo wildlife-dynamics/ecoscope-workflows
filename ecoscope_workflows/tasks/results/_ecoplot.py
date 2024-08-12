@@ -1,10 +1,31 @@
 from typing import Annotated, Literal
 
-from pydantic import Field
+from pydantic import BaseModel, Field
 from pydantic.json_schema import SkipJsonSchema
 
 from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
 from ecoscope_workflows.decorators import task
+
+
+class LineStyle(BaseModel):
+    color: str | SkipJsonSchema[None] = None
+
+
+class PlotStyle(BaseModel):
+    xperiodalignment: str | SkipJsonSchema[None] = None
+    marker_colors: list[str] | SkipJsonSchema[None] = None
+    textinfo: str | SkipJsonSchema[None] = None
+    line: LineStyle | SkipJsonSchema[None] = None
+
+
+class GroupedPlotStyle(BaseModel):
+    category: str
+    plot_style: PlotStyle
+
+
+class LayoutStyle(BaseModel):
+    font_color: str | SkipJsonSchema[None] = None
+    font_style: str | SkipJsonSchema[None] = None
 
 
 @task
@@ -17,8 +38,8 @@ def draw_ecoplot(
     y_axis: Annotated[
         str, Field(description="The dataframe column to plot in the y axis.")
     ],
-    style_kws: Annotated[
-        dict,
+    plot_style: Annotated[
+        PlotStyle | SkipJsonSchema[None],
         Field(description="Style arguments passed to plotly.graph_objects.Scatter."),
     ],
 ) -> Annotated[str, Field()]:
@@ -30,7 +51,7 @@ def draw_ecoplot(
     group_by (str): The dataframe column to group by.
     x_axis (str): The dataframe column to plot in the x axis.
     y_axis (str): The dataframe column to plot in the y axis.
-    style_kws (str): Style arguments passed to plotly.graph_objects.Scatter.
+    plot_style (PlotStyle): Style arguments passed to plotly.graph_objects.Scatter.
 
     Returns:
     The generated plot html as a string
@@ -43,7 +64,7 @@ def draw_ecoplot(
         grouped=grouped,
         x_col=x_axis,
         y_col=y_axis,
-        **style_kws,
+        **(plot_style.model_dump(exclude_none=True) if plot_style else {}),
     )
 
     plot = plotting.ecoplot(
@@ -82,21 +103,19 @@ def draw_time_series_bar_chart(
         Literal["year", "month", "week", "day", "hour"],
         Field(description="Sets the time interval of the x axis."),
     ],
-    groupby_style_kws: Annotated[
-        dict | SkipJsonSchema[None],
+    grouped_styles: Annotated[
+        list[GroupedPlotStyle],
         Field(
             description="Style arguments passed to plotly.graph_objects.Bar and applied to individual groups."
         ),
+    ] = [],
+    plot_style: Annotated[
+        PlotStyle | SkipJsonSchema[None],
+        Field(description="Additional style kwargs passed to go.Pie()."),
     ] = None,
-    style_kws: Annotated[
-        dict | SkipJsonSchema[None],
-        Field(
-            description="Style arguments passed to plotly.graph_objects.Bar and applied to all groups."
-        ),
-    ] = None,
-    layout_kws: Annotated[
-        dict | SkipJsonSchema[None],
-        Field(description="Style arguments passed to plotly.graph_objects.Figure."),
+    layout_style: Annotated[
+        LayoutStyle | SkipJsonSchema[None],
+        Field(description="Additional kwargs passed to plotly.go.Figure(layout)."),
     ] = None,
 ) -> Annotated[str, Field()]:
     """
@@ -120,7 +139,7 @@ def draw_time_series_bar_chart(
 
     from ecoscope.plotting import EcoPlotData, stacked_bar_chart
 
-    layout_kws = layout_kws if layout_kws else {}
+    layout_kws = layout_style.model_dump(exclude_none=True) if layout_style else {}
 
     match time_interval:
         case "year":
@@ -151,12 +170,17 @@ def draw_time_series_bar_chart(
 
     grouped = dataframe.groupby(["truncated_time", category])
 
+    groupby_style = {
+        group.category: group.plot_style.model_dump(exclude_none=True)
+        for group in grouped_styles
+    }
+
     data = EcoPlotData(
         grouped=grouped,
         x_col="truncated_time",
         y_col=y_axis,
-        groupby_style=groupby_style_kws,
-        **(style_kws or {}),
+        groupby_style=groupby_style,
+        **(plot_style.model_dump(exclude_none=True) if plot_style else {}),
     )
 
     plot = stacked_bar_chart(
@@ -193,12 +217,12 @@ def draw_pie_chart(
             description="The name of the dataframe column to label slices with, required if the data in value_column is numeric."
         ),
     ] = None,
-    style_kws: Annotated[
-        dict | SkipJsonSchema[None],
+    plot_style: Annotated[
+        PlotStyle | SkipJsonSchema[None],
         Field(description="Additional style kwargs passed to go.Pie()."),
     ] = None,
-    layout_kws: Annotated[
-        dict | SkipJsonSchema[None],
+    layout_style: Annotated[
+        LayoutStyle | SkipJsonSchema[None],
         Field(description="Additional kwargs passed to plotly.go.Figure(layout)."),
     ] = None,
 ) -> Annotated[str, Field()]:
@@ -221,8 +245,10 @@ def draw_pie_chart(
         data=dataframe,
         value_column=value_column,
         label_column=label_column,
-        style_kwargs=style_kws,
-        layout_kwargs=layout_kws,
+        style_kwargs=plot_style.model_dump(exclude_none=True) if plot_style else {},
+        layout_kwargs=layout_style.model_dump(exclude_none=True)
+        if layout_style
+        else {},
     )
 
     return plot.to_html(

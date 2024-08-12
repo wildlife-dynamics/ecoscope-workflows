@@ -1,10 +1,14 @@
-import pytest
 import pandas as pd
+import pytest
 
 from ecoscope_workflows.tasks.results._ecoplot import (
+    GroupedPlotStyle,
+    LayoutStyle,
+    LineStyle,
+    PlotStyle,
     draw_ecoplot,
-    draw_time_series_bar_chart,
     draw_pie_chart,
+    draw_time_series_bar_chart,
 )
 
 
@@ -98,7 +102,7 @@ def test_draw_ecoplot(sample_dataframe):
         group_by=groupby,
         x_axis=x_axis,
         y_axis=y_axis,
-        style_kws={"line": {"color": "green"}},
+        plot_style=PlotStyle(line_style=LineStyle(color="green")),
     )
 
     assert isinstance(plot, str)
@@ -123,8 +127,11 @@ def test_draw_time_series_bar_chart(time_series_dataframe, time_interval):
         category="category",
         agg_function="count",
         time_interval=time_interval,
-        groupby_style_kws={"A": {"marker_color": "red"}, "B": {"marker_color": "blue"}},
-        style_kws={"xperiodalignment": "middle"},
+        grouped_styles=[
+            GroupedPlotStyle(category="A", plot_style=PlotStyle(marker_color="red")),
+            GroupedPlotStyle(category="B", plot_style=PlotStyle(marker_color="blue")),
+        ],
+        plot_style=PlotStyle(xperiodalignment="middle"),
     )
 
     assert isinstance(plot, str)
@@ -135,11 +142,12 @@ def test_draw_pie_chart(pie_dataframe):
         pie_dataframe,
         value_column="value",
         label_column="category",
-        style_kws={
-            "marker_colors": ["chartreuse", "red", "magenta"],
-            "textinfo": "value",
-        },
-        layout_kws={"font_color": "orange", "font_style": "italic"},
+        plot_style=PlotStyle(
+            marker_colors=["chartreuse", "red", "magenta"],
+            textinfo="value",
+        ),
+        layout_style=LayoutStyle(font_color="orange", font_style="italic"),
     )
 
+    assert isinstance(plot, str)
     assert isinstance(plot, str)

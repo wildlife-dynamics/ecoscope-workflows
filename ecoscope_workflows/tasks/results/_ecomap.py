@@ -72,7 +72,7 @@ def create_map_layer(
 
     Args:
     geodataframe (geopandas.GeoDataFrame): The geodataframe to visualize.
-    layer_style (dict): Style arguments for the data visualization.
+    layer_style (LayerStyle): Style arguments for the data visualization.
 
     Returns:
     The generated LayerDefinition
@@ -126,7 +126,9 @@ def draw_ecomap(
         m.add_title(title)
 
     m.add_scale_bar()
-    m.add_north_arrow(**(north_arrow_style.model_dump() if north_arrow_style else {}))
+    m.add_north_arrow(
+        **(north_arrow_style.model_dump(exclude_none=True) if north_arrow_style else {})
+    )
 
     if tile_layer:
         m.add_layer(EcoMap.get_named_tile_layer(tile_layer))
@@ -135,15 +137,18 @@ def draw_ecomap(
     for layer_def in geo_layers:
         if isinstance(layer_def.layer_style, PolylineLayerStyle):
             layer = EcoMap.polyline_layer(
-                layer_def.geodataframe, **layer_def.layer_style.model_dump()
+                layer_def.geodataframe,
+                **layer_def.layer_style.model_dump(exclude_none=True),
             )
         elif isinstance(layer_def.layer_style, PointLayerStyle):
             layer = EcoMap.point_layer(
-                layer_def.geodataframe, **layer_def.layer_style.model_dump()
+                layer_def.geodataframe,
+                **layer_def.layer_style.model_dump(exclude_none=True),
             )
         elif isinstance(layer_def, PolygonLayerStyle):
             layer = EcoMap.polygon_layer(
-                layer_def.geodataframe, **layer_def.layer_style.model_dump()
+                layer_def.geodataframe,
+                **layer_def.layer_style.model_dump(exclude_none=True),
             )
 
         m.add_layer(layer)
