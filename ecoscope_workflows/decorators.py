@@ -1,12 +1,16 @@
 import functools
 from dataclasses import dataclass, field, replace
-from typing import Callable, Generic, Sequence, cast, overload
+from typing import Callable, Generic, ParamSpec, Sequence, TypeVar, cast, overload
 
 from pydantic import validate_call
 
-from ecoscope_workflows.typevars import P, R, K, V
 from ecoscope_workflows.executors import Executor
 from ecoscope_workflows.executors.python import PythonExecutor
+
+P = ParamSpec("P")
+R = TypeVar("R")
+K = TypeVar("K")
+V = TypeVar("V")
 
 
 @dataclass
@@ -51,7 +55,7 @@ class Task(Generic[P, R, K, V]):
     """
 
     func: Callable[P, R]
-    executor: Executor[P, R, K, V] = PythonExecutor()
+    executor: Executor = PythonExecutor()
     tags: list[str] = field(default_factory=list)
 
     def partial(
@@ -236,7 +240,7 @@ class Task(Generic[P, R, K, V]):
         if isinstance(argnames, str):
             argnames = [argnames]
         kwargs_iterable = [(k, {argnames[0]: argvalue}) for (k, argvalue) in argvalues]
-        return self.executor.mapvalues(
+        return self.executor.map(
             lambda kv: (kv[0], self.func(**kv[1])), kwargs_iterable
         )
 
