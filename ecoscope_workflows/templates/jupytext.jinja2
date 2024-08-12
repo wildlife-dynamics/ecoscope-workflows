@@ -1,35 +1,32 @@
+{% import 'call-task-macros.jinja' as call_task_macros %}
 # ruff: noqa: E402
 
 # %% [markdown]
-# # {{ name.title().replace("_", " ") }}
+# # {{ spec.id.title().replace("_", " ") }}
 # TODO: top level description
 
-{% for t in tasks -%}
-
 # %% [markdown]
-# ## {{ t.known_task.importable_reference.function.title().replace("_", " ") }}
+# ## Imports
 
-{%- if t.arg_dependencies %}
-# %%
-# dependencies assignments
-
-{% for arg in t.arg_dependencies %}{{ arg }} = {{ t.arg_dependencies[arg] }}{% endfor %}
-{% endif %}
+import os
+{% for t in spec.workflow -%}
+{{ t.known_task.importable_reference.statement }}
+{% if loop.last %}
+{% endif -%}
+{% endfor -%}
+{%- for t in spec.workflow -%}
+# %% [markdown]
+# ## {{ t.name }}
 
 # %%
 # parameters
 
-{{ t.known_task.importable_reference.params_notebook }}
+{{ t.id }}_params = {{ per_taskinstance_params_notebook[t.id] }}
 
 # %%
-# the code for {{ t.known_task.importable_reference.function.title().replace("_", " ") }}
-
-{{ t.known_task.source_body }}
-
-# %%
-# return value from this section
-
-{{ t.known_task.importable_reference.function }}_return = {{ t.known_task.source_return }}
-
-
-{% endfor %}
+# call the task
+{% set validate = false %}
+{% set params = t.id ~ '_params' %}
+{% set indent = '' %}
+{{ call_task_macros.handle_task(t, validate, params, indent) }}
+{% endfor -%}

@@ -1,0 +1,41 @@
+id: map_example
+workflow:
+  # ------------------------------------------------------
+  # Mapping over a manually defined list, which is unkeyed
+  # ------------------------------------------------------
+  # Step 1 - Fetching three independent data sources
+  - name: Get Observations A
+    id: obs_a
+    task: get_subjectgroup_observations
+  - name: Get Observations B
+    id: obs_b
+    task: get_subjectgroup_observations
+  - name: Get Observations C
+    id: obs_c
+    task: get_subjectgroup_observations
+  # Step 2 - Mapping over the three data sources
+  - name: Create Map Layer For Each Group
+    id: map_layers
+    task: create_map_layer
+    map:
+      argnames: geodataframe
+      argvalues:
+        - ${{ workflow.obs_a.return }}
+        - ${{ workflow.obs_b.return }}
+        - ${{ workflow.obs_c.return }}
+  # Step 3 - Chained map over the iterable returned by the previous step
+  - name: Create EcoMap For Each Group
+    id: ecomaps
+    task: draw_ecomap
+    map:
+      argnames: geo_layers
+      argvalues: ${{ workflow.map_layers.return }}
+  # Step 4 - Persisting the EcoMaps as text
+  - name: Persist Ecomaps as Text
+    id: td_ecomap_html_url
+    task: persist_text
+    partial:
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+    map:
+      argnames: "text"
+      argvalues: ${{ workflow.ecomaps.return }}

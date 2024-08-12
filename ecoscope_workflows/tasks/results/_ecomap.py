@@ -1,34 +1,123 @@
-from typing import Annotated
+from dataclasses import dataclass
+from typing import Annotated, Literal
 
 from pydantic import Field
+from pydantic.json_schema import SkipJsonSchema
 
 from ecoscope_workflows.annotations import AnyGeoDataFrame
-from ecoscope_workflows.decorators import distributed
+from ecoscope_workflows.decorators import task
 
 
-@distributed
+@dataclass
+class LayerDefinition:
+    geodataframe: AnyGeoDataFrame
+    data_type: str
+    style_kws: dict
+
+
+@task
+def create_map_layer(
+    geodataframe: Annotated[
+        AnyGeoDataFrame, Field(description="The geodataframe to visualize.")
+    ],
+    data_type: Annotated[
+        Literal["Point", "Polyline", "Polygon"],
+        Field(description="The type of visualization."),
+    ],
+    style_kws: Annotated[dict, Field(description="Style arguments for the layer.")],
+) -> Annotated[LayerDefinition, Field()]:
+    """
+    Creates a map layer definition based on the provided configuration.
+
+    Args:
+    geodataframe (geopandas.GeoDataFrame): The geodataframe to visualize.
+    data_type (str): The type of visualization, "Scatterplot", "Path" or "Polygon".
+    style_kws (dict): Style arguments for the data visualization.
+
+    Returns:
+    The generated LayerDefinition
+    """
+
+    return LayerDefinition(
+        geodataframe=geodataframe,
+        data_type=data_type,
+        style_kws=style_kws,
+    )
+
+
+@task
 def draw_ecomap(
-    geodataframe: AnyGeoDataFrame,
-    static: Annotated[bool, Field()],
-    height: Annotated[int, Field()],
-    width: Annotated[int, Field()],
-    search_control: Annotated[bool, Field()],
-    title: Annotated[str, Field()],
-    title_kws: Annotated[dict, Field()],
-    tile_layers: Annotated[list[dict], Field()],
-    north_arrow_kws: Annotated[dict, Field()],
-    add_gdf_kws: Annotated[dict, Field()],
+    geo_layers: Annotated[
+        LayerDefinition | list[LayerDefinition],
+        Field(description="A list of map layers to add to the map."),
+    ],
+    tile_layer: Annotated[
+        str, Field(description="A named tile layer, ie OpenStreetMap.")
+    ] = "",
+    static: Annotated[
+        bool, Field(description="Set to true to disable map pan/zoom.")
+    ] = False,
+    title: Annotated[str, Field(description="The map title.")] = "",
+    title_kws: Annotated[
+        dict | SkipJsonSchema[None],
+        Field(description="Additional arguments for configuring the Title."),
+    ] = None,
+    scale_kws: Annotated[
+        dict | SkipJsonSchema[None],
+        Field(description="Additional arguments for configuring the Scale Bar."),
+    ] = None,
+    north_arrow_kws: Annotated[
+        dict | SkipJsonSchema[None],
+        Field(description="Additional arguments for configuring the North Arrow."),
+    ] = None,
 ) -> Annotated[str, Field()]:
+    """
+    Creates a map based on the provided layer definitions and configuration.
+
+    Args:
+    geodataframe (geopandas.GeoDataFrame): The geodataframe to visualize.
+    data_type (str): The type of visualization, "Scatterplot", "Path" or "Polygon".
+    style_kws (dict): Style arguments for the data visualization.
+    tile_layer (str): A named tile layer, ie OpenStreetMap.
+    static (bool): Set to true to disable map pan/zoom.
+    title (str): The map title.
+    title_kws (dict): Additional arguments for configuring the Title.
+    scale_kws (dict): Additional arguments for configuring the Scale Bar.
+    north_arrow_kws (dict): Additional arguments for configuring the North Arrow.
+
+    Returns:
+    str: A static HTML representation of the map.
+    """
+
     from ecoscope.mapping import EcoMap
 
-    m = EcoMap(static=static, height=height, width=width, search_control=search_control)
-    m.add_title(title=title, **title_kws)
+    m = EcoMap(static=static, default_widgets=False)
 
-    for tl in tile_layers:
-        m.add_tile_layer(**tl)
+    if title:
+        m.add_title(title, **(title_kws or {}))
 
-    m.add_north_arrow(**north_arrow_kws)
-    m.add_gdf(geodataframe, **add_gdf_kws)
-    m.zoom_to_gdf(geodataframe)
+    m.add_scale_bar(**(scale_kws or {}))
+    m.add_north_arrow(**(north_arrow_kws or {}))
 
-    return m._repr_html_(fill_parent=True)
+    if tile_layer:
+        m.add_layer(EcoMap.get_named_tile_layer(tile_layer))
+
+    geo_layers = [geo_layers] if not isinstance(geo_layers, list) else geo_layers
+    for layer_def in geo_layers:
+        match layer_def.data_type:
+            case "Point":
+                layer = EcoMap.point_layer(
+                    layer_def.geodataframe, **layer_def.style_kws
+                )
+            case "Polyline":
+                layer = EcoMap.polyline_layer(
+                    layer_def.geodataframe, **layer_def.style_kws
+                )
+            case "Polygon":
+                layer = EcoMap.polygon_layer(
+                    layer_def.geodataframe, **layer_def.style_kws
+                )
+        m.add_layer(layer)
+
+    m.zoom_to_bounds(m.layers)
+    return m.to_html(title=title if title is not None else "Map Export")

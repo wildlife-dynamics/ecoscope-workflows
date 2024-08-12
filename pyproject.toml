@@ -21,17 +21,20 @@ classifiers = [
 # license = { text = "" }
 # keywords = []
 dependencies = [
-    "dill",  # for function deep-copies (maybe there's a better way to do this)
+    "jinja2",
     "pandera",
     "pydantic",
+    "pydantic-settings",
     "ruamel.yaml",
     "ruff",  # for linting compiled workflows
+    "tomli-w",
 ]
 
 [project.optional-dependencies]
 test = [
-    "ecoscope @ git+https://github.com/wildlife-dynamics/ecoscope@0cad9c793d644729556d878bfff11a6c7be74589",
+    "ecoscope[analysis,mapping,plotting] @ git+https://github.com/wildlife-dynamics/ecoscope@v1.8.2",
     "pytest",
+    "google-cloud-secret-manager",
 ]
 notebook = [
     "jupytext",

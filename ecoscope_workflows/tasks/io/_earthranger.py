@@ -1,23 +1,16 @@
-import functools
-import os
 from datetime import datetime
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 import pandas as pd
 import pandera as pa
 from pydantic import Field
-from pydantic.functional_validators import BeforeValidator
 
-from ecoscope_workflows.decorators import distributed
-from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
-
-
-def from_env(_, var_name: str) -> str:
-    """If no value is passed, load a value from the provided var_name."""
-    value = os.environ.get(var_name)
-    if value is None:
-        raise ValueError(f"Environment variable {var_name} not set.")
-    return value
+from ecoscope_workflows.annotations import (
+    DataFrame,
+    EarthRangerClient,
+    JsonSerializableDataFrameModel,
+)
+from ecoscope_workflows.decorators import task
 
 
 class SubjectGroupObservationsGDFSchema(JsonSerializableDataFrameModel):
@@ -32,53 +25,82 @@ class SubjectGroupObservationsGDFSchema(JsonSerializableDataFrameModel):
     # TODO: can we be any more specific about the `extra__` field expectations?
 
 
-@distributed(tags=["io"])
+class EventGDFSchema(JsonSerializableDataFrameModel):
+    geometry: pa.typing.Series[Any] = pa.Field()
+    id: pa.typing.Series[str] = pa.Field()
+    event_type: pa.typing.Series[str] = pa.Field()
+
+
+@task(tags=["io"])
 def get_subjectgroup_observations(
-    # client
-    server: Annotated[
-        str,
-        Field(description="URL for EarthRanger API"),
-        BeforeValidator(functools.partial(from_env, var_name="ER_SERVER")),
-    ],
-    username: Annotated[
-        str,
-        Field(description="EarthRanger username"),
-        BeforeValidator(functools.partial(from_env, var_name="ER_USERNAME")),
-    ],
-    password: Annotated[
-        str,
-        Field(description="EarthRanger password"),
-        BeforeValidator(functools.partial(from_env, var_name="ER_PASSWORD")),
-    ],
-    tcp_limit: Annotated[
-        int, Field(description="TCP limit for EarthRanger API requests")
-    ],
-    sub_page_size: Annotated[
-        int, Field(description="Sub page size for EarthRanger API requests")
-    ],
-    # get_subjectgroup_observations
+    client: EarthRangerClient,
     subject_group_name: Annotated[
         str, Field(description="Name of EarthRanger Subject")
     ],
-    include_inactive: Annotated[
-        bool, Field(description="Whether or not to include inactive subjects")
-    ],
     since: Annotated[datetime, Field(description="Start date")],
     until: Annotated[datetime, Field(description="End date")],
+    include_inactive: Annotated[
+        bool,
+        Field(description="Whether or not to include inactive subjects"),
+    ] = True,
 ) -> DataFrame[SubjectGroupObservationsGDFSchema]:
-    from ecoscope.io import EarthRangerIO
-
-    earthranger_io = EarthRangerIO(
-        server=server,
-        username=username,
-        password=password,
-        tcp_limit=tcp_limit,
-        sub_page_size=sub_page_size,
-    )
-    return earthranger_io.get_subjectgroup_observations(
+    """Get observations for a subject group from EarthRanger."""
+    return client.get_subjectgroup_observations(
         subject_group_name=subject_group_name,
         include_subject_details=True,
         include_inactive=include_inactive,
         since=since,
         until=until,
+    )
+
+
+@task(tags=["io"])
+def get_patrol_observations(
+    client: EarthRangerClient,
+    since: Annotated[str, Field(description="Start date")],
+    until: Annotated[str, Field(description="End date")],
+    patrol_type: Annotated[
+        list[str],
+        Field(description="list of UUID of patrol types"),
+    ],
+    status: Annotated[
+        list[Literal["active", "overdue", "done", "cancelled"]],
+        Field(description="list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"),
+    ],
+    include_patrol_details: Annotated[
+        bool, Field(default=False, description="Include patrol details")
+    ] = False,
+) -> DataFrame[SubjectGroupObservationsGDFSchema]:
+    """Get observations for a patrol type from EarthRanger."""
+    return client.get_patrol_observations_with_patrol_filter(
+        since=since,
+        until=until,
+        patrol_type=patrol_type,
+        status=status,
+        include_patrol_details=include_patrol_details,
+    )
+
+
+@task(tags=["io"])
+def get_patrol_events(
+    client: EarthRangerClient,
+    since: Annotated[str, Field(description="Start date")],
+    until: Annotated[str, Field(description="End date")],
+    patrol_type: Annotated[
+        list[str],
+        Field(description="list of UUID of patrol types"),
+    ],
+    status: Annotated[
+        list[str],
+        Field(
+            description="list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'",
+        ),
+    ],
+) -> DataFrame[EventGDFSchema]:
+    """Get events from patrols."""
+    return client.get_patrol_events(
+        since=since,
+        until=until,
+        patrol_type=patrol_type,
+        status=status,
     )
