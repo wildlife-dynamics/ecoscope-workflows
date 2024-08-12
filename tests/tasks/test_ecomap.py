@@ -1,7 +1,14 @@
-import pytest
 from importlib.resources import files
+
+import pytest
+
 from ecoscope_workflows.serde import gpd_from_parquet_uri
-from ecoscope_workflows.tasks.results._ecomap import draw_ecomap, create_map_layer
+from ecoscope_workflows.tasks.results._ecomap import (
+    PointLayerStyle,
+    PolylineLayerStyle,
+    create_map_layer,
+    draw_ecomap,
+)
 
 
 @pytest.fixture
@@ -27,8 +34,7 @@ def trajectories():
 def test_draw_ecomap_points(relocations):
     geo_layer = create_map_layer(
         geodataframe=relocations,
-        data_type="Point",
-        style_kws={"get_radius": 150, "get_fill_color": "#0000FF"},
+        layer_style=PointLayerStyle(get_radius=150, get_fill_color="#0000FF"),
     )
 
     map_html = draw_ecomap(
@@ -42,8 +48,7 @@ def test_draw_ecomap_points(relocations):
 def test_draw_ecomap_lines(trajectories):
     geo_layer = create_map_layer(
         geodataframe=trajectories,
-        data_type="Polyline",
-        style_kws={"get_width": 200, "get_color": "#00FFFF"},
+        layer_style=PolylineLayerStyle(get_width=200, get_color="#00FFFF"),
     )
 
     map_html = draw_ecomap(
@@ -56,14 +61,12 @@ def test_draw_ecomap_lines(trajectories):
 
 def test_draw_ecomap_combined(relocations, trajectories):
     relocs = create_map_layer(
-        geodataframe=relocations,
-        data_type="Point",
-        style_kws={"get_radius": 150, "get_fill_color": "#0000FF"},
+        geodataframe=trajectories,
+        layer_style=PolylineLayerStyle(get_width=200, get_color="#00FFFF"),
     )
     traj = create_map_layer(
         geodataframe=trajectories,
-        data_type="Polyline",
-        style_kws={"get_width": 200, "get_color": "#00FFFF"},
+        layer_style=PolylineLayerStyle(get_width=200, get_color="#00FFFF"),
     )
 
     map_html = draw_ecomap(
@@ -71,4 +74,11 @@ def test_draw_ecomap_combined(relocations, trajectories):
         tile_layer="OpenStreetMap",
         title="Relocations and Trajectories",
     )
+    assert isinstance(map_html, str)
+    map_html = draw_ecomap(
+        geo_layers=[relocs, traj],
+        tile_layer="OpenStreetMap",
+        title="Relocations and Trajectories",
+    )
+    assert isinstance(map_html, str)
     assert isinstance(map_html, str)
