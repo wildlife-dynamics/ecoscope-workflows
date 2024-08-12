@@ -6,7 +6,6 @@ from getpass import getpass
 import yaml
 from pydantic import SecretStr
 
-from ecoscope_workflows.visualize import write_png
 from ecoscope_workflows import config
 from ecoscope_workflows.compiler import DagCompiler, Spec
 from ecoscope_workflows.config import TomlConfigTable
@@ -62,6 +61,8 @@ def get_params_command(args):
 
 
 def visualize(args):
+    from ecoscope_workflows.visualize import write_png
+
     compilation_spec = Spec(**yaml.safe_load(args.spec))
     outpath = args.outpath
     write_png(compilation_spec, outpath)
