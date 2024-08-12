@@ -135,23 +135,41 @@ def draw_ecomap(
 
     geo_layers = [geo_layers] if not isinstance(geo_layers, list) else geo_layers
     for layer_def in geo_layers:
-        if isinstance(layer_def.layer_style, PolylineLayerStyle):
-            layer = EcoMap.polyline_layer(
-                layer_def.geodataframe,
-                **layer_def.layer_style.model_dump(exclude_none=True),
-            )
-        elif isinstance(layer_def.layer_style, PointLayerStyle):
-            layer = EcoMap.point_layer(
-                layer_def.geodataframe,
-                **layer_def.layer_style.model_dump(exclude_none=True),
-            )
-        elif isinstance(layer_def, PolygonLayerStyle):
-            layer = EcoMap.polygon_layer(
-                layer_def.geodataframe,
-                **layer_def.layer_style.model_dump(exclude_none=True),
-            )
+        match layer_def.layer_style.layer_type:
+            case "point":
+                layer = EcoMap.point_layer(
+                    layer_def.geodataframe,
+                    **layer_def.layer_style.model_dump(exclude_none=True),
+                )
+            case "polyline":
+                layer = EcoMap.polyline_layer(
+                    layer_def.geodataframe,
+                    **layer_def.layer_style.model_dump(exclude_none=True),
+                )
+            case "polygon":
+                layer = EcoMap.polygon_layer(
+                    layer_def.geodataframe,
+                    **layer_def.layer_style.model_dump(exclude_none=True),
+                )
 
         m.add_layer(layer)
+        # if isinstance(layer_def.layer_style.layer_type==, PolylineLayerStyle):
+        #     layer = EcoMap.polyline_layer(
+        #         layer_def.geodataframe,
+        #         **layer_def.layer_style.model_dump(exclude_none=True),
+        #     )
+        # elif isinstance(layer_def.layer_style, PointLayerStyle):
+        #     layer = EcoMap.point_layer(
+        #         layer_def.geodataframe,
+        #         **layer_def.layer_style.model_dump(exclude_none=True),
+        #     )
+        # elif isinstance(layer_def, PolygonLayerStyle):
+        #     layer = EcoMap.polygon_layer(
+        #         layer_def.geodataframe,
+        #         **layer_def.layer_style.model_dump(exclude_none=True),
+        #     )
+        # else:
+        #     raise NotImplementedError("dklafsf")
 
     m.zoom_to_bounds(m.layers)
     return m.to_html(title=title if title is not None else "Map Export")

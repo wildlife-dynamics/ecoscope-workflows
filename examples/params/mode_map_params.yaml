@@ -25,7 +25,7 @@ obs_c:
 # Parameters for 'Create Map Layer For Each Group' using task `create_map_layer`.
 map_layers:
   layer_style:
-    layer_type: "point" # (typing.Literal['Scatterplot', 'Path', 'Polygon'], FieldInfo(annotation=NoneType, required=True, description='The type of visualization.'))
+    layer_type: "point"
 
 # Parameters for 'Create EcoMap For Each Group' using task `draw_ecomap`.
 ecomaps:

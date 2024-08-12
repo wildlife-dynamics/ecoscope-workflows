@@ -18,9 +18,13 @@ class PlotStyle(BaseModel):
     line: LineStyle | SkipJsonSchema[None] = None
 
 
+class PlotCategoryStyle(BaseModel):
+    marker_color: str | SkipJsonSchema[None] = None
+
+
 class GroupedPlotStyle(BaseModel):
     category: str
-    plot_style: PlotStyle
+    plot_style: PlotCategoryStyle
 
 
 class LayoutStyle(BaseModel):
@@ -233,8 +237,8 @@ def draw_pie_chart(
     dataframe (pd.DataFrame): The input dataframe.
     value_column (str): The name of the dataframe column to pull slice values from.
     label_column (str): The name of the dataframe column to label slices with, required if the data in value_column is numeric.
-    style_kws (dict): Additional style kwargs passed to go.Pie().
-    layout_kws (dict): Additional kwargs passed to plotly.go.Figure(layout).
+    plot_style (PlotStyle): Additional style kwargs passed to go.Pie().
+    layout_style (LayoutStyle): Additional kwargs passed to plotly.go.Figure(layout).
 
     Returns:
     The generated chart html as a string
