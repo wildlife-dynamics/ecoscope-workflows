@@ -62,7 +62,7 @@ def get_params_command(args):
 
 
 def visualize(args):
-    compilation_spec = yaml.safe_load(args.spec)
+    compilation_spec = Spec(**yaml.safe_load(args.spec))
     outpath = args.outpath
     write_png(compilation_spec, outpath)
 
