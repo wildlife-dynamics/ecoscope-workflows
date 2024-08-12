@@ -491,14 +491,22 @@ class DagCompiler(BaseModel):
         }
 
     def get_params_jsonschema(self) -> dict[str, Any]:
-        return ReactJSONSchemaFormConfiguration(
-            properties={
-                t.name: t.known_task.parameters_jsonschema(
-                    omit_args=self.per_taskinstance_omit_args.get(t.id, []),
-                )
-                for t in self.spec.workflow
-            }
-        ).model_dump()
+        properties = {
+            t.name: t.known_task.parameters_jsonschema(
+                omit_args=self.per_taskinstance_omit_args.get(t.id, []),
+            )
+            for t in self.spec.workflow
+        }
+
+        definitions = {}
+        for _, schema in properties.items():
+            if "$defs" in schema:
+                definitions.update(schema["$defs"])
+                del schema["$defs"]
+
+        react_json_schema_form = ReactJSONSchemaFormConfiguration(properties=properties)
+        react_json_schema_form.definitions = definitions
+        return react_json_schema_form.model_dump(by_alias=True)
 
     def get_params_fillable_yaml(self) -> str:
         yaml_str = ""
