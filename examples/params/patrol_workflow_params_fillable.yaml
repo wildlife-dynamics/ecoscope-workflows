@@ -81,13 +81,13 @@ traj_patrol_events_ecomap:
   tile_layer:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A named tile layer, ie OpenStreetMap.'))
   static:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Set to true to disable map pan/zoom.'))
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The map title.'))
-  title_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Title.'))
-  scale_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Scale Bar.'))
-  north_arrow_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the North Arrow.'))
+  title_kws:   # (typing.Union[dict, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Title.'))
+  scale_kws:   # (typing.Union[dict, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Scale Bar.'))
+  north_arrow_kws:   # (typing.Union[dict, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the North Arrow.'))
 
 # Parameters for 'Persist Patrols Ecomap as Text' using task `persist_text`.
 traj_pe_ecomap_html_urls:
-  filename:   # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
+  filename:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
 # Parameters for 'Create Map Widgets for Patrol Events' using task `create_map_widget_single_view`.
 traj_pe_map_widgets_single_views:
@@ -96,6 +96,71 @@ traj_pe_map_widgets_single_views:
 # Parameters for 'Merge EcoMap Widget Views' using task `merge_widget_views`.
 traj_pe_grouped_map_widget:
 
+# Parameters for 'Calculate Total Patrols Per Group' using task `dataframe_column_nunique`.
+total_patrols:
+  column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Column to aggregate'))
+
+# Parameters for 'Create Single Value Widgets for Total Patrols Per Group' using task `create_single_value_widget_single_view`.
+total_patrols_sv_widgets:
+  title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Merge per group Total Patrols SV widgets' using task `merge_widget_views`.
+total_patrols_grouped_sv_widget:
+
+# Parameters for 'Calculate Total Patrol Time Per Group' using task `dataframe_column_sum`.
+total_patrol_time:
+  column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Column to aggregate'))
+
+# Parameters for 'Convert total patrol time units' using task `apply_arithmetic_operation`.
+total_patrol_time_converted:
+  b:   # (float | int, FieldInfo(annotation=NoneType, required=True, description='The second number'))
+  operation:   # (typing.Literal['add', 'subtract', 'multiply', 'divide', 'floor_divide', 'modulo', 'power'], FieldInfo(annotation=NoneType, required=True, description='The arithmetic operation to apply'))
+
+# Parameters for 'Create Single Value Widgets for Total Patrol Time Per Group' using task `create_single_value_widget_single_view`.
+total_patrol_time_sv_widgets:
+  title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Merge per group Total Patrol Time SV widgets' using task `merge_widget_views`.
+patrol_time_grouped_widget:
+
+# Parameters for 'Calculate Total Distance Per Group' using task `dataframe_column_sum`.
+total_patrol_dist:
+  column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Column to aggregate'))
+
+# Parameters for 'Convert total patrol distance units' using task `apply_arithmetic_operation`.
+total_patrol_dist_converted:
+  b:   # (float | int, FieldInfo(annotation=NoneType, required=True, description='The second number'))
+  operation:   # (typing.Literal['add', 'subtract', 'multiply', 'divide', 'floor_divide', 'modulo', 'power'], FieldInfo(annotation=NoneType, required=True, description='The arithmetic operation to apply'))
+
+# Parameters for 'Create Single Value Widgets for Total Distance Per Group' using task `create_single_value_widget_single_view`.
+total_patrol_dist_sv_widgets:
+  title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Merge per group Total Patrol Distance SV widgets' using task `merge_widget_views`.
+patrol_dist_grouped_widget:
+
+# Parameters for 'Calculate Average Speed Per Group' using task `dataframe_column_mean`.
+avg_speed:
+  column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Column to aggregate'))
+
+# Parameters for 'Create Single Value Widgets for Avg Speed Per Group' using task `create_single_value_widget_single_view`.
+avg_speed_sv_widgets:
+  title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Merge per group Avg Speed SV widgets' using task `merge_widget_views`.
+avg_speed_grouped_widget:
+
+# Parameters for 'Calculate Max Speed Per Group' using task `dataframe_column_max`.
+max_speed:
+  column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Column to aggregate'))
+
+# Parameters for 'Create Single Value Widgets for Max Speed Per Group' using task `create_single_value_widget_single_view`.
+max_speed_sv_widgets:
+  title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Merge per group Max Speed SV widgets' using task `merge_widget_views`.
+max_speed_grouped_widget:
+
 # Parameters for 'Draw Time Series Bar Chart for Patrols Events' using task `draw_time_series_bar_chart`.
 patrol_events_bar_chart:
   x_axis:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the x/time axis.'))
@@ -103,13 +168,13 @@ patrol_events_bar_chart:
   category:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to stack in the y axis.'))
   agg_function:   # (typing.Literal['count', 'mean', 'sum', 'min', 'max'], FieldInfo(annotation=NoneType, required=True, description='The aggregate function to apply to the group.'))
   time_interval:   # (typing.Literal['year', 'month', 'week', 'day', 'hour'], FieldInfo(annotation=NoneType, required=True, description='Sets the time interval of the x axis.'))
-  groupby_style_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Style arguments passed to plotly.graph_objects.Bar and applied to individual groups.'))
-  style_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Style arguments passed to plotly.graph_objects.Bar and applied to all groups.'))
-  layout_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Style arguments passed to plotly.graph_objects.Figure.'))
+  groupby_style_kws:   # (typing.Union[dict, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Style arguments passed to plotly.graph_objects.Bar and applied to individual groups.'))
+  style_kws:   # (typing.Union[dict, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Style arguments passed to plotly.graph_objects.Bar and applied to all groups.'))
+  layout_kws:   # (typing.Union[dict, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Style arguments passed to plotly.graph_objects.Figure.'))
 
 # Parameters for 'Persist Patrols Bar Chart as Text' using task `persist_text`.
 patrol_events_bar_chart_html_url:
-  filename:   # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
+  filename:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
 # Parameters for 'Create Plot Widget for Patrol Events' using task `create_plot_widget_single_view`.
 patrol_events_bar_chart_widget:
@@ -119,13 +184,13 @@ patrol_events_bar_chart_widget:
 # Parameters for 'Draw Pie Chart for Patrols Events' using task `draw_pie_chart`.
 patrol_events_pie_chart:
   value_column:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the dataframe column to pull slice values from.'))
-  label_column:   # (str | None, FieldInfo(annotation=NoneType, required=True, description='The name of the dataframe column to label slices with, required if the data in value_column is numeric.'))
-  style_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Additional style kwargs passed to go.Pie().'))
-  layout_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Additional kwargs passed to plotly.go.Figure(layout).'))
+  label_column:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='The name of the dataframe column to label slices with, required if the data in value_column is numeric.'))
+  style_kws:   # (typing.Union[dict, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional style kwargs passed to go.Pie().'))
+  layout_kws:   # (typing.Union[dict, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional kwargs passed to plotly.go.Figure(layout).'))
 
 # Parameters for 'Persist Patrols Pie Chart as Text' using task `persist_text`.
 patrol_events_pie_chart_html_url:
-  filename:   # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
+  filename:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
 # Parameters for 'Create Plot Widget for Patrol Events' using task `create_plot_widget_single_view`.
 patrol_events_pie_chart_widget:
@@ -152,13 +217,13 @@ td_ecomap:
   tile_layer:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A named tile layer, ie OpenStreetMap.'))
   static:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Set to true to disable map pan/zoom.'))
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The map title.'))
-  title_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Title.'))
-  scale_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Scale Bar.'))
-  north_arrow_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the North Arrow.'))
+  title_kws:   # (typing.Union[dict, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Title.'))
+  scale_kws:   # (typing.Union[dict, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Scale Bar.'))
+  north_arrow_kws:   # (typing.Union[dict, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the North Arrow.'))
 
 # Parameters for 'Persist Ecomap as Text' using task `persist_text`.
 td_ecomap_html_url:
-  filename:   # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
+  filename:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
 # Parameters for 'Create Time Density Map Widget' using task `create_map_widget_single_view`.
 td_map_widget:

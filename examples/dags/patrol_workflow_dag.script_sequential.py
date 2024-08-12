@@ -16,6 +16,12 @@ from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
 from ecoscope_workflows.tasks.results import merge_widget_views
+from ecoscope_workflows.tasks.analysis import dataframe_column_nunique
+from ecoscope_workflows.tasks.results import create_single_value_widget_single_view
+from ecoscope_workflows.tasks.analysis import dataframe_column_sum
+from ecoscope_workflows.tasks.analysis import apply_arithmetic_operation
+from ecoscope_workflows.tasks.analysis import dataframe_column_mean
+from ecoscope_workflows.tasks.analysis import dataframe_column_max
 from ecoscope_workflows.tasks.results import draw_time_series_bar_chart
 from ecoscope_workflows.tasks.results import create_plot_widget_single_view
 from ecoscope_workflows.tasks.results import draw_pie_chart
@@ -127,6 +133,108 @@ if __name__ == "__main__":
         .call(**params["traj_pe_grouped_map_widget"])
     )
 
+    total_patrols = (
+        dataframe_column_nunique.validate()
+        .partial(**params["total_patrols"])
+        .mapvalues(argnames=["df"], argvalues=split_patrol_traj_groups)
+    )
+
+    total_patrols_sv_widgets = (
+        create_single_value_widget_single_view.validate()
+        .partial(**params["total_patrols_sv_widgets"])
+        .map(argnames=["view", "data"], argvalues=total_patrols)
+    )
+
+    total_patrols_grouped_sv_widget = (
+        merge_widget_views.validate()
+        .partial(widgets=total_patrols_sv_widgets)
+        .call(**params["total_patrols_grouped_sv_widget"])
+    )
+
+    total_patrol_time = (
+        dataframe_column_sum.validate()
+        .partial(**params["total_patrol_time"])
+        .mapvalues(argnames=["df"], argvalues=split_patrol_traj_groups)
+    )
+
+    total_patrol_time_converted = (
+        apply_arithmetic_operation.validate()
+        .partial(**params["total_patrol_time_converted"])
+        .mapvalues(argnames=["a"], argvalues=total_patrol_time)
+    )
+
+    total_patrol_time_sv_widgets = (
+        create_single_value_widget_single_view.validate()
+        .partial(**params["total_patrol_time_sv_widgets"])
+        .map(argnames=["view", "data"], argvalues=total_patrol_time_converted)
+    )
+
+    patrol_time_grouped_widget = (
+        merge_widget_views.validate()
+        .partial(widgets=total_patrol_time_sv_widgets)
+        .call(**params["patrol_time_grouped_widget"])
+    )
+
+    total_patrol_dist = (
+        dataframe_column_sum.validate()
+        .partial(**params["total_patrol_dist"])
+        .mapvalues(argnames=["df"], argvalues=split_patrol_traj_groups)
+    )
+
+    total_patrol_dist_converted = (
+        apply_arithmetic_operation.validate()
+        .partial(**params["total_patrol_dist_converted"])
+        .mapvalues(argnames=["a"], argvalues=total_patrol_dist)
+    )
+
+    total_patrol_dist_sv_widgets = (
+        create_single_value_widget_single_view.validate()
+        .partial(**params["total_patrol_dist_sv_widgets"])
+        .map(argnames=["view", "data"], argvalues=total_patrol_dist_converted)
+    )
+
+    patrol_dist_grouped_widget = (
+        merge_widget_views.validate()
+        .partial(widgets=total_patrol_dist_sv_widgets)
+        .call(**params["patrol_dist_grouped_widget"])
+    )
+
+    avg_speed = (
+        dataframe_column_mean.validate()
+        .partial(**params["avg_speed"])
+        .mapvalues(argnames=["df"], argvalues=split_patrol_traj_groups)
+    )
+
+    avg_speed_sv_widgets = (
+        create_single_value_widget_single_view.validate()
+        .partial(**params["avg_speed_sv_widgets"])
+        .map(argnames=["view", "data"], argvalues=avg_speed)
+    )
+
+    avg_speed_grouped_widget = (
+        merge_widget_views.validate()
+        .partial(widgets=avg_speed_sv_widgets)
+        .call(**params["avg_speed_grouped_widget"])
+    )
+
+    max_speed = (
+        dataframe_column_max.validate()
+        .partial(**params["max_speed"])
+        .mapvalues(argnames=["df"], argvalues=split_patrol_traj_groups)
+    )
+
+    max_speed_sv_widgets = (
+        create_single_value_widget_single_view.validate()
+        .partial(**params["max_speed_sv_widgets"])
+        .map(argnames=["view", "data"], argvalues=max_speed)
+    )
+
+    max_speed_grouped_widget = (
+        merge_widget_views.validate()
+        .partial(widgets=max_speed_sv_widgets)
+        .call(**params["max_speed_grouped_widget"])
+    )
+
     patrol_events_bar_chart = (
         draw_time_series_bar_chart.validate()
         .partial(dataframe=filter_patrol_events)
@@ -207,6 +315,11 @@ if __name__ == "__main__":
                 td_map_widget,
                 patrol_events_bar_chart_widget,
                 patrol_events_pie_chart_widget,
+                total_patrols_grouped_sv_widget,
+                patrol_time_grouped_widget,
+                patrol_dist_grouped_widget,
+                avg_speed_grouped_widget,
+                max_speed_grouped_widget,
             ],
             groupers=groupers,
         )

@@ -1,26 +1,85 @@
+from operator import add, sub, mul, truediv, floordiv, mod, pow
 from typing import Annotated, Literal
 
-import pandas as pd
 from pydantic import Field
 
-from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
+from ecoscope_workflows.annotations import AnyDataFrame
 from ecoscope_workflows.decorators import task
 
 
+ColumnName = Annotated[str, Field(description="Column to aggregate")]
+
+
 @task
-def aggregate(
-    df: DataFrame[JsonSerializableDataFrameModel],
-    column_name: Annotated[str, Field(description="Column to aggregate")],
-    func_name: Annotated[
-        Literal["count", "mean", "sum"], Field(description="The method of aggregation")
+def dataframe_count(
+    df: AnyDataFrame,
+) -> Annotated[int, Field(description="The number of rows in the DataFrame")]:
+    return len(df)
+
+
+@task
+def dataframe_column_mean(
+    df: AnyDataFrame,
+    column_name: ColumnName,
+) -> Annotated[float, Field(description="The mean of the column")]:
+    return df[column_name].mean()
+
+
+@task
+def dataframe_column_sum(
+    df: AnyDataFrame,
+    column_name: ColumnName,
+) -> Annotated[float, Field(description="The sum of the column")]:
+    return df[column_name].sum()
+
+
+@task
+def dataframe_column_max(
+    df: AnyDataFrame,
+    column_name: ColumnName,
+) -> Annotated[float, Field(description="The max of the column")]:
+    return df[column_name].max()
+
+
+@task
+def dataframe_column_min(
+    df: AnyDataFrame,
+    column_name: ColumnName,
+) -> Annotated[float, Field(description="The min of the column")]:
+    return df[column_name].min()
+
+
+@task
+def dataframe_column_nunique(
+    df: AnyDataFrame,
+    column_name: ColumnName,
+) -> Annotated[int, Field(description="The number of unique values in the column")]:
+    return df[column_name].nunique()
+
+
+operations = {
+    "add": add,
+    "subtract": sub,
+    "multiply": mul,
+    "divide": truediv,
+    "floor_divide": floordiv,
+    "modulo": mod,
+    "power": pow,
+}
+
+Operations = Literal[
+    "add", "subtract", "multiply", "divide", "floor_divide", "modulo", "power"
+]
+
+
+@task
+def apply_arithmetic_operation(
+    a: Annotated[float | int, Field(description="The first number")],
+    b: Annotated[float | int, Field(description="The second number")],
+    operation: Annotated[
+        Operations, Field(description="The arithmetic operation to apply")
     ],
-) -> DataFrame[JsonSerializableDataFrameModel]:
-    match func_name.upper():
-        case "COUNT":
-            return pd.Series({f"{column_name}_count": len(df)})
-        case "MEAN":
-            return pd.Series({f"{column_name}_mean": df[column_name].mean()})
-        case "SUM":
-            return pd.Series({f"{column_name}_sum": df[column_name].sum()})
-        case _:
-            raise ValueError(f"Unknown aggregation function: {func_name}")
+) -> Annotated[
+    float | int, Field(description="The result of the arithmetic operation")
+]:
+    return operations[operation](a, b)

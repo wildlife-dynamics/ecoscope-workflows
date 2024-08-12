@@ -104,6 +104,114 @@ workflow:
     partial:
       widgets: ${{ workflow.traj_pe_map_widgets_single_views.return }}
 
+  # Grouped single value widget (1) - total patrols per group
+  - name: Calculate Total Patrols Per Group
+    id: total_patrols
+    task: dataframe_column_nunique
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.split_patrol_traj_groups.return }}
+  - name: Create Single Value Widgets for Total Patrols Per Group
+    id: total_patrols_sv_widgets
+    task: create_single_value_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.total_patrols.return }}
+  - name: Merge per group Total Patrols SV widgets
+    id: total_patrols_grouped_sv_widget
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.total_patrols_sv_widgets.return }}
+
+  # Grouped single value widget (2) - total patrol time per group
+  - name: Calculate Total Patrol Time Per Group
+    id: total_patrol_time
+    task: dataframe_column_sum
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.split_patrol_traj_groups.return }}
+  - name: Convert total patrol time units
+    id: total_patrol_time_converted
+    task: apply_arithmetic_operation
+    mapvalues:
+      argnames: a
+      argvalues: ${{ workflow.total_patrol_time.return }}
+  - name: Create Single Value Widgets for Total Patrol Time Per Group
+    id: total_patrol_time_sv_widgets
+    task: create_single_value_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.total_patrol_time_converted.return }}
+  - name: Merge per group Total Patrol Time SV widgets
+    id: patrol_time_grouped_widget
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.total_patrol_time_sv_widgets.return }}
+
+  # Grouped single value widget (3) - total distance per group
+  - name: Calculate Total Distance Per Group
+    id: total_patrol_dist
+    task: dataframe_column_sum
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.split_patrol_traj_groups.return }}
+  - name: Convert total patrol distance units
+    id: total_patrol_dist_converted
+    task: apply_arithmetic_operation
+    mapvalues:
+      argnames: a
+      argvalues: ${{ workflow.total_patrol_dist.return }}
+  - name: Create Single Value Widgets for Total Distance Per Group
+    id: total_patrol_dist_sv_widgets
+    task: create_single_value_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.total_patrol_dist_converted.return }}
+  - name: Merge per group Total Patrol Distance SV widgets
+    id: patrol_dist_grouped_widget
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.total_patrol_dist_sv_widgets.return }}
+
+  # Grouped single value widget (4) - average speed per group
+  - name: Calculate Average Speed Per Group
+    id: avg_speed
+    task: dataframe_column_mean
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.split_patrol_traj_groups.return }}
+  - name: Create Single Value Widgets for Avg Speed Per Group
+    id: avg_speed_sv_widgets
+    task: create_single_value_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.avg_speed.return }}
+  - name: Merge per group Avg Speed SV widgets
+    id: avg_speed_grouped_widget
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.avg_speed_sv_widgets.return }}
+
+
+  # Grouped single value widget (4) - max speed per group
+  - name: Calculate Max Speed Per Group
+    id: max_speed
+    task: dataframe_column_max
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.split_patrol_traj_groups.return }}
+  - name: Create Single Value Widgets for Max Speed Per Group
+    id: max_speed_sv_widgets
+    task: create_single_value_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.max_speed.return }}
+  - name: Merge per group Max Speed SV widgets
+    id: max_speed_grouped_widget
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.max_speed_sv_widgets.return }}
+
   # patrol events bar chart
   - name: Draw Time Series Bar Chart for Patrols Events
     id: patrol_events_bar_chart
@@ -179,4 +287,9 @@ workflow:
         - ${{ workflow.td_map_widget.return }}
         - ${{ workflow.patrol_events_bar_chart_widget.return }}
         - ${{ workflow.patrol_events_pie_chart_widget.return }}
+        - ${{ workflow.total_patrols_grouped_sv_widget.return }}
+        - ${{ workflow.patrol_time_grouped_widget.return }}
+        - ${{ workflow.patrol_dist_grouped_widget.return }}
+        - ${{ workflow.avg_speed_grouped_widget.return }}
+        - ${{ workflow.max_speed_grouped_widget.return }}
       groupers: ${{ workflow.groupers.return }}
