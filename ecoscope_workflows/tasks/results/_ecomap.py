@@ -45,7 +45,9 @@ LayerStyle = Annotated[
 
 
 class NorthArrowStyle(BaseModel):
-    placement: str = "top-left"
+    placement: Literal[
+        "top-left", "top-right", "bottom-left", "bottom-right", "fill"
+    ] = "top-left"
 
 
 @dataclass

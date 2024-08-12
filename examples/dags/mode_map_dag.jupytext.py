@@ -83,8 +83,7 @@ obs_c = get_subjectgroup_observations.call(**obs_c_params)
 # parameters
 
 map_layers_params = dict(
-    data_type=...,
-    style_kws=...,
+    layer_style=...,
 )
 
 # %%
@@ -106,9 +105,7 @@ ecomaps_params = dict(
     tile_layer=...,
     static=...,
     title=...,
-    title_kws=...,
-    scale_kws=...,
-    north_arrow_kws=...,
+    north_arrow_style=...,
 )
 
 # %%
