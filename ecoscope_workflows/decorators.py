@@ -13,7 +13,7 @@ K = TypeVar("K")
 V = TypeVar("V")
 
 
-@dataclass
+@dataclass(frozen=True)
 class Task(Generic[P, R, K, V]):
     """The implementation of `@task`. This class is used to wrap a task function
     and provide methods for calling the task function, mapping it over an iterable
