@@ -29,7 +29,8 @@ jobs:
 
       - name: Run doctests
         run: |
-          python3 -m pytest -v ecoscope_workflows/ --doctest-modules
+          python3 -m pytest -v ecoscope_workflows/ --doctest-modules \
+          --ignore=ecoscope_workflows/visualize.py
 
       - name: Test with pytest
         env:

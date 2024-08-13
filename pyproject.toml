@@ -39,6 +39,9 @@ test = [
 notebook = [
     "jupytext",
 ]
+visualize = [
+    "pydot"  # requires system install of `graphviz` for the `dot` executable
+]
 
 [project.scripts]
 ecoscope-workflows = "ecoscope_workflows.__main__:main"
