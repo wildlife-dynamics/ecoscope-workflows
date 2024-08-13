@@ -28,6 +28,9 @@ def test_reassign_executor_field():
     f_new = f.set_executor("lithops")
     assert isinstance(f_new.executor, LithopsExecutor)
 
+    f_roundtripped = f.set_executor("python")
+    assert isinstance(f_roundtripped.executor, PythonExecutor)
+
 
 def test_lithops_executor():
     @task

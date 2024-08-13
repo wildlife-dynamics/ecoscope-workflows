@@ -96,6 +96,18 @@ class _Task(Generic[P, R, K, V]):
             ),
         )
 
+    @overload
+    def set_executor(
+        self,
+        name: Literal["python"],
+    ) -> "SyncTask[P, R, K, V]": ...
+
+    @overload
+    def set_executor(
+        self,
+        name: Literal["lithops"],
+    ) -> "AsyncTask[P, R, K, V]": ...
+
     def set_executor(
         self,
         name: Literal["python", "lithops"],
