@@ -1,4 +1,5 @@
 import functools
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, replace
 from typing import (
     Callable,
@@ -13,7 +14,12 @@ from typing import (
 
 from pydantic import validate_call
 
-from ecoscope_workflows.executors import Executor
+from ecoscope_workflows.executors import (
+    AsyncExecutor,
+    Future,
+    FutureSequence,
+    SyncExecutor,
+)
 from ecoscope_workflows.executors.python import PythonExecutor
 
 P = ParamSpec("P")
@@ -23,7 +29,134 @@ V = TypeVar("V")
 
 
 @dataclass(frozen=True)
-class Task(Generic[P, R, K, V]):
+class _Task(Generic[P, R, K, V]):
+    func: Callable[P, R]
+    tags: list[str]
+
+    def partial(
+        self,
+        **kwargs: dict,
+    ) -> "_Task[P, R, K, V]":
+        """Return a new Task with the same attributes, but with the function converted
+        into a partial function with the given keyword arguments. This is useful for
+        mapping a function over an iterable where some of the function's arguments are
+        constant across all calls.
+
+        Examples:
+
+        ```python
+        >>> @task
+        ... def f(a: int, b: int) -> int:
+        ...     return a + b
+        >>> f.partial(a=1).call(b=2)
+        3
+        >>> f.partial(a=1).map("b", [2, 3])
+        [3, 4]
+        >>> f.partial(a=1).mapvalues("b", [("x", 2), ("y", 3)])
+        [('x', 3), ('y', 4)]
+
+        ```
+
+        """
+        return replace(self, func=functools.partial(self.func, **kwargs))
+
+    def validate(self) -> "_Task[P, R, K, V]":
+        """Return a new Task with the same attributes, but with the function input
+        parameters and return values validated by Pydantic's `validate_call` This
+        is required in settings where the input parameters are given as strings that
+        need to be parsed into the correct Python type before being passed to the task
+        function, such as calling workflows as scripts with parameters provided in text
+        config files, or when calling workflows over http with parameters provided as json
+        in the http request body.
+
+        Examples:
+
+        ```python
+        >>> @task
+        ... def f(a: int) -> int:
+        ...     return a
+        >>> f("1")  # no parsing without validate; input value is returned as a string
+        '1'
+        >>> f("2")
+        '2'
+        >>> f.validate().call("1")  # with validate, input value is parsed into an int
+        1
+        >>> f.validate().call("2")
+        2
+
+        ```
+
+        """
+        return replace(
+            self,
+            func=validate_call(
+                self.func,
+                validate_return=True,
+                config={"arbitrary_types_allowed": True},
+            ),
+        )
+
+    def set_executor(
+        self,
+        name: Literal["python", "lithops"],
+    ) -> "AsyncTask[P, R, K, V] | SyncTask[P, R, K, V]":
+        """Return a new Task with the same attributes, but with the executor set to the
+        given executor. This is useful for changing the executor for a task function
+        after it has been defined.
+
+        Examples:
+
+        ```python
+        >>> @task
+        ... def f(a: int, b: int) -> int:
+        ...     return a + b
+        >>> type(f.executor)
+        <class 'ecoscope_workflows.executors.python.PythonExecutor'>
+        >>> f_new = f.set_executor("lithops")
+        >>> type(f_new.executor)
+        <class 'ecoscope_workflows.executors.lithops.LithopsExecutor'>
+
+        ```
+
+        """
+        if name == "python":
+            return SyncTask(
+                func=self.func,
+                tags=self.tags,
+                executor=PythonExecutor(),
+            )
+        elif name == "lithops":
+            from ecoscope_workflows.executors.lithops import LithopsExecutor
+
+            return AsyncTask(
+                func=self.func,
+                tags=self.tags,
+                executor=LithopsExecutor(),
+            )
+
+
+class TaskMethodsMixinABC(ABC, Generic[P, R, K, V]):
+    @abstractmethod
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R | Future[R]: ...
+
+    @abstractmethod
+    def call(self, *args: P.args, **kwargs: P.kwargs) -> R | Future[R]: ...
+
+    @abstractmethod
+    def map(
+        self,
+        argnames: str | Sequence[str],
+        argvalues: Sequence[V] | Sequence[tuple[V, ...]],
+    ) -> Sequence[R] | FutureSequence[R]: ...
+
+    @abstractmethod
+    def mapvalues(
+        self, argnames: str | Sequence[str], argvalues: Sequence[tuple[K, V]]
+    ) -> Sequence[tuple[K, R]] | FutureSequence[tuple[K, R]]: ...
+
+
+@dataclass(frozen=True)
+class SyncTask(TaskMethodsMixinABC, _Task[P, R, K, V]):
     """The implementation of `@task`. This class is used to wrap a task function
     and provide methods for calling the task function, mapping it over an iterable
     of arguments, and mapping it over an iterable of key-value pairs. Any of these
@@ -63,101 +196,7 @@ class Task(Generic[P, R, K, V]):
 
     """
 
-    func: Callable[P, R]
-    executor: Executor = PythonExecutor()
-    tags: list[str] = field(default_factory=list)
-
-    def partial(
-        self,
-        **kwargs: dict,
-    ) -> "Task[P, R, K, V]":
-        """Return a new Task with the same attributes, but with the function converted
-        into a partial function with the given keyword arguments. This is useful for
-        mapping a function over an iterable where some of the function's arguments are
-        constant across all calls.
-
-        Examples:
-
-        ```python
-        >>> @task
-        ... def f(a: int, b: int) -> int:
-        ...     return a + b
-        >>> f.partial(a=1).call(b=2)
-        3
-        >>> f.partial(a=1).map("b", [2, 3])
-        [3, 4]
-        >>> f.partial(a=1).mapvalues("b", [("x", 2), ("y", 3)])
-        [('x', 3), ('y', 4)]
-
-        ```
-
-        """
-        return replace(self, func=functools.partial(self.func, **kwargs))
-
-    def validate(self) -> "Task[P, R, K, V]":
-        """Return a new Task with the same attributes, but with the function input
-        parameters and return values validated by Pydantic's `validate_call` This
-        is required in settings where the input parameters are given as strings that
-        need to be parsed into the correct Python type before being passed to the task
-        function, such as calling workflows as scripts with parameters provided in text
-        config files, or when calling workflows over http with parameters provided as json
-        in the http request body.
-
-        Examples:
-
-        ```python
-        >>> @task
-        ... def f(a: int) -> int:
-        ...     return a
-        >>> f("1")  # no parsing without validate; input value is returned as a string
-        '1'
-        >>> f("2")
-        '2'
-        >>> f.validate().call("1")  # with validate, input value is parsed into an int
-        1
-        >>> f.validate().call("2")
-        2
-
-        ```
-
-        """
-        return replace(
-            self,
-            func=validate_call(
-                self.func,
-                validate_return=True,
-                config={"arbitrary_types_allowed": True},
-            ),
-        )
-
-    def set_executor(self, name: Literal["python", "lithops"]) -> "Task[P, R, K, V]":
-        """Return a new Task with the same attributes, but with the executor set to the
-        given executor. This is useful for changing the executor for a task function
-        after it has been defined.
-
-        Examples:
-
-        ```python
-        >>> @task
-        ... def f(a: int, b: int) -> int:
-        ...     return a + b
-        >>> type(f.executor)
-        <class 'ecoscope_workflows.executors.python.PythonExecutor'>
-        >>> f_new = f.set_executor("lithops")
-        >>> type(f_new.executor)
-        <class 'ecoscope_workflows.executors.lithops.LithopsExecutor'>
-
-        ```
-
-        """
-        executors: dict[str, Executor] = {
-            "python": PythonExecutor(),
-        }
-        if name == "lithops":
-            from ecoscope_workflows.executors.lithops import LithopsExecutor
-
-            executors |= {"lithops": LithopsExecutor()}
-        return replace(self, executor=executors[name])
+    executor: SyncExecutor = field(default_factory=PythonExecutor)
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
         return self.executor.call(self.func, *args, **kwargs)
@@ -284,8 +323,10 @@ class Task(Generic[P, R, K, V]):
 
 
 @dataclass(frozen=True)
-class AsyncTask(Task[P, R, K, V]):
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
+class AsyncTask(_Task[P, R, K, V]):
+    executor: AsyncExecutor
+
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Future[R]:
         return self.executor.call(self.func, *args, **kwargs)
 
 
@@ -294,25 +335,25 @@ def task(
     func: Callable[P, R],
     *,
     tags: list[str] | None = None,
-) -> Task[P, R, K, V]: ...
+) -> SyncTask[P, R, K, V]: ...
 
 
 @overload  # @task(...) style
 def task(
     *,
     tags: list[str] | None = None,
-) -> Callable[[Callable[P, R]], Task[P, R, K, V]]: ...
+) -> Callable[[Callable[P, R]], SyncTask[P, R, K, V]]: ...
 
 
 def task(
     func: Callable[P, R] | None = None,
     *,
     tags: list[str] | None = None,
-) -> Callable[[Callable[P, R]], Task[P, R, K, V]] | Task[P, R, K, V]:
+) -> Callable[[Callable[P, R]], SyncTask[P, R, K, V]] | SyncTask[P, R, K, V]:
     def wrapper(
         func: Callable[P, R],
-    ) -> Task[P, R, K, V]:
-        return Task(
+    ) -> SyncTask[P, R, K, V]:
+        return SyncTask(
             func,
             tags=tags or [],
         )
@@ -320,3 +361,6 @@ def task(
     if func:
         return wrapper(func)  # @task style
     return wrapper  # @task(...) style
+
+
+Task = AsyncTask | SyncTask

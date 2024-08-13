@@ -44,6 +44,3 @@ class AsyncExecutor(ABC, Generic[P, R]):
         iterable: Iterable[R],
     ) -> FutureSequence[R]:
         pass
-
-
-Executor = SyncExecutor | AsyncExecutor
