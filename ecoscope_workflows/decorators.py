@@ -1,6 +1,15 @@
 import functools
 from dataclasses import dataclass, field, replace
-from typing import Callable, Generic, ParamSpec, Sequence, TypeVar, cast, overload
+from typing import (
+    Callable,
+    Generic,
+    Literal,
+    ParamSpec,
+    Sequence,
+    TypeVar,
+    cast,
+    overload,
+)
 
 from pydantic import validate_call
 
@@ -120,6 +129,35 @@ class Task(Generic[P, R, K, V]):
                 config={"arbitrary_types_allowed": True},
             ),
         )
+
+    def set_executor(self, name: Literal["python", "lithops"]) -> "Task[P, R, K, V]":
+        """Return a new Task with the same attributes, but with the executor set to the
+        given executor. This is useful for changing the executor for a task function
+        after it has been defined.
+
+        Examples:
+
+        ```python
+        >>> @task
+        ... def f(a: int, b: int) -> int:
+        ...     return a + b
+        >>> type(f.executor)
+        <class 'ecoscope_workflows.executors.python.PythonExecutor'>
+        >>> f_new = f.set_executor("lithops")
+        >>> type(f_new.executor)
+        <class 'ecoscope_workflows.executors.lithops.LithopsExecutor'>
+
+        ```
+
+        """
+        executors: dict[str, Executor] = {
+            "python": PythonExecutor(),
+        }
+        if name == "lithops":
+            from ecoscope_workflows.executors.lithops import LithopsExecutor
+
+            executors |= {"lithops": LithopsExecutor()}
+        return replace(self, executor=executors[name])
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
         return self.executor.call(self.func, *args, **kwargs)

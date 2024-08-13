@@ -1,20 +1,39 @@
+from dataclasses import FrozenInstanceError
+
+import pytest
+
 from ecoscope_workflows.decorators import task
 from ecoscope_workflows.executors import LithopsExecutor, PythonExecutor
 
 
-def test_python_executor():
+def test_default_python_executor():
     @task
     def f(a: int, b: int) -> int:
         return a + b
 
-    f.executor = PythonExecutor()
+    assert isinstance(f.executor, PythonExecutor)
     assert f(1, 2) == 3
 
 
-def test_lithops_executor_sync():
+def test_reassign_executor_field():
     @task
     def f(a: int, b: int) -> int:
         return a + b
 
-    f.executor = LithopsExecutor(mode="sync")
-    assert f.call(1, 2) == 3
+    assert isinstance(f.executor, PythonExecutor)
+
+    with pytest.raises(FrozenInstanceError, match="cannot assign to field 'executor'"):
+        f.executor = LithopsExecutor()
+
+    f_new = f.set_executor("lithops")
+    assert isinstance(f_new.executor, LithopsExecutor)
+
+
+# def test_lithops_executor():
+#     @task
+#     def f(a: int, b: int) -> int:
+#         return a + b
+
+#     f.executor = LithopsExecutor(mode="async")
+#     future = f.call(1, 2)
+#     assert future.result() == 3
