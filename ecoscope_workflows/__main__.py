@@ -60,6 +60,14 @@ def get_params_command(args):
         print(params)
 
 
+def visualize(args):
+    from ecoscope_workflows.visualize import write_png
+
+    compilation_spec = Spec(**yaml.safe_load(args.spec))
+    outpath = args.outpath
+    write_png(compilation_spec, outpath)
+
+
 def connections_create_command(args):
     conn_type = known_connections[args.type]
     cont = input(
@@ -168,6 +176,19 @@ def main():
         default="json",
     )
 
+    # Subcommand 'visualize'
+    visualize_parser = subparsers.add_parser("visualize", help="Visualize workflows")
+    visualize_parser.set_defaults(func=visualize)
+    visualize_parser.add_argument(
+        "--spec",
+        dest="spec",
+        required=True,
+        type=argparse.FileType(mode="r"),
+    )
+    visualize_parser.add_argument(
+        "--outpath",
+        dest="outpath",
+    )
     # Subcommand 'connections'
     connections_parser = subparsers.add_parser("connections", help="Manage connections")
     connections_subparsers = connections_parser.add_subparsers()

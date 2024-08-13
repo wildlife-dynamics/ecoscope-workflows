@@ -188,6 +188,15 @@ class _ParallelOperation(_ForbidExtra):
         """
         return bool(self.argnames) and bool(self.argvalues)
 
+    @property
+    def all_dependencies_dict(self) -> dict[str, list[str]]:
+        return {
+            arg: [
+                var.value for var in self.argvalues if isinstance(var, TaskIdVariable)
+            ]
+            for arg in self.argnames
+        }
+
 
 class MapOperation(_ParallelOperation):
     pass
@@ -274,6 +283,17 @@ class TaskInstance(_ForbidExtra):
             self.flattened_partial_values
             + self.map.argvalues
             + self.mapvalues.argvalues
+        )
+
+    @property
+    def all_dependencies_dict(self) -> dict[str, list[str]]:
+        return (
+            {
+                arg: [var.value for var in dep if isinstance(var, TaskIdVariable)]
+                for arg, dep in self.partial.items()
+            }
+            | self.map.all_dependencies_dict
+            | self.mapvalues.all_dependencies_dict
         )
 
     @model_validator(mode="after")

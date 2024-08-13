@@ -169,6 +169,13 @@ $ ecoscope-workflows get-params --spec ${PATH_TO_SPEC}
 will return these invocation-time parameters as either jsonschema (for programmatic consumption)
 or as a fillable yaml form (for humans); use the `--format` option to choose!
 
+To visualize your spec as graph, run:
+
+```console
+$ ecoscope-workflows visualize --spec ${PATH_TO_SPEC}  --outpath ${LOCAL_PATH_TO_SAVE_PNG}
+```
+
+
 ### CLI Quickstart
 
 ```console
@@ -183,6 +190,7 @@ subcommands:
     compile             Compile workflows
     tasks               Manage tasks
     get-params          Get params
+    visualize           Visualize workflows
 ```
 
 ### Extensible task registry
