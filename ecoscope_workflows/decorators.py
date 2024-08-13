@@ -283,6 +283,12 @@ class Task(Generic[P, R, K, V]):
         )
 
 
+@dataclass(frozen=True)
+class AsyncTask(Task[P, R, K, V]):
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
+        return self.executor.call(self.func, *args, **kwargs)
+
+
 @overload  # @task style
 def task(
     func: Callable[P, R],

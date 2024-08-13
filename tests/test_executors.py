@@ -29,11 +29,11 @@ def test_reassign_executor_field():
     assert isinstance(f_new.executor, LithopsExecutor)
 
 
-# def test_lithops_executor():
-#     @task
-#     def f(a: int, b: int) -> int:
-#         return a + b
+def test_lithops_executor():
+    @task
+    def f(a: int, b: int) -> int:
+        return a + b
 
-#     f.executor = LithopsExecutor(mode="async")
-#     future = f.call(1, 2)
-#     assert future.result() == 3
+    f_new = f.set_executor("lithops")
+    future = f_new(1, 2)
+    assert future.gather() == 3

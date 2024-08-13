@@ -1,9 +1,9 @@
 from typing import Callable, Iterable, Sequence
 
-from .base import Executor, P, R
+from .base import SyncExecutor, P, R
 
 
-class PythonExecutor(Executor):
+class PythonExecutor(SyncExecutor):
     def call(self, func: Callable[P, R], *args: P.args, **kwargs: P.kwargs) -> R:
         return func(*args, **kwargs)
 

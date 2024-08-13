@@ -5,7 +5,7 @@ P = ParamSpec("P")
 R = TypeVar("R")
 
 
-class Executor(ABC, Generic[P, R]):
+class SyncExecutor(ABC, Generic[P, R]):
     @abstractmethod
     def call(self, func: Callable[P, R], *args: P.args, **kwargs: P.kwargs) -> R:
         pass
@@ -13,3 +13,37 @@ class Executor(ABC, Generic[P, R]):
     @abstractmethod
     def map(self, func: Callable[..., R], iterable: Iterable[R]) -> Sequence[R]:
         pass
+
+
+class Future(ABC, Generic[R]):
+    @abstractmethod
+    def gather(self, *args, **kwargs) -> R:
+        pass
+
+
+class FutureSequence(ABC, Generic[R]):
+    @abstractmethod
+    def gather(self, *args, **kwargs) -> Sequence[R]:
+        pass
+
+
+class AsyncExecutor(ABC, Generic[P, R]):
+    @abstractmethod
+    def call(
+        self,
+        func: Callable[P, R],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Future[R]:
+        pass
+
+    @abstractmethod
+    def map(
+        self,
+        func: Callable[..., R],
+        iterable: Iterable[R],
+    ) -> FutureSequence[R]:
+        pass
+
+
+Executor = SyncExecutor | AsyncExecutor
