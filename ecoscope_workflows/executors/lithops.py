@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Callable, Generic, Iterable, Sequence
+from typing import Callable, Generic, Iterable, Literal, Sequence
 
 try:
     from lithops import FunctionExecutor
@@ -26,24 +26,24 @@ class GenericFuturesList(FuturesList, Generic[R]):
 @dataclass
 class LithopsExecutor(Executor):
     fexec: FunctionExecutor = field(default_factory=FunctionExecutor)
+    mode: Literal["sync", "async"] = "async"
 
     def call(
         self,
         func: Callable[P, R],
         *args: P.args,
         **kwargs: P.kwargs,
-    ) -> GenericResponseFuture[R]:
-        if args:
-            return self.fexec.call_async(func, data=args)
+    ) -> GenericResponseFuture[R] | R:
         if args and kwargs:
             raise ValueError(
                 "Cannot pass both args and kwargs to `LithopsExecutor.call`."
             )
-        return self.fexec.call_async(func, data=kwargs)
+        future = self.fexec.call_async(func, data=(args or kwargs))
+        return future if self.mode == "async" else future.result()
 
     def map(
         self,
         func: Callable[..., R],
         iterable: Iterable[R],
-    ) -> GenericFuturesList[R]:
+    ) -> GenericFuturesList[R] | Sequence[R]:
         return self.fexec.map(func, iterable)
