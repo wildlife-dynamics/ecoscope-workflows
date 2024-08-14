@@ -5,6 +5,7 @@ from ecoscope_workflows.tasks.results._ecoplot import (
     GroupedPlotStyle,
     LayoutStyle,
     LineStyle,
+    PlotCategoryStyle,
     PlotStyle,
     draw_ecoplot,
     draw_pie_chart,
@@ -128,8 +129,12 @@ def test_draw_time_series_bar_chart(time_series_dataframe, time_interval):
         agg_function="count",
         time_interval=time_interval,
         grouped_styles=[
-            GroupedPlotStyle(category="A", plot_style=PlotStyle(marker_color="red")),
-            GroupedPlotStyle(category="B", plot_style=PlotStyle(marker_color="blue")),
+            GroupedPlotStyle(
+                category="A", plot_style=PlotCategoryStyle(marker_color="red")
+            ),
+            GroupedPlotStyle(
+                category="B", plot_style=PlotCategoryStyle(marker_color="blue")
+            ),
         ],
         plot_style=PlotStyle(xperiodalignment="middle"),
     )
