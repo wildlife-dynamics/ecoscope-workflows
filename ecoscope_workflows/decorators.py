@@ -11,6 +11,7 @@ from typing import (
     cast,
     overload,
 )
+from typing_extensions import Self
 
 from pydantic import validate_call
 
@@ -36,7 +37,7 @@ class _Task(Generic[P, R, K, V]):
     def partial(
         self,
         **kwargs: dict,
-    ) -> "_Task[P, R, K, V]":
+    ) -> Self:
         """Return a new Task with the same attributes, but with the function converted
         into a partial function with the given keyword arguments. This is useful for
         mapping a function over an iterable where some of the function's arguments are
@@ -60,7 +61,7 @@ class _Task(Generic[P, R, K, V]):
         """
         return replace(self, func=functools.partial(self.func, **kwargs))
 
-    def validate(self) -> "_Task[P, R, K, V]":
+    def validate(self) -> Self:
         """Return a new Task with the same attributes, but with the function input
         parameters and return values validated by Pydantic's `validate_call` This
         is required in settings where the input parameters are given as strings that
@@ -99,18 +100,30 @@ class _Task(Generic[P, R, K, V]):
     @overload
     def set_executor(
         self,
-        name: Literal["python"],
+        name_or_executor: Literal["python"],
     ) -> "SyncTask[P, R, K, V]": ...
 
     @overload
     def set_executor(
         self,
-        name: Literal["lithops"],
+        name_or_executor: Literal["lithops"],
+    ) -> "AsyncTask[P, R, K, V]": ...
+
+    @overload
+    def set_executor(
+        self,
+        name_or_executor: SyncExecutor,
+    ) -> "SyncTask[P, R, K, V]": ...
+
+    @overload
+    def set_executor(
+        self,
+        name_or_executor: AsyncExecutor,
     ) -> "AsyncTask[P, R, K, V]": ...
 
     def set_executor(
         self,
-        name: Literal["python", "lithops"],
+        name_or_executor: Literal["python", "lithops"] | AsyncExecutor | SyncExecutor,
     ) -> "AsyncTask[P, R, K, V] | SyncTask[P, R, K, V]":
         """Return a new Task with the same attributes, but with the executor set to the
         given executor. This is useful for changing the executor for a task function
@@ -131,20 +144,38 @@ class _Task(Generic[P, R, K, V]):
         ```
 
         """
-        if name == "python":
-            return SyncTask(
-                func=self.func,
-                tags=self.tags,
-                executor=PythonExecutor(),
-            )
-        elif name == "lithops":
-            from ecoscope_workflows.executors.lithops import LithopsExecutor
+        match name_or_executor:
+            case "python":
+                return SyncTask(
+                    self.func,
+                    tags=self.tags,
+                    executor=PythonExecutor(),
+                )
+            case "lithops":
+                from ecoscope_workflows.executors.lithops import LithopsExecutor
 
-            return AsyncTask(
-                func=self.func,
-                tags=self.tags,
-                executor=LithopsExecutor(),
-            )
+                return AsyncTask(
+                    self.func,
+                    tags=self.tags,
+                    executor=LithopsExecutor(),
+                )
+            case AsyncExecutor():
+                return AsyncTask(
+                    self.func,
+                    tags=self.tags,
+                    executor=name_or_executor,
+                )
+            case SyncExecutor():
+                return SyncTask(
+                    self.func,
+                    tags=self.tags,
+                    executor=name_or_executor,
+                )
+            case _:
+                raise ValueError(
+                    "Executor name must be one of the literal strings 'python' or 'lithops', "
+                    f"or an instance of a `AsyncExecutor` or `SyncExecutor`, not {name_or_executor}."
+                )
 
 
 class TaskMethodsMixinABC(ABC, Generic[P, R, K, V]):
@@ -165,6 +196,31 @@ class TaskMethodsMixinABC(ABC, Generic[P, R, K, V]):
     def mapvalues(
         self, argnames: str | Sequence[str], argvalues: Sequence[tuple[K, V]]
     ) -> Sequence[tuple[K, R]] | FutureSequence[tuple[K, R]]: ...
+
+
+def _create_kwargs_iterable(
+    argnames: str | Sequence[str],
+    argvalues: Sequence[V] | Sequence[tuple[V, ...]],
+) -> list[dict[str, V]]:
+    if isinstance(argnames, str):
+        argnames = [argnames]
+    assert all(
+        isinstance(v, type(argvalues[0])) for v in argvalues
+    ), "All values in `argvalues` must be of the same type."
+
+    # For mypy, ensure argvalues is a list of tuples, regardless of input
+    argvalues_list: list[tuple] = (
+        [(v,) for v in argvalues]
+        if not isinstance(argvalues[0], tuple)
+        else cast(list[tuple], argvalues)
+    )
+    assert all(
+        len(v) == len(argnames) for v in argvalues_list
+    ), "All values in `argvalues` must have the same length as `argnames`."
+    return [
+        {argnames[i]: argvalues_list[j][i] for i in range(len(argnames))}
+        for j in range(len(argvalues_list))
+    ]
 
 
 @dataclass(frozen=True)
@@ -271,25 +327,7 @@ class SyncTask(TaskMethodsMixinABC, _Task[P, R, K, V]):
 
         ```
         """
-        if isinstance(argnames, str):
-            argnames = [argnames]
-        assert all(
-            isinstance(v, type(argvalues[0])) for v in argvalues
-        ), "All values in `argvalues` must be of the same type."
-
-        # For mypy, ensure argvalues is a list of tuples, regardless of input
-        argvalues_list: list[tuple] = (
-            [(v,) for v in argvalues]
-            if not isinstance(argvalues[0], tuple)
-            else cast(list[tuple], argvalues)
-        )
-        assert all(
-            len(v) == len(argnames) for v in argvalues_list
-        ), "All values in `argvalues` must have the same length as `argnames`."
-        kwargs_iterable = [
-            {argnames[i]: argvalues_list[j][i] for i in range(len(argnames))}
-            for j in range(len(argvalues_list))
-        ]
+        kwargs_iterable = _create_kwargs_iterable(argnames, argvalues)
         return self.executor.map(lambda kw: self.func(**kw), kwargs_iterable)
 
     def mapvalues(
@@ -340,6 +378,24 @@ class AsyncTask(_Task[P, R, K, V]):
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Future[R]:
         return self.executor.call(self.func, *args, **kwargs)
+
+    def map(
+        self,
+        argnames: str | Sequence[str],
+        argvalues: Sequence[V] | Sequence[tuple[V, ...]],
+    ) -> FutureSequence[R]:
+        kwargs_iterable = _create_kwargs_iterable(argnames, argvalues)
+
+        class wrapped_func:
+            def __init__(self, func):
+                self.func = func
+
+            def __call__(self, *args, **kwargs):
+                return self.func(**kwargs)
+
+        wrapper = wrapped_func(self.func)
+        functools.update_wrapper(wrapper, self.func)
+        return self.executor.map(wrapper, kwargs_iterable)
 
 
 @overload  # @task style

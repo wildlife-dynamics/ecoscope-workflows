@@ -39,11 +39,11 @@ class LithopsExecutor(AsyncExecutor):
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> LithopsFuture[R]:
-        if args and kwargs:
-            raise ValueError(
-                "Cannot pass both args and kwargs to `LithopsExecutor.call`."
+        if args:
+            raise NotImplementedError(
+                "Only keyword arguments are currently supported by `LithopsExecutor.call`."
             )
-        future = self.fexec.call_async(func, data=(args or kwargs))
+        future = self.fexec.call_async(func, data=kwargs)
         return LithopsFuture(future=future)
 
     def map(
