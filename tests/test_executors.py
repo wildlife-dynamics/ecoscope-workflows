@@ -50,3 +50,15 @@ def test_lithops_executor_map():
     lithops_executor = LithopsExecutor()
     future = f.set_executor(lithops_executor).map(["a", "b"], [(1, 1), (2, 2), (3, 3)])
     assert future.gather() == [2, 4, 6]
+
+
+def test_lithops_executor_partial_map():
+    @task
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    lithops_executor = LithopsExecutor()
+    future = (
+        f.set_executor(lithops_executor).partial(a=1).map(["b"], [(1,), (2,), (3,)])
+    )
+    assert future.gather() == [2, 3, 4]

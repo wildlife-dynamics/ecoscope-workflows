@@ -1,4 +1,5 @@
 import functools
+import inspect
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, replace
 from typing import (
@@ -27,6 +28,17 @@ P = ParamSpec("P")
 R = TypeVar("R")
 K = TypeVar("K")
 V = TypeVar("V")
+
+
+def _create_custom_signature(partial_func: functools.partial) -> inspect.Signature:
+    # workaround for lithops inspect behavior; TODO: raise upstream issue on lithops
+    original_sig = inspect.signature(partial_func.func)
+    new_params = [
+        param
+        for name, param in original_sig.parameters.items()
+        if name not in partial_func.keywords
+    ]
+    return original_sig.replace(parameters=new_params)
 
 
 @dataclass(frozen=True)
@@ -59,7 +71,9 @@ class _Task(Generic[P, R, K, V]):
         ```
 
         """
-        return replace(self, func=functools.partial(self.func, **kwargs))
+        partial = functools.partial(self.func, **kwargs)
+        partial.__signature__ = _create_custom_signature(partial)  # type: ignore[attr-defined]
+        return replace(self, func=partial)
 
     def validate(self) -> Self:
         """Return a new Task with the same attributes, but with the function input
