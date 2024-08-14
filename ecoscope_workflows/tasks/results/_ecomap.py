@@ -106,9 +106,7 @@ def draw_ecomap(
     Creates a map based on the provided layer definitions and configuration.
 
     Args:
-    geodataframe (geopandas.GeoDataFrame): The geodataframe to visualize.
-    data_type (str): The type of visualization, "Scatterplot", "Path" or "Polygon".
-    layer_style (dict): Style arguments for the data visualization.
+    geo_layers (LayerDefinition | list[LayerDefinition]): A list of map layers to add to the map.
     tile_layer (str): A named tile layer, ie OpenStreetMap.
     static (bool): Set to true to disable map pan/zoom.
     title (str): The map title.
@@ -153,23 +151,6 @@ def draw_ecomap(
                 )
 
         m.add_layer(layer)
-        # if isinstance(layer_def.layer_style.layer_type==, PolylineLayerStyle):
-        #     layer = EcoMap.polyline_layer(
-        #         layer_def.geodataframe,
-        #         **layer_def.layer_style.model_dump(exclude_none=True),
-        #     )
-        # elif isinstance(layer_def.layer_style, PointLayerStyle):
-        #     layer = EcoMap.point_layer(
-        #         layer_def.geodataframe,
-        #         **layer_def.layer_style.model_dump(exclude_none=True),
-        #     )
-        # elif isinstance(layer_def, PolygonLayerStyle):
-        #     layer = EcoMap.polygon_layer(
-        #         layer_def.geodataframe,
-        #         **layer_def.layer_style.model_dump(exclude_none=True),
-        #     )
-        # else:
-        #     raise NotImplementedError("dklafsf")
 
     m.zoom_to_bounds(m.layers)
     return m.to_html(title=title if title is not None else "Map Export")

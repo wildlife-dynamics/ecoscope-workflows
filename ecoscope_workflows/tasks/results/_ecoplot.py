@@ -132,9 +132,9 @@ def draw_time_series_bar_chart(
     stack_column (str): The dataframe column to stack in the y axis.
     agg_function (str): The aggregate function to apply to the group.
     agg_function (str): Sets the time interval of the x axis.
-    groupby_style_kws (dict): Style arguments passed to plotly.graph_objects.Bar and applied to individual groups.
-    style_kws (dict): Style arguments passed to plotly.graph_objects.Bar and applied to all groups.
-    layout_kws (dict): Additional kwargs passed to plotly.go.Figure(layout).
+    grouped_styles (list[GroupedPlotStyle]): Style arguments passed to plotly.graph_objects.Bar and applied to individual groups.
+    plot_style (PlotStyle): Style arguments passed to plotly.graph_objects.Bar and applied to all groups.
+    layout_style (LayoutStyle): Additional kwargs passed to plotly.go.Figure(layout).
 
     Returns:
     The generated chart html as a string
