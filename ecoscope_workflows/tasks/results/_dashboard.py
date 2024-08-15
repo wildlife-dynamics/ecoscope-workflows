@@ -8,6 +8,7 @@ from pydantic.json_schema import SkipJsonSchema
 from ecoscope_workflows.decorators import task
 from ecoscope_workflows.indexes import CompositeFilter, IndexName, IndexValue
 from ecoscope_workflows.jsonschema import (
+    oneOf,
     ReactJSONSchemaFormFilters,
     RJSFFilter,
     RJSFFilterProperty,
@@ -129,8 +130,10 @@ class Dashboard(BaseModel):
                     g.index_name: RJSFFilter(
                         property=RJSFFilterProperty(
                             type="string",
-                            enum=choices,
-                            enumNames=[choice.title() for choice in choices],
+                            oneOf=[
+                                oneOf(const=choice, title=choice.title())
+                                for choice in choices
+                            ],
                             default=choices[0],
                         ),
                         uiSchema=RJSFFilterUiSchema(

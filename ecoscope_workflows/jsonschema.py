@@ -28,20 +28,30 @@ class SurfacesDescriptionSchema(GenerateJsonSchema):
         return json_schema
 
 
+class oneOf(BaseModel):
+    """Model representing the oneOf field in a JSON schema.
+
+    Args:
+        const: The value that will appear in the form data.
+        title: The user-facing name that will appear in the input widget.
+    """
+
+    const: Any
+    title: str
+
+
 class RJSFFilterProperty(BaseModel):
     """Model representing the properties of a React JSON Schema Form filter.
     This model is used to generate the `properties` field for a filter schema in a dashboard.
 
     Args:
-        _type: The type of the filter property.
-        _enum: The possible values for the filter property.
-        _enumNames: The human-readable names for the possible values.
-        _default: The default value for the filter property
+        type: The type of the filter property.
+        oneOf: The possible values for the filter property.
+        default: The default value for the filter property
     """
 
     type: str
-    enum: list[str]
-    enumNames: list[str]
+    oneOf: list[oneOf]
     default: str
 
 
