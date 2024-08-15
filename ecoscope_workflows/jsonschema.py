@@ -1,5 +1,5 @@
 from inspect import signature
-from typing import Any, get_args
+from typing import Any, Literal, get_args
 
 from pydantic import BaseModel, model_serializer
 from pydantic.fields import FieldInfo
@@ -56,7 +56,7 @@ class RJSFFilterUiSchema(BaseModel):
 
     title: str
     help: str | None = None
-    widget: str = "select"
+    widget: Literal["select"] = "select"
 
     @model_serializer
     def ser_model(self) -> dict[str, Any]:
