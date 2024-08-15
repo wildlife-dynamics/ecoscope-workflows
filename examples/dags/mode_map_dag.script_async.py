@@ -24,6 +24,14 @@ if __name__ == "__main__":
 
     le = LithopsExecutor()
 
+    dependencies = {
+        "obs_a": [],
+        "obs_b": [],
+        "obs_c": [],
+        "map_layers": ["obs_a", "obs_b", "obs_c"],
+        "ecomaps": ["map_layers"],
+        "td_ecomap_html_url": ["ecomaps"],
+    }
     nodes = {
         "obs_a": Node(
             async_callable=get_subjectgroup_observations.validate().set_executor(le),
@@ -75,14 +83,6 @@ if __name__ == "__main__":
                 "argvalues": [DependsOn("ecomaps")],
             },
         ),
-    }
-    dependencies = {
-        "obs_a": [],
-        "obs_b": [],
-        "obs_c": [],
-        "map_layers": ["obs_a", "obs_b", "obs_c"],
-        "ecomaps": ["map_layers"],
-        "td_ecomap_html_url": ["ecomaps"],
     }
     graph = Graph(dependencies=dependencies, nodes=nodes)
     results = graph.execute()
