@@ -25,26 +25,23 @@ class Graph:
     dependencies: Dependencies
     nodes: Nodes
 
-    def __post_init__(self):
-        self._results: dict[str, Any] = {}
-
     def execute(self) -> dict[str, Any]:
         ts = TopologicalSorter(self.dependencies)
         ts.prepare()
+        futures: dict[str, Future | FutureSequence] = {}
         while ts.is_active():
             ready = [name for name in ts.get_ready()]
-            futures: dict[str, Future | FutureSequence] = {}
             for name in ready:
                 node = self.nodes[name]
                 hydrated_params = {}
                 for k, v in node.params.items():
                     if isinstance(v, DependsOn):
-                        v = self._results[v.node_name]
+                        v = futures[v.node_name].gather()
                     hydrated_params[k] = v
                 future = node.async_callable(**hydrated_params)
                 futures[name] = future
             for name in ready:
-                self._results[name] = futures[name].gather()
                 ts.done(name)
 
-        return {k: self._results[k] for k in ready}
+        # here, all nodes in ready are terminal nodes
+        return {n: futures[n].gather() for n in ready}
