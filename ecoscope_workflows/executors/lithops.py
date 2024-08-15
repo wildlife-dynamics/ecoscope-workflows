@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from functools import lru_cache
 from typing import Callable, Iterable, Sequence
 
 try:
@@ -13,18 +14,20 @@ except ImportError:
 from .base import AsyncExecutor, Future, FutureSequence, P, R
 
 
-@dataclass
+@dataclass(frozen=True)
 class LithopsFuture(Future[R]):
     future: ResponseFuture
 
+    @lru_cache
     def gather(self, *args, **kwargs) -> R:
         return self.future.result(*args, **kwargs)
 
 
-@dataclass
+@dataclass(frozen=True)
 class LithopsFuturesSequence(FutureSequence[R]):
     futures: FuturesList
 
+    @lru_cache
     def gather(self, *args, **kwargs) -> Sequence[R]:
         return self.futures.get_result(*args, **kwargs)
 

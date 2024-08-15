@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import TypeVar
 from textwrap import dedent
 
@@ -11,10 +12,11 @@ from ecoscope_workflows.graph import DependsOn, Graph, Node
 T = TypeVar("T")
 
 
-@dataclass
+@dataclass(frozen=True)
 class PassthroughFuture(Future[T]):
     future: T
 
+    @lru_cache
     def gather(self) -> T:
         return self.future
 
