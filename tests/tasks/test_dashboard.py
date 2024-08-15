@@ -139,14 +139,17 @@ def test_model_dump_filters(single_filter_dashboard: DashboardFixture):
             "properties": {
                 "month": {
                     "type": "string",
-                    "enum": ["january", "february"],
-                    "enumNames": ["January", "February"],
+                    "oneOf": [
+                        {"const": "january", "title": "January"},
+                        {"const": "february", "title": "February"},
+                    ],
                     "default": "january",
                 },
             },
             "uiSchema": {
                 "month": {
                     "ui:title": "Month",
+                    "ui:widget": "select",
                 },
             },
         }
@@ -245,23 +248,28 @@ def test_model_dump_filters_two_filter(two_filter_dashboard: DashboardFixture):
             "properties": {
                 "month": {
                     "type": "string",
-                    "enum": ["jan"],
-                    "enumNames": ["Jan"],
+                    "oneOf": [
+                        {"const": "jan", "title": "Jan"},
+                    ],
                     "default": "jan",
                 },
                 "year": {
                     "type": "string",
-                    "enum": ["2022", "2023"],
-                    "enumNames": ["2022", "2023"],
+                    "oneOf": [
+                        {"const": "2022", "title": "2022"},
+                        {"const": "2023", "title": "2023"},
+                    ],
                     "default": "2022",
                 },
             },
             "uiSchema": {
                 "month": {
                     "ui:title": "Month",
+                    "ui:widget": "select",
                 },
                 "year": {
                     "ui:title": "Year",
+                    "ui:widget": "select",
                 },
             },
         }
@@ -373,32 +381,39 @@ def test_model_dump_filters_three_filter(three_filter_dashboard: DashboardFixtur
             "properties": {
                 "month": {
                     "type": "string",
-                    "enum": ["jan"],
-                    "enumNames": ["Jan"],
+                    "oneOf": [
+                        {"const": "jan", "title": "Jan"},
+                    ],
                     "default": "jan",
                 },
                 "year": {
                     "type": "string",
-                    "enum": ["2022"],
-                    "enumNames": ["2022"],
+                    "oneOf": [
+                        {"const": "2022", "title": "2022"},
+                    ],
                     "default": "2022",
                 },
                 "subject_name": {
                     "type": "string",
-                    "enum": ["jo", "zo"],
-                    "enumNames": ["Jo", "Zo"],
+                    "oneOf": [
+                        {"const": "jo", "title": "Jo"},
+                        {"const": "zo", "title": "Zo"},
+                    ],
                     "default": "jo",
                 },
             },
             "uiSchema": {
                 "month": {
                     "ui:title": "Month",
+                    "ui:widget": "select",
                 },
                 "year": {
                     "ui:title": "Year",
+                    "ui:widget": "select",
                 },
                 "subject_name": {
                     "ui:title": "Subject Name",
+                    "ui:widget": "select",
                 },
             },
         }
@@ -521,14 +536,17 @@ def test_model_dump_filters_with_none_views(
             "properties": {
                 "month": {
                     "type": "string",
-                    "enum": ["january", "february"],
-                    "enumNames": ["January", "February"],
+                    "oneOf": [
+                        {"const": "january", "title": "January"},
+                        {"const": "february", "title": "February"},
+                    ],
                     "default": "january",
                 },
             },
             "uiSchema": {
                 "month": {
                     "ui:title": "Month",
+                    "ui:widget": "select",
                 },
             },
         }
