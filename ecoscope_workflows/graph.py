@@ -35,14 +35,13 @@ class Graph:
                 node = self.nodes[name]
                 hydrated_params = {}
                 for k, v in node.params.items():
-                    if isinstance(v, DependsOn):
-                        resolved = futures[v.node_name].gather()
-                    elif isinstance(v, list) and all(
-                        isinstance(x, DependsOn) for x in v
-                    ):
-                        resolved = [futures[x.node_name].gather() for x in v]
-                    else:
-                        resolved = v
+                    match v:
+                        case DependsOn(v.node_name):
+                            resolved = futures[v.node_name].gather()
+                        case list() if all(isinstance(x, DependsOn) for x in v):
+                            resolved = [futures[x.node_name].gather() for x in v]
+                        case _:
+                            resolved = v
                     hydrated_params[k] = resolved
                 future = node.async_callable(**hydrated_params)
                 futures[name] = future
