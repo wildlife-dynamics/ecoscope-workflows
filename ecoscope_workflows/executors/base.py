@@ -3,6 +3,7 @@ from typing import Callable, Generic, ParamSpec, Iterable, Sequence, TypeVar
 
 P = ParamSpec("P")
 R = TypeVar("R")
+T = TypeVar("T")
 
 
 class SyncExecutor(ABC, Generic[P, R]):
@@ -11,7 +12,7 @@ class SyncExecutor(ABC, Generic[P, R]):
         pass
 
     @abstractmethod
-    def map(self, func: Callable[..., R], iterable: Iterable[R]) -> Sequence[R]:
+    def map(self, func: Callable[..., R], iterable: Iterable[T]) -> Sequence[R]:
         pass
 
 
@@ -41,6 +42,6 @@ class AsyncExecutor(ABC, Generic[P, R]):
     def map(
         self,
         func: Callable[..., R],
-        iterable: Iterable[R],
+        iterable: Iterable[T],
     ) -> FutureSequence[R]:
         pass

@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from functools import lru_cache
 from typing import Callable, Iterable, Sequence
 
 try:
@@ -11,14 +10,13 @@ except ImportError:
         "Please install the `lithops` package to use the `LithopsExecutor`."
     )
 
-from .base import AsyncExecutor, Future, FutureSequence, P, R
+from .base import AsyncExecutor, Future, FutureSequence, P, R, T
 
 
 @dataclass(frozen=True)
 class LithopsFuture(Future[R]):
     future: ResponseFuture
 
-    @lru_cache
     def gather(self, *args, **kwargs) -> R:
         return self.future.result(*args, **kwargs)
 
@@ -27,7 +25,6 @@ class LithopsFuture(Future[R]):
 class LithopsFuturesSequence(FutureSequence[R]):
     futures: FuturesList
 
-    @lru_cache
     def gather(self, *args, **kwargs) -> Sequence[R]:
         return self.futures.get_result(*args, **kwargs)
 
@@ -52,7 +49,7 @@ class LithopsExecutor(AsyncExecutor):
     def map(
         self,
         func: Callable[..., R],
-        iterable: Iterable[R],
+        iterable: Iterable[T],
     ) -> LithopsFuturesSequence[R]:
         futures = self.fexec.map(func, iterable)
         return LithopsFuturesSequence(futures=futures)
