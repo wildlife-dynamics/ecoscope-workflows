@@ -3,6 +3,7 @@ import functools
 import keyword
 import pathlib
 import subprocess
+import sys
 from typing import Annotated, Any, Callable, Literal, TypeAlias, TypeVar
 
 from jinja2 import Environment, FileSystemLoader
@@ -342,12 +343,12 @@ def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
         unformatted = returns_str_func(*args, **kwargs)
         # https://github.com/astral-sh/ruff/issues/8401#issuecomment-1788806462
         formatted = subprocess.check_output(
-            ["ruff", "format", "-s", "-"],
+            [sys.executable, "-m", "ruff", "format", "-s", "-"],
             input=unformatted,
             encoding="utf-8",
         )
         linted = subprocess.check_output(
-            ["ruff", "check", "--fix", "--exit-zero", "-s", "-"],
+            [sys.executable, "-m", "ruff", "check", "--fix", "--exit-zero", "-s", "-"],
             input=formatted,
             encoding="utf-8",
         )
