@@ -1,6 +1,7 @@
 import json
 import os
 import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Literal
@@ -164,7 +165,7 @@ def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
         f.write(script)
 
     cmd = [
-        "python3",
+        sys.executable,
         "-W",
         "ignore",  # in testing context warnings are added; exclude them from stdout
         script_outpath.as_posix(),
