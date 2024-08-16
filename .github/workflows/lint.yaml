@@ -39,9 +39,9 @@ jobs:
 
     - name: Lint
       run: |
-        .venv/bin/python -m pip install pre-commit
-        .venv/bin/python -m pre-commit install
-        .venv/bin/python -m pre-commit run --all-files
+        python -m pip install pre-commit
+        pre-commit install
+        pre-commit run --all-files
 
     # - name: Upload Coverage to Codecov
     #   uses: codecov/codecov-action@v2
