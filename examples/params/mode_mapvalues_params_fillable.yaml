@@ -15,21 +15,18 @@ split_obs:
 
 # Parameters for 'Create Map Layer For Each Group' using task `create_map_layer`.
 map_layers:
-  data_type:   # (typing.Literal['Point', 'Polyline', 'Polygon'], FieldInfo(annotation=NoneType, required=True, description='The type of visualization.'))
-  style_kws:   # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
+  layer_style:   # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
 
 # Parameters for 'Create EcoMap For Each Group' using task `draw_ecomap`.
 ecomaps:
   tile_layer:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A named tile layer, ie OpenStreetMap.'))
   static:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Set to true to disable map pan/zoom.'))
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The map title.'))
-  title_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Title.'))
-  scale_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the Scale Bar.'))
-  north_arrow_kws:   # (dict | None, FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the North Arrow.'))
+  north_arrow_style:   # (typing.Union[ecoscope_workflows.tasks.results._ecomap.NorthArrowStyle, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the North Arrow.'))
 
 # Parameters for 'Persist EcoMaps' using task `persist_text`.
 ecomaps_persist:
-  filename:   # (str | None, FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
+  filename:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
 # Parameters for 'Create EcoMap Widgets' using task `create_map_widget_single_view`.
 ecomap_widgets:

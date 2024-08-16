@@ -80,8 +80,7 @@ split_obs = split_groups.partial(df=patrol_events, groupers=groupers).call(
 # parameters
 
 map_layers_params = dict(
-    data_type=...,
-    style_kws=...,
+    layer_style=...,
 )
 
 # %%
@@ -103,9 +102,7 @@ ecomaps_params = dict(
     tile_layer=...,
     static=...,
     title=...,
-    title_kws=...,
-    scale_kws=...,
-    north_arrow_kws=...,
+    north_arrow_style=...,
 )
 
 # %%

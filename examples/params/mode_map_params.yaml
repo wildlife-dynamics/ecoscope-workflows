@@ -24,17 +24,14 @@ obs_c:
 
 # Parameters for 'Create Map Layer For Each Group' using task `create_map_layer`.
 map_layers:
-  data_type: Point # (typing.Literal['Scatterplot', 'Path', 'Polygon'], FieldInfo(annotation=NoneType, required=True, description='The type of visualization.'))
-  style_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the data visualization.'))
+  layer_style:
+    layer_type: "point"
 
 # Parameters for 'Create EcoMap For Each Group' using task `draw_ecomap`.
 ecomaps:
   tile_layer: OpenStreetMap # (str, FieldInfo(annotation=NoneType, required=False))
   static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
   title: "Great Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
-  title_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
-  scale_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
-  north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist Ecomaps as Text' using task `persist_text`.
 td_ecomap_html_url: {}

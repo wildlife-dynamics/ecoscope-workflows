@@ -124,54 +124,28 @@
         "Create Map Layer For Each Group": {
             "additionalProperties": false,
             "properties": {
-                "data_type": {
-                    "enum": [
-                        "Point",
-                        "Polyline",
-                        "Polygon"
+                "layer_style": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/PolylineLayerStyle"
+                        },
+                        {
+                            "$ref": "#/$defs/PolygonLayerStyle"
+                        },
+                        {
+                            "$ref": "#/$defs/PointLayerStyle"
+                        }
                     ],
-                    "title": "Data Type",
-                    "type": "string",
-                    "description": "The type of visualization."
-                },
-                "style_kws": {
-                    "title": "Style Kws",
-                    "type": "object",
+                    "title": "Layer Style",
                     "description": "Style arguments for the layer."
                 }
             },
             "required": [
-                "data_type",
-                "style_kws"
+                "layer_style"
             ],
             "type": "object"
         },
         "Create EcoMap For Each Group": {
-            "$defs": {
-                "LayerDefinition": {
-                    "properties": {
-                        "geodataframe": {
-                            "title": "Geodataframe",
-                            "type": "ecoscope_workflows.annotations.DataFrame"
-                        },
-                        "data_type": {
-                            "title": "Data Type",
-                            "type": "string"
-                        },
-                        "style_kws": {
-                            "title": "Style Kws",
-                            "type": "object"
-                        }
-                    },
-                    "required": [
-                        "geodataframe",
-                        "data_type",
-                        "style_kws"
-                    ],
-                    "title": "LayerDefinition",
-                    "type": "object"
-                }
-            },
             "additionalProperties": false,
             "properties": {
                 "tile_layer": {
@@ -192,22 +166,14 @@
                     "type": "string",
                     "description": "The map title."
                 },
-                "title_kws": {
+                "north_arrow_style": {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/NorthArrowStyle"
+                        }
+                    ],
                     "default": null,
-                    "title": "Title Kws",
-                    "type": "object",
-                    "description": "Additional arguments for configuring the Title."
-                },
-                "scale_kws": {
-                    "default": null,
-                    "title": "Scale Kws",
-                    "type": "object",
-                    "description": "Additional arguments for configuring the Scale Bar."
-                },
-                "north_arrow_kws": {
-                    "default": null,
-                    "title": "North Arrow Kws",
-                    "type": "object",
+                    "title": "North Arrow Style",
                     "description": "Additional arguments for configuring the North Arrow."
                 }
             },
@@ -225,6 +191,337 @@
                 }
             },
             "required": [],
+            "type": "object"
+        }
+    },
+    "$defs": {
+        "PointLayerStyle": {
+            "properties": {
+                "auto_highlight": {
+                    "default": false,
+                    "title": "Auto Highlight",
+                    "type": "boolean"
+                },
+                "opacity": {
+                    "default": 1,
+                    "title": "Opacity",
+                    "type": "number"
+                },
+                "pickable": {
+                    "default": true,
+                    "title": "Pickable",
+                    "type": "boolean"
+                },
+                "filled": {
+                    "default": true,
+                    "title": "Filled",
+                    "type": "boolean"
+                },
+                "get_fill_color": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "type": "integer"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "items": {
+                                    "type": "integer"
+                                },
+                                "type": "array"
+                            },
+                            "type": "array"
+                        }
+                    ],
+                    "default": [
+                        0,
+                        0,
+                        0,
+                        255
+                    ],
+                    "title": "Get Fill Color"
+                },
+                "get_line_color": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "type": "integer"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "items": {
+                                    "type": "integer"
+                                },
+                                "type": "array"
+                            },
+                            "type": "array"
+                        }
+                    ],
+                    "default": [
+                        0,
+                        0,
+                        0,
+                        255
+                    ],
+                    "title": "Get Line Color"
+                },
+                "get_line_width": {
+                    "default": 1,
+                    "title": "Get Line Width",
+                    "type": "number"
+                },
+                "layer_type": {
+                    "const": "point",
+                    "default": "point",
+                    "enum": [
+                        "point"
+                    ],
+                    "title": "Layer Type",
+                    "type": "string"
+                },
+                "get_radius": {
+                    "default": 1,
+                    "title": "Get Radius",
+                    "type": "number"
+                }
+            },
+            "title": "PointLayerStyle",
+            "type": "object"
+        },
+        "PolygonLayerStyle": {
+            "properties": {
+                "auto_highlight": {
+                    "default": false,
+                    "title": "Auto Highlight",
+                    "type": "boolean"
+                },
+                "opacity": {
+                    "default": 1,
+                    "title": "Opacity",
+                    "type": "number"
+                },
+                "pickable": {
+                    "default": true,
+                    "title": "Pickable",
+                    "type": "boolean"
+                },
+                "filled": {
+                    "default": true,
+                    "title": "Filled",
+                    "type": "boolean"
+                },
+                "get_fill_color": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "type": "integer"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "items": {
+                                    "type": "integer"
+                                },
+                                "type": "array"
+                            },
+                            "type": "array"
+                        }
+                    ],
+                    "default": [
+                        0,
+                        0,
+                        0,
+                        255
+                    ],
+                    "title": "Get Fill Color"
+                },
+                "get_line_color": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "type": "integer"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "items": {
+                                    "type": "integer"
+                                },
+                                "type": "array"
+                            },
+                            "type": "array"
+                        }
+                    ],
+                    "default": [
+                        0,
+                        0,
+                        0,
+                        255
+                    ],
+                    "title": "Get Line Color"
+                },
+                "get_line_width": {
+                    "default": 1,
+                    "title": "Get Line Width",
+                    "type": "number"
+                },
+                "layer_type": {
+                    "const": "polygon",
+                    "default": "polygon",
+                    "enum": [
+                        "polygon"
+                    ],
+                    "title": "Layer Type",
+                    "type": "string"
+                },
+                "extruded": {
+                    "default": false,
+                    "title": "Extruded",
+                    "type": "boolean"
+                },
+                "get_elevation": {
+                    "default": 1000,
+                    "title": "Get Elevation",
+                    "type": "number"
+                }
+            },
+            "title": "PolygonLayerStyle",
+            "type": "object"
+        },
+        "PolylineLayerStyle": {
+            "properties": {
+                "auto_highlight": {
+                    "default": false,
+                    "title": "Auto Highlight",
+                    "type": "boolean"
+                },
+                "opacity": {
+                    "default": 1,
+                    "title": "Opacity",
+                    "type": "number"
+                },
+                "pickable": {
+                    "default": true,
+                    "title": "Pickable",
+                    "type": "boolean"
+                },
+                "layer_type": {
+                    "const": "polyline",
+                    "default": "polyline",
+                    "enum": [
+                        "polyline"
+                    ],
+                    "title": "Layer Type",
+                    "type": "string"
+                },
+                "get_color": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "type": "integer"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "items": {
+                                    "type": "integer"
+                                },
+                                "type": "array"
+                            },
+                            "type": "array"
+                        }
+                    ],
+                    "default": [
+                        0,
+                        0,
+                        0,
+                        255
+                    ],
+                    "title": "Get Color"
+                },
+                "get_width": {
+                    "default": 1,
+                    "title": "Get Width",
+                    "type": "number"
+                }
+            },
+            "title": "PolylineLayerStyle",
+            "type": "object"
+        },
+        "LayerDefinition": {
+            "properties": {
+                "geodataframe": {
+                    "title": "Geodataframe",
+                    "type": "ecoscope_workflows.annotations.DataFrame"
+                },
+                "layer_style": {
+                    "discriminator": {
+                        "mapping": {
+                            "point": "#/$defs/PointLayerStyle",
+                            "polygon": "#/$defs/PolygonLayerStyle",
+                            "polyline": "#/$defs/PolylineLayerStyle"
+                        },
+                        "propertyName": "layer_type"
+                    },
+                    "oneOf": [
+                        {
+                            "$ref": "#/$defs/PolylineLayerStyle"
+                        },
+                        {
+                            "$ref": "#/$defs/PointLayerStyle"
+                        },
+                        {
+                            "$ref": "#/$defs/PolygonLayerStyle"
+                        }
+                    ],
+                    "title": "Layer Style"
+                }
+            },
+            "required": [
+                "geodataframe",
+                "layer_style"
+            ],
+            "title": "LayerDefinition",
+            "type": "object"
+        },
+        "NorthArrowStyle": {
+            "properties": {
+                "placement": {
+                    "default": "top-left",
+                    "enum": [
+                        "top-left",
+                        "top-right",
+                        "bottom-left",
+                        "bottom-right",
+                        "fill"
+                    ],
+                    "title": "Placement",
+                    "type": "string"
+                }
+            },
+            "title": "NorthArrowStyle",
             "type": "object"
         }
     }
