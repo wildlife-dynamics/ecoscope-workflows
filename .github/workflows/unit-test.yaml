@@ -21,19 +21,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - run: |
-          echo "${{ steps.setup-python.outputs.python-version }}" > ".installed-python"
-
-      - uses: "actions/cache@v4"
-        id: "restore-cache"
+      - uses: actions/cache@v4
+        id: restore-cache
         with:
-          key: "venv-${{ hashFiles('.installed-python', 'pyproject.toml') }}"
+          key: "venv-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('pyproject.toml') }}"
           path: |
             .venv/
 
-      # If Python 3.*.x upgrades to 3.*.y, or if pyproject.toml gets updated,
-      # the cache lookup above will miss, and the venv needs to be recreated.
-      - name: "Create a virtual environment"
+      # If python patch version changes, or pyproject.toml gets updated,
+      # the cache lookup will miss, and the  venv needs to be recreated.
+      - name: If no cache hit, recreate venv
         if: "steps.restore-cache.outputs.cache-hit == false"
         run: |
           python -m venv .venv
