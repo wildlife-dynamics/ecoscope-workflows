@@ -22,7 +22,7 @@ def _my_content_type(path: str) -> tuple[str | None, str | None]:
     return mimetypes.guess_type(path)
 
 
-def _persist_text(text: str, root_path: str, filename: str) -> str:
+def _persist_text(text: str, root_path: str, filename: str) -> dict:
     match urlparse(root_path).scheme:
         case "file" | "":
             local_path = Path(root_path)
