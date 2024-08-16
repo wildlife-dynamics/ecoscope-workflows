@@ -172,11 +172,13 @@ def test_graph_tasks_lithops_map():
             dec.set_executor("lithops").map,
             params={
                 "argnames": ["x"],
-                "argvalues": [
-                    DependsOn("A"),
-                    DependsOn("C"),
-                    DependsOn("B"),
-                ],
+                "argvalues": DependsOnSequence(
+                    [
+                        DependsOn("A"),
+                        DependsOn("C"),
+                        DependsOn("B"),
+                    ],
+                ),
             },
         ),
     }
@@ -218,6 +220,74 @@ def test_graph_tasks_lithops_map_same_executor_instance():
     graph = Graph(dependencies, nodes)
     results = graph.execute()
     assert set(results["D"]) == {1, 2, 3}  # order is not guaranteed
+
+
+def test_graph_tasks_lithops_partial_map():
+    @task
+    def inc(x: int) -> int:
+        return x + 1
+
+    @task
+    def dec(x: int, y: int) -> int:
+        return x - y - 1
+
+    dependencies = {"A": [], "B": [], "C": [], "D": ["A", "B", "C"]}
+    nodes = {
+        "A": Node(inc.set_executor("lithops"), {"x": 1}),
+        "B": Node(inc.set_executor("lithops"), {"x": 2}),
+        "C": Node(inc.set_executor("lithops"), {"x": 3}),
+        "D": Node(
+            dec.partial(y=1).set_executor("lithops").map,
+            params={
+                "argnames": ["x"],
+                "argvalues": DependsOnSequence(
+                    [
+                        DependsOn("A"),
+                        DependsOn("C"),
+                        DependsOn("B"),
+                    ],
+                ),
+            },
+        ),
+    }
+    graph = Graph(dependencies, nodes)
+    results = graph.execute()
+    assert set(results["D"]) == {0, 1, 2}  # order is not guaranteed
+
+
+def test_graph_tasks_lithops_partial_map_same_executor_instance():
+    @task
+    def inc(x: int) -> int:
+        return x + 1
+
+    @task
+    def dec(x: int, y: int) -> int:
+        return x - y - 1
+
+    le = LithopsExecutor()
+
+    dependencies = {"A": [], "B": [], "C": [], "D": ["A", "B", "C"]}
+    nodes = {
+        "A": Node(inc.set_executor(le), {"x": 1}),
+        "B": Node(inc.set_executor(le), {"x": 2}),
+        "C": Node(inc.set_executor(le), {"x": 3}),
+        "D": Node(
+            dec.partial(y=1).set_executor(le).map,
+            params={
+                "argnames": ["x"],
+                "argvalues": DependsOnSequence(
+                    [
+                        DependsOn("A"),
+                        DependsOn("C"),
+                        DependsOn("B"),
+                    ],
+                ),
+            },
+        ),
+    }
+    graph = Graph(dependencies, nodes)
+    results = graph.execute()
+    assert set(results["D"]) == {0, 1, 2}  # order is not guaranteed
 
 
 def test_graph_from_spec():
