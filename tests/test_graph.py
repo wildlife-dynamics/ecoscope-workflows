@@ -8,7 +8,7 @@ import yaml
 from ecoscope_workflows.compiler import Spec, TaskInstance
 from ecoscope_workflows.decorators import task
 from ecoscope_workflows.executors import Future, LithopsExecutor
-from ecoscope_workflows.graph import DependsOn, Graph, Node
+from ecoscope_workflows.graph import DependsOn, DependsOnSequence, Graph, Node
 
 T = TypeVar("T")
 
@@ -205,11 +205,13 @@ def test_graph_tasks_lithops_map_same_executor_instance():
             dec.set_executor(le).map,
             params={
                 "argnames": ["x"],
-                "argvalues": [
-                    DependsOn("A"),
-                    DependsOn("C"),
-                    DependsOn("B"),
-                ],
+                "argvalues": DependsOnSequence(
+                    [
+                        DependsOn("A"),
+                        DependsOn("C"),
+                        DependsOn("B"),
+                    ],
+                ),
             },
         ),
     }

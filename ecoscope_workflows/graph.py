@@ -10,6 +10,10 @@ class DependsOn:
     node_name: str
 
 
+class DependsOnSequence(list[DependsOn]):
+    pass
+
+
 @dataclass
 class Node:
     async_callable: Callable
@@ -38,7 +42,7 @@ class Graph:
                     match v:
                         case DependsOn(v.node_name):
                             resolved = futures[v.node_name].gather()
-                        case list() if all(isinstance(x, DependsOn) for x in v):
+                        case DependsOnSequence():
                             resolved = [futures[x.node_name].gather() for x in v]
                         case _:
                             resolved = v
