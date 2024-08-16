@@ -1,5 +1,5 @@
 from inspect import signature
-from typing import Any, get_args, Optional
+from typing import Any, get_args
 
 from pydantic import BaseModel, model_serializer, Field
 from pydantic.fields import FieldInfo
@@ -92,4 +92,4 @@ class ReactJSONSchemaFormFilters(BaseModel):
 class ReactJSONSchemaFormConfiguration(BaseModel):
     title: str = "Ecoscope Workflow Configurations Form"
     properties: dict[str, Any]
-    definitions: Optional[dict[str, Any]] = Field(alias="$defs", default=None)
+    definitions: dict[str, Any] | None = Field(alias="$defs", default=None)
