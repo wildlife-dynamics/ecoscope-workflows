@@ -123,6 +123,101 @@ def test_graph_basic_tasks_lithops_same_executor_instance():
     assert results == {"D": 4}
 
 
+def test_graph_tasks_python_sync_map():
+    @task
+    def inc(x: int) -> PassthroughFuture[int]:
+        return PassthroughFuture(x + 1)
+
+    @task
+    def dec(x: int) -> PassthroughFuture[int]:
+        return PassthroughFuture(x - 1)
+
+    dependencies = {"A": [], "B": [], "C": [], "D": ["A", "B", "C"]}
+    nodes = {
+        "A": Node(inc, {"x": 1}),
+        "B": Node(inc, {"x": 2}),
+        "C": Node(inc, {"x": 3}),
+        "D": Node(
+            dec.map,
+            params={
+                "argnames": ["x"],
+                "argvalues": [
+                    DependsOn("A"),
+                    DependsOn("C"),
+                    DependsOn("B"),
+                ],
+            },
+        ),
+    }
+    graph = Graph(dependencies, nodes)
+    results = graph.execute()
+    assert results == {"D": [1, 2, 3]}
+
+
+def test_graph_tasks_lithops_map():
+    @task
+    def inc(x: int) -> int:
+        return x + 1
+
+    @task
+    def dec(x: int) -> int:
+        return x - 1
+
+    dependencies = {"A": [], "B": [], "C": [], "D": ["A", "B", "C"]}
+    nodes = {
+        "A": Node(inc.set_executor("lithops"), {"x": 1}),
+        "B": Node(inc.set_executor("lithops"), {"x": 2}),
+        "C": Node(inc.set_executor("lithops"), {"x": 3}),
+        "D": Node(
+            dec.set_executor("lithops").map,
+            params={
+                "argnames": ["x"],
+                "argvalues": [
+                    DependsOn("A"),
+                    DependsOn("C"),
+                    DependsOn("B"),
+                ],
+            },
+        ),
+    }
+    graph = Graph(dependencies, nodes)
+    results = graph.execute()
+    assert set(results["D"]) == {1, 2, 3}  # order is not guaranteed
+
+
+def test_graph_tasks_lithops_map_same_executor_instance():
+    @task
+    def inc(x: int) -> int:
+        return x + 1
+
+    @task
+    def dec(x: int) -> int:
+        return x - 1
+
+    le = LithopsExecutor()
+
+    dependencies = {"A": [], "B": [], "C": [], "D": ["A", "B", "C"]}
+    nodes = {
+        "A": Node(inc.set_executor(le), {"x": 1}),
+        "B": Node(inc.set_executor(le), {"x": 2}),
+        "C": Node(inc.set_executor(le), {"x": 3}),
+        "D": Node(
+            dec.set_executor(le).map,
+            params={
+                "argnames": ["x"],
+                "argvalues": [
+                    DependsOn("A"),
+                    DependsOn("C"),
+                    DependsOn("B"),
+                ],
+            },
+        ),
+    }
+    graph = Graph(dependencies, nodes)
+    results = graph.execute()
+    assert set(results["D"]) == {1, 2, 3}  # order is not guaranteed
+
+
 def test_graph_from_spec():
     s = dedent(
         """\
