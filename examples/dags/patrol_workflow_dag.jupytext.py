@@ -164,8 +164,7 @@ split_patrol_traj_groups = split_groups.partial(
 # parameters
 
 patrol_traj_map_layers_params = dict(
-    data_type=...,
-    style_kws=...,
+    layer_style=...,
 )
 
 # %%
@@ -268,8 +267,7 @@ split_pe_groups = split_groups.partial(
 # parameters
 
 patrol_events_map_layers_params = dict(
-    data_type=...,
-    style_kws=...,
+    layer_style=...,
 )
 
 # %%
@@ -308,9 +306,7 @@ traj_patrol_events_ecomap_params = dict(
     tile_layer=...,
     static=...,
     title=...,
-    title_kws=...,
-    scale_kws=...,
-    north_arrow_kws=...,
+    north_arrow_style=...,
 )
 
 # %%
@@ -705,9 +701,9 @@ patrol_events_bar_chart_params = dict(
     category=...,
     agg_function=...,
     time_interval=...,
-    groupby_style_kws=...,
-    style_kws=...,
-    layout_kws=...,
+    grouped_styles=...,
+    plot_style=...,
+    layout_style=...,
 )
 
 # %%
@@ -767,8 +763,8 @@ patrol_events_bar_chart_widget = create_plot_widget_single_view.partial(
 patrol_events_pie_chart_params = dict(
     value_column=...,
     label_column=...,
-    style_kws=...,
-    layout_kws=...,
+    plot_style=...,
+    layout_style=...,
 )
 
 # %%
@@ -849,8 +845,7 @@ td = calculate_time_density.partial(trajectory_gdf=patrol_traj).call(**td_params
 # parameters
 
 td_map_layer_params = dict(
-    data_type=...,
-    style_kws=...,
+    layer_style=...,
 )
 
 # %%
@@ -870,9 +865,7 @@ td_ecomap_params = dict(
     tile_layer=...,
     static=...,
     title=...,
-    title_kws=...,
-    scale_kws=...,
-    north_arrow_kws=...,
+    north_arrow_style=...,
 )
 
 # %%

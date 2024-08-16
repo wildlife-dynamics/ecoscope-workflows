@@ -1,7 +1,7 @@
 from inspect import signature
 from typing import Any, get_args
 
-from pydantic import BaseModel, model_serializer
+from pydantic import BaseModel, model_serializer, Field
 from pydantic.fields import FieldInfo
 from pydantic.json_schema import GenerateJsonSchema
 
@@ -92,3 +92,4 @@ class ReactJSONSchemaFormFilters(BaseModel):
 class ReactJSONSchemaFormConfiguration(BaseModel):
     title: str = "Ecoscope Workflow Configurations Form"
     properties: dict[str, Any]
+    definitions: dict[str, Any] | None = Field(alias="$defs", default=None)

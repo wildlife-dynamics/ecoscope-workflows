@@ -12,7 +12,7 @@ patrol_events:
 
 # Parameters for 'Set Groupers' using task `set_groupers`.
 groupers:
-  groupers:  # (list[ecoscope_workflows.tasks.groupby._groupby.Grouper], FieldInfo(annotation=NoneType, required=True, description='            Index(es) and/or column(s) to group by, along with\n            optional display names and help text.\n            '))
+  groupers: # (list[ecoscope_workflows.tasks.groupby._groupby.Grouper], FieldInfo(annotation=NoneType, required=True, description='            Index(es) and/or column(s) to group by, along with\n            optional display names and help text.\n            '))
     - index_name: "event_type"
       display_name: "Event Type"
       help_text: "The type of event that occurred."
@@ -22,29 +22,26 @@ split_obs: {}
 
 # Parameters for 'Create Map Layer For Each Group' using task `create_map_layer`.
 map_layers:
-  data_type: Point  # (typing.Literal['Point', 'Polyline', 'Polygon'], FieldInfo(annotation=NoneType, required=True, description='The type of visualization.'))
-  style_kws: {}  # (<class 'dict'>, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
+  layer_style:
+    layer_type: "point"
 
 # Parameters for 'Create EcoMap For Each Group' using task `draw_ecomap`.
 ecomaps:
   tile_layer: OpenStreetMap # (str, FieldInfo(annotation=NoneType, required=False))
   static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
   title: "Great Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
-  title_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
-  scale_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
-  north_arrow_kws: {} # (<class 'dict'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist EcoMaps' using task `persist_text`.
 ecomaps_persist: {}
 
 # Parameters for 'Create EcoMap Widgets' using task `create_map_widget_single_view`.
 ecomap_widgets:
-  title: "Grouped Ecomaps"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+  title: "Grouped Ecomaps" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
 
 # Parameters for 'Merge EcoMap Widget Views' using task `merge_widget_views`.
 ecomap_widgets_merged: {}
 
 # Parameters for 'Create EcoMap Dashboard' using task `gather_dashboard`.
 dashboard:
-  title: "Grouped Dashboard of Observations"  # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the dashboard'))
+  title: "Grouped Dashboard of Observations" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the dashboard'))
   description: "A dashboard demonstrating grouped data." # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The description of the dashboard'))
