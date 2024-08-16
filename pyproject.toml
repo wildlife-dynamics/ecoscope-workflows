@@ -36,6 +36,9 @@ test = [
     "pytest",
     "google-cloud-secret-manager",
 ]
+cloud = [
+    "cloudpathlib",
+]
 notebook = [
     "jupytext",
 ]

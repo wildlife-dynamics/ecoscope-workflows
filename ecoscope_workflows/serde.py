@@ -1,4 +1,4 @@
-import os
+import mimetypes
 from pathlib import Path
 from urllib.parse import urlparse, quote
 
@@ -17,26 +17,35 @@ def _gs_url_to_https_url(gs_url: str):
     return "/".join(parts[:4] + encoded_parts)
 
 
+def _my_content_type(path: str) -> tuple[str | None, str | None]:
+    # xref https://cloudpathlib.drivendata.org/stable/other_client_settings/
+    return mimetypes.guess_type(path)
+
+
 def _persist_text(text: str, root_path: str, filename: str) -> str:
-    import fsspec
+    match urlparse(root_path).scheme:
+        case "file" | "":
+            local_path = Path(root_path)
+            if not local_path.exists():
+                local_path.mkdir(parents=True, exist_ok=True)
+            write_path = local_path / filename
+            read_path = write_path.absolute().as_posix()
 
-    aspath = Path(root_path)
-    if urlparse(root_path).scheme in ("file", ""):
-        if not aspath.exists():
-            aspath.mkdir(parents=True, exist_ok=True)
-        if not aspath.is_absolute():
-            root_path = aspath.absolute().as_posix()
+        case "gs":
+            from cloudpathlib.gs.gspath import GSPath
+            from cloudpathlib.gs.gsclient import GSClient
 
-    dst_write = os.path.join(root_path, filename)
+            client = GSClient(content_type_method=_my_content_type)
+            client.set_as_default_client()
+
+            write_path = GSPath(root_path) / filename
+            read_path = _gs_url_to_https_url(write_path.as_uri())
+        case _:
+            raise ValueError(f"Unsupported scheme for: {root_path}")
+
     try:
-        with fsspec.open(dst_write, "w") as f:
-            f.write(text)
+        write_path.write_text(text)
     except Exception as e:
-        raise ValueError(f"Failed to write HTML to {dst_write}") from e
+        raise ValueError(f"Failed to write HTML to {write_path}") from e
 
-    # TODO: redo with structural pattern matching? or a storage class could handle this with a @property
-    if dst_write.startswith("gs://"):
-        dst_read = _gs_url_to_https_url(dst_write)
-    else:
-        dst_read = dst_write
-    return dst_read
+    return read_path
