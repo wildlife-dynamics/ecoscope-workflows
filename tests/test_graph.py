@@ -7,7 +7,7 @@ import yaml
 
 from ecoscope_workflows.compiler import Spec, TaskInstance
 from ecoscope_workflows.decorators import task
-from ecoscope_workflows.executors import Future
+from ecoscope_workflows.executors import Future, LithopsExecutor
 from ecoscope_workflows.graph import DependsOn, Graph, Node
 
 T = TypeVar("T")
@@ -90,6 +90,33 @@ def test_graph_basic_tasks_lithops():
         "D": Node(
             add.set_executor("lithops"), {"x": DependsOn("B"), "y": DependsOn("C")}
         ),
+    }
+    graph = Graph(dependencies, nodes)
+    results = graph.execute()
+    assert results == {"D": 4}
+
+
+def test_graph_basic_tasks_lithops_same_executor_instance():
+    @task
+    def inc(x: int) -> int:
+        return x + 1
+
+    @task
+    def dec(x: int) -> int:
+        return x - 1
+
+    @task
+    def add(x: int, y: int) -> int:
+        return x + y
+
+    le = LithopsExecutor()
+
+    dependencies = {"D": {"B", "C"}, "C": {"A"}, "B": {"A"}}
+    nodes = {
+        "A": Node(inc.set_executor(le), {"x": 1}),
+        "B": Node(dec.set_executor(le), {"x": DependsOn("A")}),
+        "C": Node(add.set_executor(le), {"x": DependsOn("A"), "y": 1}),
+        "D": Node(add.set_executor(le), {"x": DependsOn("B"), "y": DependsOn("C")}),
     }
     graph = Graph(dependencies, nodes)
     results = graph.execute()
