@@ -6,6 +6,7 @@ from textwrap import dedent
 import yaml
 
 from ecoscope_workflows.compiler import Spec, TaskInstance
+from ecoscope_workflows.decorators import task
 from ecoscope_workflows.executors import Future
 from ecoscope_workflows.graph import DependsOn, Graph, Node
 
@@ -21,25 +22,74 @@ class PassthroughFuture(Future[T]):
         return self.future
 
 
-def inc(x: int) -> PassthroughFuture[int]:
-    return PassthroughFuture(x + 1)
-
-
-def dec(x: int) -> PassthroughFuture[int]:
-    return PassthroughFuture(x - 1)
-
-
-def add(x: int, y: int) -> PassthroughFuture[int]:
-    return PassthroughFuture(x + y)
-
-
 def test_graph_basic():
+    def inc(x: int) -> PassthroughFuture[int]:
+        return PassthroughFuture(x + 1)
+
+    def dec(x: int) -> PassthroughFuture[int]:
+        return PassthroughFuture(x - 1)
+
+    def add(x: int, y: int) -> PassthroughFuture[int]:
+        return PassthroughFuture(x + y)
+
     dependencies = {"D": {"B", "C"}, "C": {"A"}, "B": {"A"}}
     nodes = {
         "A": Node(inc, {"x": 1}),
         "B": Node(dec, {"x": DependsOn("A")}),
         "C": Node(add, {"x": DependsOn("A"), "y": 1}),
         "D": Node(add, {"x": DependsOn("B"), "y": DependsOn("C")}),
+    }
+    graph = Graph(dependencies, nodes)
+    results = graph.execute()
+    assert results == {"D": 4}
+
+
+def test_graph_basic_tasks():
+    @task
+    def inc(x: int) -> PassthroughFuture[int]:
+        return PassthroughFuture(x + 1)
+
+    @task
+    def dec(x: int) -> PassthroughFuture[int]:
+        return PassthroughFuture(x - 1)
+
+    @task
+    def add(x: int, y: int) -> PassthroughFuture[int]:
+        return PassthroughFuture(x + y)
+
+    dependencies = {"D": {"B", "C"}, "C": {"A"}, "B": {"A"}}
+    nodes = {
+        "A": Node(inc, {"x": 1}),
+        "B": Node(dec, {"x": DependsOn("A")}),
+        "C": Node(add, {"x": DependsOn("A"), "y": 1}),
+        "D": Node(add, {"x": DependsOn("B"), "y": DependsOn("C")}),
+    }
+    graph = Graph(dependencies, nodes)
+    results = graph.execute()
+    assert results == {"D": 4}
+
+
+def test_graph_basic_tasks_lithops():
+    @task
+    def inc(x: int) -> int:
+        return x + 1
+
+    @task
+    def dec(x: int) -> int:
+        return x - 1
+
+    @task
+    def add(x: int, y: int) -> int:
+        return x + y
+
+    dependencies = {"D": {"B", "C"}, "C": {"A"}, "B": {"A"}}
+    nodes = {
+        "A": Node(inc.set_executor("lithops"), {"x": 1}),
+        "B": Node(dec.set_executor("lithops"), {"x": DependsOn("A")}),
+        "C": Node(add.set_executor("lithops"), {"x": DependsOn("A"), "y": 1}),
+        "D": Node(
+            add.set_executor("lithops"), {"x": DependsOn("B"), "y": DependsOn("C")}
+        ),
     }
     graph = Graph(dependencies, nodes)
     results = graph.execute()

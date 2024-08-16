@@ -32,13 +32,33 @@ def test_reassign_executor_field():
     assert isinstance(f_roundtripped.executor, PythonExecutor)
 
 
-def test_lithops_executor():
+def test_lithops_executor_basic():
     @task
     def f(a: int, b: int) -> int:
         return a + b
 
     f_new = f.set_executor("lithops")
     future = f_new(a=1, b=2)
+    assert future.gather() == 3
+
+
+def test_lithops_executor_validate():
+    @task
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    future = f.validate().set_executor("lithops")(a="1", b="2")
+    assert future.gather() == 3
+
+
+def test_lithops_executor_validate_partial():
+    @task
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    partial = f.validate().partial(b="2")
+    async_partial = partial.set_executor("lithops")
+    future = async_partial.call(a="1", b="2")
     assert future.gather() == 3
 
 
@@ -59,6 +79,8 @@ def test_lithops_executor_partial_map():
 
     lithops_executor = LithopsExecutor()
     future = (
-        f.set_executor(lithops_executor).partial(a=1).map(["b"], [(1,), (2,), (3,)])
+        f.set_executor(lithops_executor)
+        .partial(a=1)
+        .map(argnames=["b"], argvalues=[(1,), (2,), (3,)])
     )
     assert future.gather() == [2, 3, 4]
