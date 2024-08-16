@@ -34,7 +34,6 @@ dependencies = [
 test = [
     "ecoscope[analysis,mapping,plotting] @ git+https://github.com/wildlife-dynamics/ecoscope@v1.8.2",
     "pytest",
-    "google-cloud-secret-manager",
 ]
 cloud = [
     "cloudpathlib",
