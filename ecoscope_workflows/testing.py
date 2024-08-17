@@ -17,16 +17,17 @@ class MockWrappedFunctionProtocol(Protocol):
         ...
 
 
-class MockValidateProtocol(Protocol):
+class MockReturnsMutatedTaskCopyProtocol(Protocol):
     return_value: "TaskMagicMock"
 
-    def __call__(self) -> "TaskMagicMock":
-        """Mocks the call signature of `Task.validate`"""
-        ...
+    def __call__(self) -> "TaskMagicMock": ...
+
+    def call(self, *args, **kws) -> "TaskMagicMock": ...
 
 
 class TaskMagicMock(MagicMock):
-    validate: MockValidateProtocol
+    validate: MockReturnsMutatedTaskCopyProtocol
+    set_executor: MockReturnsMutatedTaskCopyProtocol
     call: MockWrappedFunctionProtocol
 
 

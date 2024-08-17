@@ -3,6 +3,7 @@ import inspect
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, replace
 from typing import (
+    Any,
     Callable,
     Generic,
     Literal,
@@ -215,7 +216,8 @@ class TaskMethodsMixinABC(ABC, Generic[P, R, K, V]):
 def _create_kwargs_iterable(
     argnames: str | Sequence[str],
     argvalues: Sequence[V] | Sequence[tuple[V, ...]],
-) -> list[dict[str, V]]:
+    defaults: dict[str, Any] | None = None,
+) -> list[dict[str, V | Any]]:
     if isinstance(argnames, str):
         argnames = [argnames]
     assert all(
@@ -233,6 +235,7 @@ def _create_kwargs_iterable(
     ), "All values in `argvalues` must have the same length as `argnames`."
     return [
         {argnames[i]: argvalues_list[j][i] for i in range(len(argnames))}
+        | (defaults or {})
         for j in range(len(argvalues_list))
     ]
 
@@ -390,16 +393,8 @@ class SyncTask(TaskMethodsMixinABC, _Task[P, R, K, V]):
 class AsyncTask(_Task[P, R, K, V]):
     executor: AsyncExecutor
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Future[R]:
-        return self.executor.call(self.func, *args, **kwargs)
-
-    def map(
-        self,
-        argnames: str | Sequence[str],
-        argvalues: Sequence[V] | Sequence[tuple[V, ...]],
-    ) -> FutureSequence[R]:
-        kwargs_iterable = _create_kwargs_iterable(argnames, argvalues)
-
+    @property
+    def wrapper(self) -> Callable[P, R]:
         class wrapped_func:
             def __init__(self, func):
                 self.func = func
@@ -409,7 +404,27 @@ class AsyncTask(_Task[P, R, K, V]):
 
         wrapper = wrapped_func(self.func)
         functools.update_wrapper(wrapper, self.func)
-        return self.executor.map(wrapper, kwargs_iterable)
+        return wrapper
+
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Future[R]:
+        return self.executor.call(self.wrapper, *args, **kwargs)
+
+    def call(self, *args: P.args, **kwargs: P.kwargs) -> Future[R]:
+        return self(*args, **kwargs)
+
+    def map(
+        self,
+        argnames: str | Sequence[str],
+        argvalues: Sequence[V] | Sequence[tuple[V, ...]],
+    ) -> FutureSequence[R]:
+        defaults = {
+            k: v
+            for k, v in inspect.signature(self.func).parameters.items()
+            if v.default is not inspect.Parameter.empty
+        }
+        kwargs_iterable = _create_kwargs_iterable(argnames, argvalues, defaults)
+        breakpoint()
+        return self.executor.map(self.wrapper, kwargs_iterable)
 
 
 @overload  # @task style
