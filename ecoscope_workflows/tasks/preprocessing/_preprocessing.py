@@ -27,7 +27,9 @@ def process_relocations(
 
     # filter relocations based on the config
     relocs.apply_reloc_filter(
-        RelocsCoordinateFilter(filter_point_coords=filter_point_coords),
+        RelocsCoordinateFilter(
+            filter_point_coords=[[coord.x, coord.y] for coord in filter_point_coords]
+        ),
         inplace=True,
     )
     relocs.remove_filtered(inplace=True)
