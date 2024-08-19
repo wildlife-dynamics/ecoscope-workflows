@@ -1,6 +1,6 @@
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field, confloat
+from pydantic import BaseModel, Field
 from pydantic.json_schema import SkipJsonSchema
 
 from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
@@ -35,10 +35,8 @@ class LayoutStyle(BaseModel):
 
 
 class BarLayoutStyle(LayoutStyle):
-    bargap: Annotated[confloat, Field(ge=0.0, le=1.0)] | SkipJsonSchema[None] = None
-    bargroupgap: Annotated[confloat, Field(ge=0.0, le=1.0)] | SkipJsonSchema[None] = (
-        None
-    )
+    bargap: Annotated[float, Field(ge=0.0, le=1.0)] | SkipJsonSchema[None] = None
+    bargroupgap: Annotated[float, Field(ge=0.0, le=1.0)] | SkipJsonSchema[None] = None
 
 
 @task
