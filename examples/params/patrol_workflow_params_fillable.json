@@ -791,7 +791,7 @@
                 "layout_style": {
                     "allOf": [
                         {
-                            "$ref": "#/$defs/LayoutStyle"
+                            "$ref": "#/$defs/BarLayoutStyle"
                         }
                     ],
                     "default": null,
@@ -1481,6 +1481,220 @@
             "title": "WidgetSingleView",
             "type": "object"
         },
+        "BarLayoutStyle": {
+            "properties": {
+                "font_color": {
+                    "default": null,
+                    "title": "Font Color",
+                    "type": "string"
+                },
+                "font_style": {
+                    "default": null,
+                    "title": "Font Style",
+                    "type": "string"
+                },
+                "plot_bgcolor": {
+                    "default": null,
+                    "title": "Plot Bgcolor",
+                    "type": "string"
+                },
+                "showlegend": {
+                    "default": null,
+                    "title": "Showlegend",
+                    "type": "boolean"
+                },
+                "bargap": {
+                    "additionalProperties": false,
+                    "default": null,
+                    "ge": 0.0,
+                    "le": 1.0,
+                    "properties": {
+                        "strict": {
+                            "anyOf": [
+                                {
+                                    "type": "boolean"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Strict"
+                        },
+                        "gt": {
+                            "anyOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Gt"
+                        },
+                        "ge": {
+                            "anyOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Ge"
+                        },
+                        "lt": {
+                            "anyOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Lt"
+                        },
+                        "le": {
+                            "anyOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Le"
+                        },
+                        "multiple_of": {
+                            "anyOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Multiple Of"
+                        },
+                        "allow_inf_nan": {
+                            "anyOf": [
+                                {
+                                    "type": "boolean"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Allow Inf Nan"
+                        }
+                    },
+                    "title": "Bargap",
+                    "type": "object"
+                },
+                "bargroupgap": {
+                    "additionalProperties": false,
+                    "default": null,
+                    "ge": 0.0,
+                    "le": 1.0,
+                    "properties": {
+                        "strict": {
+                            "anyOf": [
+                                {
+                                    "type": "boolean"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Strict"
+                        },
+                        "gt": {
+                            "anyOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Gt"
+                        },
+                        "ge": {
+                            "anyOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Ge"
+                        },
+                        "lt": {
+                            "anyOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Lt"
+                        },
+                        "le": {
+                            "anyOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Le"
+                        },
+                        "multiple_of": {
+                            "anyOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Multiple Of"
+                        },
+                        "allow_inf_nan": {
+                            "anyOf": [
+                                {
+                                    "type": "boolean"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Allow Inf Nan"
+                        }
+                    },
+                    "title": "Bargroupgap",
+                    "type": "object"
+                }
+            },
+            "title": "BarLayoutStyle",
+            "type": "object"
+        },
         "GroupedPlotStyle": {
             "properties": {
                 "category": {
@@ -1496,22 +1710,6 @@
                 "plot_style"
             ],
             "title": "GroupedPlotStyle",
-            "type": "object"
-        },
-        "LayoutStyle": {
-            "properties": {
-                "font_color": {
-                    "default": null,
-                    "title": "Font Color",
-                    "type": "string"
-                },
-                "font_style": {
-                    "default": null,
-                    "title": "Font Style",
-                    "type": "string"
-                }
-            },
-            "title": "LayoutStyle",
             "type": "object"
         },
         "LineStyle": {
@@ -1567,6 +1765,32 @@
                 }
             },
             "title": "PlotStyle",
+            "type": "object"
+        },
+        "LayoutStyle": {
+            "properties": {
+                "font_color": {
+                    "default": null,
+                    "title": "Font Color",
+                    "type": "string"
+                },
+                "font_style": {
+                    "default": null,
+                    "title": "Font Style",
+                    "type": "string"
+                },
+                "plot_bgcolor": {
+                    "default": null,
+                    "title": "Plot Bgcolor",
+                    "type": "string"
+                },
+                "showlegend": {
+                    "default": null,
+                    "title": "Showlegend",
+                    "type": "boolean"
+                }
+            },
+            "title": "LayoutStyle",
             "type": "object"
         },
         "GroupedWidget": {
