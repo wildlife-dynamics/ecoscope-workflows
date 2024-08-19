@@ -2,7 +2,10 @@ import pandas as pd
 import pytest
 from shapely.geometry import Point
 
-from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
+from ecoscope_workflows.tasks.transformation._filtering import (
+    Coordinate,
+    apply_reloc_coord_filter,
+)
 
 
 @pytest.fixture
@@ -32,7 +35,7 @@ def test_filter_points(df_with_geometry):
 
     # Apply the filter
     filtered_df = apply_reloc_coord_filter(
-        df_with_geometry, filter_point_coords=[[0.0, 0.0]]
+        df_with_geometry, filter_point_coords=[Coordinate(x=0.0, y=0.0)]
     )
 
     # Assert that the filtered DataFrame matches the expected result

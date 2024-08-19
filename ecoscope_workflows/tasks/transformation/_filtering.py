@@ -1,12 +1,17 @@
 import logging
 from typing import Annotated
 
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from ecoscope_workflows.annotations import AnyGeoDataFrameSchema, DataFrame
 from ecoscope_workflows.decorators import task
 
 logger = logging.getLogger(__name__)
+
+
+class Coordinate(BaseModel):
+    x: float
+    y: float
 
 
 @task
@@ -16,16 +21,16 @@ def apply_reloc_coord_filter(
     max_x: Annotated[float, Field(default=180.0)] = 180.0,
     min_y: Annotated[float, Field(default=-90.0)] = -90.0,
     max_y: Annotated[float, Field(default=90.0)] = 90.0,
-    filter_point_coords: Annotated[list[list[float]], Field(default=[[0.0, 0.0]])] = [
-        [0.0, 0.0]
-    ],
+    filter_point_coords: Annotated[
+        list[Coordinate], Field(default=[Coordinate(x=0.0, y=0.0)])
+    ] = [Coordinate(x=0.0, y=0.0)],
 ) -> DataFrame[AnyGeoDataFrameSchema]:
     import geopandas
     import shapely
 
     # TODO: move it to ecoscope core
     filter_point_coords = geopandas.GeoSeries(
-        shapely.geometry.Point(coord) for coord in filter_point_coords
+        shapely.geometry.Point(coord.x, coord.y) for coord in filter_point_coords
     )
 
     def envelope_reloc_filter(geometry) -> DataFrame[AnyGeoDataFrameSchema]:
