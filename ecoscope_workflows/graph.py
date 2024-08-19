@@ -29,6 +29,8 @@ class Graph:
     dependencies: Dependencies
     nodes: Nodes
 
+    # TODO: __post_init__ to validate that all dependencies are in nodes
+
     def execute(self) -> dict[str, Any]:
         ts = TopologicalSorter(self.dependencies)
         ts.prepare()

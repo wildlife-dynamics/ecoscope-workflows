@@ -418,7 +418,7 @@ class AsyncTask(_Task[P, R, K, V]):
         argvalues: Sequence[V] | Sequence[tuple[V, ...]],
     ) -> FutureSequence[R]:
         defaults = {
-            k: v
+            k: v.default
             for k, v in inspect.signature(self.func).parameters.items()
             if v.default is not inspect.Parameter.empty
         }

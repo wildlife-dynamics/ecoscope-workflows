@@ -1,4 +1,5 @@
 import argparse
+import os
 
 import yaml
 
@@ -11,6 +12,8 @@ from ecoscope_workflows.graph import DependsOn, DependsOnSequence, Graph, Node
 #     func_name="get_subjectgroup_observations",  # 🧪
 # )  # 🧪
 from ecoscope_workflows.tasks.results import create_map_layer
+from ecoscope_workflows.tasks.results import draw_ecomap
+from ecoscope_workflows.tasks.io import persist_text
 
 
 if __name__ == "__main__":
@@ -84,30 +87,30 @@ if __name__ == "__main__":
                 ),
             },
         ),
-        # "ecomaps": Node(
-        #     async_callable=(
-        #         draw_ecomap.validate().partial(**params["ecomaps"]).set_executor(le).map
-        #     ),
-        #     params={
-        #         "argnames": ["geo_layers"],
-        #         "argvalues": [DependsOn("map_layers")],
-        #     },
-        # ),
-        # "td_ecomap_html_url": Node(
-        #     async_callable=(
-        #         persist_text.validate()
-        #         .partial(
-        #             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-        #             **params["td_ecomap_html_url"],
-        #         )
-        #         .set_executor(le)
-        #         .map
-        #     ),
-        #     params={
-        #         "argnames": ["text"],
-        #         "argvalues": [DependsOn("ecomaps")],
-        #     },
-        # ),
+        "ecomaps": Node(
+            async_callable=(
+                draw_ecomap.validate().partial(**params["ecomaps"]).set_executor(le).map
+            ),
+            params={
+                "argnames": ["geo_layers"],
+                "argvalues": DependsOn("map_layers"),
+            },
+        ),
+        "td_ecomap_html_url": Node(
+            async_callable=(
+                persist_text.validate()
+                .partial(
+                    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+                    **params["td_ecomap_html_url"],
+                )
+                .set_executor(le)
+                .map
+            ),
+            params={
+                "argnames": ["text"],
+                "argvalues": DependsOn("ecomaps"),
+            },
+        ),
     }
     graph = Graph(dependencies=dependencies, nodes=nodes)
     results = graph.execute()
