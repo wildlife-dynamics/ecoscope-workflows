@@ -10,6 +10,8 @@ from ecoscope_workflows.graph import DependsOn, DependsOnSequence, Graph, Node
 #     anchor="ecoscope_workflows.tasks.io",  # 🧪
 #     func_name="get_subjectgroup_observations",  # 🧪
 # )  # 🧪
+from ecoscope_workflows.tasks.results import create_map_layer
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -27,11 +29,11 @@ if __name__ == "__main__":
 
     dependencies = {
         "obs_a": [],
-        # "obs_b": [],
-        # "obs_c": [],
-        "map_layers": ["obs_a"],  # "obs_b", "obs_c"],
-        # "ecomaps": ["map_layers"],
-        # "td_ecomap_html_url": ["ecomaps"],
+        "obs_b": [],
+        "obs_c": [],
+        "map_layers": ["obs_a", "obs_b", "obs_c"],
+        "ecomaps": ["map_layers"],
+        "td_ecomap_html_url": ["ecomaps"],
     }
 
     from ecoscope_workflows.decorators import task
@@ -51,39 +53,33 @@ if __name__ == "__main__":
     ):
         return data
 
-    @task
-    def log(geodataframe):
-        print(geodataframe)
-        return geodataframe
-
     nodes = {
         "obs_a": Node(
             async_callable=get_subjectgroup_observations.set_executor(le),
             params=params["obs_a"],
         ),
-        # # "obs_b": Node(
-        # #     async_callable=get_subjectgroup_observations.validate().set_executor(le),
-        # #     params=params["obs_b"],
-        # # ),
-        # # "obs_c": Node(
-        # #     async_callable=get_subjectgroup_observations.validate().set_executor(le),
-        # #     params=params["obs_c"],
-        # ),
+        "obs_b": Node(
+            async_callable=get_subjectgroup_observations.validate().set_executor(le),
+            params=params["obs_b"],
+        ),
+        "obs_c": Node(
+            async_callable=get_subjectgroup_observations.validate().set_executor(le),
+            params=params["obs_c"],
+        ),
         "map_layers": Node(
             async_callable=(
-                log.validate().set_executor(le).map
-                # create_map_layer.validate()
-                # .partial(**params["map_layers"])
-                # .set_executor(le)
-                # .map
+                create_map_layer.validate()
+                .partial(**params["map_layers"])
+                .set_executor(le)
+                .map
             ),
             params={
                 "argnames": ["geodataframe"],
                 "argvalues": DependsOnSequence(
                     [
                         DependsOn("obs_a"),
-                        # DependsOn("obs_b"),
-                        # DependsOn("obs_c"),
+                        DependsOn("obs_b"),
+                        DependsOn("obs_c"),
                     ],
                 ),
             },
