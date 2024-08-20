@@ -1,5 +1,9 @@
 [build-system]
-requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+requires = [
+    "setuptools>=45",
+    "setuptools_scm[toml]>=6.2",
+    "numpy<2",  # Remove after resolution of https://github.com/wildlife-dynamics/ecoscope/issues/251
+]
 
 [project]
 name = "ecoscope_workflows"
@@ -33,7 +37,6 @@ dependencies = [
 [project.optional-dependencies]
 test = [
     "ecoscope[analysis,mapping,plotting] @ git+https://github.com/wildlife-dynamics/ecoscope@v1.8.2",
-    "numpy<2.0",  # Remove after resolution of https://github.com/wildlife-dynamics/ecoscope/issues/251
     "pytest",
 ]
 lithops = [
