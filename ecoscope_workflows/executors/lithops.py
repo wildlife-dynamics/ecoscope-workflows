@@ -1,4 +1,5 @@
 import functools
+import inspect
 from dataclasses import dataclass, field
 from typing import Callable, Iterable, Sequence
 
@@ -30,7 +31,21 @@ class LithopsFuturesSequence(FutureSequence[R]):
         return self.futures.get_result(*args, **kwargs)
 
 
+def _create_custom_signature(partial_func: functools.partial) -> inspect.Signature:
+    # workaround for lithops inspect behavior; TODO: raise upstream issue on lithops
+    original_sig = inspect.signature(partial_func.func)
+    new_params = [
+        param
+        for name, param in original_sig.parameters.items()
+        if name not in partial_func.keywords
+    ]
+    return original_sig.replace(parameters=new_params)
+
+
 def wrap(func) -> Callable[P, R]:
+    if isinstance(func, functools.partial):
+        func.__signature__ = _create_custom_signature(func)  # type: ignore[attr-defined]
+
     class wrapped_func:
         def __init__(self, func):
             self.func = func

@@ -31,17 +31,6 @@ K = TypeVar("K")
 V = TypeVar("V")
 
 
-def _create_custom_signature(partial_func: functools.partial) -> inspect.Signature:
-    # workaround for lithops inspect behavior; TODO: raise upstream issue on lithops
-    original_sig = inspect.signature(partial_func.func)
-    new_params = [
-        param
-        for name, param in original_sig.parameters.items()
-        if name not in partial_func.keywords
-    ]
-    return original_sig.replace(parameters=new_params)
-
-
 @dataclass(frozen=True)
 class _Task(Generic[P, R, K, V]):
     func: Callable[P, R]
@@ -72,9 +61,7 @@ class _Task(Generic[P, R, K, V]):
         ```
 
         """
-        partial = functools.partial(self.func, **kwargs)
-        partial.__signature__ = _create_custom_signature(partial)  # type: ignore[attr-defined]
-        return replace(self, func=partial)
+        return replace(self, func=functools.partial(self.func, **kwargs))
 
     def validate(self) -> Self:
         """Return a new Task with the same attributes, but with the function input
