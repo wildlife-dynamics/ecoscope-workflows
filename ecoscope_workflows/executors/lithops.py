@@ -1,3 +1,4 @@
+import functools
 from dataclasses import dataclass, field
 from typing import Callable, Iterable, Sequence
 
@@ -29,6 +30,19 @@ class LithopsFuturesSequence(FutureSequence[R]):
         return self.futures.get_result(*args, **kwargs)
 
 
+def wrap(func) -> Callable[P, R]:
+    class wrapped_func:
+        def __init__(self, func):
+            self.func = func
+
+        def __call__(self, *args, **kwargs):
+            return self.func(**kwargs)
+
+    wrapper = wrapped_func(func)
+    functools.update_wrapper(wrapper, func)
+    return wrapper
+
+
 @dataclass
 class LithopsExecutor(AsyncExecutor):
     fexec: FunctionExecutor = field(default_factory=FunctionExecutor)
@@ -43,7 +57,7 @@ class LithopsExecutor(AsyncExecutor):
             raise NotImplementedError(
                 "Only keyword arguments are currently supported by `LithopsExecutor.call`."
             )
-        future = self.fexec.call_async(func, data=kwargs)
+        future = self.fexec.call_async(wrap(func), data=kwargs)
         return LithopsFuture(future=future)
 
     def map(
@@ -51,5 +65,5 @@ class LithopsExecutor(AsyncExecutor):
         func: Callable[..., R],
         iterable: Iterable[T],
     ) -> LithopsFuturesSequence[R]:
-        futures = self.fexec.map(func, iterable)
+        futures = self.fexec.map(wrap(func), iterable)
         return LithopsFuturesSequence(futures=futures)

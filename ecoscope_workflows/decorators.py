@@ -393,21 +393,8 @@ class SyncTask(TaskMethodsMixinABC, _Task[P, R, K, V]):
 class AsyncTask(_Task[P, R, K, V]):
     executor: AsyncExecutor
 
-    @property
-    def wrapper(self) -> Callable[P, R]:
-        class wrapped_func:
-            def __init__(self, func):
-                self.func = func
-
-            def __call__(self, *args, **kwargs):
-                return self.func(**kwargs)
-
-        wrapper = wrapped_func(self.func)
-        functools.update_wrapper(wrapper, self.func)
-        return wrapper
-
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Future[R]:
-        return self.executor.call(self.wrapper, *args, **kwargs)
+        return self.executor.call(self.func, *args, **kwargs)
 
     def call(self, *args: P.args, **kwargs: P.kwargs) -> Future[R]:
         return self(*args, **kwargs)
@@ -423,7 +410,7 @@ class AsyncTask(_Task[P, R, K, V]):
             if v.default is not inspect.Parameter.empty
         }
         kwargs_iterable = _create_kwargs_iterable(argnames, argvalues, defaults)
-        return self.executor.map(self.wrapper, kwargs_iterable)
+        return self.executor.map(self.func, kwargs_iterable)
 
 
 @overload  # @task style
