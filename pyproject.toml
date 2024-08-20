@@ -39,8 +39,8 @@ test = [
 lithops = [
     "lithops",
 ]
-cloud = [
-    "cloudpathlib",
+gcs = [
+    "cloudpathlib[gs]",
 ]
 notebook = [
     "jupytext",
