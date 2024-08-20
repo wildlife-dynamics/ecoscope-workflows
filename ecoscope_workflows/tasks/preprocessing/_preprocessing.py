@@ -7,6 +7,7 @@ from pydantic import Field
 from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
 from ecoscope_workflows.decorators import task
 from ecoscope_workflows.tasks.io import SubjectGroupObservationsGDFSchema
+from ecoscope_workflows.tasks.transformation._filtering import Coordinate
 
 
 class RelocationsGDFSchema(SubjectGroupObservationsGDFSchema):
@@ -17,7 +18,7 @@ class RelocationsGDFSchema(SubjectGroupObservationsGDFSchema):
 @task
 def process_relocations(
     observations: DataFrame[SubjectGroupObservationsGDFSchema],
-    filter_point_coords: Annotated[list[list[float]], Field()],
+    filter_point_coords: Annotated[list[Coordinate], Field()],
     relocs_columns: Annotated[list[str], Field()],
 ) -> DataFrame[RelocationsGDFSchema]:
     from ecoscope.base import Relocations, RelocsCoordinateFilter
@@ -26,7 +27,9 @@ def process_relocations(
 
     # filter relocations based on the config
     relocs.apply_reloc_filter(
-        RelocsCoordinateFilter(filter_point_coords=filter_point_coords),
+        RelocsCoordinateFilter(
+            filter_point_coords=[[coord.x, coord.y] for coord in filter_point_coords]
+        ),
         inplace=True,
     )
     relocs.remove_filtered(inplace=True)
@@ -88,4 +91,5 @@ def relocations_to_trajectory(
     traj.apply_traj_filter(traj_seg_filter, inplace=True)
     traj.remove_filtered(inplace=True)
 
+    return traj
     return traj

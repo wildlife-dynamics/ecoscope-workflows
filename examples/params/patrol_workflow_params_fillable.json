@@ -79,10 +79,7 @@
             "properties": {
                 "filter_point_coords": {
                     "items": {
-                        "items": {
-                            "type": "number"
-                        },
-                        "type": "array"
+                        "$ref": "#/$defs/Coordinate"
                     },
                     "title": "Filter Point Coords",
                     "type": "array"
@@ -300,16 +297,13 @@
                 },
                 "filter_point_coords": {
                     "default": [
-                        [
-                            0.0,
-                            0.0
-                        ]
+                        {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
                     ],
                     "items": {
-                        "items": {
-                            "type": "number"
-                        },
-                        "type": "array"
+                        "$ref": "#/$defs/Coordinate"
                     },
                     "title": "Filter Point Coords",
                     "type": "array"
@@ -791,7 +785,7 @@
                 "layout_style": {
                     "allOf": [
                         {
-                            "$ref": "#/$defs/LayoutStyle"
+                            "$ref": "#/$defs/BarLayoutStyle"
                         }
                     ],
                     "default": null,
@@ -1070,6 +1064,24 @@
                 "index_name"
             ],
             "title": "Grouper",
+            "type": "object"
+        },
+        "Coordinate": {
+            "properties": {
+                "x": {
+                    "title": "X",
+                    "type": "number"
+                },
+                "y": {
+                    "title": "Y",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "x",
+                "y"
+            ],
+            "title": "Coordinate",
             "type": "object"
         },
         "PointLayerStyle": {
@@ -1481,6 +1493,46 @@
             "title": "WidgetSingleView",
             "type": "object"
         },
+        "BarLayoutStyle": {
+            "properties": {
+                "font_color": {
+                    "default": null,
+                    "title": "Font Color",
+                    "type": "string"
+                },
+                "font_style": {
+                    "default": null,
+                    "title": "Font Style",
+                    "type": "string"
+                },
+                "plot_bgcolor": {
+                    "default": null,
+                    "title": "Plot Bgcolor",
+                    "type": "string"
+                },
+                "showlegend": {
+                    "default": null,
+                    "title": "Showlegend",
+                    "type": "boolean"
+                },
+                "bargap": {
+                    "default": null,
+                    "maximum": 1.0,
+                    "minimum": 0.0,
+                    "title": "Bargap",
+                    "type": "number"
+                },
+                "bargroupgap": {
+                    "default": null,
+                    "maximum": 1.0,
+                    "minimum": 0.0,
+                    "title": "Bargroupgap",
+                    "type": "number"
+                }
+            },
+            "title": "BarLayoutStyle",
+            "type": "object"
+        },
         "GroupedPlotStyle": {
             "properties": {
                 "category": {
@@ -1496,22 +1548,6 @@
                 "plot_style"
             ],
             "title": "GroupedPlotStyle",
-            "type": "object"
-        },
-        "LayoutStyle": {
-            "properties": {
-                "font_color": {
-                    "default": null,
-                    "title": "Font Color",
-                    "type": "string"
-                },
-                "font_style": {
-                    "default": null,
-                    "title": "Font Style",
-                    "type": "string"
-                }
-            },
-            "title": "LayoutStyle",
             "type": "object"
         },
         "LineStyle": {
@@ -1567,6 +1603,32 @@
                 }
             },
             "title": "PlotStyle",
+            "type": "object"
+        },
+        "LayoutStyle": {
+            "properties": {
+                "font_color": {
+                    "default": null,
+                    "title": "Font Color",
+                    "type": "string"
+                },
+                "font_style": {
+                    "default": null,
+                    "title": "Font Style",
+                    "type": "string"
+                },
+                "plot_bgcolor": {
+                    "default": null,
+                    "title": "Plot Bgcolor",
+                    "type": "string"
+                },
+                "showlegend": {
+                    "default": null,
+                    "title": "Showlegend",
+                    "type": "boolean"
+                }
+            },
+            "title": "LayoutStyle",
             "type": "object"
         },
         "GroupedWidget": {
