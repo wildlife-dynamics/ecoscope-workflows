@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, create_autospec
+import inspect
 
 from ecoscope_workflows.decorators import SyncTask
 from ecoscope_workflows.util import (
@@ -7,14 +7,18 @@ from ecoscope_workflows.util import (
 )
 
 
-def create_task_magicmock(anchor: str, func_name: str) -> SyncTask:
-    task = import_task_from_reference(anchor, func_name)
-    mock_func: MagicMock = create_autospec(spec=task.func)
-    example_return = load_example_return_from_task_reference(anchor, func_name)
-    mock_func.return_value = example_return
+class MockSyncTask(SyncTask):
+    def validate(self) -> "MockSyncTask":
+        return self
 
-    class MockSyncTask(SyncTask):
-        def validate(self):
-            return self
+
+def create_task_magicmock(anchor: str, func_name: str) -> MockSyncTask:
+    task = import_task_from_reference(anchor, func_name)
+    example_return = load_example_return_from_task_reference(anchor, func_name)
+
+    def mock_func(*args, **kwargs):
+        return example_return
+
+    mock_func.__signature__ = inspect.signature(task.func)  # type: ignore[attr-defined]
 
     return MockSyncTask(func=mock_func, tags=task.tags, executor=task.executor)

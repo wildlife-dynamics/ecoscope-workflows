@@ -5,12 +5,12 @@ import yaml
 
 from ecoscope_workflows.executors import LithopsExecutor
 from ecoscope_workflows.graph import DependsOn, DependsOnSequence, Graph, Node
-# from ecoscope_workflows.testing import create_task_magicmock  # 🧪
+from ecoscope_workflows.testing import create_task_magicmock  # 🧪
 
-# get_subjectgroup_observations = create_task_magicmock(  # 🧪
-#     anchor="ecoscope_workflows.tasks.io",  # 🧪
-#     func_name="get_subjectgroup_observations",  # 🧪
-# )  # 🧪
+get_subjectgroup_observations = create_task_magicmock(  # 🧪
+    anchor="ecoscope_workflows.tasks.io",  # 🧪
+    func_name="get_subjectgroup_observations",  # 🧪
+)  # 🧪
 from ecoscope_workflows.tasks.results import create_map_layer
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
@@ -38,23 +38,6 @@ if __name__ == "__main__":
         "ecomaps": ["map_layers"],
         "td_ecomap_html_url": ["ecomaps"],
     }
-
-    from ecoscope_workflows.decorators import task
-
-    from importlib.resources import files
-    import geopandas as gpd
-
-    f = (
-        files("ecoscope_workflows.tasks.io")
-        / "get-subjectgroup-observations.example-return.parquet"
-    )
-    data = gpd.read_parquet(f)
-
-    @task
-    def get_subjectgroup_observations(
-        client, subject_group_name, include_inactive, since, until
-    ):
-        return data
 
     nodes = {
         "obs_a": Node(
