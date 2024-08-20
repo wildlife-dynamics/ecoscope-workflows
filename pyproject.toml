@@ -36,6 +36,9 @@ test = [
     "pytest",
     "pytest-xdist",
 ]
+lithops = [
+    "lithops",
+]
 cloud = [
     "cloudpathlib",
 ]
