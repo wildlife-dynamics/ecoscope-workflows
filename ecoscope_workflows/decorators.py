@@ -200,10 +200,18 @@ class TaskMethodsMixinABC(ABC, Generic[P, R, K, V]):
     ) -> Sequence[tuple[K, R]] | FutureSequence[tuple[K, R]]: ...
 
 
+def _get_defaults(func: Callable) -> dict[str, Any]:
+    return {
+        k: v.default
+        for k, v in inspect.signature(func).parameters.items()
+        if v.default is not inspect.Parameter.empty
+    }
+
+
 def _create_kwargs_iterable(
     argnames: str | Sequence[str],
     argvalues: Sequence[V] | Sequence[tuple[V, ...]],
-    defaults: dict[str, Any] | None = None,
+    defaults: dict[str, Any],
 ) -> list[dict[str, V | Any]]:
     if isinstance(argnames, str):
         argnames = [argnames]
@@ -221,8 +229,7 @@ def _create_kwargs_iterable(
         len(v) == len(argnames) for v in argvalues_list
     ), "All values in `argvalues` must have the same length as `argnames`."
     return [
-        {argnames[i]: argvalues_list[j][i] for i in range(len(argnames))}
-        | (defaults or {})
+        defaults | {argnames[i]: argvalues_list[j][i] for i in range(len(argnames))}
         for j in range(len(argvalues_list))
     ]
 
@@ -331,7 +338,8 @@ class SyncTask(TaskMethodsMixinABC, _Task[P, R, K, V]):
 
         ```
         """
-        kwargs_iterable = _create_kwargs_iterable(argnames, argvalues)
+        defaults = _get_defaults(self.func)
+        kwargs_iterable = _create_kwargs_iterable(argnames, argvalues, defaults)
         return self.executor.map(lambda kw: self.func(**kw), kwargs_iterable)
 
     def mapvalues(
@@ -370,7 +378,10 @@ class SyncTask(TaskMethodsMixinABC, _Task[P, R, K, V]):
             )
         if isinstance(argnames, str):
             argnames = [argnames]
-        kwargs_iterable = [(k, {argnames[0]: argvalue}) for (k, argvalue) in argvalues]
+        defaults = _get_defaults(self.func)
+        kwargs_iterable = [
+            (k, defaults | {argnames[0]: argvalue}) for (k, argvalue) in argvalues
+        ]
         return self.executor.map(
             lambda kv: (kv[0], self.func(**kv[1])), kwargs_iterable
         )
@@ -391,11 +402,7 @@ class AsyncTask(_Task[P, R, K, V]):
         argnames: str | Sequence[str],
         argvalues: Sequence[V] | Sequence[tuple[V, ...]],
     ) -> FutureSequence[R]:
-        defaults = {
-            k: v.default
-            for k, v in inspect.signature(self.func).parameters.items()
-            if v.default is not inspect.Parameter.empty
-        }
+        defaults = _get_defaults(self.func)
         kwargs_iterable = _create_kwargs_iterable(argnames, argvalues, defaults)
         return self.executor.map(self.func, kwargs_iterable)
 
