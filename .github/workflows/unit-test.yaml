@@ -37,13 +37,9 @@ jobs:
           .venv/bin/python -m pip install --upgrade pip
           .venv/bin/python -m pip install -e ".[test,lithops]"
 
-      - name: Activate virtualenv for all downstream steps
-        run: |
-          . .venv/bin/activate
-          echo PATH=$PATH >> $GITHUB_ENV
-
       - name: Run doctests
         run: |
+          . .venv/bin/activate
           python -m pytest -v ecoscope_workflows/ --doctest-modules \
           --ignore=ecoscope_workflows/visualize.py
 
@@ -53,6 +49,7 @@ jobs:
           EARTHRANGER_USERNAME: ${{ secrets.EARTHRANGER_USERNAME }}
           EARTHRANGER_PASSWORD: ${{ secrets.EARTHRANGER_PASSWORD }}
         run: |
+          . .venv/bin/activate
           python -m pytest -n auto tests -vvv
 
     # - name: Upload Coverage to Codecov

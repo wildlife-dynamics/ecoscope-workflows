@@ -37,13 +37,9 @@ jobs:
         .venv/bin/python -m pip install --upgrade pip
         .venv/bin/python -m pip install -e ".[test,lithops]"
 
-    - name: Activate virtualenv for all downstream steps
-      run: |
-        . .venv/bin/activate
-        echo PATH=$PATH >> $GITHUB_ENV
-
     - name: Lint
       run: |
+        . .venv/bin/activate
         python -m pip install pre-commit
         pre-commit install
         pre-commit run --all-files
