@@ -35,7 +35,6 @@ test = [
     "ecoscope[analysis,mapping,plotting] @ git+https://github.com/wildlife-dynamics/ecoscope@v1.8.2",
     "numpy<2.0",  # Remove after resolution of https://github.com/wildlife-dynamics/ecoscope/issues/251
     "pytest",
-    "pytest-xdist",
 ]
 lithops = [
     "lithops",
