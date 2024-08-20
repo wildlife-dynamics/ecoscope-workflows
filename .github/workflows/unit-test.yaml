@@ -50,7 +50,7 @@ jobs:
           EARTHRANGER_PASSWORD: ${{ secrets.EARTHRANGER_PASSWORD }}
         run: |
           . .venv/bin/activate
-          python -m pytest -n auto tests -vvv
+          python -m pytest tests -vvv
 
     # - name: Upload Coverage to Codecov
     #   uses: codecov/codecov-action@v2
