@@ -1,5 +1,6 @@
 import functools
 import inspect
+import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, replace
 from typing import (
@@ -13,7 +14,11 @@ from typing import (
     cast,
     overload,
 )
-from typing_extensions import Self
+
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:
+    from typing_extensions import Self
 
 from pydantic import validate_call
 
