@@ -171,7 +171,8 @@ def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
         else [sys.executable]
     )
     cmd = (
-        f"{os.environ['SHELL']} -c '"
+        os.environ["SHELL"]
+        + " -c '"
         + " ".join(
             exe
             + [
