@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from graphlib import TopologicalSorter
 from typing import Any, Callable
 
@@ -17,7 +17,7 @@ class DependsOnSequence(list[DependsOn]):
 @dataclass
 class Node:
     async_callable: Callable
-    params: dict[str, Any | DependsOn]
+    params: dict[str, Any | DependsOn] = field(default_factory=dict)
 
 
 Dependencies = dict[str, list[str]]  # TODO: `set` instead of `list`

@@ -35,16 +35,28 @@ if __name__ == "__main__":
 
     nodes = {
         "obs_a": Node(
-            async_callable=get_subjectgroup_observations.set_executor(le),
-            params=params["obs_a"],
+            async_callable=(
+                get_subjectgroup_observations.validate()
+                .partial(**params["obs_a"])
+                .set_executor(le)
+                .call
+            ),
         ),
         "obs_b": Node(
-            async_callable=get_subjectgroup_observations.validate().set_executor(le),
-            params=params["obs_b"],
+            async_callable=(
+                get_subjectgroup_observations.validate()
+                .partial(**params["obs_b"])
+                .set_executor(le)
+                .call
+            ),
         ),
         "obs_c": Node(
-            async_callable=get_subjectgroup_observations.validate().set_executor(le),
-            params=params["obs_c"],
+            async_callable=(
+                get_subjectgroup_observations.validate()
+                .partial(**params["obs_c"])
+                .set_executor(le)
+                .call
+            ),
         ),
         "map_layers": Node(
             async_callable=(
