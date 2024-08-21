@@ -8,6 +8,7 @@ from ._aggregation import (
     dataframe_count,
 )
 from ._time_density import TimeDensityReturnGDFSchema, calculate_time_density
+from ._create_meshgrid import create_meshgrid
 
 __all__ = [
     "TimeDensityReturnGDFSchema",
@@ -19,4 +20,5 @@ __all__ = [
     "dataframe_column_sum",
     "dataframe_count",
     "calculate_time_density",
+    "create_meshgrid",
 ]
