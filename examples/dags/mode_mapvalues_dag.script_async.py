@@ -43,99 +43,79 @@ if __name__ == "__main__":
 
     nodes = {
         "patrol_events": Node(
-            async_callable=(
-                get_patrol_events.validate()
-                .partial(**params["patrol_events"])
-                .set_executor(le)
-                .call
-            ),
+            async_task=get_patrol_events.validate().set_executor(le),
+            partial=params["patrol_events"],
+            method="call",
         ),
         "groupers": Node(
-            async_callable=(
-                set_groupers.validate()
-                .partial(**params["groupers"])
-                .set_executor(le)
-                .call
-            ),
+            async_task=set_groupers.validate().set_executor(le),
+            partial=params["groupers"],
+            method="call",
         ),
         "split_obs": Node(
-            async_callable=(
-                split_groups.validate()
-                .partial(df=patrol_events, groupers=groupers, **params["split_obs"])
-                .set_executor(le)
-                .call
-            ),
+            async_task=split_groups.validate().set_executor(le),
+            partial={
+                "df": patrol_events,
+                "groupers": groupers,
+            }
+            | params["split_obs"],
+            method="call",
         ),
         "map_layers": Node(
-            async_callable=(
-                create_map_layer.validate()
-                .partial(**params["map_layers"])
-                .set_executor(le)
-                .mapvalues
-            ),
-            params={
+            async_task=create_map_layer.validate().set_executor(le),
+            partial=params["map_layers"],
+            method="mapvalues",
+            kwargs={
                 "argnames": ["geodataframe"],
                 "argvalues": DependsOn("split_obs"),
             },
         ),
         "ecomaps": Node(
-            async_callable=(
-                draw_ecomap.validate()
-                .partial(**params["ecomaps"])
-                .set_executor(le)
-                .mapvalues
-            ),
-            params={
+            async_task=draw_ecomap.validate().set_executor(le),
+            partial=params["ecomaps"],
+            method="mapvalues",
+            kwargs={
                 "argnames": ["geo_layers"],
                 "argvalues": DependsOn("map_layers"),
             },
         ),
         "ecomaps_persist": Node(
-            async_callable=(
-                persist_text.validate()
-                .partial(
-                    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-                    **params["ecomaps_persist"],
-                )
-                .set_executor(le)
-                .mapvalues
-            ),
-            params={
+            async_task=persist_text.validate().set_executor(le),
+            partial={
+                "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            }
+            | params["ecomaps_persist"],
+            method="mapvalues",
+            kwargs={
                 "argnames": ["text"],
                 "argvalues": DependsOn("ecomaps"),
             },
         ),
         "ecomap_widgets": Node(
-            async_callable=(
-                create_map_widget_single_view.validate()
-                .partial(**params["ecomap_widgets"])
-                .set_executor(le)
-                .map
-            ),
-            params={
+            async_task=create_map_widget_single_view.validate().set_executor(le),
+            partial=params["ecomap_widgets"],
+            method="map",
+            kwargs={
                 "argnames": ["view", "data"],
                 "argvalues": DependsOn("ecomaps_persist"),
             },
         ),
         "ecomap_widgets_merged": Node(
-            async_callable=(
-                merge_widget_views.validate()
-                .partial(widgets=ecomap_widgets, **params["ecomap_widgets_merged"])
-                .set_executor(le)
-                .call
-            ),
+            async_task=merge_widget_views.validate().set_executor(le),
+            partial={
+                "widgets": ecomap_widgets,
+            }
+            | params["ecomap_widgets_merged"],
+            method="call",
         ),
         "dashboard": Node(
-            async_callable=(
-                gather_dashboard.validate()
-                .partial(
-                    widgets=ecomap_widgets_merged,
-                    groupers=groupers,
-                    **params["dashboard"],
-                )
-                .set_executor(le)
-                .call
-            ),
+            async_task=gather_dashboard.validate().set_executor(le),
+            partial={
+                "widgets": ecomap_widgets_merged,
+                "groupers": groupers,
+            }
+            | params["dashboard"],
+            method="call",
         ),
     }
     graph = Graph(dependencies=dependencies, nodes=nodes)
