@@ -166,30 +166,34 @@ def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
 
     exe = (
         # workaround for https://github.com/mamba-org/mamba/issues/2577
-        "python"  # assumes test is running in an activated conda env
+        "python"  # assumes test will run in shell with activated env
         if "mamba" in sys.executable
         else sys.executable
     )
     cmd = " ".join(
         [
-            exe,
+            os.environ.get("SHELL", "/bin/sh"),
+            "-c",
+            f"'{exe}",
             "-W",
             "ignore",  # in testing context warnings are added; exclude them from stdout
             script_outpath.as_posix(),
             "--config-file",
-            end_to_end.param_path.as_posix(),
+            f"{end_to_end.param_path.as_posix()}'",
         ],
     )
     env = os.environ.copy()
     env["ECOSCOPE_WORKFLOWS_RESULTS"] = tmp.as_posix()
-    out = subprocess.run(
+    proc = subprocess.Popen(
         cmd,
-        capture_output=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         text=True,
         env=env,
         shell=True,
-        executable=os.environ.get("SHELL", "/bin/sh"),
     )
-    assert out.returncode == 0
+    returncode = proc.wait()
+    assert returncode == 0
+    assert proc.stdout is not None
     for assert_fn in end_to_end.assert_that_stdout:
-        assert assert_fn(out.stdout.strip())
+        assert assert_fn(proc.stdout.read().strip())
