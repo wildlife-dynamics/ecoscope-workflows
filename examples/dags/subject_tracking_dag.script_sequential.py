@@ -13,6 +13,8 @@ from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
 from ecoscope_workflows.tasks.results import merge_widget_views
+from ecoscope_workflows.tasks.analysis import dataframe_column_mean
+from ecoscope_workflows.tasks.results import create_single_value_widget_single_view
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -87,4 +89,22 @@ if __name__ == "__main__":
         .call(**params["traj_grouped_map_widget"])
     )
 
-    print(traj_grouped_map_widget)
+    mean_speed = (
+        dataframe_column_mean.validate()
+        .partial(**params["mean_speed"])
+        .mapvalues(argnames=["df"], argvalues=split_subject_traj_groups)
+    )
+
+    mean_speed_sv_widgets = (
+        create_single_value_widget_single_view.validate()
+        .partial(**params["mean_speed_sv_widgets"])
+        .map(argnames=["view", "data"], argvalues=mean_speed)
+    )
+
+    mean_speed_grouped_sv_widget = (
+        merge_widget_views.validate()
+        .partial(widgets=mean_speed_sv_widgets)
+        .call(**params["mean_speed_grouped_sv_widget"])
+    )
+
+    print(mean_speed_grouped_sv_widget)
