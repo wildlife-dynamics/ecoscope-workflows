@@ -9,7 +9,6 @@ from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
 from ecoscope_workflows.tasks.transformation import add_temporal_index
 from ecoscope_workflows.tasks.groupby import split_groups
 from ecoscope_workflows.tasks.results import create_map_layer
-from ecoscope_workflows.tasks.groupby import groupbykey
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
 from ecoscope_workflows.tasks.results import create_map_widget_single_view
@@ -61,16 +60,10 @@ if __name__ == "__main__":
         .mapvalues(argnames=["geodataframe"], argvalues=split_subject_traj_groups)
     )
 
-    combined_traj_map_layers = (
-        groupbykey.validate()
-        .partial(iterables=traj_map_layers)
-        .call(**params["combined_traj_map_layers"])
-    )
-
     traj_ecomap = (
         draw_ecomap.validate()
         .partial(**params["traj_ecomap"])
-        .mapvalues(argnames=["geo_layers"], argvalues=combined_traj_map_layers)
+        .mapvalues(argnames=["geo_layers"], argvalues=traj_map_layers)
     )
 
     ecomap_html_urls = (

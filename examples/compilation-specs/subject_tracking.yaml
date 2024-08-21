@@ -8,7 +8,7 @@ workflow:
   # subject group observations
   - name: Get Subject Group Observations from EarthRanger
     id: subject_obs
-    task: get_subjectgroup_observations # todo
+    task: get_subjectgroup_observations
   - name: Transform Observations to Relocations
     id: subject_reloc
     task: process_relocations
@@ -38,18 +38,12 @@ workflow:
     mapvalues:
       argnames: geodataframe
       argvalues: ${{ workflow.split_subject_traj_groups.return }}
-  - name: Combine Trajectories and Patrol Events layers
-    id: combined_traj_map_layers
-    task: groupbykey
-    partial:
-      iterables:
-        - ${{ workflow.traj_map_layers.return }}
   - name: Draw Ecomaps for each trajectory group
     id: traj_ecomap
     task: draw_ecomap
     mapvalues:
       argnames: geo_layers
-      argvalues: ${{ workflow.combined_traj_map_layers.return }}
+      argvalues: ${{ workflow.traj_map_layers.return }}
   - name: Persist ecomap as Text
     id: ecomap_html_urls
     task: persist_text

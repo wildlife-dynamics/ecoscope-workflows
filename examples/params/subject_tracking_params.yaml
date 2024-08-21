@@ -34,7 +34,7 @@ subject_traj:
 # Parameters for 'Add temporal index to Subject Trajectories' using task `add_temporal_index`.
 traj_add_temporal_index:
   index_name: "month" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A name for the new index which will be added.'))
-  time_col: "extra__patrol_start_time" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of existing column containing time data.'))
+  time_col: "segment_start" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of existing column containing time data.'))
   directive: "%B" # (typing.Literal['%a', '%A', '%b', '%B', '%c', '%d', '%f', '%H', '%I', '%j', '%m', '%M', '%p', '%S', '%U', '%w', '%W', '%x', '%X', '%y', '%Y', '%z', '%%'], FieldInfo(annotation=NoneType, required=True, description='A directive for formatting the time data.'))
 
 # Parameters for 'Split Subject Trajectories by Group' using task `split_groups`.
@@ -44,9 +44,6 @@ split_subject_traj_groups: {}
 traj_map_layers:
   layer_style:
     layer_type: "polyline"
-
-# Parameters for 'Combine Trajectories and Patrol Events layers' using task `groupbykey`.
-combined_traj_map_layers: {}
 
 # Parameters for 'Draw Ecomaps for each trajectory group' using task `draw_ecomap`.
 traj_ecomap:
