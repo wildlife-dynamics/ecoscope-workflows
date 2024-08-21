@@ -164,14 +164,13 @@ def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
     with open(script_outpath, mode="w") as f:
         f.write(script)
 
-    prefix = (
+    exe = (
         # workaround for https://github.com/mamba-org/mamba/issues/2577
-        [os.environ["MAMBA_EXE"], "run", "-n", os.environ["CONDA_ENV_NAME"]]
+        [os.environ["MAMBA_EXE"], "run", "-n", os.environ["CONDA_ENV_NAME"], "python"]
         if "mamba" in sys.executable
-        else []
+        else [sys.executable]
     )
-    cmd = prefix + [
-        sys.executable,
+    cmd = exe + [
         "-W",
         "ignore",  # in testing context warnings are added; exclude them from stdout
         script_outpath.as_posix(),
