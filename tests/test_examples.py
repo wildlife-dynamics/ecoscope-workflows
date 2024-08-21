@@ -170,13 +170,16 @@ def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
         if "mamba" in sys.executable
         else [sys.executable]
     )
-    cmd = exe + [
-        "-W",
-        "ignore",  # in testing context warnings are added; exclude them from stdout
-        script_outpath.as_posix(),
-        "--config-file",
-        end_to_end.param_path.as_posix(),
-    ]
+    cmd = " ".join(
+        exe
+        + [
+            "-W",
+            "ignore",  # in testing context warnings are added; exclude them from stdout
+            script_outpath.as_posix(),
+            "--config-file",
+            end_to_end.param_path.as_posix(),
+        ],
+    )
     env = os.environ.copy()
     env["ECOSCOPE_WORKFLOWS_RESULTS"] = tmp.as_posix()
     out = subprocess.run(cmd, capture_output=True, text=True, env=env, shell=True)
