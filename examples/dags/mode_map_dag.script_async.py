@@ -1,14 +1,14 @@
 import argparse
 import os
-
 import yaml
 
 from ecoscope_workflows.executors import LithopsExecutor
 from ecoscope_workflows.graph import DependsOn, DependsOnSequence, Graph, Node
+
+from ecoscope_workflows.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows.tasks.results import create_map_layer
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
-from ecoscope_workflows.tasks.io import get_subjectgroup_observations
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
