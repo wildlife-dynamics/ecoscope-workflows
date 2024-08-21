@@ -67,7 +67,7 @@ if __name__ == "__main__":
                         {% for v in argvalues %}
                         DependsOn("{{ v }}"),
                         {% endfor %}
-                    ]
+                    ],
                 ),
                 {% else %}
                 "argvalues": DependsOn("{{ argvalues[0] }}"),
