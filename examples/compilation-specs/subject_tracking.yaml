@@ -1,4 +1,4 @@
-id: patrol_workflow
+id: subject_tracking
 workflow:
   # set 'global' groupers
   - name: Set Groupers
@@ -52,7 +52,7 @@ workflow:
     mapvalues:
       argnames: text
       argvalues: ${{ workflow.traj_ecomap.return }}
-  - name: Create Map Widgets for Patrol Events
+  - name: Create Map Widgets for Trajectories
     id: traj_map_widgets_single_views
     task: create_map_widget_single_view
     map:
@@ -64,8 +64,7 @@ workflow:
     partial:
       widgets: ${{ workflow.traj_map_widgets_single_views.return }}
 
-
-  # Grouped single value widget (1) - total patrols per group
+  # Grouped single value widget (1) - mean speed per group
   - name: Calculate Mean Speed Per Group
     id: mean_speed
     task: dataframe_column_mean
@@ -78,8 +77,27 @@ workflow:
     map:
       argnames: [view, data]
       argvalues: ${{ workflow.mean_speed.return }}
-  - name: Merge per group Total Patrols SV widgets
+  - name: Merge per group Mean Speed SV widgets
     id: mean_speed_grouped_sv_widget
     task: merge_widget_views
     partial:
       widgets: ${{ workflow.mean_speed_sv_widgets.return }}
+
+  # Grouped single value widget (2) - max speed per group
+  - name: Calculate Max Speed Per Group
+    id: max_speed
+    task: dataframe_column_max
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.split_subject_traj_groups.return }}
+  - name: Create Single Value Widgets for Max Speed Per Group
+    id: max_speed_sv_widgets
+    task: create_single_value_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.max_speed.return }}
+  - name: Merge per group Max Speed SV widgets
+    id: max_speed_grouped_sv_widget
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.max_speed_sv_widgets.return }}

@@ -50,7 +50,7 @@ traj_ecomap:
 ecomap_html_urls:
   filename:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
-# Parameters for 'Create Map Widgets for Patrol Events' using task `create_map_widget_single_view`.
+# Parameters for 'Create Map Widgets for Trajectories' using task `create_map_widget_single_view`.
 traj_map_widgets_single_views:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
 
@@ -65,5 +65,16 @@ mean_speed:
 mean_speed_sv_widgets:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
 
-# Parameters for 'Merge per group Total Patrols SV widgets' using task `merge_widget_views`.
+# Parameters for 'Merge per group Mean Speed SV widgets' using task `merge_widget_views`.
 mean_speed_grouped_sv_widget:
+
+# Parameters for 'Calculate Max Speed Per Group' using task `dataframe_column_max`.
+max_speed:
+  column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Column to aggregate'))
+
+# Parameters for 'Create Single Value Widgets for Max Speed Per Group' using task `create_single_value_widget_single_view`.
+max_speed_sv_widgets:
+  title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Merge per group Max Speed SV widgets' using task `merge_widget_views`.
+max_speed_grouped_sv_widget:

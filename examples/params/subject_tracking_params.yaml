@@ -69,5 +69,16 @@ mean_speed:
 mean_speed_sv_widgets:
   title: "Mean Speed" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
 
-# Parameters for 'Merge per group Total Patrols SV widgets' using task `merge_widget_views`.
+# Parameters for 'Merge per group Mean Speed SV widgets' using task `merge_widget_views`.
 mean_speed_grouped_sv_widget: {}
+
+# Parameters for 'Calculate Max Speed Per Group' using task `dataframe_column_mean`.
+max_speed:
+  column_name: "speed_kmhr" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Column to aggregate'))
+
+# Parameters for 'Create Single Value Widgets for Mean Max Per Group' using task `create_single_value_widget_single_view`.
+max_speed_sv_widgets:
+  title: "Max Speed" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Merge per group Total Patrols SV widgets' using task `merge_widget_views`.
+max_speed_grouped_sv_widget: {}
