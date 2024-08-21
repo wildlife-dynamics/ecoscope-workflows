@@ -51,7 +51,23 @@ if __name__ == "__main__":
             async_task={{ call_task_macros.create_callable(t, false, false, validate, false, set_executor) }},
             {% if t.partial %}
             partial={
-                {% for arg in t.partial %}"{{ arg }}": {{ t.partial[arg]["asstr"] }},{% endfor %}
+                {% for arg in t.partial %}
+                {% if t.partial[arg]["aslist"]|length > 1 %}
+                "{{ arg }}": DependsOnSequence(
+                    [
+                        {% for v in t.partial[arg]["aslist"] %}
+                        DependsOn("{{ v }}"),
+                        {% endfor %}
+                    ],
+                ),
+                {% else %}
+                {% if "os.environ" in t.partial[arg]["asstr"] %}
+                "{{ arg }}": {{ t.partial[arg]["aslist"][0]  }},
+                {% else %}
+                "{{ arg }}": DependsOn("{{ t.partial[arg]["aslist"][0] }}"),
+                {% endif %}
+                {% endif %}
+                {% endfor %}
             } | {{ params }},
             {% else %}
             partial={{ params }},

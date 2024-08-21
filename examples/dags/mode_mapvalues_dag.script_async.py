@@ -55,8 +55,8 @@ if __name__ == "__main__":
         "split_obs": Node(
             async_task=split_groups.validate().set_executor(le),
             partial={
-                "df": patrol_events,
-                "groupers": groupers,
+                "df": DependsOn("patrol_events"),
+                "groupers": DependsOn("groupers"),
             }
             | params["split_obs"],
             method="call",
@@ -103,7 +103,7 @@ if __name__ == "__main__":
         "ecomap_widgets_merged": Node(
             async_task=merge_widget_views.validate().set_executor(le),
             partial={
-                "widgets": ecomap_widgets,
+                "widgets": DependsOn("ecomap_widgets"),
             }
             | params["ecomap_widgets_merged"],
             method="call",
@@ -111,8 +111,8 @@ if __name__ == "__main__":
         "dashboard": Node(
             async_task=gather_dashboard.validate().set_executor(le),
             partial={
-                "widgets": ecomap_widgets_merged,
-                "groupers": groupers,
+                "widgets": DependsOn("ecomap_widgets_merged"),
+                "groupers": DependsOn("groupers"),
             }
             | params["dashboard"],
             method="call",
