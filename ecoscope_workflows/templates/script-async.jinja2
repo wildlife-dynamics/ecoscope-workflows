@@ -46,8 +46,12 @@ if __name__ == "__main__":
         {% for t in spec.workflow %}
         {% set validate = true %}
         {% set params = 'params["' ~ t.id ~ '"]' %}
-        {% set indent = '    ' %}
-        {{ call_task_macros.handle_task(t, validate, params, indent) }}
+        {% set set_executor = 'le' %}
+        "{{ t.id }}": Node(
+            async_callable=(
+                {{ call_task_macros.create_callable(t, validate, params, set_executor) }}
+            ),
+        ),
         {% endfor -%}
     }
     graph = Graph(dependencies=dependencies, nodes=nodes)

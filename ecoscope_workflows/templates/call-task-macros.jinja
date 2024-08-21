@@ -1,4 +1,4 @@
-{% macro create_callable(t, validate, params) %}
+{% macro create_callable(t, validate, params, set_executor) %}
 {{ t.known_task.importable_reference.function }}
 {% if validate %}
 .validate()
@@ -7,6 +7,9 @@
 .partial({% for arg in t.partial %}{{ arg }}={{ t.partial[arg] }},{% endfor %} **{{ params }})
 {% else %}
 .partial(**{{ params }})
+{% endif %}
+{% if set_executor %}
+.set_executor({{ set_executor }})
 {% endif %}
 .{{ t.method }}
 {% endmacro %}
