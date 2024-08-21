@@ -28,6 +28,9 @@ jobs:
           cache-downloads: true
           init-shell: bash
 
+      - name: Export environment name to env
+        run: echo "CONDA_ENV_NAME=${{ matrix.environment-name }}" >> $GITHUB_ENV
+
       - name: Install pip dependencies and our package
         shell: bash -leo pipefail {0}
         run: |
