@@ -28,9 +28,6 @@ jobs:
           cache-downloads: true
           init-shell: bash
 
-      - name: Export environment name to env
-        run: echo "CONDA_ENV_NAME=${{ matrix.environment-name }}" >> $GITHUB_ENV
-
       - name: Install pip dependencies and our package
         shell: bash -leo pipefail {0}
         run: |
@@ -41,6 +38,9 @@ jobs:
         run: |
           python -m pytest -v ecoscope_workflows/ --doctest-modules \
           --ignore=ecoscope_workflows/visualize.py
+
+      - name: Export shell name to env
+        run: echo "SHELL='/usr/bin/bash -leo pipefail {0}'" >> $GITHUB_ENV
 
       - name: Test with pytest
         env:
