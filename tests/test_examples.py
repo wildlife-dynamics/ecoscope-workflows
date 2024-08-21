@@ -198,5 +198,6 @@ def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
         raise ValueError(f"{cmd = } failed with:\n {proc.stderr.read()}")
     assert returncode == 0
     assert proc.stdout is not None
+    stdout = proc.stdout.read().strip()
     for assert_fn in end_to_end.assert_that_stdout:
-        assert assert_fn(proc.stdout.read().strip())
+        assert assert_fn(stdout)
