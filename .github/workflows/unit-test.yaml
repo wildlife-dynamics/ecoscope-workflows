@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: ["*"]
 
+defaults:
+  run:
+    shell: bash -leo pipefail {0}
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -24,16 +28,10 @@ jobs:
           environment-file: ./runtimes/${{ matrix.environment-name }}.yml
           cache-environment: true
           cache-downloads: true
-
-      - name: Initialize micromamba
-        shell: bash -l {0}
-        run: |
-          $MAMBA_EXE shell init --shell bash --root-prefix=~/micromamba
+          init-shell: bash
 
       - name: Install pip dependencies and our package
-        shell: bash {0}
         run: |
-          $MAMBA_EXE activate ${{ matrix.environment-name }}
           python -m pip install ".[test,lithops]"
 
       # - uses: actions/cache@v4
