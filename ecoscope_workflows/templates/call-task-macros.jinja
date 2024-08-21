@@ -14,9 +14,8 @@
 
 {% macro handle_call_method(t, validate, params, indent) %}
 {{ indent }}{{ t.id }} = (
-{{ indent }}{{ indent }}{{ create_callable(t, validate, params) }}()
+        {{ create_callable(t, validate, params) }}()
     )
-
 {% endmacro %}
 
 
@@ -27,7 +26,7 @@
 {% endmacro %}
 
 
-{% macro handle_task(t, validate, params, indent) %}
+{% macro call_task(t, validate, params, indent) %}
 {% if t.method == "call" %}
     {{ handle_call_method(t, validate, params, indent) }}
 {% else %}
