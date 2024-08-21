@@ -31,7 +31,7 @@ obs_a_params = dict(
 # call the task
 
 
-obs_a = get_subjectgroup_observations.call(**obs_a_params)
+obs_a = get_subjectgroup_observations.partial(**obs_a_params).call()
 
 
 # %% [markdown]
@@ -52,7 +52,7 @@ obs_b_params = dict(
 # call the task
 
 
-obs_b = get_subjectgroup_observations.call(**obs_b_params)
+obs_b = get_subjectgroup_observations.partial(**obs_b_params).call()
 
 
 # %% [markdown]
@@ -73,7 +73,7 @@ obs_c_params = dict(
 # call the task
 
 
-obs_c = get_subjectgroup_observations.call(**obs_c_params)
+obs_c = get_subjectgroup_observations.partial(**obs_c_params).call()
 
 
 # %% [markdown]

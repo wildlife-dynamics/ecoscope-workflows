@@ -24,14 +24,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
     params = yaml.safe_load(args.config_file)
 
-    patrol_events = get_patrol_events.validate().call(**params["patrol_events"])
+    patrol_events = (
+        get_patrol_events.validate().partial(**params["patrol_events"]).call()
+    )
 
-    groupers = set_groupers.validate().call(**params["groupers"])
+    groupers = set_groupers.validate().partial(**params["groupers"]).call()
 
     split_obs = (
         split_groups.validate()
-        .partial(df=patrol_events, groupers=groupers)
-        .call(**params["split_obs"])
+        .partial(df=patrol_events, groupers=groupers, **params["split_obs"])
+        .call()
     )
 
     map_layers = (
@@ -63,14 +65,16 @@ if __name__ == "__main__":
 
     ecomap_widgets_merged = (
         merge_widget_views.validate()
-        .partial(widgets=ecomap_widgets)
-        .call(**params["ecomap_widgets_merged"])
+        .partial(widgets=ecomap_widgets, **params["ecomap_widgets_merged"])
+        .call()
     )
 
     dashboard = (
         gather_dashboard.validate()
-        .partial(widgets=ecomap_widgets_merged, groupers=groupers)
-        .call(**params["dashboard"])
+        .partial(
+            widgets=ecomap_widgets_merged, groupers=groupers, **params["dashboard"]
+        )
+        .call()
     )
 
     print(dashboard)

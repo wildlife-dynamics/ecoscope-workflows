@@ -1,18 +1,20 @@
-{% macro create_call_method_callable(t, validate) %}
+{%- macro create_call_method_callable(t, validate, params) %}
 {{ t.known_task.importable_reference.function }}
 {% if validate %}
 .validate()
 {% endif %}
 {% if t.partial %}
-.partial({% for arg in t.partial %}{{ arg }}={{ t.partial[arg] }}{% if not loop.last %},{% endif %}{% endfor %})
+.partial({% for arg in t.partial %}{{ arg }}={{ t.partial[arg] }},{% endfor %} **{{ params }})
+{% else %}
+.partial(**{{ params }})
 {% endif %}
 .call
-{% endmacro %}
+{% endmacro -%}
 
 
 {% macro handle_call_method(t, validate, params, indent) %}
 {{ indent }}{{ t.id }} = (
-        {{ create_call_method_callable(t, validate) }}(**{{ params }})
+{{ indent }}{{ indent }}{{ create_call_method_callable(t, validate, params) }}()
     )
 
 {% endmacro %}
@@ -24,7 +26,7 @@
 .validate()
 {% endif %}
 {% if t.partial %}
-.partial({% for arg in t.partial %}{{ arg }}={{ t.partial[arg] }}{% endfor %}, **{{ params }})
+.partial({% for arg in t.partial %}{{ arg }}={{ t.partial[arg] }},{% endfor %} **{{ params }})
 {% else %}
 .partial(**{{ params }})
 {% endif %}
