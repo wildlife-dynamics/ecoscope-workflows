@@ -23,7 +23,13 @@ jobs:
         with:
           environment-file: ./runtimes/${{ matrix.environment-name }}.yml
 
+      - name: Initialize micromamba
+        shell: bash -l {0}
+        run: |
+          $MAMBA_EXE shell init --shell bash --root-prefix=~/micromamba
+
       - name: Install pip dependencies and our package
+        shell: bash -l {0}
         run: |
           $MAMBA_EXE activate ${{ matrix.environment-name }}
           python -m pip install ".[test,lithops]"
@@ -45,6 +51,7 @@ jobs:
       #     .venv/bin/python -m pip install -e ".[test,lithops]"
 
       - name: Run doctests
+        shell: bash -l {0}
         run: |
           $MAMBA_EXE activate ${{ matrix.environment-name }}
           python -m pytest -v ecoscope_workflows/ --doctest-modules \
@@ -55,6 +62,7 @@ jobs:
           EARTHRANGER_SERVER: ${{ secrets.EARTHRANGER_SERVER }}
           EARTHRANGER_USERNAME: ${{ secrets.EARTHRANGER_USERNAME }}
           EARTHRANGER_PASSWORD: ${{ secrets.EARTHRANGER_PASSWORD }}
+        shell: bash -l {0}
         run: |
           $MAMBA_EXE activate ${{ matrix.environment-name }}
           python -m pytest tests -vvv
