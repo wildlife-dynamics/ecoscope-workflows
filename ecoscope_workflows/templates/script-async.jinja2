@@ -49,7 +49,13 @@ if __name__ == "__main__":
         {% set set_executor = 'le' %}
         "{{ t.id }}": Node(
             async_task={{ call_task_macros.create_callable(t, false, false, validate, false, set_executor) }},
+            {% if t.partial %}
+            partial={
+                {% for arg in t.partial %}"{{ arg }}": {{ t.partial[arg]["asstr"] }},{% endfor %}
+            } | {{ params }},
+            {% else %}
             partial={{ params }},
+            {% endif %}
             method="{{ t.method }}",
             {% if t.method != "call" %}
             {% if t.method == "map" %}

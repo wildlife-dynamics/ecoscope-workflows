@@ -75,7 +75,9 @@ if __name__ == "__main__":
         ),
         "td_ecomap_html_url": Node(
             async_task=persist_text.validate().set_executor(le),
-            partial={"root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"]}
+            partial={
+                "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            }
             | params["td_ecomap_html_url"],
             method="map",
             kwargs={
