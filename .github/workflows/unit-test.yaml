@@ -25,7 +25,7 @@ jobs:
 
       - name: Install pip dependencies and our package
         run: |
-          mamba run -n ${{ matrix.environment-name }} pip install ".[test,lithops]"
+          $MAMBA_EXE run -n ${{ matrix.environment-name }} pip install ".[test,lithops]"
 
       # - uses: actions/cache@v4
       #   id: restore-cache
@@ -45,7 +45,7 @@ jobs:
 
       - name: Run doctests
         run: |
-          mamba run -n ${{ matrix.environment-name }} \
+          $MAMBA_EXE run -n ${{ matrix.environment-name }} \
           pytest -v ecoscope_workflows/ --doctest-modules \
           --ignore=ecoscope_workflows/visualize.py
 
@@ -55,7 +55,7 @@ jobs:
           EARTHRANGER_USERNAME: ${{ secrets.EARTHRANGER_USERNAME }}
           EARTHRANGER_PASSWORD: ${{ secrets.EARTHRANGER_PASSWORD }}
         run: |
-          mamba run -n ${{ matrix.environment-name }} pytest tests -vvv
+          $MAMBA_EXE run -n ${{ matrix.environment-name }} pytest tests -vvv
 
     # - name: Upload Coverage to Codecov
     #   uses: codecov/codecov-action@v2
