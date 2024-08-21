@@ -348,6 +348,32 @@
             "required": [],
             "type": "object"
         },
+        "Calculate Number of Locations Per Group": {
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+        },
+        "Create Single Value Widgets for Number of Location Per Group": {
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "title": "Title",
+                    "type": "string",
+                    "description": "The title of the widget"
+                }
+            },
+            "required": [
+                "title"
+            ],
+            "type": "object"
+        },
+        "Merge per group Number of Locations SV widgets": {
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+        },
         "Calculate Time Density from Trajectory": {
             "additionalProperties": false,
             "properties": {
@@ -491,6 +517,26 @@
             "additionalProperties": false,
             "properties": {},
             "required": [],
+            "type": "object"
+        },
+        "Create Dashboard with Subject Tracking Widgets": {
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "title": "Title",
+                    "type": "string",
+                    "description": "The title of the dashboard"
+                },
+                "description": {
+                    "title": "Description",
+                    "type": "string",
+                    "description": "The description of the dashboard"
+                }
+            },
+            "required": [
+                "title",
+                "description"
+            ],
             "type": "object"
         }
     },
@@ -943,6 +989,57 @@
                 "data"
             ],
             "title": "WidgetSingleView",
+            "type": "object"
+        },
+        "GroupedWidget": {
+            "properties": {
+                "widget_type": {
+                    "enum": [
+                        "plot",
+                        "map",
+                        "text",
+                        "single_value"
+                    ],
+                    "title": "Widget Type",
+                    "type": "string"
+                },
+                "title": {
+                    "title": "Title",
+                    "type": "string"
+                },
+                "views": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "format": "path",
+                                "type": "string"
+                            },
+                            {
+                                "format": "uri",
+                                "minLength": 1,
+                                "type": "string"
+                            },
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "number"
+                            }
+                        ]
+                    },
+                    "title": "Views",
+                    "type": "object"
+                }
+            },
+            "required": [
+                "widget_type",
+                "title",
+                "views"
+            ],
+            "title": "GroupedWidget",
             "type": "object"
         }
     }

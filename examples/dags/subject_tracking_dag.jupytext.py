@@ -22,7 +22,9 @@ from ecoscope_workflows.tasks.results import merge_widget_views
 from ecoscope_workflows.tasks.analysis import dataframe_column_mean
 from ecoscope_workflows.tasks.results import create_single_value_widget_single_view
 from ecoscope_workflows.tasks.analysis import dataframe_column_max
+from ecoscope_workflows.tasks.analysis import dataframe_count
 from ecoscope_workflows.tasks.analysis import calculate_time_density
+from ecoscope_workflows.tasks.results import gather_dashboard
 
 # %% [markdown]
 # ## Set Groupers
@@ -353,6 +355,59 @@ max_speed_grouped_sv_widget = merge_widget_views.partial(
 
 
 # %% [markdown]
+# ## Calculate Number of Locations Per Group
+
+# %%
+# parameters
+
+num_location_params = dict()
+
+# %%
+# call the task
+
+
+num_location = dataframe_count.partial(**num_location_params).mapvalues(
+    argnames=["df"], argvalues=split_subject_traj_groups
+)
+
+
+# %% [markdown]
+# ## Create Single Value Widgets for Number of Location Per Group
+
+# %%
+# parameters
+
+num_location_sv_widgets_params = dict(
+    title=...,
+)
+
+# %%
+# call the task
+
+
+num_location_sv_widgets = create_single_value_widget_single_view.partial(
+    **num_location_sv_widgets_params
+).map(argnames=["view", "data"], argvalues=num_location)
+
+
+# %% [markdown]
+# ## Merge per group Number of Locations SV widgets
+
+# %%
+# parameters
+
+num_location_grouped_sv_widget_params = dict()
+
+# %%
+# call the task
+
+
+num_location_grouped_sv_widget = merge_widget_views.partial(
+    widgets=num_location_sv_widgets
+).call(**num_location_grouped_sv_widget_params)
+
+
+# %% [markdown]
 # ## Calculate Time Density from Trajectory
 
 # %%
@@ -471,3 +526,30 @@ td_grouped_map_widget_params = dict()
 td_grouped_map_widget = merge_widget_views.partial(widgets=td_map_widget).call(
     **td_grouped_map_widget_params
 )
+
+
+# %% [markdown]
+# ## Create Dashboard with Subject Tracking Widgets
+
+# %%
+# parameters
+
+subject_tracking_dashboard_params = dict(
+    title=...,
+    description=...,
+)
+
+# %%
+# call the task
+
+
+subject_tracking_dashboard = gather_dashboard.partial(
+    widgets=[
+        traj_grouped_map_widget,
+        mean_speed_grouped_sv_widget,
+        max_speed_grouped_sv_widget,
+        num_location_grouped_sv_widget,
+        td_grouped_map_widget,
+    ],
+    groupers=groupers,
+).call(**subject_tracking_dashboard_params)

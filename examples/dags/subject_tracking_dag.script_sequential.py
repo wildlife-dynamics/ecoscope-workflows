@@ -16,7 +16,9 @@ from ecoscope_workflows.tasks.results import merge_widget_views
 from ecoscope_workflows.tasks.analysis import dataframe_column_mean
 from ecoscope_workflows.tasks.results import create_single_value_widget_single_view
 from ecoscope_workflows.tasks.analysis import dataframe_column_max
+from ecoscope_workflows.tasks.analysis import dataframe_count
 from ecoscope_workflows.tasks.analysis import calculate_time_density
+from ecoscope_workflows.tasks.results import gather_dashboard
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -127,6 +129,24 @@ if __name__ == "__main__":
         .call(**params["max_speed_grouped_sv_widget"])
     )
 
+    num_location = (
+        dataframe_count.validate()
+        .partial(**params["num_location"])
+        .mapvalues(argnames=["df"], argvalues=split_subject_traj_groups)
+    )
+
+    num_location_sv_widgets = (
+        create_single_value_widget_single_view.validate()
+        .partial(**params["num_location_sv_widgets"])
+        .map(argnames=["view", "data"], argvalues=num_location)
+    )
+
+    num_location_grouped_sv_widget = (
+        merge_widget_views.validate()
+        .partial(widgets=num_location_sv_widgets)
+        .call(**params["num_location_grouped_sv_widget"])
+    )
+
     td = (
         calculate_time_density.validate()
         .partial(**params["td"])
@@ -166,4 +186,19 @@ if __name__ == "__main__":
         .call(**params["td_grouped_map_widget"])
     )
 
-    print(td_grouped_map_widget)
+    subject_tracking_dashboard = (
+        gather_dashboard.validate()
+        .partial(
+            widgets=[
+                traj_grouped_map_widget,
+                mean_speed_grouped_sv_widget,
+                max_speed_grouped_sv_widget,
+                num_location_grouped_sv_widget,
+                td_grouped_map_widget,
+            ],
+            groupers=groupers,
+        )
+        .call(**params["subject_tracking_dashboard"])
+    )
+
+    print(subject_tracking_dashboard)

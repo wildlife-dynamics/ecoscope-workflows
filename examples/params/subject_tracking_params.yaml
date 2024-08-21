@@ -83,6 +83,16 @@ max_speed_sv_widgets:
 # Parameters for 'Merge per group Total Patrols SV widgets' using task `merge_widget_views`.
 max_speed_grouped_sv_widget: {}
 
+# Parameters for 'Calculate Number of Locations Per Group' using task `dataframe_count`.
+num_location: {}
+
+# Parameters for 'Create Single Value Widgets for Number of Location Per Group' using task `create_single_value_widget_single_view`.
+num_location_sv_widgets:
+  title: "Number of Locations" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Merge per group Number of Locations SV widgets' using task `merge_widget_views`.
+num_location_grouped_sv_widget: {}
+
 # Parameters for 'Calculate Time Density from Trajectory' using task `calculate_time_density`.
 td:
   pixel_size: 250.0 # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=250.0, description='Pixel size for raster profile.'))
@@ -113,3 +123,8 @@ td_map_widget:
 
 # Parameters for 'Merge Time Density Map Widget Views' using task `merge_widget_views`.
 td_grouped_map_widget: {}
+
+# Parameters for 'Create Dashboard with Subject Tracking Widgets' using task `gather_dashboard`.
+subject_tracking_dashboard:
+  title: "Subject Tracking Dashboard" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the dashboard'))
+  description: "A dashboard for visualizing subject trajectories and home range." # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The description of the dashboard'))
