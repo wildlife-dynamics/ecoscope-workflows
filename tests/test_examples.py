@@ -166,7 +166,7 @@ def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
 
     exe = (
         # workaround for https://github.com/mamba-org/mamba/issues/2577
-        "python"  # assumes test will run in shell with activated env
+        f"{os.environ['MAMBA_EXE']} run -n {os.environ['CONDA_ENV_NAME']} python"
         if "mamba" in sys.executable
         else sys.executable
     )
