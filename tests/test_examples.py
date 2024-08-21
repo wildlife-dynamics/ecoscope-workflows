@@ -193,6 +193,9 @@ def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
         shell=True,
     )
     returncode = proc.wait()
+    if returncode != 0:
+        assert proc.stderr is not None
+        raise ValueError(f"{cmd = } failed with:\n {proc.stderr.read()}")
     assert returncode == 0
     assert proc.stdout is not None
     for assert_fn in end_to_end.assert_that_stdout:
