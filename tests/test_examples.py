@@ -172,7 +172,7 @@ def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
     )
     cmd = " ".join(
         [
-            os.environ.get("SHELL", "/bin/sh"),
+            os.environ.get("SHELL", "/bin/sh").replace('"', "").replace("'", ""),
             "-c",
             f"'{exe}",
             "-W",
