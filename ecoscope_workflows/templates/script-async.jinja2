@@ -54,13 +54,24 @@ if __name__ == "__main__":
             {% if t.method != "call" %}
             {% if t.method == "map" %}
                 {% set argnames = t.map.argnames %}
-                {% set argvalues = t.map.argvalues %}
+                {% set argvalues = t.map.argvalues["aslist"] %}
             {% elif t.method == "mapvalues" %}
                 {% set argnames = t.mapvalues.argnames %}
-                {% set argvalues = t.mapvalues.argvalues %}
+                {% set argvalues = t.mapvalues.argvalues["aslist"] %}
             {% endif %}
             params={
-                "argnames": {{ argnames}},
+                "argnames": {{ argnames }},
+                {% if argvalues|length > 1 %}
+                "argvalues": DependsOnSequence(
+                    [
+                        {% for v in argvalues %}
+                        DependsOn("{{ v }}"),
+                        {% endfor %}
+                    ]
+                ),
+                {% else %}
+                "argvalues": DependsOn("{{ argvalues[0] }}"),
+                {% endif %}
             },
             {% endif %}
         ),
