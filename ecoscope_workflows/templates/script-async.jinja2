@@ -51,6 +51,18 @@ if __name__ == "__main__":
             async_callable=(
                 {{ call_task_macros.create_callable(t, validate, params, set_executor) }}
             ),
+            {% if t.method != "call" %}
+            {% if t.method == "map" %}
+                {% set argnames = t.map.argnames %}
+                {% set argvalues = t.map.argvalues %}
+            {% elif t.method == "mapvalues" %}
+                {% set argnames = t.mapvalues.argnames %}
+                {% set argvalues = t.mapvalues.argvalues %}
+            {% endif %}
+            params={
+                "argnames": {{ argnames}},
+            },
+            {% endif %}
         ),
         {% endfor -%}
     }
