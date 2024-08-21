@@ -1,4 +1,4 @@
-name: ecoscope-1.8.2
+name: py3.10-ecoscope1.8.2
 channels:
   - conda-forge
 dependencies:
