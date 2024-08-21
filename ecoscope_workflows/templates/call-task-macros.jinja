@@ -1,10 +1,10 @@
-{% macro create_callable(t, validate, params, set_executor) %}
+{% macro create_callable(t, partial, validate, params, set_executor) %}
 {{ t.known_task.importable_reference.function }}
 {% if validate %}
 .validate()
 {% endif %}
-{% if t.partial %}
-.partial({% for arg in t.partial %}{{ arg }}={{ t.partial[arg]["asstr"] }},{% endfor %} **{{ params }})
+{% if partial %}
+.partial({% for arg in partial %}{{ arg }}={{ partial[arg]["asstr"] }},{% endfor %} **{{ params }})
 {% else %}
 .partial(**{{ params }})
 {% endif %}
@@ -17,14 +17,14 @@
 
 {% macro handle_call_method(t, validate, params, indent) %}
 {{ indent }}{{ t.id }} = (
-        {{ create_callable(t, validate, params) }}()
+        {{ create_callable(t, t.partial, validate, params) }}()
     )
 {% endmacro %}
 
 
 {% macro handle_parallel_method(t, validate, params, indent, argnames, argvalues) %}
 {{ indent }}{{ t.id }} = (
-        {{ create_callable(t, validate, params) }}(argnames={{ argnames }}, argvalues={{ argvalues }})
+        {{ create_callable(t, t.partial, validate, params) }}(argnames={{ argnames }}, argvalues={{ argvalues }})
     )
 {% endmacro %}
 
