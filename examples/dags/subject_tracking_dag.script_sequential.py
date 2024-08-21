@@ -16,6 +16,7 @@ from ecoscope_workflows.tasks.results import merge_widget_views
 from ecoscope_workflows.tasks.analysis import dataframe_column_mean
 from ecoscope_workflows.tasks.results import create_single_value_widget_single_view
 from ecoscope_workflows.tasks.analysis import dataframe_column_max
+from ecoscope_workflows.tasks.analysis import calculate_time_density
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -126,4 +127,43 @@ if __name__ == "__main__":
         .call(**params["max_speed_grouped_sv_widget"])
     )
 
-    print(max_speed_grouped_sv_widget)
+    td = (
+        calculate_time_density.validate()
+        .partial(**params["td"])
+        .mapvalues(argnames=["trajectory_gdf"], argvalues=split_subject_traj_groups)
+    )
+
+    td_map_layer = (
+        create_map_layer.validate()
+        .partial(**params["td_map_layer"])
+        .mapvalues(argnames=["geodataframe"], argvalues=td)
+    )
+
+    td_ecomap = (
+        draw_ecomap.validate()
+        .partial(**params["td_ecomap"])
+        .mapvalues(argnames=["geo_layers"], argvalues=td_map_layer)
+    )
+
+    td_ecomap_html_url = (
+        persist_text.validate()
+        .partial(
+            root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            **params["td_ecomap_html_url"],
+        )
+        .mapvalues(argnames=["text"], argvalues=td_ecomap)
+    )
+
+    td_map_widget = (
+        create_map_widget_single_view.validate()
+        .partial(**params["td_map_widget"])
+        .map(argnames=["view", "data"], argvalues=td_ecomap_html_url)
+    )
+
+    td_grouped_map_widget = (
+        merge_widget_views.validate()
+        .partial(widgets=td_map_widget)
+        .call(**params["td_grouped_map_widget"])
+    )
+
+    print(td_grouped_map_widget)

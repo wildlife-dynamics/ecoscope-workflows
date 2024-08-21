@@ -101,3 +101,42 @@ workflow:
     task: merge_widget_views
     partial:
       widgets: ${{ workflow.max_speed_sv_widgets.return }}
+
+  # time density
+  - name: Calculate Time Density from Trajectory
+    id: td
+    task: calculate_time_density
+    mapvalues:
+      argnames: trajectory_gdf
+      argvalues: ${{ workflow.split_subject_traj_groups.return }}
+  - name: Create map layer from Time Density
+    id: td_map_layer
+    task: create_map_layer
+    mapvalues:
+      argnames: geodataframe
+      argvalues: ${{ workflow.td.return }}
+  - name: Draw Ecomap from Time Density
+    id: td_ecomap
+    task: draw_ecomap
+    mapvalues:
+      argnames: geo_layers
+      argvalues: ${{ workflow.td_map_layer.return }}
+  - name: Persist Ecomap as Text
+    id: td_ecomap_html_url
+    task: persist_text
+    partial:
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+    mapvalues:
+      argnames: text
+      argvalues: ${{ workflow.td_ecomap.return }}
+  - name: Create Time Density Map Widget
+    id: td_map_widget
+    task: create_map_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.td_ecomap_html_url.return }}
+  - name: Merge Time Density Map Widget Views
+    id: td_grouped_map_widget
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.td_map_widget.return }}

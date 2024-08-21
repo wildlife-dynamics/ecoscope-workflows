@@ -78,3 +78,36 @@ max_speed_sv_widgets:
 
 # Parameters for 'Merge per group Max Speed SV widgets' using task `merge_widget_views`.
 max_speed_grouped_sv_widget:
+
+# Parameters for 'Calculate Time Density from Trajectory' using task `calculate_time_density`.
+td:
+  pixel_size:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=250.0, description='Pixel size for raster profile.'))
+  crs:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default='ESRI:102022'))
+  nodata_value:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default='nan', metadata=[_PydanticGeneralMetadata(allow_inf_nan=True)]))
+  band_count:   # (<class 'int'>, FieldInfo(annotation=NoneType, required=False, default=1))
+  max_speed_factor:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=1.05))
+  expansion_factor:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=1.3))
+  percentiles:   # (list[float], FieldInfo(annotation=NoneType, required=False, default=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0]))
+
+# Parameters for 'Create map layer from Time Density' using task `create_map_layer`.
+td_map_layer:
+  layer_style:   # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
+
+# Parameters for 'Draw Ecomap from Time Density' using task `draw_ecomap`.
+td_ecomap:
+  tile_layer:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A named tile layer, ie OpenStreetMap.'))
+  static:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Set to true to disable map pan/zoom.'))
+  title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The map title.'))
+  north_arrow_style:   # (typing.Union[ecoscope_workflows.tasks.results._ecomap.NorthArrowStyle, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the North Arrow.'))
+
+# Parameters for 'Persist Ecomap as Text' using task `persist_text`.
+td_ecomap_html_url:
+  filename:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
+
+# Parameters for 'Create Time Density Map Widget' using task `create_map_widget_single_view`.
+td_map_widget:
+  title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+  view:   # (tuple[tuple[str, typing.Literal['='], str], ...] | None, FieldInfo(annotation=NoneType, required=True, description='If grouped, the view of the widget', exclude=True))
+
+# Parameters for 'Merge Time Density Map Widget Views' using task `merge_widget_views`.
+td_grouped_map_widget:
