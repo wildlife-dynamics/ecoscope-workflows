@@ -107,7 +107,6 @@ td_ecomap_html_url:
 # Parameters for 'Create Time Density Map Widget' using task `create_map_widget_single_view`.
 td_map_widget:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
-  view:   # (tuple[tuple[str, typing.Literal['='], str], ...] | None, FieldInfo(annotation=NoneType, required=True, description='If grouped, the view of the widget', exclude=True))
 
 # Parameters for 'Merge Time Density Map Widget Views' using task `merge_widget_views`.
 td_grouped_map_widget:
