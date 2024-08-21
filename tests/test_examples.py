@@ -179,7 +179,7 @@ def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
     ]
     env = os.environ.copy()
     env["ECOSCOPE_WORKFLOWS_RESULTS"] = tmp.as_posix()
-    out = subprocess.run(cmd, capture_output=True, text=True, env=env)
+    out = subprocess.run(cmd, capture_output=True, text=True, env=env, shell=True)
     assert out.returncode == 0
     for assert_fn in end_to_end.assert_that_stdout:
         assert assert_fn(out.stdout.strip())
