@@ -33,6 +33,7 @@ jobs:
       - name: Install pip dependencies and our package
         shell: bash -l {0}
         run: |
+          $MAMBA_EXE shell reinit --shell bash
           $MAMBA_EXE activate ${{ matrix.environment-name }}
           python -m pip install ".[test,lithops]"
 
@@ -55,6 +56,7 @@ jobs:
       - name: Run doctests
         shell: bash -l {0}
         run: |
+          $MAMBA_EXE shell reinit --shell bash
           $MAMBA_EXE activate ${{ matrix.environment-name }}
           python -m pytest -v ecoscope_workflows/ --doctest-modules \
           --ignore=ecoscope_workflows/visualize.py
@@ -66,6 +68,7 @@ jobs:
           EARTHRANGER_PASSWORD: ${{ secrets.EARTHRANGER_PASSWORD }}
         shell: bash -l {0}
         run: |
+          $MAMBA_EXE shell reinit --shell bash
           $MAMBA_EXE activate ${{ matrix.environment-name }}
           python -m pytest tests -vvv
 
