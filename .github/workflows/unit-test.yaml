@@ -40,7 +40,7 @@ jobs:
           --ignore=ecoscope_workflows/visualize.py
 
       - name: Export shell name to env
-        run: echo "SHELL='/usr/bin/bash -leo pipefail {0}'" >> $GITHUB_ENV
+        run: echo 'SHELL="/usr/bin/bash -leo pipefail {0}"' >> $GITHUB_ENV
 
       - name: Test with pytest
         env:

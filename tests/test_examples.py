@@ -166,24 +166,22 @@ def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
 
     exe = (
         # workaround for https://github.com/mamba-org/mamba/issues/2577
-        ["python"]  # assumes test is running in an activated conda env
+        "python"  # assumes test is running in an activated conda env
         if "mamba" in sys.executable
-        else [sys.executable]
+        else sys.executable
     )
-    cmd = (
-        os.environ["SHELL"]
-        + " -c '"
-        + " ".join(
-            exe
-            + [
-                "-W",
-                "ignore",  # in testing context warnings are added; exclude them from stdout
-                script_outpath.as_posix(),
-                "--config-file",
-                end_to_end.param_path.as_posix(),
-            ],
-        )
-        + "'"
+    cmd = " ".join(
+        [
+            os.environ["SHELL"],
+            "-c '",
+            exe,
+            "-W",
+            "ignore",  # in testing context warnings are added; exclude them from stdout
+            script_outpath.as_posix(),
+            "--config-file",
+            end_to_end.param_path.as_posix(),
+            "'",
+        ],
     )
     env = os.environ.copy()
     env["ECOSCOPE_WORKFLOWS_RESULTS"] = tmp.as_posix()
