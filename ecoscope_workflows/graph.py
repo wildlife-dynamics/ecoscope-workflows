@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
 from graphlib import TopologicalSorter
-from typing import Any, Callable
+from typing import Any, Literal
 
+from ecoscope_workflows.decorators import AsyncTask
 from ecoscope_workflows.executors import Future, FutureSequence
 
 
@@ -14,10 +15,15 @@ class DependsOnSequence(list[DependsOn]):
     pass
 
 
+Dependency = DependsOn | DependsOnSequence
+
+
 @dataclass
 class Node:
-    async_callable: Callable
-    params: dict[str, Any | DependsOn] = field(default_factory=dict)
+    async_task: AsyncTask
+    partial: dict[str, Any | Dependency] = field(default_factory=dict)
+    method: Literal["call", "map", "mapvalues"] = "call"
+    kwargs: dict[str, Any | Dependency] = field(default_factory=dict)
 
 
 Dependencies = dict[str, list[str]]  # TODO: `set` instead of `list`
@@ -39,17 +45,20 @@ class Graph:
             ready = [name for name in ts.get_ready()]
             for name in ready:
                 node = self.nodes[name]
-                hydrated_params = {}
-                for k, v in node.params.items():
+                hydrated_kwargs = {}
+                for k, v in node.kwargs.items():
                     match v:
-                        case DependsOn(v.node_name):
+                        case DependsOn():
                             resolved = futures[v.node_name].gather()
                         case DependsOnSequence():
                             resolved = [futures[x.node_name].gather() for x in v]
                         case _:
                             resolved = v
-                    hydrated_params[k] = resolved
-                future = node.async_callable(**hydrated_params)
+                    hydrated_kwargs[k] = resolved
+                # TODO: hydrate dependencies in node.partial
+                partial = getattr(node.async_task, "partial")(**node.partial)
+                callable_method = getattr(partial, node.method)
+                future = callable_method(**hydrated_kwargs)
                 futures[name] = future
             for name in ready:
                 ts.done(name)
