@@ -48,9 +48,8 @@ if __name__ == "__main__":
         {% set params = 'params["' ~ t.id ~ '"]' %}
         {% set set_executor = 'le' %}
         "{{ t.id }}": Node(
-            async_callable=(
-                {{ call_task_macros.create_callable(t, validate, params, set_executor) }}
-            ),
+            async_task={{ call_task_macros.create_callable(t, false, false, validate, false, set_executor) }},
+            partial={{ params }},
             {% if t.method != "call" %}
             {% if t.method == "map" %}
                 {% set argnames = t.map.argnames %}
@@ -59,7 +58,8 @@ if __name__ == "__main__":
                 {% set argnames = t.mapvalues.argnames %}
                 {% set argvalues = t.mapvalues.argvalues["aslist"] %}
             {% endif %}
-            params={
+            method="{{ t.method }}",
+            kwargs={
                 "argnames": {{ argnames }},
                 {% if argvalues|length > 1 %}
                 "argvalues": DependsOnSequence(

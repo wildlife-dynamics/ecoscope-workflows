@@ -5,7 +5,7 @@
 {% endif %}
 {% if partial %}
 .partial({% for arg in partial %}{{ arg }}={{ partial[arg]["asstr"] }},{% endfor %} **{{ params }})
-{% else %}
+{% elif params %}
 .partial(**{{ params }})
 {% endif %}
 {% if set_executor %}
