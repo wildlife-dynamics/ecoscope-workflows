@@ -1,0 +1,61 @@
+# Parameters for 'Set Groupers' using task `set_groupers`.
+groupers:
+  groupers:   # (list[ecoscope_workflows.tasks.groupby._groupby.Grouper], FieldInfo(annotation=NoneType, required=True, description='            Index(es) and/or column(s) to group by, along with\n            optional display names and help text.\n            '))
+
+# Parameters for 'Get Subject Group Observations from EarthRanger' using task `get_subjectgroup_observations`.
+subject_obs:
+  client:   # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
+  subject_group_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of EarthRanger Subject'))
+  since:   # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
+  until:   # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
+  include_inactive:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether or not to include inactive subjects'))
+
+# Parameters for 'Transform Observations to Relocations' using task `process_relocations`.
+subject_reloc:
+  filter_point_coords:   # (list[ecoscope_workflows.tasks.transformation._filtering.Coordinate], FieldInfo(annotation=NoneType, required=True))
+  relocs_columns:   # (list[str], FieldInfo(annotation=NoneType, required=True))
+
+# Parameters for 'Transform Relocations to Trajectories' using task `relocations_to_trajectory`.
+subject_traj:
+  min_length_meters:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
+  max_length_meters:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
+  max_time_secs:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
+  min_time_secs:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
+  max_speed_kmhr:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
+  min_speed_kmhr:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
+
+# Parameters for 'Add temporal index to Subject Trajectories' using task `add_temporal_index`.
+traj_add_temporal_index:
+  index_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A name for the new index which will be added.'))
+  time_col:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of existing column containing time data.'))
+  directive:   # (typing.Literal['%a', '%A', '%b', '%B', '%c', '%d', '%f', '%H', '%I', '%j', '%m', '%M', '%p', '%S', '%U', '%w', '%W', '%x', '%X', '%y', '%Y', '%z', '%%'], FieldInfo(annotation=NoneType, required=True, description='A directive for formatting the time data.'))
+  cast_to_datetime:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether to attempt casting `time_col` to datetime.'))
+  format:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='            If `cast_to_datetime=True`, the format to pass to `pd.to_datetime`\n            when attempting to cast `time_col` to datetime. Defaults to "mixed".\n            '))
+
+# Parameters for 'Split Subject Trajectories by Group' using task `split_groups`.
+split_subject_traj_groups:
+
+# Parameters for 'Create map layer for each trajectory group' using task `create_map_layer`.
+traj_map_layers:
+  layer_style:   # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
+
+# Parameters for 'Combine Trajectories and Patrol Events layers' using task `groupbykey`.
+combined_traj_map_layers:
+
+# Parameters for 'Draw Ecomaps for each trajectory group' using task `draw_ecomap`.
+traj_ecomap:
+  tile_layer:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A named tile layer, ie OpenStreetMap.'))
+  static:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Set to true to disable map pan/zoom.'))
+  title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The map title.'))
+  north_arrow_style:   # (typing.Union[ecoscope_workflows.tasks.results._ecomap.NorthArrowStyle, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the North Arrow.'))
+
+# Parameters for 'Persist ecomap as Text' using task `persist_text`.
+ecomap_html_urls:
+  filename:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
+
+# Parameters for 'Create Map Widgets for Patrol Events' using task `create_map_widget_single_view`.
+traj_map_widgets_single_views:
+  title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Merge EcoMap Widget Views' using task `merge_widget_views`.
+traj_grouped_map_widget:
