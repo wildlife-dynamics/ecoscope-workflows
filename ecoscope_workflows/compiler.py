@@ -417,6 +417,7 @@ class Spec(_ForbidExtra):
                     )
         return self
 
+    @computed_field  # type: ignore[misc]
     @property
     def task_instance_dependencies(self) -> dict[str, list[str]]:
         return {

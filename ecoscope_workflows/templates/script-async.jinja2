@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     le = LithopsExecutor()
 
-    dependencies = ...
+    dependencies = {{ spec.task_instance_dependencies }}
 
     nodes = {
         {% for t in spec.workflow %}
