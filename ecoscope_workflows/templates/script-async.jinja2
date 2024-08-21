@@ -50,6 +50,7 @@ if __name__ == "__main__":
         "{{ t.id }}": Node(
             async_task={{ call_task_macros.create_callable(t, false, false, validate, false, set_executor) }},
             partial={{ params }},
+            method="{{ t.method }}",
             {% if t.method != "call" %}
             {% if t.method == "map" %}
                 {% set argnames = t.map.argnames %}
@@ -58,7 +59,6 @@ if __name__ == "__main__":
                 {% set argnames = t.mapvalues.argnames %}
                 {% set argvalues = t.mapvalues.argvalues["aslist"] %}
             {% endif %}
-            method="{{ t.method }}",
             kwargs={
                 "argnames": {{ argnames }},
                 {% if argvalues|length > 1 %}
