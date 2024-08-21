@@ -172,20 +172,24 @@ def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
     )
     cmd = " ".join(
         [
-            os.environ["SHELL"],
-            "-c '",
             exe,
             "-W",
             "ignore",  # in testing context warnings are added; exclude them from stdout
             script_outpath.as_posix(),
             "--config-file",
             end_to_end.param_path.as_posix(),
-            "'",
         ],
     )
     env = os.environ.copy()
     env["ECOSCOPE_WORKFLOWS_RESULTS"] = tmp.as_posix()
-    out = subprocess.run(cmd, capture_output=True, text=True, env=env, shell=True)
+    out = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        env=env,
+        shell=True,
+        executable=os.environ.get("SHELL", "/bin/sh"),
+    )
     assert out.returncode == 0
     for assert_fn in end_to_end.assert_that_stdout:
         assert assert_fn(out.stdout.strip())
