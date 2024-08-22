@@ -4,5 +4,6 @@ build:
   tools:
     python: "3.10"
   commands:
+    - pip install ".[visualize]"
     - pip install pdoc3
     - pdoc --html --output-dir $READTHEDOCS_OUTPUT/html/ ecoscope_workflows
