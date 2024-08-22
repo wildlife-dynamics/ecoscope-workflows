@@ -20,7 +20,10 @@ def create_meshgrid(
         int, Field(description="The height of a grid cell in meters.")
     ] = 5000,
     intersecting_only: Annotated[
-        bool, Field(description="The height of a grid cell in meters.")
+        bool,
+        Field(
+            description="Whether to return only grid cells intersecting with the aoi."
+        ),
     ] = True,
     existing_grid: Annotated[
         AnyGeoDataFrame | pa.typing.pandas.Series | SkipJsonSchema[None],
@@ -28,10 +31,11 @@ def create_meshgrid(
             description="If provided, attempts to align created grid to start of existing grid. Requires a CRS and valid geometry."
         ),
     ] = None,
-) -> pa.typing.pandas.Series:
+) -> AnyGeoDataFrame:
     """
     Create a grid from the provided area of interest.
     """
+    import geopandas as gpd
     from ecoscope.base.utils import create_meshgrid
 
     result = create_meshgrid(
@@ -44,4 +48,4 @@ def create_meshgrid(
         align_to_existing=existing_grid,
     )
 
-    return result
+    return gpd.GeoDataFrame(geometry=result)

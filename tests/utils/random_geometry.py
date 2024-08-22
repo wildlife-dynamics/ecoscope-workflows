@@ -77,3 +77,4 @@ def random_points_in_bounds(bounds: BoundingBox | Polygon | None, num_points: in
     points = []
     for i in range(num_points):
         points.append(random_point_in_bounds(bounds))
+    return points
