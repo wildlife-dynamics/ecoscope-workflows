@@ -186,7 +186,7 @@ class _Task(Generic[P, R, K, V]):
                 )
 
 
-class TaskMethodsMixinABC(ABC, Generic[P, R, K, V]):
+class _TaskMethodsMixinABC(ABC, Generic[P, R, K, V]):
     @abstractmethod
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R | Future[R]: ...
 
@@ -247,7 +247,7 @@ def _wrap_for_mapvalues(func: Callable[P, R]) -> Callable[[tuple[K, V]], tuple[K
 
 
 @dataclass(frozen=True)
-class SyncTask(TaskMethodsMixinABC, _Task[P, R, K, V]):
+class SyncTask(_TaskMethodsMixinABC, _Task[P, R, K, V]):
     """The implementation of `@task`. This class is used to wrap a task function
     and provide methods for calling the task function, mapping it over an iterable
     of arguments, and mapping it over an iterable of key-value pairs. Any of these
@@ -398,7 +398,7 @@ class SyncTask(TaskMethodsMixinABC, _Task[P, R, K, V]):
 
 
 @dataclass(frozen=True)
-class AsyncTask(TaskMethodsMixinABC, _Task[P, R, K, V]):
+class AsyncTask(_TaskMethodsMixinABC, _Task[P, R, K, V]):
     executor: AsyncExecutor
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Future[R]:
