@@ -67,7 +67,6 @@ class Graph:
                 hydrated_kwargs = hydrate_dependencies(node.kwargs, futures)
                 hydrated_partial = hydrate_dependencies(node.partial, futures)
                 partial = getattr(node.async_task, "partial")(**hydrated_partial)
-                partial = getattr(node.async_task, "partial")(**node.partial)
                 callable_method = getattr(partial, node.method)
                 future = callable_method(**hydrated_kwargs)
                 futures[name] = future
