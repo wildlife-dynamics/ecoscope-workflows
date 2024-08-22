@@ -4,6 +4,8 @@ from typing import Callable, Generic, ParamSpec, Iterable, Sequence, TypeVar
 P = ParamSpec("P")
 R = TypeVar("R")
 T = TypeVar("T")
+K = TypeVar("K")
+V = TypeVar("V")
 
 
 class SyncExecutor(ABC, Generic[P, R]):
@@ -45,3 +47,12 @@ class AsyncExecutor(ABC, Generic[P, R]):
         iterable: Iterable[T],
     ) -> FutureSequence[R]:
         pass
+
+
+class mapvalues_wrapper(Generic[K, V, R]):
+    def __init__(self, func):
+        self.func = func
+
+    def __call__(self, kv: tuple[K, V]) -> tuple[K, R]:
+        key, argvalue = kv
+        return key, self.func(**argvalue)

@@ -27,6 +27,7 @@ from ecoscope_workflows.executors import (
     Future,
     FutureSequence,
     SyncExecutor,
+    mapvalues_wrapper,
 )
 from ecoscope_workflows.executors.python import PythonExecutor
 
@@ -239,6 +240,12 @@ def _create_kwargs_iterable(
     ]
 
 
+def _wrap_for_mapvalues(func: Callable[P, R]) -> Callable[[tuple[K, V]], tuple[K, R]]:
+    wrapper: mapvalues_wrapper = mapvalues_wrapper(func)
+    functools.update_wrapper(wrapper, func)
+    return wrapper
+
+
 @dataclass(frozen=True)
 class SyncTask(TaskMethodsMixinABC, _Task[P, R, K, V]):
     """The implementation of `@task`. This class is used to wrap a task function
@@ -387,9 +394,7 @@ class SyncTask(TaskMethodsMixinABC, _Task[P, R, K, V]):
         kwargs_iterable = [
             (k, defaults | {argnames[0]: argvalue}) for (k, argvalue) in argvalues
         ]
-        return self.executor.map(
-            lambda kv: (kv[0], self.func(**kv[1])), kwargs_iterable
-        )
+        return self.executor.map(_wrap_for_mapvalues(self.func), kwargs_iterable)
 
 
 @dataclass(frozen=True)
@@ -424,9 +429,7 @@ class AsyncTask(TaskMethodsMixinABC, _Task[P, R, K, V]):
         kwargs_iterable = [
             (k, defaults | {argnames[0]: argvalue}) for (k, argvalue) in argvalues
         ]
-        return self.executor.map(
-            lambda kv: (kv[0], self.func(**kv[1])), kwargs_iterable
-        )
+        return self.executor.map(_wrap_for_mapvalues(self.func), kwargs_iterable)
 
 
 @overload  # @task style

@@ -84,3 +84,16 @@ def test_lithops_executor_partial_map():
         .map(argnames=["b"], argvalues=[(1,), (2,), (3,)])
     )
     assert future.gather() == [2, 3, 4]
+
+
+def test_lithops_executor_mapvalues():
+    @task
+    def f(a: int) -> int:
+        return a * 2
+
+    lithops_executor = LithopsExecutor()
+    future = f.set_executor(lithops_executor).mapvalues(
+        ["a"],
+        [("x", 1), ("y", 2), ("z", 3)],
+    )
+    assert future.gather() == [("x", 2), ("y", 4), ("z", 6)]

@@ -12,7 +12,7 @@ except ImportError:
         "Please install the `lithops` package to use the `LithopsExecutor`."
     )
 
-from .base import AsyncExecutor, Future, FutureSequence, P, R, T
+from .base import AsyncExecutor, Future, FutureSequence, mapvalues_wrapper, P, R, T
 
 
 @dataclass(frozen=True)
@@ -54,7 +54,10 @@ def wrap(func) -> Callable[P, R]:
             return self.func(**kwargs)
 
     wrapper = wrapped_func(func)
-    functools.update_wrapper(wrapper, func)
+    if isinstance(func, mapvalues_wrapper):
+        functools.update_wrapper(wrapper, func.__call__)
+    else:
+        functools.update_wrapper(wrapper, func)
     return wrapper
 
 
@@ -80,5 +83,9 @@ class LithopsExecutor(AsyncExecutor):
         func: Callable[..., R],
         iterable: Iterable[T],
     ) -> LithopsFuturesSequence[R]:
-        futures = self.fexec.map(wrap(func), iterable)
+        if isinstance(func, mapvalues_wrapper):
+            iterdata = [{"kv": e} for e in iterable]
+        else:
+            iterdata = iterable
+        futures = self.fexec.map(wrap(func), iterdata)
         return LithopsFuturesSequence(futures=futures)
