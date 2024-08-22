@@ -402,7 +402,8 @@ class AsyncTask(TaskMethodsMixinABC, _Task[P, R, K, V]):
     executor: AsyncExecutor
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Future[R]:
-        return self.executor.call(self.func, *args, **kwargs)
+        defaults = _get_defaults(self.func)
+        return self.executor.call(self.func, *args, **defaults, **kwargs)
 
     def call(self, *args: P.args, **kwargs: P.kwargs) -> Future[R]:
         return self(*args, **kwargs)
