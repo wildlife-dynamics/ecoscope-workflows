@@ -30,6 +30,13 @@ class GroupedPlotStyle(BaseModel):
 class LayoutStyle(BaseModel):
     font_color: str | SkipJsonSchema[None] = None
     font_style: str | SkipJsonSchema[None] = None
+    plot_bgcolor: str | SkipJsonSchema[None] = None
+    showlegend: bool | SkipJsonSchema[None] = None
+
+
+class BarLayoutStyle(LayoutStyle):
+    bargap: Annotated[float, Field(ge=0.0, le=1.0)] | SkipJsonSchema[None] = None
+    bargroupgap: Annotated[float, Field(ge=0.0, le=1.0)] | SkipJsonSchema[None] = None
 
 
 @task
@@ -118,7 +125,7 @@ def draw_time_series_bar_chart(
         Field(description="Additional style kwargs passed to go.Pie()."),
     ] = None,
     layout_style: Annotated[
-        LayoutStyle | SkipJsonSchema[None],
+        BarLayoutStyle | SkipJsonSchema[None],
         Field(description="Additional kwargs passed to plotly.go.Figure(layout)."),
     ] = None,
 ) -> Annotated[str, Field()]:

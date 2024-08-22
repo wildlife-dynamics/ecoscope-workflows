@@ -7,6 +7,7 @@ from ecoscope_workflows.tasks.preprocessing import (
     process_relocations,
     relocations_to_trajectory,
 )
+from ecoscope_workflows.tasks.transformation._filtering import Coordinate
 
 
 def test_process_relocations():
@@ -16,7 +17,7 @@ def test_process_relocations():
     )
     input_df = gpd.read_parquet(example_input_df_path)
     kws = dict(
-        filter_point_coords=[[180, 90], [0, 0]],
+        filter_point_coords=[Coordinate(x=180, y=90), Coordinate(x=0, y=0)],
         relocs_columns=["groupby_col", "fixtime", "junk_status", "geometry"],
     )
     result = process_relocations(input_df, **kws)
