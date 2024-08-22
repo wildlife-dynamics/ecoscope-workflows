@@ -393,7 +393,7 @@ class SyncTask(TaskMethodsMixinABC, _Task[P, R, K, V]):
 
 
 @dataclass(frozen=True)
-class AsyncTask(_Task[P, R, K, V]):
+class AsyncTask(TaskMethodsMixinABC, _Task[P, R, K, V]):
     executor: AsyncExecutor
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Future[R]:
@@ -410,6 +410,23 @@ class AsyncTask(_Task[P, R, K, V]):
         defaults = _get_defaults(self.func)
         kwargs_iterable = _create_kwargs_iterable(argnames, argvalues, defaults)
         return self.executor.map(self.func, kwargs_iterable)
+
+    def mapvalues(
+        self, argnames: str | Sequence[str], argvalues: Sequence[tuple[K, V]]
+    ) -> FutureSequence[tuple[K, R]]:
+        if not isinstance(argnames, str) and len(argnames) > 1:
+            raise NotImplementedError(
+                "Arg unpacking is not yet supported for `mapvalues`."
+            )
+        if isinstance(argnames, str):
+            argnames = [argnames]
+        defaults = _get_defaults(self.func)
+        kwargs_iterable = [
+            (k, defaults | {argnames[0]: argvalue}) for (k, argvalue) in argvalues
+        ]
+        return self.executor.map(
+            lambda kv: (kv[0], self.func(**kv[1])), kwargs_iterable
+        )
 
 
 @overload  # @task style
