@@ -2,7 +2,6 @@ import argparse
 import os
 import yaml
 
-from ecoscope_workflows.executors import LithopsExecutor
 from ecoscope_workflows.graph import DependsOn, Graph, Node
 
 from ecoscope_workflows.tasks.io import get_patrol_events
@@ -27,8 +26,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     params = yaml.safe_load(args.config_file)
 
-    le = LithopsExecutor()
-
     dependencies = {
         "patrol_events": [],
         "groupers": [],
@@ -43,17 +40,17 @@ if __name__ == "__main__":
 
     nodes = {
         "patrol_events": Node(
-            async_task=get_patrol_events.validate().set_executor(le),
+            async_task=get_patrol_events.validate().set_executor("lithops"),
             partial=params["patrol_events"],
             method="call",
         ),
         "groupers": Node(
-            async_task=set_groupers.validate().set_executor(le),
+            async_task=set_groupers.validate().set_executor("lithops"),
             partial=params["groupers"],
             method="call",
         ),
         "split_obs": Node(
-            async_task=split_groups.validate().set_executor(le),
+            async_task=split_groups.validate().set_executor("lithops"),
             partial={
                 "df": DependsOn("patrol_events"),
                 "groupers": DependsOn("groupers"),
@@ -62,7 +59,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "map_layers": Node(
-            async_task=create_map_layer.validate().set_executor(le),
+            async_task=create_map_layer.validate().set_executor("lithops"),
             partial=params["map_layers"],
             method="mapvalues",
             kwargs={
@@ -71,7 +68,7 @@ if __name__ == "__main__":
             },
         ),
         "ecomaps": Node(
-            async_task=draw_ecomap.validate().set_executor(le),
+            async_task=draw_ecomap.validate().set_executor("lithops"),
             partial=params["ecomaps"],
             method="mapvalues",
             kwargs={
@@ -80,7 +77,7 @@ if __name__ == "__main__":
             },
         ),
         "ecomaps_persist": Node(
-            async_task=persist_text.validate().set_executor(le),
+            async_task=persist_text.validate().set_executor("lithops"),
             partial={
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
@@ -92,7 +89,7 @@ if __name__ == "__main__":
             },
         ),
         "ecomap_widgets": Node(
-            async_task=create_map_widget_single_view.validate().set_executor(le),
+            async_task=create_map_widget_single_view.validate().set_executor("lithops"),
             partial=params["ecomap_widgets"],
             method="map",
             kwargs={
@@ -101,7 +98,7 @@ if __name__ == "__main__":
             },
         ),
         "ecomap_widgets_merged": Node(
-            async_task=merge_widget_views.validate().set_executor(le),
+            async_task=merge_widget_views.validate().set_executor("lithops"),
             partial={
                 "widgets": DependsOn("ecomap_widgets"),
             }
@@ -109,7 +106,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "dashboard": Node(
-            async_task=gather_dashboard.validate().set_executor(le),
+            async_task=gather_dashboard.validate().set_executor("lithops"),
             partial={
                 "widgets": DependsOn("ecomap_widgets_merged"),
                 "groupers": DependsOn("groupers"),

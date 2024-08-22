@@ -15,7 +15,6 @@ import warnings  # 🧪
 from ecoscope_workflows.testing import create_task_magicmock  # 🧪
 {% endif %}
 
-from ecoscope_workflows.executors import LithopsExecutor
 from ecoscope_workflows.graph import DependsOn, DependsOnSequence, Graph, Node
 
 {% for t in spec.workflow -%}
@@ -38,15 +37,13 @@ if __name__ == "__main__":
     warnings.warn("This test script should not be used in production!")  # 🧪
     {% endif %}
 
-    le = LithopsExecutor()
-
     dependencies = {{ spec.task_instance_dependencies }}
 
     nodes = {
         {% for t in spec.workflow %}
         {% set validate = true %}
         {% set params = 'params["' ~ t.id ~ '"]' %}
-        {% set set_executor = 'le' %}
+        {% set set_executor = '"lithops"' %}
         "{{ t.id }}": Node(
             async_task={{ call_task_macros.create_callable(t, false, false, validate, false, set_executor) }},
             {% if t.partial %}

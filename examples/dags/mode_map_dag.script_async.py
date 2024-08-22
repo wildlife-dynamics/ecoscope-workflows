@@ -2,7 +2,6 @@ import argparse
 import os
 import yaml
 
-from ecoscope_workflows.executors import LithopsExecutor
 from ecoscope_workflows.graph import DependsOn, DependsOnSequence, Graph, Node
 
 from ecoscope_workflows.tasks.io import get_subjectgroup_observations
@@ -22,8 +21,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     params = yaml.safe_load(args.config_file)
 
-    le = LithopsExecutor()
-
     dependencies = {
         "obs_a": [],
         "obs_b": [],
@@ -35,22 +32,22 @@ if __name__ == "__main__":
 
     nodes = {
         "obs_a": Node(
-            async_task=get_subjectgroup_observations.validate().set_executor(le),
+            async_task=get_subjectgroup_observations.validate().set_executor("lithops"),
             partial=params["obs_a"],
             method="call",
         ),
         "obs_b": Node(
-            async_task=get_subjectgroup_observations.validate().set_executor(le),
+            async_task=get_subjectgroup_observations.validate().set_executor("lithops"),
             partial=params["obs_b"],
             method="call",
         ),
         "obs_c": Node(
-            async_task=get_subjectgroup_observations.validate().set_executor(le),
+            async_task=get_subjectgroup_observations.validate().set_executor("lithops"),
             partial=params["obs_c"],
             method="call",
         ),
         "map_layers": Node(
-            async_task=create_map_layer.validate().set_executor(le),
+            async_task=create_map_layer.validate().set_executor("lithops"),
             partial=params["map_layers"],
             method="map",
             kwargs={
@@ -65,7 +62,7 @@ if __name__ == "__main__":
             },
         ),
         "ecomaps": Node(
-            async_task=draw_ecomap.validate().set_executor(le),
+            async_task=draw_ecomap.validate().set_executor("lithops"),
             partial=params["ecomaps"],
             method="map",
             kwargs={
@@ -74,7 +71,7 @@ if __name__ == "__main__":
             },
         ),
         "td_ecomap_html_url": Node(
-            async_task=persist_text.validate().set_executor(le),
+            async_task=persist_text.validate().set_executor("lithops"),
             partial={
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }

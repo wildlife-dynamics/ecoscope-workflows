@@ -2,7 +2,6 @@ import argparse
 import os
 import yaml
 
-from ecoscope_workflows.executors import LithopsExecutor
 from ecoscope_workflows.graph import DependsOn, DependsOnSequence, Graph, Node
 
 from ecoscope_workflows.tasks.groupby import set_groupers
@@ -42,8 +41,6 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     params = yaml.safe_load(args.config_file)
-
-    le = LithopsExecutor()
 
     dependencies = {
         "groupers": [],
@@ -110,17 +107,17 @@ if __name__ == "__main__":
 
     nodes = {
         "groupers": Node(
-            async_task=set_groupers.validate().set_executor(le),
+            async_task=set_groupers.validate().set_executor("lithops"),
             partial=params["groupers"],
             method="call",
         ),
         "patrol_obs": Node(
-            async_task=get_patrol_observations.validate().set_executor(le),
+            async_task=get_patrol_observations.validate().set_executor("lithops"),
             partial=params["patrol_obs"],
             method="call",
         ),
         "patrol_reloc": Node(
-            async_task=process_relocations.validate().set_executor(le),
+            async_task=process_relocations.validate().set_executor("lithops"),
             partial={
                 "observations": DependsOn("patrol_obs"),
             }
@@ -128,7 +125,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "patrol_traj": Node(
-            async_task=relocations_to_trajectory.validate().set_executor(le),
+            async_task=relocations_to_trajectory.validate().set_executor("lithops"),
             partial={
                 "relocations": DependsOn("patrol_reloc"),
             }
@@ -136,7 +133,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "traj_add_temporal_index": Node(
-            async_task=add_temporal_index.validate().set_executor(le),
+            async_task=add_temporal_index.validate().set_executor("lithops"),
             partial={
                 "df": DependsOn("patrol_traj"),
             }
@@ -144,7 +141,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "split_patrol_traj_groups": Node(
-            async_task=split_groups.validate().set_executor(le),
+            async_task=split_groups.validate().set_executor("lithops"),
             partial={
                 "df": DependsOn("traj_add_temporal_index"),
                 "groupers": DependsOn("groupers"),
@@ -153,7 +150,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "patrol_traj_map_layers": Node(
-            async_task=create_map_layer.validate().set_executor(le),
+            async_task=create_map_layer.validate().set_executor("lithops"),
             partial=params["patrol_traj_map_layers"],
             method="mapvalues",
             kwargs={
@@ -162,12 +159,12 @@ if __name__ == "__main__":
             },
         ),
         "patrol_events": Node(
-            async_task=get_patrol_events.validate().set_executor(le),
+            async_task=get_patrol_events.validate().set_executor("lithops"),
             partial=params["patrol_events"],
             method="call",
         ),
         "filter_patrol_events": Node(
-            async_task=apply_reloc_coord_filter.validate().set_executor(le),
+            async_task=apply_reloc_coord_filter.validate().set_executor("lithops"),
             partial={
                 "df": DependsOn("patrol_events"),
             }
@@ -175,7 +172,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "pe_add_temporal_index": Node(
-            async_task=add_temporal_index.validate().set_executor(le),
+            async_task=add_temporal_index.validate().set_executor("lithops"),
             partial={
                 "df": DependsOn("filter_patrol_events"),
             }
@@ -183,7 +180,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "split_pe_groups": Node(
-            async_task=split_groups.validate().set_executor(le),
+            async_task=split_groups.validate().set_executor("lithops"),
             partial={
                 "df": DependsOn("pe_add_temporal_index"),
                 "groupers": DependsOn("groupers"),
@@ -192,7 +189,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "patrol_events_map_layers": Node(
-            async_task=create_map_layer.validate().set_executor(le),
+            async_task=create_map_layer.validate().set_executor("lithops"),
             partial=params["patrol_events_map_layers"],
             method="mapvalues",
             kwargs={
@@ -201,7 +198,7 @@ if __name__ == "__main__":
             },
         ),
         "combined_traj_and_pe_map_layers": Node(
-            async_task=groupbykey.validate().set_executor(le),
+            async_task=groupbykey.validate().set_executor("lithops"),
             partial={
                 "iterables": DependsOnSequence(
                     [
@@ -214,7 +211,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "traj_patrol_events_ecomap": Node(
-            async_task=draw_ecomap.validate().set_executor(le),
+            async_task=draw_ecomap.validate().set_executor("lithops"),
             partial=params["traj_patrol_events_ecomap"],
             method="mapvalues",
             kwargs={
@@ -223,7 +220,7 @@ if __name__ == "__main__":
             },
         ),
         "traj_pe_ecomap_html_urls": Node(
-            async_task=persist_text.validate().set_executor(le),
+            async_task=persist_text.validate().set_executor("lithops"),
             partial={
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
@@ -235,7 +232,7 @@ if __name__ == "__main__":
             },
         ),
         "traj_pe_map_widgets_single_views": Node(
-            async_task=create_map_widget_single_view.validate().set_executor(le),
+            async_task=create_map_widget_single_view.validate().set_executor("lithops"),
             partial=params["traj_pe_map_widgets_single_views"],
             method="map",
             kwargs={
@@ -244,7 +241,7 @@ if __name__ == "__main__":
             },
         ),
         "traj_pe_grouped_map_widget": Node(
-            async_task=merge_widget_views.validate().set_executor(le),
+            async_task=merge_widget_views.validate().set_executor("lithops"),
             partial={
                 "widgets": DependsOn("traj_pe_map_widgets_single_views"),
             }
@@ -252,7 +249,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "total_patrols": Node(
-            async_task=dataframe_column_nunique.validate().set_executor(le),
+            async_task=dataframe_column_nunique.validate().set_executor("lithops"),
             partial=params["total_patrols"],
             method="mapvalues",
             kwargs={
@@ -262,7 +259,7 @@ if __name__ == "__main__":
         ),
         "total_patrols_sv_widgets": Node(
             async_task=create_single_value_widget_single_view.validate().set_executor(
-                le
+                "lithops"
             ),
             partial=params["total_patrols_sv_widgets"],
             method="map",
@@ -272,7 +269,7 @@ if __name__ == "__main__":
             },
         ),
         "total_patrols_grouped_sv_widget": Node(
-            async_task=merge_widget_views.validate().set_executor(le),
+            async_task=merge_widget_views.validate().set_executor("lithops"),
             partial={
                 "widgets": DependsOn("total_patrols_sv_widgets"),
             }
@@ -280,7 +277,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "total_patrol_time": Node(
-            async_task=dataframe_column_sum.validate().set_executor(le),
+            async_task=dataframe_column_sum.validate().set_executor("lithops"),
             partial=params["total_patrol_time"],
             method="mapvalues",
             kwargs={
@@ -289,7 +286,7 @@ if __name__ == "__main__":
             },
         ),
         "total_patrol_time_converted": Node(
-            async_task=apply_arithmetic_operation.validate().set_executor(le),
+            async_task=apply_arithmetic_operation.validate().set_executor("lithops"),
             partial=params["total_patrol_time_converted"],
             method="mapvalues",
             kwargs={
@@ -299,7 +296,7 @@ if __name__ == "__main__":
         ),
         "total_patrol_time_sv_widgets": Node(
             async_task=create_single_value_widget_single_view.validate().set_executor(
-                le
+                "lithops"
             ),
             partial=params["total_patrol_time_sv_widgets"],
             method="map",
@@ -309,7 +306,7 @@ if __name__ == "__main__":
             },
         ),
         "patrol_time_grouped_widget": Node(
-            async_task=merge_widget_views.validate().set_executor(le),
+            async_task=merge_widget_views.validate().set_executor("lithops"),
             partial={
                 "widgets": DependsOn("total_patrol_time_sv_widgets"),
             }
@@ -317,7 +314,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "total_patrol_dist": Node(
-            async_task=dataframe_column_sum.validate().set_executor(le),
+            async_task=dataframe_column_sum.validate().set_executor("lithops"),
             partial=params["total_patrol_dist"],
             method="mapvalues",
             kwargs={
@@ -326,7 +323,7 @@ if __name__ == "__main__":
             },
         ),
         "total_patrol_dist_converted": Node(
-            async_task=apply_arithmetic_operation.validate().set_executor(le),
+            async_task=apply_arithmetic_operation.validate().set_executor("lithops"),
             partial=params["total_patrol_dist_converted"],
             method="mapvalues",
             kwargs={
@@ -336,7 +333,7 @@ if __name__ == "__main__":
         ),
         "total_patrol_dist_sv_widgets": Node(
             async_task=create_single_value_widget_single_view.validate().set_executor(
-                le
+                "lithops"
             ),
             partial=params["total_patrol_dist_sv_widgets"],
             method="map",
@@ -346,7 +343,7 @@ if __name__ == "__main__":
             },
         ),
         "patrol_dist_grouped_widget": Node(
-            async_task=merge_widget_views.validate().set_executor(le),
+            async_task=merge_widget_views.validate().set_executor("lithops"),
             partial={
                 "widgets": DependsOn("total_patrol_dist_sv_widgets"),
             }
@@ -354,7 +351,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "avg_speed": Node(
-            async_task=dataframe_column_mean.validate().set_executor(le),
+            async_task=dataframe_column_mean.validate().set_executor("lithops"),
             partial=params["avg_speed"],
             method="mapvalues",
             kwargs={
@@ -364,7 +361,7 @@ if __name__ == "__main__":
         ),
         "avg_speed_sv_widgets": Node(
             async_task=create_single_value_widget_single_view.validate().set_executor(
-                le
+                "lithops"
             ),
             partial=params["avg_speed_sv_widgets"],
             method="map",
@@ -374,7 +371,7 @@ if __name__ == "__main__":
             },
         ),
         "avg_speed_grouped_widget": Node(
-            async_task=merge_widget_views.validate().set_executor(le),
+            async_task=merge_widget_views.validate().set_executor("lithops"),
             partial={
                 "widgets": DependsOn("avg_speed_sv_widgets"),
             }
@@ -382,7 +379,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "max_speed": Node(
-            async_task=dataframe_column_max.validate().set_executor(le),
+            async_task=dataframe_column_max.validate().set_executor("lithops"),
             partial=params["max_speed"],
             method="mapvalues",
             kwargs={
@@ -392,7 +389,7 @@ if __name__ == "__main__":
         ),
         "max_speed_sv_widgets": Node(
             async_task=create_single_value_widget_single_view.validate().set_executor(
-                le
+                "lithops"
             ),
             partial=params["max_speed_sv_widgets"],
             method="map",
@@ -402,7 +399,7 @@ if __name__ == "__main__":
             },
         ),
         "max_speed_grouped_widget": Node(
-            async_task=merge_widget_views.validate().set_executor(le),
+            async_task=merge_widget_views.validate().set_executor("lithops"),
             partial={
                 "widgets": DependsOn("max_speed_sv_widgets"),
             }
@@ -410,7 +407,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "patrol_events_bar_chart": Node(
-            async_task=draw_time_series_bar_chart.validate().set_executor(le),
+            async_task=draw_time_series_bar_chart.validate().set_executor("lithops"),
             partial={
                 "dataframe": DependsOn("filter_patrol_events"),
             }
@@ -418,7 +415,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "patrol_events_bar_chart_html_url": Node(
-            async_task=persist_text.validate().set_executor(le),
+            async_task=persist_text.validate().set_executor("lithops"),
             partial={
                 "text": DependsOn("patrol_events_bar_chart"),
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
@@ -427,7 +424,9 @@ if __name__ == "__main__":
             method="call",
         ),
         "patrol_events_bar_chart_widget": Node(
-            async_task=create_plot_widget_single_view.validate().set_executor(le),
+            async_task=create_plot_widget_single_view.validate().set_executor(
+                "lithops"
+            ),
             partial={
                 "data": DependsOn("patrol_events_bar_chart_html_url"),
             }
@@ -435,7 +434,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "patrol_events_pie_chart": Node(
-            async_task=draw_pie_chart.validate().set_executor(le),
+            async_task=draw_pie_chart.validate().set_executor("lithops"),
             partial={
                 "dataframe": DependsOn("filter_patrol_events"),
             }
@@ -443,7 +442,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "patrol_events_pie_chart_html_url": Node(
-            async_task=persist_text.validate().set_executor(le),
+            async_task=persist_text.validate().set_executor("lithops"),
             partial={
                 "text": DependsOn("patrol_events_pie_chart"),
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
@@ -452,7 +451,9 @@ if __name__ == "__main__":
             method="call",
         ),
         "patrol_events_pie_chart_widget": Node(
-            async_task=create_plot_widget_single_view.validate().set_executor(le),
+            async_task=create_plot_widget_single_view.validate().set_executor(
+                "lithops"
+            ),
             partial={
                 "data": DependsOn("patrol_events_pie_chart_html_url"),
             }
@@ -460,7 +461,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "td": Node(
-            async_task=calculate_time_density.validate().set_executor(le),
+            async_task=calculate_time_density.validate().set_executor("lithops"),
             partial={
                 "trajectory_gdf": DependsOn("patrol_traj"),
             }
@@ -468,7 +469,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "td_map_layer": Node(
-            async_task=create_map_layer.validate().set_executor(le),
+            async_task=create_map_layer.validate().set_executor("lithops"),
             partial={
                 "geodataframe": DependsOn("td"),
             }
@@ -476,7 +477,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "td_ecomap": Node(
-            async_task=draw_ecomap.validate().set_executor(le),
+            async_task=draw_ecomap.validate().set_executor("lithops"),
             partial={
                 "geo_layers": DependsOn("td_map_layer"),
             }
@@ -484,7 +485,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "td_ecomap_html_url": Node(
-            async_task=persist_text.validate().set_executor(le),
+            async_task=persist_text.validate().set_executor("lithops"),
             partial={
                 "text": DependsOn("td_ecomap"),
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
@@ -493,7 +494,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "td_map_widget": Node(
-            async_task=create_map_widget_single_view.validate().set_executor(le),
+            async_task=create_map_widget_single_view.validate().set_executor("lithops"),
             partial={
                 "data": DependsOn("td_ecomap_html_url"),
             }
@@ -501,7 +502,7 @@ if __name__ == "__main__":
             method="call",
         ),
         "patrol_dashboard": Node(
-            async_task=gather_dashboard.validate().set_executor(le),
+            async_task=gather_dashboard.validate().set_executor("lithops"),
             partial={
                 "widgets": DependsOnSequence(
                     [
