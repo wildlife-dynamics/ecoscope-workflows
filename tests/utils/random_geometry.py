@@ -11,14 +11,7 @@ class BoundingBox:
     max_y: float
 
 
-MIN_X_3857 = -20037508.34
-MAX_X_3857 = 20037508.34
-MIN_Y_3857 = -20048966.1
-MAX_Y_3857 = 20048966.1
-MIN_Y_3857_UTM_SAFE = -15538711.09
-MAX_Y_3857_UTM_SAFE = 18807214.09
-
-
+# EPSG 3857 as it allows us to define ranges in metres
 EPSG_3857_BOUNDS = BoundingBox(
     min_x=-20037508.34,
     max_x=20037508.34,
@@ -26,6 +19,8 @@ EPSG_3857_BOUNDS = BoundingBox(
     max_y=20048966.1,
 )
 
+# In places like create_meshgrid where there's a conversion to UTM,
+# we want to restrict to ranges valid in that CRS
 EPSG_3857_BOUNDS_UTM_SAFE = BoundingBox(
     min_x=-20037508.34,
     max_x=20037508.34,
