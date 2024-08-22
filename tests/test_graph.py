@@ -31,28 +31,6 @@ class PassthroughFutureSequence(FutureSequence[T]):
         return [f.gather() for f in self.futures]
 
 
-def test_graph_basic():
-    def inc(x: int) -> PassthroughFuture[int]:
-        return PassthroughFuture(x + 1)
-
-    def dec(x: int) -> PassthroughFuture[int]:
-        return PassthroughFuture(x - 1)
-
-    def add(x: int, y: int) -> PassthroughFuture[int]:
-        return PassthroughFuture(x + y)
-
-    dependencies = {"D": {"B", "C"}, "C": {"A"}, "B": {"A"}}
-    nodes = {
-        "A": Node(inc, {"x": 1}),
-        "B": Node(dec, {"x": DependsOn("A")}),
-        "C": Node(add, {"x": DependsOn("A"), "y": 1}),
-        "D": Node(add, {"x": DependsOn("B"), "y": DependsOn("C")}),
-    }
-    graph = Graph(dependencies, nodes)
-    results = graph.execute()
-    assert results == {"D": 4}
-
-
 def test_graph_basic_tasks():
     @task
     def inc(x: int) -> PassthroughFuture[int]:
