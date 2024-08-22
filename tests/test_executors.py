@@ -58,7 +58,7 @@ def test_lithops_executor_validate_partial():
 
     partial = f.validate().partial(b="2")
     async_partial = partial.set_executor("lithops")
-    future = async_partial.call(a="1", b="2")
+    future = async_partial.call(a="1")
     assert future.gather() == 3
 
 
