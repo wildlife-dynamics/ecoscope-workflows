@@ -28,6 +28,25 @@ class Node:
 
 Dependencies = dict[str, list[str]]  # TODO: `set` instead of `list`
 Nodes = dict[str, Node]
+FuturesDict = dict[str, Future | FutureSequence]
+Resolved = Any | list[Any]
+
+
+def hydrate_dependencies(
+    kwargs: dict[str, Resolved | Dependency],
+    futures: FuturesDict,
+) -> dict[str, Resolved]:
+    hydrated_kwargs = {}
+    for k, v in kwargs.items():
+        match v:
+            case DependsOn():
+                resolved = futures[v.node_name].gather()
+            case DependsOnSequence():
+                resolved = [futures[x.node_name].gather() for x in v]
+            case _:
+                resolved = v
+        hydrated_kwargs[k] = resolved
+    return hydrated_kwargs
 
 
 @dataclass
@@ -40,22 +59,14 @@ class Graph:
     def execute(self) -> dict[str, Any]:
         ts = TopologicalSorter(self.dependencies)
         ts.prepare()
-        futures: dict[str, Future | FutureSequence] = {}
+        futures: FuturesDict = {}
         while ts.is_active():
             ready = [name for name in ts.get_ready()]
             for name in ready:
                 node = self.nodes[name]
-                hydrated_kwargs = {}
-                for k, v in node.kwargs.items():
-                    match v:
-                        case DependsOn():
-                            resolved = futures[v.node_name].gather()
-                        case DependsOnSequence():
-                            resolved = [futures[x.node_name].gather() for x in v]
-                        case _:
-                            resolved = v
-                    hydrated_kwargs[k] = resolved
-                # TODO: hydrate dependencies in node.partial
+                hydrated_kwargs = hydrate_dependencies(node.kwargs, futures)
+                hydrated_partial = hydrate_dependencies(node.partial, futures)
+                partial = getattr(node.async_task, "partial")(**hydrated_partial)
                 partial = getattr(node.async_task, "partial")(**node.partial)
                 callable_method = getattr(partial, node.method)
                 future = callable_method(**hydrated_kwargs)
