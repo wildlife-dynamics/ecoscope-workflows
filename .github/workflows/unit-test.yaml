@@ -23,7 +23,7 @@ jobs:
       - name: Setup Micromamba
         uses: mamba-org/setup-micromamba@v1
         with:
-          environment-file: ./runtimes/${{ matrix.environment-name }}.yml
+          environment-file: ./ci/envs/${{ matrix.environment-name }}.yml
           cache-environment: true
           cache-downloads: true
           init-shell: bash
