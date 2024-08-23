@@ -28,5 +28,5 @@ import os
 {% set validate = false %}
 {% set params = t.id ~ '_params' %}
 {% set indent = '' %}
-{{ call_task_macros.handle_task(t, validate, params, indent) }}
+{{ call_task_macros.call_task(t, validate, params, indent) }}
 {% endfor -%}

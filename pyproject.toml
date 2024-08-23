@@ -32,12 +32,13 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
-    "ecoscope[analysis,mapping,plotting] @ git+https://github.com/wildlife-dynamics/ecoscope@v1.8.2",
     "pytest",
-    "pytest-xdist",
 ]
-cloud = [
-    "cloudpathlib",
+lithops = [
+    "lithops",
+]
+gcs = [
+    "cloudpathlib[gs]",
 ]
 notebook = [
     "jupytext",
@@ -45,6 +46,7 @@ notebook = [
 visualize = [
     "pydot"  # requires system install of `graphviz` for the `dot` executable
 ]
+
 
 [project.scripts]
 ecoscope-workflows = "ecoscope_workflows.__main__:main"
@@ -60,6 +62,9 @@ Tracker = "https://github.com/wildlife-dynamics/ecoscope-workflows/issues"
 [tool.setuptools_scm]
 write_to = "ecoscope_workflows/_version.py"
 write_to_template = "__version__ = '{version}'"
+
+[tool.setuptools]
+py-modules = ["ecoscope_workflows"]
 
 [tool.setuptools.package-data]
 ecoscope_workflows = ["py.typed"]

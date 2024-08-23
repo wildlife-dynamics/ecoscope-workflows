@@ -36,7 +36,7 @@ patrol_events_params = dict(
 # call the task
 
 
-patrol_events = get_patrol_events.call(**patrol_events_params)
+patrol_events = get_patrol_events.partial(**patrol_events_params).call()
 
 
 # %% [markdown]
@@ -53,7 +53,7 @@ groupers_params = dict(
 # call the task
 
 
-groupers = set_groupers.call(**groupers_params)
+groupers = set_groupers.partial(**groupers_params).call()
 
 
 # %% [markdown]
@@ -68,9 +68,9 @@ split_obs_params = dict()
 # call the task
 
 
-split_obs = split_groups.partial(df=patrol_events, groupers=groupers).call(
-    **split_obs_params
-)
+split_obs = split_groups.partial(
+    df=patrol_events, groupers=groupers, **split_obs_params
+).call()
 
 
 # %% [markdown]
@@ -164,9 +164,9 @@ ecomap_widgets_merged_params = dict()
 # call the task
 
 
-ecomap_widgets_merged = merge_widget_views.partial(widgets=ecomap_widgets).call(
-    **ecomap_widgets_merged_params
-)
+ecomap_widgets_merged = merge_widget_views.partial(
+    widgets=ecomap_widgets, **ecomap_widgets_merged_params
+).call()
 
 
 # %% [markdown]
@@ -185,5 +185,5 @@ dashboard_params = dict(
 
 
 dashboard = gather_dashboard.partial(
-    widgets=ecomap_widgets_merged, groupers=groupers
-).call(**dashboard_params)
+    widgets=ecomap_widgets_merged, groupers=groupers, **dashboard_params
+).call()

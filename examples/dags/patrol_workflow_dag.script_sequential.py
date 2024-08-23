@@ -40,32 +40,38 @@ if __name__ == "__main__":
     args = parser.parse_args()
     params = yaml.safe_load(args.config_file)
 
-    groupers = set_groupers.validate().call(**params["groupers"])
+    groupers = set_groupers.validate().partial(**params["groupers"]).call()
 
-    patrol_obs = get_patrol_observations.validate().call(**params["patrol_obs"])
+    patrol_obs = (
+        get_patrol_observations.validate().partial(**params["patrol_obs"]).call()
+    )
 
     patrol_reloc = (
         process_relocations.validate()
-        .partial(observations=patrol_obs)
-        .call(**params["patrol_reloc"])
+        .partial(observations=patrol_obs, **params["patrol_reloc"])
+        .call()
     )
 
     patrol_traj = (
         relocations_to_trajectory.validate()
-        .partial(relocations=patrol_reloc)
-        .call(**params["patrol_traj"])
+        .partial(relocations=patrol_reloc, **params["patrol_traj"])
+        .call()
     )
 
     traj_add_temporal_index = (
         add_temporal_index.validate()
-        .partial(df=patrol_traj)
-        .call(**params["traj_add_temporal_index"])
+        .partial(df=patrol_traj, **params["traj_add_temporal_index"])
+        .call()
     )
 
     split_patrol_traj_groups = (
         split_groups.validate()
-        .partial(df=traj_add_temporal_index, groupers=groupers)
-        .call(**params["split_patrol_traj_groups"])
+        .partial(
+            df=traj_add_temporal_index,
+            groupers=groupers,
+            **params["split_patrol_traj_groups"],
+        )
+        .call()
     )
 
     patrol_traj_map_layers = (
@@ -74,24 +80,28 @@ if __name__ == "__main__":
         .mapvalues(argnames=["geodataframe"], argvalues=split_patrol_traj_groups)
     )
 
-    patrol_events = get_patrol_events.validate().call(**params["patrol_events"])
+    patrol_events = (
+        get_patrol_events.validate().partial(**params["patrol_events"]).call()
+    )
 
     filter_patrol_events = (
         apply_reloc_coord_filter.validate()
-        .partial(df=patrol_events)
-        .call(**params["filter_patrol_events"])
+        .partial(df=patrol_events, **params["filter_patrol_events"])
+        .call()
     )
 
     pe_add_temporal_index = (
         add_temporal_index.validate()
-        .partial(df=filter_patrol_events)
-        .call(**params["pe_add_temporal_index"])
+        .partial(df=filter_patrol_events, **params["pe_add_temporal_index"])
+        .call()
     )
 
     split_pe_groups = (
         split_groups.validate()
-        .partial(df=pe_add_temporal_index, groupers=groupers)
-        .call(**params["split_pe_groups"])
+        .partial(
+            df=pe_add_temporal_index, groupers=groupers, **params["split_pe_groups"]
+        )
+        .call()
     )
 
     patrol_events_map_layers = (
@@ -102,8 +112,11 @@ if __name__ == "__main__":
 
     combined_traj_and_pe_map_layers = (
         groupbykey.validate()
-        .partial(iterables=[patrol_traj_map_layers, patrol_events_map_layers])
-        .call(**params["combined_traj_and_pe_map_layers"])
+        .partial(
+            iterables=[patrol_traj_map_layers, patrol_events_map_layers],
+            **params["combined_traj_and_pe_map_layers"],
+        )
+        .call()
     )
 
     traj_patrol_events_ecomap = (
@@ -129,8 +142,11 @@ if __name__ == "__main__":
 
     traj_pe_grouped_map_widget = (
         merge_widget_views.validate()
-        .partial(widgets=traj_pe_map_widgets_single_views)
-        .call(**params["traj_pe_grouped_map_widget"])
+        .partial(
+            widgets=traj_pe_map_widgets_single_views,
+            **params["traj_pe_grouped_map_widget"],
+        )
+        .call()
     )
 
     total_patrols = (
@@ -147,8 +163,11 @@ if __name__ == "__main__":
 
     total_patrols_grouped_sv_widget = (
         merge_widget_views.validate()
-        .partial(widgets=total_patrols_sv_widgets)
-        .call(**params["total_patrols_grouped_sv_widget"])
+        .partial(
+            widgets=total_patrols_sv_widgets,
+            **params["total_patrols_grouped_sv_widget"],
+        )
+        .call()
     )
 
     total_patrol_time = (
@@ -171,8 +190,10 @@ if __name__ == "__main__":
 
     patrol_time_grouped_widget = (
         merge_widget_views.validate()
-        .partial(widgets=total_patrol_time_sv_widgets)
-        .call(**params["patrol_time_grouped_widget"])
+        .partial(
+            widgets=total_patrol_time_sv_widgets, **params["patrol_time_grouped_widget"]
+        )
+        .call()
     )
 
     total_patrol_dist = (
@@ -195,8 +216,10 @@ if __name__ == "__main__":
 
     patrol_dist_grouped_widget = (
         merge_widget_views.validate()
-        .partial(widgets=total_patrol_dist_sv_widgets)
-        .call(**params["patrol_dist_grouped_widget"])
+        .partial(
+            widgets=total_patrol_dist_sv_widgets, **params["patrol_dist_grouped_widget"]
+        )
+        .call()
     )
 
     avg_speed = (
@@ -213,8 +236,8 @@ if __name__ == "__main__":
 
     avg_speed_grouped_widget = (
         merge_widget_views.validate()
-        .partial(widgets=avg_speed_sv_widgets)
-        .call(**params["avg_speed_grouped_widget"])
+        .partial(widgets=avg_speed_sv_widgets, **params["avg_speed_grouped_widget"])
+        .call()
     )
 
     max_speed = (
@@ -231,14 +254,14 @@ if __name__ == "__main__":
 
     max_speed_grouped_widget = (
         merge_widget_views.validate()
-        .partial(widgets=max_speed_sv_widgets)
-        .call(**params["max_speed_grouped_widget"])
+        .partial(widgets=max_speed_sv_widgets, **params["max_speed_grouped_widget"])
+        .call()
     )
 
     patrol_events_bar_chart = (
         draw_time_series_bar_chart.validate()
-        .partial(dataframe=filter_patrol_events)
-        .call(**params["patrol_events_bar_chart"])
+        .partial(dataframe=filter_patrol_events, **params["patrol_events_bar_chart"])
+        .call()
     )
 
     patrol_events_bar_chart_html_url = (
@@ -246,20 +269,24 @@ if __name__ == "__main__":
         .partial(
             text=patrol_events_bar_chart,
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            **params["patrol_events_bar_chart_html_url"],
         )
-        .call(**params["patrol_events_bar_chart_html_url"])
+        .call()
     )
 
     patrol_events_bar_chart_widget = (
         create_plot_widget_single_view.validate()
-        .partial(data=patrol_events_bar_chart_html_url)
-        .call(**params["patrol_events_bar_chart_widget"])
+        .partial(
+            data=patrol_events_bar_chart_html_url,
+            **params["patrol_events_bar_chart_widget"],
+        )
+        .call()
     )
 
     patrol_events_pie_chart = (
         draw_pie_chart.validate()
-        .partial(dataframe=filter_patrol_events)
-        .call(**params["patrol_events_pie_chart"])
+        .partial(dataframe=filter_patrol_events, **params["patrol_events_pie_chart"])
+        .call()
     )
 
     patrol_events_pie_chart_html_url = (
@@ -267,44 +294,52 @@ if __name__ == "__main__":
         .partial(
             text=patrol_events_pie_chart,
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            **params["patrol_events_pie_chart_html_url"],
         )
-        .call(**params["patrol_events_pie_chart_html_url"])
+        .call()
     )
 
     patrol_events_pie_chart_widget = (
         create_plot_widget_single_view.validate()
-        .partial(data=patrol_events_pie_chart_html_url)
-        .call(**params["patrol_events_pie_chart_widget"])
+        .partial(
+            data=patrol_events_pie_chart_html_url,
+            **params["patrol_events_pie_chart_widget"],
+        )
+        .call()
     )
 
     td = (
         calculate_time_density.validate()
-        .partial(trajectory_gdf=patrol_traj)
-        .call(**params["td"])
+        .partial(trajectory_gdf=patrol_traj, **params["td"])
+        .call()
     )
 
     td_map_layer = (
         create_map_layer.validate()
-        .partial(geodataframe=td)
-        .call(**params["td_map_layer"])
+        .partial(geodataframe=td, **params["td_map_layer"])
+        .call()
     )
 
     td_ecomap = (
         draw_ecomap.validate()
-        .partial(geo_layers=td_map_layer)
-        .call(**params["td_ecomap"])
+        .partial(geo_layers=td_map_layer, **params["td_ecomap"])
+        .call()
     )
 
     td_ecomap_html_url = (
         persist_text.validate()
-        .partial(text=td_ecomap, root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"])
-        .call(**params["td_ecomap_html_url"])
+        .partial(
+            text=td_ecomap,
+            root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            **params["td_ecomap_html_url"],
+        )
+        .call()
     )
 
     td_map_widget = (
         create_map_widget_single_view.validate()
-        .partial(data=td_ecomap_html_url)
-        .call(**params["td_map_widget"])
+        .partial(data=td_ecomap_html_url, **params["td_map_widget"])
+        .call()
     )
 
     patrol_dashboard = (
@@ -322,8 +357,9 @@ if __name__ == "__main__":
                 max_speed_grouped_widget,
             ],
             groupers=groupers,
+            **params["patrol_dashboard"],
         )
-        .call(**params["patrol_dashboard"])
+        .call()
     )
 
     print(patrol_dashboard)
