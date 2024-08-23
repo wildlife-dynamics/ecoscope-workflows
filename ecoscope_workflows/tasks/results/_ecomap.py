@@ -84,7 +84,12 @@ def create_map_layer(
     )
 
 
-@task
+@task(
+    pip_requires=[
+        "ecoscope[mapping] @ git+https://github.com/wildlife-dynamics/ecoscope@v1.8.2"
+    ],
+    mamba_requires=["geopandas<=0.14.2", "numpy<2"],
+)
 def draw_ecomap(
     geo_layers: Annotated[
         LayerDefinition | list[LayerDefinition],

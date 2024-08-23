@@ -30,6 +30,12 @@ from ecoscope_workflows.executors import (
     mapvalues_wrapper,
 )
 from ecoscope_workflows.executors.python import PythonExecutor
+from ecoscope_workflows.image import (
+    Environment,
+    Image,
+    MambaRequirement,
+    PipRequirement,
+)
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -41,6 +47,7 @@ V = TypeVar("V")
 class _Task(Generic[P, R, K, V]):
     func: Callable[P, R]
     tags: list[str]
+    image: Image
 
     def partial(
         self,
@@ -157,6 +164,7 @@ class _Task(Generic[P, R, K, V]):
                 return SyncTask(
                     self.func,
                     tags=self.tags,
+                    image=self.image,
                     executor=PythonExecutor(),
                 )
             case "lithops":
@@ -165,18 +173,21 @@ class _Task(Generic[P, R, K, V]):
                 return AsyncTask(
                     self.func,
                     tags=self.tags,
+                    image=self.image,
                     executor=LithopsExecutor(),
                 )
             case AsyncExecutor():
                 return AsyncTask(
                     self.func,
                     tags=self.tags,
+                    image=self.image,
                     executor=name_or_executor,
                 )
             case SyncExecutor():
                 return SyncTask(
                     self.func,
                     tags=self.tags,
+                    image=self.image,
                     executor=name_or_executor,
                 )
             case _:
@@ -438,6 +449,8 @@ def task(
     func: Callable[P, R],
     *,
     tags: list[str] | None = None,
+    mamba_requires: list[str] | None = None,
+    pip_requires: list[str] | None = None,
 ) -> SyncTask[P, R, K, V]: ...
 
 
@@ -445,6 +458,8 @@ def task(
 def task(
     *,
     tags: list[str] | None = None,
+    mamba_requires: list[str] | None = None,
+    pip_requires: list[str] | None = None,
 ) -> Callable[[Callable[P, R]], SyncTask[P, R, K, V]]: ...
 
 
@@ -452,14 +467,19 @@ def task(
     func: Callable[P, R] | None = None,
     *,
     tags: list[str] | None = None,
+    mamba_requires: list[str] | None = None,
+    pip_requires: list[str] | None = None,
 ) -> Callable[[Callable[P, R]], SyncTask[P, R, K, V]] | SyncTask[P, R, K, V]:
-    def wrapper(
-        func: Callable[P, R],
-    ) -> SyncTask[P, R, K, V]:
-        return SyncTask(
-            func,
-            tags=tags or [],
-        )
+    environment = Environment(
+        mamba_requires=[MambaRequirement(r) for r in mamba_requires]
+        if mamba_requires
+        else [],
+        pip_requires=[PipRequirement(r) for r in pip_requires] if pip_requires else [],
+    )
+    image = Image(environment=environment)
+
+    def wrapper(func: Callable[P, R]) -> SyncTask[P, R, K, V]:
+        return SyncTask(func, tags=tags or [], image=image)
 
     if func:
         return wrapper(func)  # @task style
