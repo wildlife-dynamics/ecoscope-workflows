@@ -17,6 +17,7 @@ from ecoscope_workflows.tasks.analysis import dataframe_column_mean
 from ecoscope_workflows.tasks.results import create_single_value_widget_single_view
 from ecoscope_workflows.tasks.analysis import dataframe_column_max
 from ecoscope_workflows.tasks.analysis import dataframe_count
+from ecoscope_workflows.tasks.analysis import get_day_night_ratio
 from ecoscope_workflows.tasks.analysis import calculate_time_density
 from ecoscope_workflows.tasks.results import gather_dashboard
 
@@ -147,6 +148,24 @@ if __name__ == "__main__":
         .call(**params["num_location_grouped_sv_widget"])
     )
 
+    daynight_ratio = (
+        get_day_night_ratio.validate()
+        .partial(**params["daynight_ratio"])
+        .mapvalues(argnames=["df"], argvalues=split_subject_traj_groups)
+    )
+
+    daynight_ratio_sv_widgets = (
+        create_single_value_widget_single_view.validate()
+        .partial(**params["daynight_ratio_sv_widgets"])
+        .map(argnames=["view", "data"], argvalues=daynight_ratio)
+    )
+
+    daynight_ratio_grouped_sv_widget = (
+        merge_widget_views.validate()
+        .partial(widgets=daynight_ratio_sv_widgets)
+        .call(**params["daynight_ratio_grouped_sv_widget"])
+    )
+
     td = (
         calculate_time_density.validate()
         .partial(**params["td"])
@@ -194,6 +213,7 @@ if __name__ == "__main__":
                 mean_speed_grouped_sv_widget,
                 max_speed_grouped_sv_widget,
                 num_location_grouped_sv_widget,
+                daynight_ratio_grouped_sv_widget,
                 td_grouped_map_widget,
             ],
             groupers=groupers,

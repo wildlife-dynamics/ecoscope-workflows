@@ -23,6 +23,7 @@ from ecoscope_workflows.tasks.analysis import dataframe_column_mean
 from ecoscope_workflows.tasks.results import create_single_value_widget_single_view
 from ecoscope_workflows.tasks.analysis import dataframe_column_max
 from ecoscope_workflows.tasks.analysis import dataframe_count
+from ecoscope_workflows.tasks.analysis import get_day_night_ratio
 from ecoscope_workflows.tasks.analysis import calculate_time_density
 from ecoscope_workflows.tasks.results import gather_dashboard
 
@@ -408,6 +409,59 @@ num_location_grouped_sv_widget = merge_widget_views.partial(
 
 
 # %% [markdown]
+# ## Calculate Day/Night Ratio Per Group
+
+# %%
+# parameters
+
+daynight_ratio_params = dict()
+
+# %%
+# call the task
+
+
+daynight_ratio = get_day_night_ratio.partial(**daynight_ratio_params).mapvalues(
+    argnames=["df"], argvalues=split_subject_traj_groups
+)
+
+
+# %% [markdown]
+# ## Create Single Value Widgets for Day/Night Ratio Per Group
+
+# %%
+# parameters
+
+daynight_ratio_sv_widgets_params = dict(
+    title=...,
+)
+
+# %%
+# call the task
+
+
+daynight_ratio_sv_widgets = create_single_value_widget_single_view.partial(
+    **daynight_ratio_sv_widgets_params
+).map(argnames=["view", "data"], argvalues=daynight_ratio)
+
+
+# %% [markdown]
+# ## Merge per group Day/Night Ratio SV widgets
+
+# %%
+# parameters
+
+daynight_ratio_grouped_sv_widget_params = dict()
+
+# %%
+# call the task
+
+
+daynight_ratio_grouped_sv_widget = merge_widget_views.partial(
+    widgets=daynight_ratio_sv_widgets
+).call(**daynight_ratio_grouped_sv_widget_params)
+
+
+# %% [markdown]
 # ## Calculate Time Density from Trajectory
 
 # %%
@@ -549,6 +603,7 @@ subject_tracking_dashboard = gather_dashboard.partial(
         mean_speed_grouped_sv_widget,
         max_speed_grouped_sv_widget,
         num_location_grouped_sv_widget,
+        daynight_ratio_grouped_sv_widget,
         td_grouped_map_widget,
     ],
     groupers=groupers,

@@ -374,6 +374,32 @@
             "required": [],
             "type": "object"
         },
+        "Calculate Day/Night Ratio Per Group": {
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+        },
+        "Create Single Value Widgets for Day/Night Ratio Per Group": {
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "title": "Title",
+                    "type": "string",
+                    "description": "The title of the widget"
+                }
+            },
+            "required": [
+                "title"
+            ],
+            "type": "object"
+        },
+        "Merge per group Day/Night Ratio SV widgets": {
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+        },
         "Calculate Time Density from Trajectory": {
             "additionalProperties": false,
             "properties": {
