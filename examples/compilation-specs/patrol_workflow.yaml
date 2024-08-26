@@ -234,19 +234,28 @@ workflow:
   - name: Draw Pie Chart for Patrols Events
     id: patrol_events_pie_chart
     task: draw_pie_chart
-    partial:
-      dataframe: ${{ workflow.filter_patrol_events.return }}
+    mapvalues:
+      argnames: geodataframe
+      argvalues: ${{ workflow.split_pe_groups.return }}
   - name: Persist Patrols Pie Chart as Text
     id: patrol_events_pie_chart_html_url
     task: persist_text
     partial:
-      text: ${{ workflow.patrol_events_pie_chart.return }}
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+    mapvalues:
+      argnames: text
+      argvalues: ${{ workflow.patrol_events_pie_chart.return }}
   - name: Create Plot Widget for Patrol Events
-    id: patrol_events_pie_chart_widget
+    id: patrol_events_pie_chart_widgets
     task: create_plot_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.patrol_events_pie_chart_html_url.return }}
+  - name: Merge Pie Chart Widget Views
+    id: patrol_events_pie_widget_grouped
+    task: merge_widget_views
     partial:
-      data: ${{ workflow.patrol_events_pie_chart_html_url.return }}
+      widgets: ${{ workflow.patrol_events_pie_chart_widgets.return }}
 
   # time density
   - name: Calculate Time Density from Trajectory
@@ -286,7 +295,7 @@ workflow:
         - ${{ workflow.traj_pe_grouped_map_widget.return }}
         - ${{ workflow.td_map_widget.return }}
         - ${{ workflow.patrol_events_bar_chart_widget.return }}
-        - ${{ workflow.patrol_events_pie_chart_widget.return }}
+        - ${{ workflow.patrol_events_pie_widget_grouped.return }}
         - ${{ workflow.total_patrols_grouped_sv_widget.return }}
         - ${{ workflow.patrol_time_grouped_widget.return }}
         - ${{ workflow.patrol_dist_grouped_widget.return }}
