@@ -13,7 +13,7 @@ patrol_obs:
 
 # Parameters for 'Transform Observations to Relocations' using task `process_relocations`.
 patrol_reloc:
-  filter_point_coords:   # (list[list[float]], FieldInfo(annotation=NoneType, required=True))
+  filter_point_coords:   # (list[ecoscope_workflows.tasks.transformation._filtering.Coordinate], FieldInfo(annotation=NoneType, required=True))
   relocs_columns:   # (list[str], FieldInfo(annotation=NoneType, required=True))
 
 # Parameters for 'Transform Relocations to Trajectories' using task `relocations_to_trajectory`.
@@ -54,7 +54,7 @@ filter_patrol_events:
   max_x:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=180.0))
   min_y:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=-90.0))
   max_y:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=90.0))
-  filter_point_coords:   # (list[list[float]], FieldInfo(annotation=NoneType, required=False, default=[[0.0, 0.0]]))
+  filter_point_coords:   # (list[ecoscope_workflows.tasks.transformation._filtering.Coordinate], FieldInfo(annotation=NoneType, required=False, default=[Coordinate(x=0.0, y=0.0)]))
 
 # Parameters for 'Add temporal index to Patrol Events' using task `add_temporal_index`.
 pe_add_temporal_index:
@@ -166,7 +166,7 @@ patrol_events_bar_chart:
   time_interval:   # (typing.Literal['year', 'month', 'week', 'day', 'hour'], FieldInfo(annotation=NoneType, required=True, description='Sets the time interval of the x axis.'))
   grouped_styles:   # (list[ecoscope_workflows.tasks.results._ecoplot.GroupedPlotStyle], FieldInfo(annotation=NoneType, required=True, description='Style arguments passed to plotly.graph_objects.Bar and applied to individual groups.'))
   plot_style:   # (typing.Union[ecoscope_workflows.tasks.results._ecoplot.PlotStyle, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional style kwargs passed to go.Pie().'))
-  layout_style:   # (typing.Union[ecoscope_workflows.tasks.results._ecoplot.LayoutStyle, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional kwargs passed to plotly.go.Figure(layout).'))
+  layout_style:   # (typing.Union[ecoscope_workflows.tasks.results._ecoplot.BarLayoutStyle, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional kwargs passed to plotly.go.Figure(layout).'))
 
 # Parameters for 'Persist Patrols Bar Chart as Text' using task `persist_text`.
 patrol_events_bar_chart_html_url:
@@ -185,13 +185,15 @@ patrol_events_pie_chart:
   layout_style:   # (typing.Union[ecoscope_workflows.tasks.results._ecoplot.LayoutStyle, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional kwargs passed to plotly.go.Figure(layout).'))
 
 # Parameters for 'Persist Patrols Pie Chart as Text' using task `persist_text`.
-patrol_events_pie_chart_html_url:
+pe_pie_chart_html_urls:
   filename:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
 # Parameters for 'Create Plot Widget for Patrol Events' using task `create_plot_widget_single_view`.
-patrol_events_pie_chart_widget:
+patrol_events_pie_chart_widgets:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
-  view:   # (tuple[tuple[str, typing.Literal['='], str], ...] | None, FieldInfo(annotation=NoneType, required=True, description='If grouped, the view of the widget', exclude=True))
+
+# Parameters for 'Merge Pie Chart Widget Views' using task `merge_widget_views`.
+patrol_events_pie_widget_grouped:
 
 # Parameters for 'Calculate Time Density from Trajectory' using task `calculate_time_density`.
 td:

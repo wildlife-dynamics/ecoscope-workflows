@@ -775,8 +775,8 @@ patrol_events_pie_chart_params = dict(
 
 
 patrol_events_pie_chart = draw_pie_chart.partial(
-    dataframe=filter_patrol_events, **patrol_events_pie_chart_params
-).call()
+    **patrol_events_pie_chart_params
+).mapvalues(argnames=["dataframe"], argvalues=split_pe_groups)
 
 
 # %% [markdown]
@@ -785,7 +785,7 @@ patrol_events_pie_chart = draw_pie_chart.partial(
 # %%
 # parameters
 
-patrol_events_pie_chart_html_url_params = dict(
+pe_pie_chart_html_urls_params = dict(
     filename=...,
 )
 
@@ -793,11 +793,9 @@ patrol_events_pie_chart_html_url_params = dict(
 # call the task
 
 
-patrol_events_pie_chart_html_url = persist_text.partial(
-    text=patrol_events_pie_chart,
-    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-    **patrol_events_pie_chart_html_url_params,
-).call()
+pe_pie_chart_html_urls = persist_text.partial(
+    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"], **pe_pie_chart_html_urls_params
+).mapvalues(argnames=["text"], argvalues=patrol_events_pie_chart)
 
 
 # %% [markdown]
@@ -806,17 +804,33 @@ patrol_events_pie_chart_html_url = persist_text.partial(
 # %%
 # parameters
 
-patrol_events_pie_chart_widget_params = dict(
+patrol_events_pie_chart_widgets_params = dict(
     title=...,
-    view=...,
 )
 
 # %%
 # call the task
 
 
-patrol_events_pie_chart_widget = create_plot_widget_single_view.partial(
-    data=patrol_events_pie_chart_html_url, **patrol_events_pie_chart_widget_params
+patrol_events_pie_chart_widgets = create_plot_widget_single_view.partial(
+    **patrol_events_pie_chart_widgets_params
+).map(argnames=["view", "data"], argvalues=pe_pie_chart_html_urls)
+
+
+# %% [markdown]
+# ## Merge Pie Chart Widget Views
+
+# %%
+# parameters
+
+patrol_events_pie_widget_grouped_params = dict()
+
+# %%
+# call the task
+
+
+patrol_events_pie_widget_grouped = merge_widget_views.partial(
+    widgets=patrol_events_pie_chart_widgets, **patrol_events_pie_widget_grouped_params
 ).call()
 
 
@@ -941,7 +955,7 @@ patrol_dashboard = gather_dashboard.partial(
         traj_pe_grouped_map_widget,
         td_map_widget,
         patrol_events_bar_chart_widget,
-        patrol_events_pie_chart_widget,
+        patrol_events_pie_widget_grouped,
         total_patrols_grouped_sv_widget,
         patrol_time_grouped_widget,
         patrol_dist_grouped_widget,

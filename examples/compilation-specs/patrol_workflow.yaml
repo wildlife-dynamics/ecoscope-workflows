@@ -235,10 +235,10 @@ workflow:
     id: patrol_events_pie_chart
     task: draw_pie_chart
     mapvalues:
-      argnames: geodataframe
+      argnames: dataframe
       argvalues: ${{ workflow.split_pe_groups.return }}
   - name: Persist Patrols Pie Chart as Text
-    id: patrol_events_pie_chart_html_url
+    id: pe_pie_chart_html_urls
     task: persist_text
     partial:
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
@@ -250,7 +250,7 @@ workflow:
     task: create_plot_widget_single_view
     map:
       argnames: [view, data]
-      argvalues: ${{ workflow.patrol_events_pie_chart_html_url.return }}
+      argvalues: ${{ workflow.pe_pie_chart_html_urls.return }}
   - name: Merge Pie Chart Widget Views
     id: patrol_events_pie_widget_grouped
     task: merge_widget_views

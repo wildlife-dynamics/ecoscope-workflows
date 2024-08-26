@@ -285,25 +285,30 @@ if __name__ == "__main__":
 
     patrol_events_pie_chart = (
         draw_pie_chart.validate()
-        .partial(dataframe=filter_patrol_events, **params["patrol_events_pie_chart"])
-        .call()
+        .partial(**params["patrol_events_pie_chart"])
+        .mapvalues(argnames=["dataframe"], argvalues=split_pe_groups)
     )
 
-    patrol_events_pie_chart_html_url = (
+    pe_pie_chart_html_urls = (
         persist_text.validate()
         .partial(
-            text=patrol_events_pie_chart,
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-            **params["patrol_events_pie_chart_html_url"],
+            **params["pe_pie_chart_html_urls"],
         )
-        .call()
+        .mapvalues(argnames=["text"], argvalues=patrol_events_pie_chart)
     )
 
-    patrol_events_pie_chart_widget = (
+    patrol_events_pie_chart_widgets = (
         create_plot_widget_single_view.validate()
+        .partial(**params["patrol_events_pie_chart_widgets"])
+        .map(argnames=["view", "data"], argvalues=pe_pie_chart_html_urls)
+    )
+
+    patrol_events_pie_widget_grouped = (
+        merge_widget_views.validate()
         .partial(
-            data=patrol_events_pie_chart_html_url,
-            **params["patrol_events_pie_chart_widget"],
+            widgets=patrol_events_pie_chart_widgets,
+            **params["patrol_events_pie_widget_grouped"],
         )
         .call()
     )
@@ -349,7 +354,7 @@ if __name__ == "__main__":
                 traj_pe_grouped_map_widget,
                 td_map_widget,
                 patrol_events_bar_chart_widget,
-                patrol_events_pie_chart_widget,
+                patrol_events_pie_widget_grouped,
                 total_patrols_grouped_sv_widget,
                 patrol_time_grouped_widget,
                 patrol_dist_grouped_widget,
