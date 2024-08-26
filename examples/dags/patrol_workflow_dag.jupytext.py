@@ -48,7 +48,7 @@ groupers_params = dict(
 # call the task
 
 
-groupers = set_groupers.call(**groupers_params)
+groupers = set_groupers.partial(**groupers_params).call()
 
 
 # %% [markdown]
@@ -70,7 +70,7 @@ patrol_obs_params = dict(
 # call the task
 
 
-patrol_obs = get_patrol_observations.call(**patrol_obs_params)
+patrol_obs = get_patrol_observations.partial(**patrol_obs_params).call()
 
 
 # %% [markdown]
@@ -88,9 +88,9 @@ patrol_reloc_params = dict(
 # call the task
 
 
-patrol_reloc = process_relocations.partial(observations=patrol_obs).call(
-    **patrol_reloc_params
-)
+patrol_reloc = process_relocations.partial(
+    observations=patrol_obs, **patrol_reloc_params
+).call()
 
 
 # %% [markdown]
@@ -112,9 +112,9 @@ patrol_traj_params = dict(
 # call the task
 
 
-patrol_traj = relocations_to_trajectory.partial(relocations=patrol_reloc).call(
-    **patrol_traj_params
-)
+patrol_traj = relocations_to_trajectory.partial(
+    relocations=patrol_reloc, **patrol_traj_params
+).call()
 
 
 # %% [markdown]
@@ -135,9 +135,9 @@ traj_add_temporal_index_params = dict(
 # call the task
 
 
-traj_add_temporal_index = add_temporal_index.partial(df=patrol_traj).call(
-    **traj_add_temporal_index_params
-)
+traj_add_temporal_index = add_temporal_index.partial(
+    df=patrol_traj, **traj_add_temporal_index_params
+).call()
 
 
 # %% [markdown]
@@ -153,8 +153,8 @@ split_patrol_traj_groups_params = dict()
 
 
 split_patrol_traj_groups = split_groups.partial(
-    df=traj_add_temporal_index, groupers=groupers
-).call(**split_patrol_traj_groups_params)
+    df=traj_add_temporal_index, groupers=groupers, **split_patrol_traj_groups_params
+).call()
 
 
 # %% [markdown]
@@ -194,7 +194,7 @@ patrol_events_params = dict(
 # call the task
 
 
-patrol_events = get_patrol_events.call(**patrol_events_params)
+patrol_events = get_patrol_events.partial(**patrol_events_params).call()
 
 
 # %% [markdown]
@@ -215,9 +215,9 @@ filter_patrol_events_params = dict(
 # call the task
 
 
-filter_patrol_events = apply_reloc_coord_filter.partial(df=patrol_events).call(
-    **filter_patrol_events_params
-)
+filter_patrol_events = apply_reloc_coord_filter.partial(
+    df=patrol_events, **filter_patrol_events_params
+).call()
 
 
 # %% [markdown]
@@ -238,9 +238,9 @@ pe_add_temporal_index_params = dict(
 # call the task
 
 
-pe_add_temporal_index = add_temporal_index.partial(df=filter_patrol_events).call(
-    **pe_add_temporal_index_params
-)
+pe_add_temporal_index = add_temporal_index.partial(
+    df=filter_patrol_events, **pe_add_temporal_index_params
+).call()
 
 
 # %% [markdown]
@@ -256,8 +256,8 @@ split_pe_groups_params = dict()
 
 
 split_pe_groups = split_groups.partial(
-    df=pe_add_temporal_index, groupers=groupers
-).call(**split_pe_groups_params)
+    df=pe_add_temporal_index, groupers=groupers, **split_pe_groups_params
+).call()
 
 
 # %% [markdown]
@@ -292,8 +292,9 @@ combined_traj_and_pe_map_layers_params = dict()
 
 
 combined_traj_and_pe_map_layers = groupbykey.partial(
-    iterables=[patrol_traj_map_layers, patrol_events_map_layers]
-).call(**combined_traj_and_pe_map_layers_params)
+    iterables=[patrol_traj_map_layers, patrol_events_map_layers],
+    **combined_traj_and_pe_map_layers_params,
+).call()
 
 
 # %% [markdown]
@@ -370,8 +371,8 @@ traj_pe_grouped_map_widget_params = dict()
 
 
 traj_pe_grouped_map_widget = merge_widget_views.partial(
-    widgets=traj_pe_map_widgets_single_views
-).call(**traj_pe_grouped_map_widget_params)
+    widgets=traj_pe_map_widgets_single_views, **traj_pe_grouped_map_widget_params
+).call()
 
 
 # %% [markdown]
@@ -425,8 +426,8 @@ total_patrols_grouped_sv_widget_params = dict()
 
 
 total_patrols_grouped_sv_widget = merge_widget_views.partial(
-    widgets=total_patrols_sv_widgets
-).call(**total_patrols_grouped_sv_widget_params)
+    widgets=total_patrols_sv_widgets, **total_patrols_grouped_sv_widget_params
+).call()
 
 
 # %% [markdown]
@@ -500,8 +501,8 @@ patrol_time_grouped_widget_params = dict()
 
 
 patrol_time_grouped_widget = merge_widget_views.partial(
-    widgets=total_patrol_time_sv_widgets
-).call(**patrol_time_grouped_widget_params)
+    widgets=total_patrol_time_sv_widgets, **patrol_time_grouped_widget_params
+).call()
 
 
 # %% [markdown]
@@ -575,8 +576,8 @@ patrol_dist_grouped_widget_params = dict()
 
 
 patrol_dist_grouped_widget = merge_widget_views.partial(
-    widgets=total_patrol_dist_sv_widgets
-).call(**patrol_dist_grouped_widget_params)
+    widgets=total_patrol_dist_sv_widgets, **patrol_dist_grouped_widget_params
+).call()
 
 
 # %% [markdown]
@@ -630,8 +631,8 @@ avg_speed_grouped_widget_params = dict()
 
 
 avg_speed_grouped_widget = merge_widget_views.partial(
-    widgets=avg_speed_sv_widgets
-).call(**avg_speed_grouped_widget_params)
+    widgets=avg_speed_sv_widgets, **avg_speed_grouped_widget_params
+).call()
 
 
 # %% [markdown]
@@ -685,8 +686,8 @@ max_speed_grouped_widget_params = dict()
 
 
 max_speed_grouped_widget = merge_widget_views.partial(
-    widgets=max_speed_sv_widgets
-).call(**max_speed_grouped_widget_params)
+    widgets=max_speed_sv_widgets, **max_speed_grouped_widget_params
+).call()
 
 
 # %% [markdown]
@@ -711,8 +712,8 @@ patrol_events_bar_chart_params = dict(
 
 
 patrol_events_bar_chart = draw_time_series_bar_chart.partial(
-    dataframe=filter_patrol_events
-).call(**patrol_events_bar_chart_params)
+    dataframe=filter_patrol_events, **patrol_events_bar_chart_params
+).call()
 
 
 # %% [markdown]
@@ -730,8 +731,10 @@ patrol_events_bar_chart_html_url_params = dict(
 
 
 patrol_events_bar_chart_html_url = persist_text.partial(
-    text=patrol_events_bar_chart, root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"]
-).call(**patrol_events_bar_chart_html_url_params)
+    text=patrol_events_bar_chart,
+    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+    **patrol_events_bar_chart_html_url_params,
+).call()
 
 
 # %% [markdown]
@@ -750,8 +753,8 @@ patrol_events_bar_chart_widget_params = dict(
 
 
 patrol_events_bar_chart_widget = create_plot_widget_single_view.partial(
-    data=patrol_events_bar_chart_html_url
-).call(**patrol_events_bar_chart_widget_params)
+    data=patrol_events_bar_chart_html_url, **patrol_events_bar_chart_widget_params
+).call()
 
 
 # %% [markdown]
@@ -771,9 +774,9 @@ patrol_events_pie_chart_params = dict(
 # call the task
 
 
-patrol_events_pie_chart = draw_pie_chart.partial(dataframe=filter_patrol_events).call(
-    **patrol_events_pie_chart_params
-)
+patrol_events_pie_chart = draw_pie_chart.partial(
+    dataframe=filter_patrol_events, **patrol_events_pie_chart_params
+).call()
 
 
 # %% [markdown]
@@ -791,8 +794,10 @@ patrol_events_pie_chart_html_url_params = dict(
 
 
 patrol_events_pie_chart_html_url = persist_text.partial(
-    text=patrol_events_pie_chart, root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"]
-).call(**patrol_events_pie_chart_html_url_params)
+    text=patrol_events_pie_chart,
+    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+    **patrol_events_pie_chart_html_url_params,
+).call()
 
 
 # %% [markdown]
@@ -811,8 +816,8 @@ patrol_events_pie_chart_widget_params = dict(
 
 
 patrol_events_pie_chart_widget = create_plot_widget_single_view.partial(
-    data=patrol_events_pie_chart_html_url
-).call(**patrol_events_pie_chart_widget_params)
+    data=patrol_events_pie_chart_html_url, **patrol_events_pie_chart_widget_params
+).call()
 
 
 # %% [markdown]
@@ -835,7 +840,7 @@ td_params = dict(
 # call the task
 
 
-td = calculate_time_density.partial(trajectory_gdf=patrol_traj).call(**td_params)
+td = calculate_time_density.partial(trajectory_gdf=patrol_traj, **td_params).call()
 
 
 # %% [markdown]
@@ -852,7 +857,7 @@ td_map_layer_params = dict(
 # call the task
 
 
-td_map_layer = create_map_layer.partial(geodataframe=td).call(**td_map_layer_params)
+td_map_layer = create_map_layer.partial(geodataframe=td, **td_map_layer_params).call()
 
 
 # %% [markdown]
@@ -872,7 +877,7 @@ td_ecomap_params = dict(
 # call the task
 
 
-td_ecomap = draw_ecomap.partial(geo_layers=td_map_layer).call(**td_ecomap_params)
+td_ecomap = draw_ecomap.partial(geo_layers=td_map_layer, **td_ecomap_params).call()
 
 
 # %% [markdown]
@@ -890,8 +895,10 @@ td_ecomap_html_url_params = dict(
 
 
 td_ecomap_html_url = persist_text.partial(
-    text=td_ecomap, root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"]
-).call(**td_ecomap_html_url_params)
+    text=td_ecomap,
+    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+    **td_ecomap_html_url_params,
+).call()
 
 
 # %% [markdown]
@@ -909,9 +916,9 @@ td_map_widget_params = dict(
 # call the task
 
 
-td_map_widget = create_map_widget_single_view.partial(data=td_ecomap_html_url).call(
-    **td_map_widget_params
-)
+td_map_widget = create_map_widget_single_view.partial(
+    data=td_ecomap_html_url, **td_map_widget_params
+).call()
 
 
 # %% [markdown]
@@ -942,4 +949,5 @@ patrol_dashboard = gather_dashboard.partial(
         max_speed_grouped_widget,
     ],
     groupers=groupers,
-).call(**patrol_dashboard_params)
+    **patrol_dashboard_params,
+).call()

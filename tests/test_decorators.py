@@ -1,6 +1,23 @@
+from dataclasses import FrozenInstanceError
+
 import pytest
 
 from ecoscope_workflows.decorators import task
+
+
+def test_frozen():
+    @task
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    with pytest.raises(FrozenInstanceError, match="cannot assign to field 'executor'"):
+        f.executor = None
+
+    with pytest.raises(FrozenInstanceError, match="cannot assign to field 'tags'"):
+        f.tags = None
+
+    with pytest.raises(FrozenInstanceError, match="cannot assign to field 'func'"):
+        f.func = None
 
 
 def test_call_simple():

@@ -19,11 +19,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     params = yaml.safe_load(args.config_file)
 
-    obs_a = get_subjectgroup_observations.validate().call(**params["obs_a"])
+    obs_a = get_subjectgroup_observations.validate().partial(**params["obs_a"]).call()
 
-    obs_b = get_subjectgroup_observations.validate().call(**params["obs_b"])
+    obs_b = get_subjectgroup_observations.validate().partial(**params["obs_b"]).call()
 
-    obs_c = get_subjectgroup_observations.validate().call(**params["obs_c"])
+    obs_c = get_subjectgroup_observations.validate().partial(**params["obs_c"]).call()
 
     map_layers = (
         create_map_layer.validate()
