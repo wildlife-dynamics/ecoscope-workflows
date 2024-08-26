@@ -12,43 +12,47 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        environment-name: [
+          "py3.10-ecoscope1.8.2",
+          "py3.11-ecoscope1.8.2",
+          "py3.12-ecoscope1.8.2",
+        ]
 
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - name: Setup Micromamba
+        uses: mamba-org/setup-micromamba@v1
         with:
-          python-version: ${{ matrix.python-version }}
+          environment-file: ./ci/envs/${{ matrix.environment-name }}.yml
+          cache-environment: true
+          cache-downloads: true
+          init-shell: bash
 
-      - uses: actions/cache@v4
-        id: restore-cache
-        with:
-          key: "venv-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}"
-          path: |
-            .venv/
-
-      # If python patch version changes, or pyproject.toml gets updated,
-      # the cache lookup will miss, and the  venv needs to be recreated.
-      - name: If no cache hit, recreate venv
-        if: "steps.restore-cache.outputs.cache-hit == false"
+      - name: Install pip dependencies and our package
+        shell: bash -leo pipefail {0}
         run: |
-          python -m venv .venv
-          .venv/bin/python -m pip install --upgrade pip
-          .venv/bin/python -m pip install -e ".[test]"
+          python -m pip install -U pip
+          python -m pip install -e ".[test,lithops]" --config-settings editable_mode=compat
 
       - name: Run doctests
+        shell: bash -leo pipefail {0}
         run: |
-          .venv/bin/python -m pytest -v ecoscope_workflows/ --doctest-modules \
+          python -m pytest -v ecoscope_workflows/ --doctest-modules \
           --ignore=ecoscope_workflows/visualize.py
+
+      - name: Export shell name and conda env name to env
+        run: |
+          echo 'SHELL="bash -leo pipefail"' >> $GITHUB_ENV
+          echo "CONDA_ENV_NAME=${{ matrix.environment-name }}" >> $GITHUB_ENV
 
       - name: Test with pytest
         env:
           EARTHRANGER_SERVER: ${{ secrets.EARTHRANGER_SERVER }}
           EARTHRANGER_USERNAME: ${{ secrets.EARTHRANGER_USERNAME }}
           EARTHRANGER_PASSWORD: ${{ secrets.EARTHRANGER_PASSWORD }}
+        shell: bash -leo pipefail {0}
         run: |
-          .venv/bin/python -m pytest -n auto tests -vvv
+          python -m pytest tests -vvv
 
     # - name: Upload Coverage to Codecov
     #   uses: codecov/codecov-action@v2
