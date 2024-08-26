@@ -1,11 +1,10 @@
-from operator import add, sub, mul, truediv, floordiv, mod, pow
+from operator import add, floordiv, mod, mul, pow, sub, truediv
 from typing import Annotated, Literal
 
 from pydantic import Field
 
-from ecoscope_workflows.annotations import AnyDataFrame
+from ecoscope_workflows.annotations import AnyDataFrame, AnyGeoDataFrame
 from ecoscope_workflows.decorators import task
-
 
 ColumnName = Annotated[str, Field(description="Column to aggregate")]
 
@@ -83,3 +82,12 @@ def apply_arithmetic_operation(
     float | int, Field(description="The result of the arithmetic operation")
 ]:
     return operations[operation](a, b)
+
+
+@task
+def get_day_night_ratio(
+    df: AnyGeoDataFrame,
+) -> Annotated[float, Field(description="Daynight ratio")]:
+    from ecoscope.analysis import astronomy
+
+    return astronomy.get_daynight_ratio(df)

@@ -121,6 +121,25 @@ workflow:
     partial:
       widgets: ${{ workflow.num_location_sv_widgets.return }}
 
+  # Grouped single value widget (4) - daynight ratio
+  - name: Calculate Day/Night Ratio Per Group
+    id: daynight_ratio
+    task: get_day_night_ratio
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.split_subject_traj_groups.return }}
+  - name: Create Single Value Widgets for Day/Night Ratio Per Group
+    id: daynight_ratio_sv_widgets
+    task: create_single_value_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.daynight_ratio.return }}
+  - name: Merge per group Day/Night Ratio SV widgets
+    id: daynight_ratio_grouped_sv_widget
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.daynight_ratio_sv_widgets.return }}
+
   # time density
   - name: Calculate Time Density from Trajectory
     id: td
@@ -170,5 +189,6 @@ workflow:
         - ${{ workflow.mean_speed_grouped_sv_widget.return }}
         - ${{ workflow.max_speed_grouped_sv_widget.return }}
         - ${{ workflow.num_location_grouped_sv_widget.return }}
+        - ${{ workflow.daynight_ratio_grouped_sv_widget.return }}
         - ${{ workflow.td_grouped_map_widget.return }}
       groupers: ${{ workflow.groupers.return }}
