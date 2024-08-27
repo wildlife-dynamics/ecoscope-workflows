@@ -41,7 +41,7 @@ groupers_params = dict(
 # call the task
 
 
-groupers = set_groupers.call(**groupers_params)
+groupers = set_groupers.partial(**groupers_params).call()
 
 
 # %% [markdown]
@@ -62,7 +62,7 @@ subject_obs_params = dict(
 # call the task
 
 
-subject_obs = get_subjectgroup_observations.call(**subject_obs_params)
+subject_obs = get_subjectgroup_observations.partial(**subject_obs_params).call()
 
 
 # %% [markdown]
@@ -80,9 +80,9 @@ subject_reloc_params = dict(
 # call the task
 
 
-subject_reloc = process_relocations.partial(observations=subject_obs).call(
-    **subject_reloc_params
-)
+subject_reloc = process_relocations.partial(
+    observations=subject_obs, **subject_reloc_params
+).call()
 
 
 # %% [markdown]
@@ -104,9 +104,9 @@ subject_traj_params = dict(
 # call the task
 
 
-subject_traj = relocations_to_trajectory.partial(relocations=subject_reloc).call(
-    **subject_traj_params
-)
+subject_traj = relocations_to_trajectory.partial(
+    relocations=subject_reloc, **subject_traj_params
+).call()
 
 
 # %% [markdown]
@@ -127,9 +127,9 @@ traj_add_temporal_index_params = dict(
 # call the task
 
 
-traj_add_temporal_index = add_temporal_index.partial(df=subject_traj).call(
-    **traj_add_temporal_index_params
-)
+traj_add_temporal_index = add_temporal_index.partial(
+    df=subject_traj, **traj_add_temporal_index_params
+).call()
 
 
 # %% [markdown]
@@ -145,8 +145,8 @@ split_subject_traj_groups_params = dict()
 
 
 split_subject_traj_groups = split_groups.partial(
-    df=traj_add_temporal_index, groupers=groupers
-).call(**split_subject_traj_groups_params)
+    df=traj_add_temporal_index, groupers=groupers, **split_subject_traj_groups_params
+).call()
 
 
 # %% [markdown]
@@ -241,8 +241,8 @@ traj_grouped_map_widget_params = dict()
 
 
 traj_grouped_map_widget = merge_widget_views.partial(
-    widgets=traj_map_widgets_single_views
-).call(**traj_grouped_map_widget_params)
+    widgets=traj_map_widgets_single_views, **traj_grouped_map_widget_params
+).call()
 
 
 # %% [markdown]
@@ -296,8 +296,8 @@ mean_speed_grouped_sv_widget_params = dict()
 
 
 mean_speed_grouped_sv_widget = merge_widget_views.partial(
-    widgets=mean_speed_sv_widgets
-).call(**mean_speed_grouped_sv_widget_params)
+    widgets=mean_speed_sv_widgets, **mean_speed_grouped_sv_widget_params
+).call()
 
 
 # %% [markdown]
@@ -351,8 +351,8 @@ max_speed_grouped_sv_widget_params = dict()
 
 
 max_speed_grouped_sv_widget = merge_widget_views.partial(
-    widgets=max_speed_sv_widgets
-).call(**max_speed_grouped_sv_widget_params)
+    widgets=max_speed_sv_widgets, **max_speed_grouped_sv_widget_params
+).call()
 
 
 # %% [markdown]
@@ -404,8 +404,8 @@ num_location_grouped_sv_widget_params = dict()
 
 
 num_location_grouped_sv_widget = merge_widget_views.partial(
-    widgets=num_location_sv_widgets
-).call(**num_location_grouped_sv_widget_params)
+    widgets=num_location_sv_widgets, **num_location_grouped_sv_widget_params
+).call()
 
 
 # %% [markdown]
@@ -457,8 +457,8 @@ daynight_ratio_grouped_sv_widget_params = dict()
 
 
 daynight_ratio_grouped_sv_widget = merge_widget_views.partial(
-    widgets=daynight_ratio_sv_widgets
-).call(**daynight_ratio_grouped_sv_widget_params)
+    widgets=daynight_ratio_sv_widgets, **daynight_ratio_grouped_sv_widget_params
+).call()
 
 
 # %% [markdown]
@@ -577,9 +577,9 @@ td_grouped_map_widget_params = dict()
 # call the task
 
 
-td_grouped_map_widget = merge_widget_views.partial(widgets=td_map_widget).call(
-    **td_grouped_map_widget_params
-)
+td_grouped_map_widget = merge_widget_views.partial(
+    widgets=td_map_widget, **td_grouped_map_widget_params
+).call()
 
 
 # %% [markdown]
@@ -607,4 +607,5 @@ subject_tracking_dashboard = gather_dashboard.partial(
         td_grouped_map_widget,
     ],
     groupers=groupers,
-).call(**subject_tracking_dashboard_params)
+    **subject_tracking_dashboard_params,
+).call()

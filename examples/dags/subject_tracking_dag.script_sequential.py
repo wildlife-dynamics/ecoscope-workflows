@@ -33,32 +33,38 @@ if __name__ == "__main__":
     args = parser.parse_args()
     params = yaml.safe_load(args.config_file)
 
-    groupers = set_groupers.validate().call(**params["groupers"])
+    groupers = set_groupers.validate().partial(**params["groupers"]).call()
 
-    subject_obs = get_subjectgroup_observations.validate().call(**params["subject_obs"])
+    subject_obs = (
+        get_subjectgroup_observations.validate().partial(**params["subject_obs"]).call()
+    )
 
     subject_reloc = (
         process_relocations.validate()
-        .partial(observations=subject_obs)
-        .call(**params["subject_reloc"])
+        .partial(observations=subject_obs, **params["subject_reloc"])
+        .call()
     )
 
     subject_traj = (
         relocations_to_trajectory.validate()
-        .partial(relocations=subject_reloc)
-        .call(**params["subject_traj"])
+        .partial(relocations=subject_reloc, **params["subject_traj"])
+        .call()
     )
 
     traj_add_temporal_index = (
         add_temporal_index.validate()
-        .partial(df=subject_traj)
-        .call(**params["traj_add_temporal_index"])
+        .partial(df=subject_traj, **params["traj_add_temporal_index"])
+        .call()
     )
 
     split_subject_traj_groups = (
         split_groups.validate()
-        .partial(df=traj_add_temporal_index, groupers=groupers)
-        .call(**params["split_subject_traj_groups"])
+        .partial(
+            df=traj_add_temporal_index,
+            groupers=groupers,
+            **params["split_subject_traj_groups"],
+        )
+        .call()
     )
 
     traj_map_layers = (
@@ -90,8 +96,10 @@ if __name__ == "__main__":
 
     traj_grouped_map_widget = (
         merge_widget_views.validate()
-        .partial(widgets=traj_map_widgets_single_views)
-        .call(**params["traj_grouped_map_widget"])
+        .partial(
+            widgets=traj_map_widgets_single_views, **params["traj_grouped_map_widget"]
+        )
+        .call()
     )
 
     mean_speed = (
@@ -108,8 +116,10 @@ if __name__ == "__main__":
 
     mean_speed_grouped_sv_widget = (
         merge_widget_views.validate()
-        .partial(widgets=mean_speed_sv_widgets)
-        .call(**params["mean_speed_grouped_sv_widget"])
+        .partial(
+            widgets=mean_speed_sv_widgets, **params["mean_speed_grouped_sv_widget"]
+        )
+        .call()
     )
 
     max_speed = (
@@ -126,8 +136,8 @@ if __name__ == "__main__":
 
     max_speed_grouped_sv_widget = (
         merge_widget_views.validate()
-        .partial(widgets=max_speed_sv_widgets)
-        .call(**params["max_speed_grouped_sv_widget"])
+        .partial(widgets=max_speed_sv_widgets, **params["max_speed_grouped_sv_widget"])
+        .call()
     )
 
     num_location = (
@@ -144,8 +154,10 @@ if __name__ == "__main__":
 
     num_location_grouped_sv_widget = (
         merge_widget_views.validate()
-        .partial(widgets=num_location_sv_widgets)
-        .call(**params["num_location_grouped_sv_widget"])
+        .partial(
+            widgets=num_location_sv_widgets, **params["num_location_grouped_sv_widget"]
+        )
+        .call()
     )
 
     daynight_ratio = (
@@ -162,8 +174,11 @@ if __name__ == "__main__":
 
     daynight_ratio_grouped_sv_widget = (
         merge_widget_views.validate()
-        .partial(widgets=daynight_ratio_sv_widgets)
-        .call(**params["daynight_ratio_grouped_sv_widget"])
+        .partial(
+            widgets=daynight_ratio_sv_widgets,
+            **params["daynight_ratio_grouped_sv_widget"],
+        )
+        .call()
     )
 
     td = (
@@ -201,8 +216,8 @@ if __name__ == "__main__":
 
     td_grouped_map_widget = (
         merge_widget_views.validate()
-        .partial(widgets=td_map_widget)
-        .call(**params["td_grouped_map_widget"])
+        .partial(widgets=td_map_widget, **params["td_grouped_map_widget"])
+        .call()
     )
 
     subject_tracking_dashboard = (
@@ -217,8 +232,9 @@ if __name__ == "__main__":
                 td_grouped_map_widget,
             ],
             groupers=groupers,
+            **params["subject_tracking_dashboard"],
         )
-        .call(**params["subject_tracking_dashboard"])
+        .call()
     )
 
     print(subject_tracking_dashboard)
