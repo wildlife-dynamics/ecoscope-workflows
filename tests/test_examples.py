@@ -151,10 +151,13 @@ def end_to_end(spec_fixture: SpecFixture) -> EndToEndFixture:
     )
 
 
-def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
+@pytest.mark.parametrize(
+    "template", ["script-sequential.jinja2", "script-async.jinja2"]
+)
+def test_end_to_end(template: str, end_to_end: EndToEndFixture, tmp_path: Path):
     spec = Spec(**end_to_end.spec_fixture.spec)
     dc = DagCompiler(spec=spec)
-    dc.template = "script-sequential.jinja2"
+    dc.template = template
     dc.testing = True
     dc.mock_tasks = end_to_end.mock_tasks
     script = dc.generate_dag()
@@ -164,17 +167,56 @@ def test_end_to_end(end_to_end: EndToEndFixture, tmp_path: Path):
     with open(script_outpath, mode="w") as f:
         f.write(script)
 
-    cmd = [
-        sys.executable,
-        "-W",
-        "ignore",  # in testing context warnings are added; exclude them from stdout
-        script_outpath.as_posix(),
-        "--config-file",
-        end_to_end.param_path.as_posix(),
-    ]
+    exe = (
+        # workaround for https://github.com/mamba-org/mamba/issues/2577
+        f"{os.environ['MAMBA_EXE']} run -n {os.environ['CONDA_ENV_NAME']} python"
+        if "mamba" in sys.executable
+        else sys.executable
+    )
+    cmd = " ".join(
+        [
+            os.environ.get("SHELL", "/bin/sh").replace('"', "").replace("'", ""),
+            "-c",
+            f"'{exe}",
+            "-W",
+            "ignore",  # in testing context warnings are added; exclude them from stdout
+            script_outpath.as_posix(),
+            "--config-file",
+            f"{end_to_end.param_path.as_posix()}'",
+        ],
+    )
     env = os.environ.copy()
     env["ECOSCOPE_WORKFLOWS_RESULTS"] = tmp.as_posix()
-    out = subprocess.run(cmd, capture_output=True, text=True, env=env)
-    assert out.returncode == 0
+    if template == "script-async.jinja2":
+        lithops_config_outpath = tmp / "lithops.yaml"
+        lithops_config = {
+            "lithops": {
+                "backend": "localhost",
+                "storage": "localhost",
+                "log_level": "INFO",
+                "data_limit": 16,
+            }
+        }
+        yaml = ruamel.yaml.YAML(typ="safe")
+        with open(lithops_config_outpath, mode="w") as f:
+            yaml.dump(lithops_config, f)
+
+        env["LITHOPS_CONFIG_FILE"] = lithops_config_outpath.as_posix()
+
+    proc = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        env=env,
+        shell=True,
+    )
+    returncode = proc.wait()
+    if returncode != 0:
+        assert proc.stderr is not None
+        raise ValueError(f"{cmd = } failed with:\n {proc.stderr.read()}")
+    assert returncode == 0
+    assert proc.stdout is not None
+    stdout = proc.stdout.read().strip()
     for assert_fn in end_to_end.assert_that_stdout:
-        assert assert_fn(out.stdout.strip())
+        assert assert_fn(stdout)

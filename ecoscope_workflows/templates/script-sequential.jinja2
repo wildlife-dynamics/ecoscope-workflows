@@ -38,7 +38,7 @@ if __name__ == "__main__":
     {% set validate = true %}
     {% set params = 'params["' ~ t.id ~ '"]' %}
     {% set indent = '    ' %}
-    {{ call_task_macros.handle_task(t, validate, params, indent) }}
+    {{ call_task_macros.call_task(t, validate, params, indent) }}
     {% if loop.last %}
     print({{ t.id }})
     {% endif %}

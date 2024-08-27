@@ -32,6 +32,8 @@ ecomaps:
   tile_layer: OpenStreetMap # (str, FieldInfo(annotation=NoneType, required=False))
   static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
   title: "Great Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
+  north_arrow_style:
+    placement: "top-right"
 
 # Parameters for 'Persist Ecomaps as Text' using task `persist_text`.
 td_ecomap_html_url: {}

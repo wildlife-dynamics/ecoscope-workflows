@@ -120,29 +120,32 @@ WorkflowVariable = Annotated[
 ]
 
 
-def _serialize_variables(v: list[WorkflowVariable]) -> str:
+def _serialize_variables(v: list[WorkflowVariable]) -> dict[str, str | list[str]]:
     """Serialize a list of workflow variables to a string for use in templating.
 
     Examples:
 
     ```python
     >>> _serialize_variables([TaskIdVariable(value="task1", suffix="return")])
-    'task1'
+    {'asstr': 'task1', 'aslist': ['task1']}
     >>> _serialize_variables([EnvVariable(value="ENV_VAR")])
-    'os.environ["ENV_VAR"]'
+    {'asstr': 'os.environ["ENV_VAR"]', 'aslist': ['os.environ["ENV_VAR"]']}
     >>> _serialize_variables([TaskIdVariable(value="task1", suffix="return"), TaskIdVariable(value="task2", suffix="return")])
-    '[task1, task2]'
+    {'asstr': '[task1, task2]', 'aslist': ['task1', 'task2']}
     >>> _serialize_variables([TaskIdVariable(value="task1", suffix="return"), EnvVariable(value="ENV_VAR")])
-    '[task1, os.environ["ENV_VAR"]]'
+    {'asstr': '[task1, os.environ["ENV_VAR"]]', 'aslist': ['task1', 'os.environ["ENV_VAR"]']}
 
     ```
 
     """
-    return (
-        v[0].model_dump()
-        if len(v) == 1
-        else f"[{', '.join(var.model_dump() for var in v)}]"
-    )
+    return {
+        "asstr": (
+            v[0].model_dump()
+            if len(v) == 1
+            else f"[{', '.join(var.model_dump() for var in v)}]"
+        ),
+        "aslist": [var.model_dump() for var in v],
+    }
 
 
 def _singleton_or_list_aslist(s: T | list[T]) -> list[T]:
@@ -152,7 +155,7 @@ def _singleton_or_list_aslist(s: T | list[T]) -> list[T]:
 Vars = Annotated[
     list[WorkflowVariable],
     BeforeValidator(_singleton_or_list_aslist),
-    PlainSerializer(_serialize_variables, return_type=str),
+    PlainSerializer(_serialize_variables, return_type=dict[str, str | list[str]]),
 ]
 TaskInstanceId = Annotated[
     str,
@@ -414,6 +417,7 @@ class Spec(_ForbidExtra):
                     )
         return self
 
+    @computed_field  # type: ignore[misc]
     @property
     def task_instance_dependencies(self) -> dict[str, list[str]]:
         return {

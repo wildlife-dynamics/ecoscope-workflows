@@ -3,7 +3,7 @@ from importlib.resources import files
 from pathlib import Path
 from typing import cast
 
-from ecoscope_workflows.decorators import Task
+from ecoscope_workflows.decorators import SyncTask
 from ecoscope_workflows.serde import gpd_from_parquet_uri
 
 
@@ -27,7 +27,7 @@ def validate_importable_reference(reference: str):
     return reference
 
 
-def import_task_from_reference(anchor: str, func_name: str) -> Task:
+def import_task_from_reference(anchor: str, func_name: str) -> SyncTask:
     """Import a task function from an importable reference."""
     # TODO: we will need to be clear in docs about what imports are allowed at top
     # level (ecoscope_workflows, pydantic, pandera, pandas) and which imports must
@@ -35,7 +35,7 @@ def import_task_from_reference(anchor: str, func_name: str) -> Task:
     # also enforce this programmatically.
     mod = importlib.import_module(anchor)
     func = getattr(mod, func_name)
-    assert isinstance(func, Task), f"{anchor}.{func_name} is not `@task`"
+    assert isinstance(func, SyncTask), f"{anchor}.{func_name} is not `@task`"
     return func
 
 
