@@ -1,0 +1,96 @@
+{
+  "info": {
+    "subdir": "noarch"
+  },
+  "packages": {},
+  "packages.conda": {
+    "ecoscope-v1.8.2-pyh4616a5c_0.conda": {
+      "build": "pyh4616a5c_0",
+      "build_number": 0,
+      "depends": [
+        "python",
+        "backoff",
+        "earthengine-api",
+        "geopandas <=0.14.2",
+        "numpy <2",
+        "pyproj",
+        "rasterio",
+        "tqdm",
+        "astroplan",
+        "datashader",
+        "igraph",
+        "mapclassify",
+        "matplotlib",
+        "networkx",
+        "numba",
+        "scipy",
+        "scikit-image",
+        "scikit-learn",
+        "plotly",
+        "matplotlib",
+        "mapclassify",
+        "python"
+      ],
+      "license": "BSD-3-Clause",
+      "md5": "2c7313c774c53b2865477a7dd0eb4879",
+      "name": "ecoscope",
+      "noarch": "python",
+      "sha256": "5caf069f454ce8f2427a8ed7035b9f64d28c1dc0053a469b91156cc9e6789357",
+      "size": 57479,
+      "subdir": "noarch",
+      "timestamp": 1724887513495,
+      "version": "v1.8.2"
+    },
+    "lithops-3.4.1-pyh4616a5c_0.conda": {
+      "build": "pyh4616a5c_0",
+      "build_number": 0,
+      "depends": [
+        "python >=3.6",
+        "click",
+        "tabulate",
+        "six",
+        "pyyaml",
+        "pika",
+        "tqdm",
+        "tblib",
+        "requests",
+        "paramiko",
+        "cloudpickle",
+        "ps-mem",
+        "psutil",
+        "httplib2",
+        "google-cloud-storage",
+        "google-cloud-pubsub",
+        "google-api-python-client",
+        "google-auth",
+        "python"
+      ],
+      "license": "Apache-2.0",
+      "md5": "c7a78daaa3b95c5aed81eabdef9fc26a",
+      "name": "lithops",
+      "noarch": "python",
+      "sha256": "d3cd763966914174119d3cfda03c7adab1af8f9311b532bcc139f9fc4d01792d",
+      "size": 219015,
+      "subdir": "noarch",
+      "timestamp": 1724886517681,
+      "version": "3.4.1"
+    },
+    "ps-mem-3.14-pyh4616a5c_0.conda": {
+      "build": "pyh4616a5c_0",
+      "build_number": 0,
+      "depends": [
+        "python"
+      ],
+      "license": "LGPL-2.1",
+      "md5": "c934cf0a835c9e7fd9aab5c60093f0a1",
+      "name": "ps-mem",
+      "noarch": "python",
+      "sha256": "abfe637b1ae989e755ce66a05c1c4205bc440f8c15e473edd64491748012ae44",
+      "size": 32150,
+      "subdir": "noarch",
+      "timestamp": 1724886235316,
+      "version": "3.14"
+    }
+  },
+  "repodata_version": 2
+}

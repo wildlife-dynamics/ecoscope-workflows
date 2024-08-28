@@ -1,0 +1,49 @@
+context:
+  name: ecoscope-workflows
+  version: 0.0.1
+
+package:
+  name: ecoscope-workflows
+  version: ${{ version }}
+
+source:
+  git: https://github.com/wildlife-dynamics/ecoscope-workflows.git
+  tag: ${{ version }}
+
+build:
+  python:
+    entry_points:
+      - ecoscope-workflows = ecoscope_workflows.__main__:main
+  noarch: python
+  script: pip install . -v
+
+requirements:
+  host:
+    - python
+    - setuptools >=45
+    - setuptools-scm >=6.2
+    - pip
+  run:
+    - python
+    - jinja2
+    - pandera
+    - pydantic
+    - pydantic-settings
+    - ruamel.yaml
+    - ruff
+    - tomli-w
+    # testing
+    - pytest
+
+tests:
+  - python:
+      imports:
+        - ecoscope_workflows
+
+about:
+  license: BSD-3-Clause
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - cisaacstern
