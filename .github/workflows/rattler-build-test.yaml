@@ -1,0 +1,32 @@
+name: Test Rattler Build
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Micromamba
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: rattler
+          init-shell: bash
+
+      - name: Install build deps
+        shell: bash -leo pipefail {0}
+        run: |
+          micromamba install -c conda-forge rattler-build --yes
+
+      - name: Build psmem
+        shell: bash -leo pipefail {0}
+        working-directory: deploy
+        run: |
+          rattler-build build --recipe rattler/ps-mem.yaml
