@@ -1,0 +1,7 @@
+channels:
+  - file:///opt/rattler-output/
+  - conda-forge
+dependencies:
+  - python
+  - ecoscope==v1.8.2
+  - ecoscope-workflows==ae1ba8733de848e34d742b780ac2443ab60f61a1

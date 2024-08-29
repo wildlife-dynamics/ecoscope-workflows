@@ -61,3 +61,9 @@ jobs:
         working-directory: deploy
         run: |
           rattler-build build --recipe rattler/ecoscope-workflows.yaml
+
+      - name: Build worker container
+        shell: bash -leo pipefail {0}
+        working-directory: deploy
+        run: |
+          docker buildx build -t rattler-image .
