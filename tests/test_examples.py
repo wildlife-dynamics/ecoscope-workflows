@@ -14,7 +14,9 @@ from ecoscope_workflows.registry import TaskTag, known_tasks
 
 EXAMPLES = Path(__file__).parent.parent / "examples"
 
-TemplateName = Literal["script-sequential.jinja2", "jupytext.jinja2"]
+TemplateName = Literal[
+    "script-async.jinja2", "script-sequential.jinja2", "jupytext.jinja2"
+]
 
 
 def _spec_path_to_dag_fname(path: Path, template: TemplateName) -> str:
@@ -59,6 +61,7 @@ def spec_fixture(request: pytest.FixtureRequest) -> SpecFixture:
     "template",
     [
         "jupytext.jinja2",
+        "script-async.jinja2",
         "script-sequential.jinja2",
     ],
 )
@@ -129,6 +132,15 @@ assert_that_stdout = {
             "'rainfall_rep', 'traffic_rep', 'wildlife_sighting_rep']}"
         )
         in out,
+    ],
+    "subject_tracking.yaml": [
+        lambda out: "A dashboard for visualizing subject trajectories and home range."
+        in out,
+        lambda out: "widget_type='map', title='Subject Group Trajectory Map'" in out,
+        lambda out: "widget_type='single_value', title='Mean Speed'" in out,
+        lambda out: "widget_type='single_value', title='Max Speed'," in out,
+        lambda out: "widget_type='single_value', title='Number of Locations'" in out,
+        lambda out: "widget_type='map', title='Home Range Map'" in out,
     ],
 }
 
