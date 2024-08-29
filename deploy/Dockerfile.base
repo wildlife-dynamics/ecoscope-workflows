@@ -11,9 +11,11 @@ RUN apt-get update && apt-get install -y \
 USER $MAMBA_USER
 
 COPY $ENVFILE ./
-RUN --mount=type=bind,source=output,target=/opt/rattler-output/ \
+RUN --mount=type=bind,source=output,target=$LOCAL_CONDA_CHANNEL_MOUNT \
     micromamba create --file $ENVFILE --name $ENVNAME \
-    -c file://$LOCAL_CONDA_CHANNEL_MOUNT -c conda-forge --yes
+    -c file://$LOCAL_CONDA_CHANNEL_MOUNT \
+    -c conda-forge \
+    --yes
 RUN micromamba clean --all -f --yes
 
 # # Distroless for execution
