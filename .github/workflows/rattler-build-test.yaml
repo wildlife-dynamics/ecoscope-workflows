@@ -74,6 +74,9 @@ jobs:
           docker run -it \
           -v `pwd`/tests:/opt/tests \
           -v `pwd`/examples:/opt/examples \
+          -e EARTHRANGER_SERVER=${{ secrets.EARTHRANGER_SERVER }} \
+          -e EARTHRANGER_USERNAME=${{ secrets.EARTHRANGER_USERNAME }} \
+          -e EARTHRANGER_PASSWORD=${{ secrets.EARTHRANGER_PASSWORD }} \
           rattler-image /bin/bash -c "\
           micromamba -n lithops-worker install -c conda-forge pytest --yes \
           && micromamba -n lithops-worker run pytest /opt/tests"
