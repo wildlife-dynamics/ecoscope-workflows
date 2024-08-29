@@ -71,6 +71,9 @@ jobs:
       - name: Test worker container
         shell: bash -leo pipefail {0}
         run: |
-          docker run -it -v `pwd`/tests:/opt/tests rattler-image /bin/bash -c "\
+          docker run -it \
+          -v `pwd`/tests:/opt/tests \
+          -v `pwd`/examples:/opt/examples \
+          rattler-image /bin/bash -c "\
           micromamba -n lithops-worker install -c conda-forge pytest --yes \
           && micromamba -n lithops-worker run pytest /opt/tests"
