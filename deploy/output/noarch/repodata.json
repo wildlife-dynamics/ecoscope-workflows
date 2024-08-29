@@ -97,6 +97,33 @@
       "timestamp": 1724886517681,
       "version": "3.4.1"
     },
+    "lonboard-0.0.1-pyh4616a5c_0.conda": {
+      "build": "pyh4616a5c_0",
+      "build_number": 0,
+      "depends": [
+        "python >=3.8.0,<4.0.0",
+        "anywidget >=0.9.0,<0.10.0",
+        "pyarrow >=14.0.1",
+        "geopandas >=0.13",
+        "pandas >=2.0.0,<3.0.0",
+        "palettable >=3.3.3,<4.0.0",
+        "matplotlib-base >=3.7.0,<4.0.0",
+        "shapely >=2.0.0,<3.0.0",
+        "typing-extensions >=4.6.0,<5.0.0",
+        "click >=8.1.7,<9.0.0",
+        "pyogrio >=0.7.2,<0.8.0",
+        "python"
+      ],
+      "license": "MIT",
+      "md5": "ba74814452c82e2352a949f4ce8941c2",
+      "name": "lonboard",
+      "noarch": "python",
+      "sha256": "7d86f03b3d3151f49fd1e0fb46a9f3a9d074ee461f7a8b6589d9e1adb673db62",
+      "size": 662368,
+      "subdir": "noarch",
+      "timestamp": 1724953546776,
+      "version": "0.0.1"
+    },
     "ps-mem-3.14-pyh4616a5c_0.conda": {
       "build": "pyh4616a5c_0",
       "build_number": 0,

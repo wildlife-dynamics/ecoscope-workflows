@@ -24,7 +24,7 @@ requirements:
     - python
     - backoff
     - earthengine-api
-    - earthranger-client  # FIXME: build this
+    - earthranger-client
     - geopandas <=0.14.2
     - numpy <2  # added by me, but should be ensured by geopandas anyway
     - pyproj
@@ -46,10 +46,9 @@ requirements:
     - plotly
     # - scikit-learn  # duplicate with analysis
     # ~ mapping ~
-    # FIXME: build custom package for lonboard
-    # - lonboard @ git+https://github.com/wildlife-dynamics/lonboard@77c56d30a9c2dd96fd863e910bf62952cfa36da8",
+    - lonboard
     - matplotlib
-    - mapclassify
+    # - mapclassify  # duplicate with analysis
 
 tests:
   - python:
