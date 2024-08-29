@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 4:
         print(
             "Usage: set_environment_workflows_specifier.py <src_envyaml_path> <dst_envyaml_path> <rev>"
         )
