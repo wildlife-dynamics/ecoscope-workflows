@@ -55,12 +55,18 @@ jobs:
         run: |
           rattler-build build --recipe rattler/ecoscope-core.yaml
 
-      - name: Export github rev and tmp paths to env
-        # FIXME: there is something inconsistent about $GITHUB_SHA that i can't recall at the moment
+      - name: Get correct COMMIT_SHA (regardless of event type)
         run: |
-          export ECOSCOPE_WORKFLOWS_REV=$GITHUB_SHA
-          echo "ECOSCOPE_WORKFLOWS_REV=${ECOSCOPE_WORKFLOWS_REV}" >> $GITHUB_ENV
-          echo "TMP_RATTLER_RECIPE=`pwd`/tmp/${ECOSCOPE_WORKFLOWS_REV}.yaml" >> $GITHUB_ENV
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "COMMIT_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+          else
+            echo "COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
+          fi
+
+      - name: Export ECOSCOPE_WORKFLOWS_REV and tmp paths to env
+        run: |
+          echo "ECOSCOPE_WORKFLOWS_REV=${COMMIT_SHA}" >> $GITHUB_ENV
+          echo "TMP_RATTLER_RECIPE=`pwd`/tmp/${COMMIT_SHA}.yaml" >> $GITHUB_ENV
           echo "TMP_ENVFILE=`pwd`/tmp/environment.yml" >> $GITHUB_ENV
 
       - name: Build ecoscope-workflows
