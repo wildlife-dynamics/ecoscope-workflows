@@ -18,11 +18,7 @@ ENV CONCURRENCY 1
 ENV TIMEOUT 600
 ENV ENVNAME $ENVNAME
 
-# Copy Lithops proxy and lib to the container image.
-# ENV APP_HOME /lithops
-# WORKDIR $APP_HOME
+# # Distroless for execution
+# FROM gcr.io/distroless/base-debian10
 
-# COPY lithops_cloudrun.zip .
-# RUN unzip lithops_cloudrun.zip && rm lithops_cloudrun.zip
-
-# CMD micromamba run -n $ENVNAME gunicorn --bind :$PORT --workers $CONCURRENCY --timeout $TIMEOUT lithopsproxy:proxy
+# COPY --from=build /env /env

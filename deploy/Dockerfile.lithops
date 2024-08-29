@@ -1,0 +1,20 @@
+# build steps:
+# 1. build base image with:
+#    ```
+#    docker buildx build -t ecoscope-workflows-lithops-worker -f Dockerfile.base .
+#    ```
+# 2. build final image with:
+#     ```
+#     $ LITHOPS_CONFIG_FILE=path/to/lithops-config.yaml \
+#     lithops runtime build -b gcp_cloudrun -f Dockerfile.lithops env-<ENVFILE_SHA256_HASH>-worker
+#     ```
+
+FROM ecoscope-workflows-lithops-worker:latest
+
+ENV APP_HOME /lithops
+WORKDIR $APP_HOME
+
+COPY lithops_cloudrun.zip .
+RUN unzip lithops_cloudrun.zip && rm lithops_cloudrun.zip
+
+CMD micromamba run -n $ENVNAME gunicorn --bind :$PORT --workers $CONCURRENCY --timeout $TIMEOUT lithopsproxy:proxy
