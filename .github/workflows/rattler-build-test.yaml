@@ -42,3 +42,9 @@ jobs:
         working-directory: deploy
         run: |
           rattler-build build --recipe rattler/earthranger-client.yaml
+
+      - name: Build lonboard
+        shell: bash -leo pipefail {0}
+        working-directory: deploy
+        run: |
+          rattler-build build --recipe rattler/lonboard.yaml
