@@ -55,12 +55,15 @@ jobs:
         run: |
           rattler-build build --recipe rattler/ecoscope-core.yaml
 
-      - name: Export github rev to env
+      - name: Export github rev and tmp paths to env
         # Doing this so we can use the commit hash of the current branch in the next step.
         # GitHub provides some context variables for this but they always confuse me, so
         # just doing it manually. Not to mention this way, we can reuse this logic locally.
         run: |
-          echo 'ECOSCOPE_WORKFLOWS_REV=$(git rev-parse HEAD)' >> $GITHUB_ENV
+          export ECOSCOPE_WORKFLOWS_REV=$(git rev-parse HEAD)
+          echo 'ECOSCOPE_WORKFLOWS_REV=$ECOSCOPE_WORKFLOWS_REV' >> $GITHUB_ENV
+          echo 'TMP_RATTLER_RECIPE=`pwd`/tmp/${ECOSCOPE_WORKFLOWS_REV}.yaml' >> $GITHUB_ENV
+          echo 'TMP_ENVFILE=`pwd`/tmp/environment.yml' >> $GITHUB_ENV
 
       - name: Build ecoscope-workflows
         shell: bash -leo pipefail {0}
@@ -68,9 +71,8 @@ jobs:
         # This command sets the version of ecoscope-workflows to the commit hash of
         # the current branch and then builds the conda package based on that version.
         run: |
-          python scripts/set_context_version.py \
-          `pwd`/rattler/ecoscope-workflows.yaml `pwd`/tmp/${ECOSCOPE_WORKFLOWS_REV}.yaml $ECOSCOPE_WORKFLOWS_REV \
-          rattler-build build --recipe ${ECOSCOPE_WORKFLOWS_REV}.yaml
+          python scripts/set_context_version.py `pwd`/rattler/ecoscope-workflows.yaml $TMP_RATTLER_RECIPE $ECOSCOPE_WORKFLOWS_REV
+          rattler-build build --recipe $TMP_RATTLER_RECIPE
 
       - name: Build worker container
         shell: bash -leo pipefail {0}
@@ -79,9 +81,7 @@ jobs:
         # in environment.yml to the commit hash of the current branch, to match the version of the conda package
         # we just built in the previous step.
         run: |
-          export TMP_ENVFILE=`pwd`/tmp/environment.yml \
-          python scripts/set_envyaml_workflows_specifier.py \
-          `pwd`/environment.yml $TMP_ENVFILE ${ECOSCOPE_WORKFLOWS_REV} \
+          python scripts/set_envyaml_workflows_specifier.py `pwd`/environment.yml $TMP_ENVFILE $ECOSCOPE_WORKFLOWS_REV
           docker buildx build -t rattler-image -f Dockerfile.base --build-arg ENVFILE=$TMP_ENVFILE .
 
       - name: Test worker container
