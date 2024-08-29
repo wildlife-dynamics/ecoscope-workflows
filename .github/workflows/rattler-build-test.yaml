@@ -66,4 +66,4 @@ jobs:
         shell: bash -leo pipefail {0}
         working-directory: deploy
         run: |
-          docker buildx build -t rattler-image .
+          docker buildx build -t rattler-image -f Dockerfile.base .
