@@ -1,6 +1,6 @@
 context:
   name: ecoscope-workflows
-  version: ae1ba8733de848e34d742b780ac2443ab60f61a1  # TODO: update this
+  version: ae1ba8733de848e34d742b780ac2443ab60f61a1
 
 package:
   name: ecoscope-workflows
