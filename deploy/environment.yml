@@ -1,6 +1,3 @@
-channels:
-  - file:///opt/rattler-output/
-  - conda-forge
 dependencies:
   - python
   - gunicorn  # for serving lithops proxy

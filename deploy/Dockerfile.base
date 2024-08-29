@@ -1,5 +1,6 @@
 FROM mambaorg/micromamba:latest as build
 
+ARG LOCAL_CONDA_CHANNEL_MOUNT=/opt/rattler-output
 ARG ENVFILE=environment.yml
 ARG ENVNAME=lithops-worker
 
@@ -11,7 +12,8 @@ USER $MAMBA_USER
 
 COPY $ENVFILE ./
 RUN --mount=type=bind,source=output,target=/opt/rattler-output/ \
-    micromamba create --file $ENVFILE --name $ENVNAME --yes
+    micromamba create --file $ENVFILE --name $ENVNAME \
+    -c file://$LOCAL_CONDA_CHANNEL_MOUNT -c conda-forge --yes
 RUN micromamba clean --all -f --yes
 
 # # Distroless for execution
