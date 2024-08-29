@@ -14,7 +14,9 @@ from ecoscope_workflows.registry import TaskTag, known_tasks
 
 EXAMPLES = Path(__file__).parent.parent / "examples"
 
-TemplateName = Literal["script-sequential.jinja2", "jupytext.jinja2"]
+TemplateName = Literal[
+    "script-async.jinja2", "script-sequential.jinja2", "jupytext.jinja2"
+]
 
 
 def _spec_path_to_dag_fname(path: Path, template: TemplateName) -> str:
@@ -59,6 +61,7 @@ def spec_fixture(request: pytest.FixtureRequest) -> SpecFixture:
     "template",
     [
         "jupytext.jinja2",
+        "script-async.jinja2",
         "script-sequential.jinja2",
     ],
 )
