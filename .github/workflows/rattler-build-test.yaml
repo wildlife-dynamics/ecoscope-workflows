@@ -71,7 +71,7 @@ jobs:
       - name: Test worker container
         shell: bash -leo pipefail {0}
         run: |
-          docker run -it \
+          docker run \
           -v `pwd`/tests:/opt/tests \
           -v `pwd`/examples:/opt/examples \
           -e EARTHRANGER_SERVER=${{ secrets.EARTHRANGER_SERVER }} \
