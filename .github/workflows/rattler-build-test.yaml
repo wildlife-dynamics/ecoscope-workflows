@@ -54,3 +54,10 @@ jobs:
         working-directory: deploy
         run: |
           rattler-build build --recipe rattler/ecoscope-core.yaml
+
+      # FIXME: make this run off of the current commit on the branch being tested
+      - name: Build ecoscope-workflows
+        shell: bash -leo pipefail {0}
+        working-directory: deploy
+        run: |
+          rattler-build build --recipe rattler/ecoscope-workflows.yaml
