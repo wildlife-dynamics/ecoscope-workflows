@@ -48,3 +48,9 @@ jobs:
         working-directory: deploy
         run: |
           rattler-build build --recipe rattler/lonboard.yaml
+
+      - name: Build ecoscope-core
+        shell: bash -leo pipefail {0}
+        working-directory: deploy
+        run: |
+          rattler-build build --recipe rattler/ecoscope-core.yaml
