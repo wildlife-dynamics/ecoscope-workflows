@@ -56,11 +56,8 @@ jobs:
           rattler-build build --recipe rattler/ecoscope-core.yaml
 
       - name: Export github rev and tmp paths to env
-        # Doing this so we can use the commit hash of the current branch in the next step.
-        # GitHub provides some context variables for this but they always confuse me, so
-        # just doing it manually. Not to mention this way, we can reuse this logic locally.
         run: |
-          export ECOSCOPE_WORKFLOWS_REV=$(git rev-parse HEAD)
+          export ECOSCOPE_WORKFLOWS_REV=$(git rev-parse --short "$GITHUB_SHA")
           echo "ECOSCOPE_WORKFLOWS_REV=${ECOSCOPE_WORKFLOWS_REV}" >> $GITHUB_ENV
           echo "TMP_RATTLER_RECIPE=`pwd`/tmp/${ECOSCOPE_WORKFLOWS_REV}.yaml" >> $GITHUB_ENV
           echo "TMP_ENVFILE=`pwd`/tmp/environment.yml" >> $GITHUB_ENV
