@@ -56,8 +56,9 @@ jobs:
           rattler-build build --recipe rattler/ecoscope-core.yaml
 
       - name: Export github rev and tmp paths to env
+        # FIXME: there is something inconsistent about $GITHUB_SHA that i can't recall at the moment
         run: |
-          export ECOSCOPE_WORKFLOWS_REV=$(git rev-parse --short "$GITHUB_SHA")
+          export ECOSCOPE_WORKFLOWS_REV=$GITHUB_SHA
           echo "ECOSCOPE_WORKFLOWS_REV=${ECOSCOPE_WORKFLOWS_REV}" >> $GITHUB_ENV
           echo "TMP_RATTLER_RECIPE=`pwd`/tmp/${ECOSCOPE_WORKFLOWS_REV}.yaml" >> $GITHUB_ENV
           echo "TMP_ENVFILE=`pwd`/tmp/environment.yml" >> $GITHUB_ENV
