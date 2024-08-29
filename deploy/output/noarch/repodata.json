@@ -64,6 +64,57 @@
       "timestamp": 1724953735142,
       "version": "v1.8.2"
     },
+    "ecoscope-workflows-ae1ba8733de848e34d742b780ac2443ab60f61a1-pyh4616a5c_0.conda": {
+      "build": "pyh4616a5c_0",
+      "build_number": 0,
+      "depends": [
+        "python",
+        "jinja2",
+        "pandera",
+        "pydantic",
+        "pydantic-settings",
+        "ruamel.yaml",
+        "ruff",
+        "tomli-w",
+        "lithops",
+        "cloudpathlib-gs",
+        "python"
+      ],
+      "license": "BSD-3-Clause",
+      "md5": "eb506b69146ff1ff7e1117391d56f57e",
+      "name": "ecoscope-workflows",
+      "noarch": "python",
+      "sha256": "c2da3b1215a03b03de1413ed3880d12f55ff239ccf7090d4f9021dc174207fcd",
+      "size": 458931,
+      "subdir": "noarch",
+      "timestamp": 1724957728718,
+      "version": "ae1ba8733de848e34d742b780ac2443ab60f61a1"
+    },
+    "ecoscope-workflows-v0.0.1-pyh4616a5c_0.conda": {
+      "build": "pyh4616a5c_0",
+      "build_number": 0,
+      "depends": [
+        "python",
+        "jinja2",
+        "pandera",
+        "pydantic",
+        "pydantic-settings",
+        "ruamel.yaml",
+        "ruff",
+        "tomli-w",
+        "lithops",
+        "python"
+      ],
+      "license": "BSD-3-Clause",
+      "md5": "d8dd464733f9931da03177d83e4bbc94",
+      "name": "ecoscope-workflows",
+      "noarch": "python",
+      "sha256": "a5168b216423db64d11942c4524084289703313e584296d12ff71ed0b8bb2cd1",
+      "size": 458752,
+      "subdir": "noarch",
+      "timestamp": 1724957250260,
+      "version": "v0.0.1"
+    },
     "lithops-3.4.1-pyh4616a5c_0.conda": {
       "build": "pyh4616a5c_0",
       "build_number": 0,

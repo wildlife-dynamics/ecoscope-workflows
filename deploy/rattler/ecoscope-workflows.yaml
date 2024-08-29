@@ -1,6 +1,6 @@
 context:
   name: ecoscope-workflows
-  version: 0.0.1
+  version: ae1ba8733de848e34d742b780ac2443ab60f61a1  # TODO: update this
 
 package:
   name: ecoscope-workflows
@@ -8,7 +8,7 @@ package:
 
 source:
   git: https://github.com/wildlife-dynamics/ecoscope-workflows.git
-  tag: ${{ version }}
+  rev: ${{ version }}
 
 build:
   python:
@@ -32,8 +32,9 @@ requirements:
     - ruamel.yaml
     - ruff
     - tomli-w
-    # testing
-    - pytest
+    # optionals that we want for deployment
+    - lithops
+    - cloudpathlib-gs
 
 tests:
   - python:
