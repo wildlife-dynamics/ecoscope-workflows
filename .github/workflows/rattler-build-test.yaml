@@ -61,9 +61,9 @@ jobs:
         # just doing it manually. Not to mention this way, we can reuse this logic locally.
         run: |
           export ECOSCOPE_WORKFLOWS_REV=$(git rev-parse HEAD)
-          echo 'ECOSCOPE_WORKFLOWS_REV=$ECOSCOPE_WORKFLOWS_REV' >> $GITHUB_ENV
-          echo 'TMP_RATTLER_RECIPE=`pwd`/tmp/${ECOSCOPE_WORKFLOWS_REV}.yaml' >> $GITHUB_ENV
-          echo 'TMP_ENVFILE=`pwd`/tmp/environment.yml' >> $GITHUB_ENV
+          echo "ECOSCOPE_WORKFLOWS_REV=${ECOSCOPE_WORKFLOWS_REV}" >> $GITHUB_ENV
+          echo "TMP_RATTLER_RECIPE=`pwd`/tmp/${ECOSCOPE_WORKFLOWS_REV}.yaml" >> $GITHUB_ENV
+          echo "TMP_ENVFILE=`pwd`/tmp/environment.yml" >> $GITHUB_ENV
 
       - name: Build ecoscope-workflows
         shell: bash -leo pipefail {0}
