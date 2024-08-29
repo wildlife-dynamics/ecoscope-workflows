@@ -14,10 +14,6 @@ RUN --mount=type=bind,source=output,target=/opt/rattler-output/ \
     micromamba create --file $ENVFILE --name $ENVNAME --yes
 RUN micromamba clean --all -f --yes
 
-ENV CONCURRENCY 1
-ENV TIMEOUT 600
-ENV ENVNAME $ENVNAME
-
 # # Distroless for execution
 # FROM gcr.io/distroless/base-debian10
 

@@ -11,7 +11,13 @@
 
 FROM ecoscope-workflows-lithops-worker:latest
 
+ARG ENVNAME=lithops-worker
+
+ENV ENVNAME $ENVNAME
+ENV CONCURRENCY 1
+ENV TIMEOUT 600
 ENV APP_HOME /lithops
+
 WORKDIR $APP_HOME
 
 COPY lithops_cloudrun.zip .
