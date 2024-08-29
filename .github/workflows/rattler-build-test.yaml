@@ -30,3 +30,9 @@ jobs:
         working-directory: deploy
         run: |
           rattler-build build --recipe rattler/ps-mem.yaml
+
+      - name: Build lithops
+        shell: bash -leo pipefail {0}
+        working-directory: deploy
+        run: |
+          rattler-build build --recipe rattler/lithops.yaml
