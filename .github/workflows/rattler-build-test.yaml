@@ -36,3 +36,9 @@ jobs:
         working-directory: deploy
         run: |
           rattler-build build --recipe rattler/lithops.yaml
+
+      - name: Build earthranger-client
+        shell: bash -leo pipefail {0}
+        working-directory: deploy
+        run: |
+          rattler-build build --recipe rattler/earthranger-client.yaml
