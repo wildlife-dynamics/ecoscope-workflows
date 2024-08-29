@@ -38,7 +38,9 @@ requirements:
 # Extra: gcp
     - httplib2
     - google-cloud-storage
-    - google-cloud-pubsub
+    # (cisaacstern) disabling for python > 3.9 compatibility; seems conda-forge
+    # doesn't offer a version of this package that is compatible with python 3.9?
+    # - google-cloud-pubsub
     - google-api-python-client
     - google-auth
 
