@@ -27,6 +27,7 @@ jobs:
 
       - name: Build local channel
         shell: bash -leo pipefail {0}
+        working-directory: deploy
         run: |
           chmod +x scripts/build_local_channel_in_order.sh
           ./scripts/build_local_channel_in_order.sh
