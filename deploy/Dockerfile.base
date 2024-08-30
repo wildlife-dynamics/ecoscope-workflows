@@ -1,3 +1,4 @@
+# stage 1: build the environment with micromamba
 FROM mambaorg/micromamba:latest as build
 
 ARG ENVFILE=environment.yml
@@ -9,29 +10,40 @@ RUN --mount=type=bind,source=output,target=/opt/rattler-output \
     -c file:///opt/rattler-output \
     -c conda-forge \
     --yes
-# for testing builds; we'll remove this later
 RUN micromamba install -n env pytest -c conda-forge --yes
 RUN micromamba clean --all -f --yes
 
-# clean the environment by removing unnecessary files
+# stage 2: clean the environment by removing unnecessary files
+# that cannot otherwise (currently) be excluded by micromamba create
 FROM mambaorg/micromamba:latest as clean
 
 COPY --from=build /opt/conda/envs/env /opt/conda/envs/env
 
 USER root
 RUN rm -rf /opt/conda/envs/env/conda-meta
-RUN rm -rf /opt/conda/envs/env/lib/python3.12/site-packages/pip
-RUN rm -rf /opt/conda/envs/env/lib/python3.12/site-packages/setuptools
-RUN rm -rf /opt/conda/envs/env/lib/python3.12/site-packages/wheel
-RUN rm -rf /opt/conda/envs/env/share/terminfo
-RUN rm -rf /opt/conda/envs/env/lib/python3.12/site-packages/datashader/examples
-RUN rm -rf /opt/conda/envs/env/lib/python3.12/site-packages/xarray/tests
-RUN rm -rf /opt/conda/envs/env/lib/python3.12/site-packages/numba/tests
+RUN export SHARE=/opt/conda/envs/env/share \
+    && rm -rf /terminfo
+
+RUN export SITEPKGS=/opt/conda/envs/env/lib/python3.12/site-packages \
+    && rm -rf $SITEPKGS/pip \
+    && rm -rf $SITEPKGS/pip-*.dist-info \
+    && rm -rf $SITEPKGS/setuptools \
+    && rm -rf $SITEPKGS/setuptools-*.dist-info \
+    && rm -rf $SITEPKGS/wheel \
+    && rm -rf $SITEPKGS/wheel-*.dist-info \
+    && rm -rf $SITEPKGS/datashader/examples \
+    && rm -rf $SITEPKGS/xarray/tests \
+    && rm -rf $SITEPKGS/numba/tests
 USER $MAMBA_USER
 
-# Distroless for execution
+# stage 3: create a testable distroless runtime image
+# this is testable because we haven't removed pytest yet
 FROM gcr.io/distroless/base-debian12 as testable_runtime
 
 COPY --from=clean /opt/conda/envs/env /env
 
-# TODO: remove all pytest deps
+# TODO: stage 4: create a distroless runtime image without pytest
+# in CI, then, test against `testable_runtime` and deploy `runtime`
+# FROM gcr.io/distroless/base-debian12 as runtime
+# COPY --from=testable_runtime /env /env
+# RUN rm -rf /env/lib/python3.12/site-packages/pytest*
