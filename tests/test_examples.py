@@ -206,10 +206,13 @@ def test_end_to_end(template: str, end_to_end: EndToEndFixture, tmp_path: Path):
                 "log_level": "INFO",
                 "data_limit": 16,
             },
-            "localhost": {
-                "runtime": python_exe,
-            },
         }
+        if "mamba" not in python_exe:
+            # in the distroless setting, we need to specify the python runtime
+            # but this breaks the mamba setting, so only set this if we are not
+            # in the mamba setting. ultimately, we can avoid these workarounds
+            # once we drop `mamba run` for ci and converge on a single approach.
+            lithops_config["localhost"]["runtime"] = python_exe
         yaml = ruamel.yaml.YAML(typ="safe")
         with open(lithops_config_outpath, mode="w") as f:
             yaml.dump(lithops_config, f)
