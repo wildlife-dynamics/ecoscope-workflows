@@ -1,14 +1,6 @@
-# stage 1: build the environment
 FROM mambaorg/micromamba:latest as build
 
 ARG ENVFILE=environment.yml
-
-USER root
-RUN apt-get update && apt-get install -y \
-        zip \
-        && rm -rf /var/lib/apt/lists/*
-USER $MAMBA_USER
-
 COPY $ENVFILE /opt/environment.yml
 
 RUN --mount=type=bind,source=output,target=/opt/rattler-output \
@@ -19,18 +11,17 @@ RUN --mount=type=bind,source=output,target=/opt/rattler-output \
     --yes
 RUN micromamba clean --all -f --yes
 
-
-# stage 2: clean the environment by removing unnecessary files
-FROM mambaorg/micromamba:latest as clean
-
-COPY --from=build /opt/conda/envs/env /opt/conda/envs/env
-
+# clean the environment by removing unnecessary files
 USER root
 RUN rm -rf /opt/conda/envs/env/conda-meta
 RUN rm -rf /opt/conda/envs/env/lib/python3.12/site-packages/pip
 RUN rm -rf /opt/conda/envs/env/lib/python3.12/site-packages/setuptools
 RUN rm -rf /opt/conda/envs/env/lib/python3.12/site-packages/wheel
-
+RUN rm -rf /opt/conda/envs/env/share/terminfo
+RUN rm -rf /opt/conda/envs/env/lib/python3.12/site-packages/datashader/examples
+RUN rm -rf /opt/conda/envs/env/lib/python3.12/site-packages/xarray/tests
+RUN rm -rf /opt/conda/envs/env/lib/python3.12/site-packages/numba/tests
+USER $MAMBA_USER
 
 # # Distroless for execution
 # FROM gcr.io/distroless/base-debian10

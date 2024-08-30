@@ -11,7 +11,11 @@
 
 FROM ecoscope-workflows-lithops-worker:latest
 
-ARG ENVNAME=lithops-worker
+USER root
+RUN apt-get update && apt-get install -y \
+        zip \
+        && rm -rf /var/lib/apt/lists/*
+USER $MAMBA_USER
 
 ENV ENVNAME $ENVNAME
 ENV CONCURRENCY 1
@@ -23,4 +27,4 @@ WORKDIR $APP_HOME
 COPY lithops_cloudrun.zip .
 RUN unzip lithops_cloudrun.zip && rm lithops_cloudrun.zip
 
-CMD micromamba run -n $ENVNAME gunicorn --bind :$PORT --workers $CONCURRENCY --timeout $TIMEOUT lithopsproxy:proxy
+CMD micromamba run -n env gunicorn --bind :$PORT --workers $CONCURRENCY --timeout $TIMEOUT lithopsproxy:proxy
