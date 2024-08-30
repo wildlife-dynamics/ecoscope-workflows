@@ -10,7 +10,9 @@ RUN apt-get update && apt-get install -y \
         && rm -rf /var/lib/apt/lists/*
 USER $MAMBA_USER
 
-COPY $ENVFILE ./
+COPY $ENVFILE .
+RUN mv $(basename ${ENVFILE}) .
+
 RUN --mount=type=bind,source=output,target=$LOCAL_CONDA_CHANNEL_MOUNT \
     micromamba create --file $ENVFILE --name $ENVNAME \
     -c file://$LOCAL_CONDA_CHANNEL_MOUNT \

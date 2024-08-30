@@ -67,7 +67,7 @@ jobs:
         run: |
           echo "ECOSCOPE_WORKFLOWS_REV=${COMMIT_SHA}" >> $GITHUB_ENV
           echo "TMP_RATTLER_RECIPE=`pwd`/tmp/${COMMIT_SHA}.yaml" >> $GITHUB_ENV
-          echo "TMP_ENVFILE=`pwd`/tmp/environment.yml" >> $GITHUB_ENV
+          echo "TMP_ENVFILE=./tmp/environment.yml" >> $GITHUB_ENV
 
       - name: Build ecoscope-workflows
         shell: bash -leo pipefail {0}
