@@ -28,6 +28,8 @@ RUN rm -rf /opt/conda/envs/env/lib/python3.12/site-packages/numba/tests
 USER $MAMBA_USER
 
 # Distroless for execution
-FROM gcr.io/distroless/base-debian10
+FROM gcr.io/distroless/base-debian12
 
 COPY --from=clean /opt/conda/envs/env /env
+
+# TODO: install pytest above, so we can run tests, then delete in a subsequent stage
