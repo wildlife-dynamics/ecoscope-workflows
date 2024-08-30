@@ -25,35 +25,11 @@ jobs:
         run: |
           micromamba install -c conda-forge rattler-build PyYAML "python>=3.10" --yes
 
-      - name: Build psmem
+      - name: Build local channel
         shell: bash -leo pipefail {0}
-        working-directory: deploy
         run: |
-          rattler-build build --recipe rattler/ps-mem.yaml
-
-      - name: Build lithops
-        shell: bash -leo pipefail {0}
-        working-directory: deploy
-        run: |
-          rattler-build build --recipe rattler/lithops.yaml
-
-      - name: Build earthranger-client
-        shell: bash -leo pipefail {0}
-        working-directory: deploy
-        run: |
-          rattler-build build --recipe rattler/earthranger-client.yaml
-
-      - name: Build lonboard
-        shell: bash -leo pipefail {0}
-        working-directory: deploy
-        run: |
-          rattler-build build --recipe rattler/lonboard.yaml
-
-      - name: Build ecoscope-core
-        shell: bash -leo pipefail {0}
-        working-directory: deploy
-        run: |
-          rattler-build build --recipe rattler/ecoscope-core.yaml
+          chmod +x scripts/build_local_channel_in_order.sh
+          ./scripts/build_local_channel_in_order.sh
 
       - name: Get correct COMMIT_SHA (regardless of event type)
         run: |
