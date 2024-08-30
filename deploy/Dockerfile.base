@@ -31,7 +31,6 @@ RUN export SITEPKGS=/opt/conda/envs/env/lib/python3.12/site-packages \
     && rm -rf $SITEPKGS/setuptools-*.dist-info \
     && rm -rf $SITEPKGS/wheel \
     && rm -rf $SITEPKGS/wheel-*.dist-info \
-    && rm -rf $SITEPKGS/datashader/examples \
     && rm -rf $SITEPKGS/xarray/tests \
     && rm -rf $SITEPKGS/numba/tests
 USER $MAMBA_USER
