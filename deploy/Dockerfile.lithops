@@ -1,7 +1,7 @@
 # build steps:
 # 1. build base image with:
 #    ```
-#    docker buildx build -t ecoscope-workflows-lithops-worker -f Dockerfile.base .
+#    docker buildx build -t ecoscope-workflows-worker -f Dockerfile.base .
 #    ```
 # 2. build and push final image with:
 #     ```
@@ -9,22 +9,27 @@
 #     lithops runtime build -b gcp_cloudrun -f Dockerfile.lithops env-<ENVFILE_SHA256_HASH>-worker
 #     ```
 
-FROM ecoscope-workflows-lithops-worker:latest
+# stage 1: unzip the lithops proxy
+FROM python:3.10-slim-buster as unzip_proxy
 
-USER root
 RUN apt-get update && apt-get install -y \
-        zip \
-        && rm -rf /var/lib/apt/lists/*
-USER $MAMBA_USER
+    zip \
+    && rm -rf /var/lib/apt/lists/*
 
-ENV ENVNAME $ENVNAME
-ENV CONCURRENCY 1
-ENV TIMEOUT 600
 ENV APP_HOME /lithops
-
 WORKDIR $APP_HOME
 
 COPY lithops_cloudrun.zip .
 RUN unzip lithops_cloudrun.zip && rm lithops_cloudrun.zip
 
-CMD micromamba run -n env gunicorn --bind :$PORT --workers $CONCURRENCY --timeout $TIMEOUT lithopsproxy:proxy
+
+# stage 2: copy the lithops proxy into the final image
+FROM ecoscope-workflows-worker:latest as serve
+
+# COPY --from=unzip_proxy /lithops /lithops
+
+ENV CONCURRENCY 1
+ENV TIMEOUT 600
+WORKDIR /lithops
+
+CMD /env/bin/gunicorn --bind :$PORT --workers $CONCURRENCY --timeout $TIMEOUT lithopsproxy:proxy

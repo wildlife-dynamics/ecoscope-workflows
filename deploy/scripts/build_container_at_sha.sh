@@ -20,4 +20,6 @@ echo "Creating temporary environment file $TMP_ENVFILE"
 python scripts/set_envyaml_workflows_specifier.py `pwd`/environment.yml $TMP_ENVFILE $ECOSCOPE_WORKFLOWS_REV
 
 echo "Building container with $TMP_ENVFILE"
-docker buildx build -t `echo $COMMIT_SHA | cut -c1-7` -f Dockerfile.base --build-arg ENVFILE=$TMP_ENVFILE .
+docker buildx build -t `echo $COMMIT_SHA | cut -c1-7` \
+    --target=testable_runtime \  # This is the target we want to build for testing
+    -f Dockerfile --build-arg ENVFILE=$TMP_ENVFILE .

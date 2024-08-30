@@ -65,8 +65,30 @@ FROM gcr.io/distroless/base-debian12 as testable_runtime
 
 COPY --from=clean /opt/conda/envs/env /env
 
-# TODO: stage 4: create a distroless runtime image without pytest
-# in CI, then, test against `testable_runtime` and deploy `runtime`
-# FROM gcr.io/distroless/base-debian12 as runtime
-# COPY --from=testable_runtime /env /env
-# RUN rm -rf /env/lib/python3.12/site-packages/pytest*
+
+# stage 4: unzip the lithops proxy
+FROM python:3.10-slim-buster as unzip_proxy
+
+RUN apt-get update && apt-get install -y \
+    zip \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV APP_HOME /lithops
+WORKDIR $APP_HOME
+# assumes the build context is running the lithops runtime build command
+# in a context with the same lithops version as the one in the container (?)
+COPY lithops_cloudrun.zip .
+RUN unzip lithops_cloudrun.zip && rm lithops_cloudrun.zip
+
+
+# stage 5: copy the lithops proxy into the distroless
+# image and remove test dependencies
+FROM testable_runtime as serve
+
+COPY --from=unzip_proxy /lithops /lithops
+
+ENV CONCURRENCY 1
+ENV TIMEOUT 600
+WORKDIR /lithops
+
+CMD /env/bin/gunicorn --bind :$PORT --workers $CONCURRENCY --timeout $TIMEOUT lithopsproxy:proxy
