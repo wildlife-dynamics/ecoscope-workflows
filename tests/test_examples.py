@@ -214,7 +214,7 @@ def test_end_to_end(template: str, end_to_end: EndToEndFixture, tmp_path: Path):
         env["LITHOPS_CONFIG_FILE"] = lithops_config_outpath.as_posix()
 
     proc = subprocess.Popen(
-        cmd,
+        (cmd if shell else cmd.split()),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
