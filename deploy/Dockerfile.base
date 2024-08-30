@@ -21,18 +21,44 @@ COPY --from=build /opt/conda/envs/env /opt/conda/envs/env
 
 USER root
 RUN rm -rf /opt/conda/envs/env/conda-meta
+
+RUN export BIN=/opts/conda/envs/env/bin \
+    && rm -rf $BIN/h4* \
+    && rm -rf $BIN/h5* \
+    && rm -rf $BIN/hdf* \
+    && rm -rf $BIN/ipython* \
+    && rm -rf $BIN/openssl \
+    && rm -rf $BIN/pdf* \
+    && rm -rf $BIN/pip* \
+    && rm -rf $BIN/sqlite3 \
+    && rm -rf $BIN/wheel
+
+RUN export LIB=/opt/conda/envs/env/lib \
+    && rm -rf $LIB/aws-* \
+    && rm -rf $LIB/libaws* \
+    && rm -rf $LIB/libazure*
+
 RUN export SHARE=/opt/conda/envs/env/share \
-    && rm -rf /terminfo
+    && rm -rf $SHARE/azure* \
+    && rm -rf $SHARE/bash-completion \
+    && rm -rf $SHARE/cmake \
+    && rm -rf $SHARE/doc \
+    && rm -rf $SHARE/examples \
+    && rm -rf $SHARE/hdf5_examples \
+    && rm -rf $SHARE/jupyter \
+    && rm -rf $SHARE/man \
+    && rm -rf $SHARE/pg_* \
+    && rm -rf $SHARE/postgres* \
+    && rm -rf $SHARE/psql* \
+    && rm -rf $SHARE/terminfo
 
 RUN export SITEPKGS=/opt/conda/envs/env/lib/python3.12/site-packages \
-    && rm -rf $SITEPKGS/pip \
-    && rm -rf $SITEPKGS/pip-*.dist-info \
-    && rm -rf $SITEPKGS/setuptools \
-    && rm -rf $SITEPKGS/setuptools-*.dist-info \
-    && rm -rf $SITEPKGS/wheel \
-    && rm -rf $SITEPKGS/wheel-*.dist-info \
-    && rm -rf $SITEPKGS/xarray/tests \
-    && rm -rf $SITEPKGS/numba/tests
+    && rm -rf $SITEPKGS/numba/tests \
+    && rm -rf $SITEPKGS/pip* \
+    && rm -rf $SITEPKGS/setuptools* \
+    && rm -rf $SITEPKGS/wheel* \
+    && rm -rf $SITEPKGS/xarray*
+
 USER $MAMBA_USER
 
 # stage 3: create a testable distroless runtime image
