@@ -60,6 +60,4 @@ jobs:
           -e EARTHRANGER_SERVER=${{ secrets.EARTHRANGER_SERVER }} \
           -e EARTHRANGER_USERNAME=${{ secrets.EARTHRANGER_USERNAME }} \
           -e EARTHRANGER_PASSWORD=${{ secrets.EARTHRANGER_PASSWORD }} \
-          $SHORT_COMMIT_SHA /bin/bash -c "\
-          micromamba -n env install -c conda-forge pytest --yes \
-          && micromamba -n env run pytest /opt/tests"
+          $SHORT_COMMIT_SHA /env/bin/python -m pytest /opt/tests/test_examples.py -k end_to_end

@@ -9,6 +9,8 @@ RUN --mount=type=bind,source=output,target=/opt/rattler-output \
     -c file:///opt/rattler-output \
     -c conda-forge \
     --yes
+# for testing builds; we'll remove this later
+RUN micromamba install -n env pytest -c conda-forge --yes
 RUN micromamba clean --all -f --yes
 
 # clean the environment by removing unnecessary files
@@ -28,8 +30,8 @@ RUN rm -rf /opt/conda/envs/env/lib/python3.12/site-packages/numba/tests
 USER $MAMBA_USER
 
 # Distroless for execution
-FROM gcr.io/distroless/base-debian12
+FROM gcr.io/distroless/base-debian12 as testable_runtime
 
 COPY --from=clean /opt/conda/envs/env /env
 
-# TODO: install pytest above, so we can run tests, then delete in a subsequent stage
+# TODO: remove all pytest deps
