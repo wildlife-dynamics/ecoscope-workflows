@@ -51,10 +51,20 @@ jobs:
         run: |
           echo "SHORT_COMMIT_SHA=$(echo $COMMIT_SHA | cut -c1-7)" >> $GITHUB_ENV
 
-      - name: Test worker container
+      - name: Test worker container - sequential end-to-end
         shell: bash -leo pipefail {0}
         run: |
           docker run \
           -v `pwd`/tests:/opt/tests \
           -v `pwd`/examples:/opt/examples \
-          $SHORT_COMMIT_SHA /env/bin/python -m pytest /opt/tests/test_examples.py -k "end_to_end" -v
+          $SHORT_COMMIT_SHA /env/bin/python -m pytest -v /opt/tests/test_examples.py \
+          -k "end_to_end and sequential"
+
+      - name: Test worker container - async end-to-end
+        shell: bash -leo pipefail {0}
+        run: |
+          docker run \
+          -v `pwd`/tests:/opt/tests \
+          -v `pwd`/examples:/opt/examples \
+          $SHORT_COMMIT_SHA /env/bin/python -m pytest -v /opt/tests/test_examples.py \
+          -k "end_to_end and async"
