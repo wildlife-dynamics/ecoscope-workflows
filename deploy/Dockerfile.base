@@ -1,8 +1,7 @@
+# stage 1: build the environment
 FROM mambaorg/micromamba:latest as build
 
-ARG LOCAL_CONDA_CHANNEL_MOUNT=/opt/rattler-output
 ARG ENVFILE=environment.yml
-ARG ENVNAME=lithops-worker
 
 USER root
 RUN apt-get update && apt-get install -y \
@@ -12,13 +11,26 @@ USER $MAMBA_USER
 
 COPY $ENVFILE /opt/environment.yml
 
-RUN --mount=type=bind,source=output,target=$LOCAL_CONDA_CHANNEL_MOUNT \
+RUN --mount=type=bind,source=output,target=/opt/rattler-output \
     --mount=type=cache,target=/opt/conda/pkgs \
-    micromamba create --file /opt/environment.yml --name $ENVNAME \
-    -c file://$LOCAL_CONDA_CHANNEL_MOUNT \
+    micromamba create --file /opt/environment.yml --name env \
+    -c file:///opt/rattler-output \
     -c conda-forge \
     --yes
 RUN micromamba clean --all -f --yes
+
+
+# stage 2: clean the environment by removing unnecessary files
+FROM mambaorg/micromamba:latest as clean
+
+COPY --from=build /opt/conda/envs/env /opt/conda/envs/env
+
+USER root
+RUN rm -rf /opt/conda/envs/env/conda-meta
+RUN rm -rf /opt/conda/envs/env/lib/python3.12/site-packages/pip
+RUN rm -rf /opt/conda/envs/env/lib/python3.12/site-packages/setuptools
+RUN rm -rf /opt/conda/envs/env/lib/python3.12/site-packages/wheel
+
 
 # # Distroless for execution
 # FROM gcr.io/distroless/base-debian10

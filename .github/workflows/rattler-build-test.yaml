@@ -61,5 +61,5 @@ jobs:
           -e EARTHRANGER_USERNAME=${{ secrets.EARTHRANGER_USERNAME }} \
           -e EARTHRANGER_PASSWORD=${{ secrets.EARTHRANGER_PASSWORD }} \
           $SHORT_COMMIT_SHA /bin/bash -c "\
-          micromamba -n lithops-worker install -c conda-forge pytest --yes \
-          && micromamba -n lithops-worker run pytest /opt/tests"
+          micromamba -n env install -c conda-forge pytest --yes \
+          && micromamba -n env run pytest /opt/tests"
