@@ -57,4 +57,4 @@ jobs:
           docker run \
           -v `pwd`/tests:/opt/tests \
           -v `pwd`/examples:/opt/examples \
-          $SHORT_COMMIT_SHA /env/bin/python -m pytest /opt/tests/test_examples.py -k "end_to_end and not async"
+          $SHORT_COMMIT_SHA /env/bin/python -m pytest /opt/tests/test_examples.py -k "end_to_end" -v

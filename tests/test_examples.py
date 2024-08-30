@@ -205,7 +205,10 @@ def test_end_to_end(template: str, end_to_end: EndToEndFixture, tmp_path: Path):
                 "storage": "localhost",
                 "log_level": "INFO",
                 "data_limit": 16,
-            }
+            },
+            "localhost": {
+                "runtime": python_exe,
+            },
         }
         yaml = ruamel.yaml.YAML(typ="safe")
         with open(lithops_config_outpath, mode="w") as f:
@@ -227,6 +230,6 @@ def test_end_to_end(template: str, end_to_end: EndToEndFixture, tmp_path: Path):
         raise ValueError(f"{cmd = } failed with:\n {proc.stderr.read()}")
     assert returncode == 0
     assert proc.stdout is not None
-    # stdout = proc.stdout.read().strip()
-    # for assert_fn in end_to_end.assert_that_stdout:
-    #     assert assert_fn(stdout)
+    stdout = proc.stdout.read().strip()
+    for assert_fn in end_to_end.assert_that_stdout:
+        assert assert_fn(stdout)
