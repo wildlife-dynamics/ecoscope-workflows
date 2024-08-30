@@ -13,6 +13,7 @@ USER $MAMBA_USER
 COPY $ENVFILE /opt/environment.yml
 
 RUN --mount=type=bind,source=output,target=$LOCAL_CONDA_CHANNEL_MOUNT \
+    --mount=type=cache,target=/opt/conda/pkgs \
     micromamba create --file /opt/environment.yml --name $ENVNAME \
     -c file://$LOCAL_CONDA_CHANNEL_MOUNT \
     -c conda-forge \
