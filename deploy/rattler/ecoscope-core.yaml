@@ -13,6 +13,7 @@ source:
 build:
   noarch: python
   script: pip install . -v
+  number: 1
 
 requirements:
   host:
@@ -35,7 +36,8 @@ requirements:
     - datashader
     - igraph
     - mapclassify
-    - matplotlib
+    # - matplotlib  # disabling in favor of matplotlib-base which is smaller
+    - matplotlib-base
     - networkx
     - numba
     - scipy
@@ -47,7 +49,7 @@ requirements:
     # - scikit-learn  # duplicate with analysis
     # ~ mapping ~
     - lonboard
-    - matplotlib
+    # - matplotlib  # duplicate with analysis
     # - mapclassify  # duplicate with analysis
 
 tests:
