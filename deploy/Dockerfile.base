@@ -53,9 +53,9 @@ RUN export SITEPKGS=/opt/conda/envs/env/lib/python3.12/site-packages \
     && rm -rf $SITEPKGS/wheel* \
     && rm -rf $SITEPKGS/xarray*
 
-# RUN cd /opt/conda \
-#     && find -name '*.a' -delete \
-#     && find -name '__pycache__' -type d -exec rm -rf '{}' '+'
+RUN cd /opt/conda \
+    && find -name '*.a' -delete \
+    && find -name '__pycache__' -type d -exec rm -rf '{}' '+'
 
 USER $MAMBA_USER
 
