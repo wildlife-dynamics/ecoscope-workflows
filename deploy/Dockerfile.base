@@ -33,13 +33,7 @@ RUN export BIN=/opts/conda/envs/env/bin \
     && rm -rf $BIN/sqlite3 \
     && rm -rf $BIN/wheel
 
-RUN export LIB=/opt/conda/envs/env/lib \
-    && rm -rf $LIB/aws-* \
-    && rm -rf $LIB/libaws* \
-    && rm -rf $LIB/libazure*
-
 RUN export SHARE=/opt/conda/envs/env/share \
-    && rm -rf $SHARE/azure* \
     && rm -rf $SHARE/bash-completion \
     && rm -rf $SHARE/cmake \
     && rm -rf $SHARE/doc \
@@ -58,6 +52,10 @@ RUN export SITEPKGS=/opt/conda/envs/env/lib/python3.12/site-packages \
     && rm -rf $SITEPKGS/setuptools* \
     && rm -rf $SITEPKGS/wheel* \
     && rm -rf $SITEPKGS/xarray*
+
+# RUN cd /opt/conda \
+#     && find -name '*.a' -delete \
+#     && find -name '__pycache__' -type d -exec rm -rf '{}' '+'
 
 USER $MAMBA_USER
 
