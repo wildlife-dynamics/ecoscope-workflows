@@ -179,24 +179,29 @@ def test_end_to_end(template: str, end_to_end: EndToEndFixture, tmp_path: Path):
     with open(script_outpath, mode="w") as f:
         f.write(script)
 
-    exe = (
-        # workaround for https://github.com/mamba-org/mamba/issues/2577
-        f"{os.environ['MAMBA_EXE']} run -n {os.environ['CONDA_ENV_NAME']} python"
-        if "mamba" in sys.executable
-        else sys.executable
+    if (
+        python_exe := os.environ.get("ECOSCOPE_WORKFLOWS_TESTING_PYTHON_EXECUTABLE")
+    ) is None:
+        # if not explicitly set, use the current python executable, assuming we're not in
+        # mamba environment, in which case we need to use the mamba executable to run the script
+        # since python may not be available in PATH. the safest option is just to explicitly set
+        # the python executable to use for testing on the env, but this is a reasonable default.
+        python_exe = (
+            # workaround for https://github.com/mamba-org/mamba/issues/2577
+            f"{os.environ['MAMBA_EXE']} run -n {os.environ['CONDA_ENV_NAME']} python"
+            if "mamba" in sys.executable
+            else sys.executable
+        )
+    python_cmd = (
+        f"{python_exe} -W ignore {script_outpath.as_posix()} "
+        f"--config-file {end_to_end.param_path.as_posix()}"
     )
-    cmd = " ".join(
-        [
-            os.environ.get("SHELL", "/bin/sh").replace('"', "").replace("'", ""),
-            "-c",
-            f"'{exe}",
-            "-W",
-            "ignore",  # in testing context warnings are added; exclude them from stdout
-            script_outpath.as_posix(),
-            "--config-file",
-            f"{end_to_end.param_path.as_posix()}'",
-        ],
+    shell = (
+        os.environ.get("ECOSCOPE_WORKFLOWS_TESTING_SHELL", "")
+        .replace('"', "")
+        .replace("'", "")
     )
+    cmd = f"{shell} -c '{python_cmd}'" if shell else python_cmd
     env = os.environ.copy()
     env["ECOSCOPE_WORKFLOWS_RESULTS"] = tmp.as_posix()
     if template == "script-async.jinja2":
@@ -221,7 +226,7 @@ def test_end_to_end(template: str, end_to_end: EndToEndFixture, tmp_path: Path):
         stderr=subprocess.PIPE,
         text=True,
         env=env,
-        shell=True,
+        shell=(True if shell else False),
     )
     returncode = proc.wait()
     if returncode != 0:
