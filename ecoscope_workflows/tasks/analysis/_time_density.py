@@ -3,9 +3,12 @@ from typing import Annotated, Any
 import pandera as pa
 from pydantic import Field
 
+from ecoscope_workflows.annotations import (
+    AnyGeoDataFrame,
+    DataFrame,
+    JsonSerializableDataFrameModel,
+)
 from ecoscope_workflows.decorators import task
-from ecoscope_workflows.tasks.preprocessing import TrajectoryGDFSchema
-from ecoscope_workflows.annotations import JsonSerializableDataFrameModel, DataFrame
 
 
 class TimeDensityReturnGDFSchema(JsonSerializableDataFrameModel):
@@ -16,7 +19,10 @@ class TimeDensityReturnGDFSchema(JsonSerializableDataFrameModel):
 
 @task
 def calculate_time_density(
-    trajectory_gdf: DataFrame[TrajectoryGDFSchema],
+    trajectory_gdf: Annotated[
+        AnyGeoDataFrame,
+        Field(description="The trajectory geodataframe.", exclude=True),
+    ],
     # raster profile
     pixel_size: Annotated[
         float,
@@ -33,6 +39,7 @@ def calculate_time_density(
     ],
 ) -> DataFrame[TimeDensityReturnGDFSchema]:
     import tempfile
+
     from ecoscope.analysis.percentile import get_percentile_area
     from ecoscope.analysis.UD import calculate_etd_range
     from ecoscope.io.raster import RasterProfile
