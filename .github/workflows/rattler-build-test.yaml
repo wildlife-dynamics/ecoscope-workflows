@@ -63,30 +63,16 @@ jobs:
             echo "COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
           fi
 
-      - name: Export ECOSCOPE_WORKFLOWS_REV and tmp paths to env
-        run: |
-          echo "ECOSCOPE_WORKFLOWS_REV=${COMMIT_SHA}" >> $GITHUB_ENV
-          echo "TMP_RATTLER_RECIPE=`pwd`/tmp/${COMMIT_SHA}.yaml" >> $GITHUB_ENV
-          echo "TMP_ENVFILE=./tmp/environment.yml" >> $GITHUB_ENV
-
-      - name: Build ecoscope-workflows
+      - name: Build ecoscope-workflows worker container at current commit
         shell: bash -leo pipefail {0}
         working-directory: deploy
-        # This command sets the version of ecoscope-workflows to the commit hash of
-        # the current branch and then builds the conda package based on that version.
         run: |
-          python scripts/set_context_version.py `pwd`/rattler/ecoscope-workflows.yaml $TMP_RATTLER_RECIPE $ECOSCOPE_WORKFLOWS_REV
-          rattler-build build --recipe $TMP_RATTLER_RECIPE
+          chmod +x scripts/build_container_at_sha.sh
+          ./scripts/build_container_at_sha.sh $COMMIT_SHA
 
-      - name: Build worker container
-        shell: bash -leo pipefail {0}
-        working-directory: deploy
-        # Now before we build the worker container, we need to reset the rev specifier for ecoscope-workflows
-        # in environment.yml to the commit hash of the current branch, to match the version of the conda package
-        # we just built in the previous step.
+      - name: Set short commit sha on env (this is the container tag)
         run: |
-          python scripts/set_envyaml_workflows_specifier.py `pwd`/environment.yml $TMP_ENVFILE $ECOSCOPE_WORKFLOWS_REV
-          docker buildx build -t rattler-image -f Dockerfile.base --build-arg ENVFILE=$TMP_ENVFILE .
+          echo "SHORT_COMMIT_SHA=$(echo $COMMIT_SHA | cut -c1-7)" >> $GITHUB_ENV
 
       - name: Test worker container
         shell: bash -leo pipefail {0}
@@ -97,6 +83,6 @@ jobs:
           -e EARTHRANGER_SERVER=${{ secrets.EARTHRANGER_SERVER }} \
           -e EARTHRANGER_USERNAME=${{ secrets.EARTHRANGER_USERNAME }} \
           -e EARTHRANGER_PASSWORD=${{ secrets.EARTHRANGER_PASSWORD }} \
-          rattler-image /bin/bash -c "\
+          $SHORT_COMMIT_SHA /bin/bash -c "\
           micromamba -n lithops-worker install -c conda-forge pytest --yes \
           && micromamba -n lithops-worker run pytest /opt/tests"
