@@ -112,8 +112,7 @@ jobs:
         uses: google-github-actions/auth@v0
         with:
           # TODO: change to workload identity
-          credentials: ${{ secrets.GCP_CLOUDRUN_LITHOPS_TESTING_SERVICE_ACCOUNT_KEY }}
-          create_credentials_file: true
+          credentials_json: '${{ secrets.GCP_CLOUDRUN_LITHOPS_TESTING_SERVICE_ACCOUNT_KEY }}'
 
       - name: Set lithops runtime name on env
         run: |
