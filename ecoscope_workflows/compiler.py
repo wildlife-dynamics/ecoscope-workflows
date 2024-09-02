@@ -6,7 +6,6 @@ import subprocess
 import sys
 from typing import Annotated, Any, Callable, Literal, TypeAlias, TypeVar
 
-from jinja2 import Environment, FileSystemLoader
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -533,6 +532,14 @@ class DagCompiler(BaseModel):
 
     @ruff_formatted
     def generate_dag(self) -> str:
+        try:
+            from jinja2 import Environment, FileSystemLoader
+        except ImportError as e:
+            raise ImportError(
+                "The `jinja2` package is required to compile DAGs. "
+                "Please install `ecoscope-workflows[compile]` dependencies."
+            ) from e
+
         env = Environment(loader=FileSystemLoader(self.template_dir))
         template = env.get_template(self.template)
         return template.render(self.get_dag_config())

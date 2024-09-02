@@ -11,7 +11,6 @@ from importlib.metadata import entry_points
 from inspect import getmembers, ismodule
 from typing import Annotated, Any, Generator, get_args
 
-import ruamel.yaml
 from pydantic import (
     BaseModel,
     Field,
@@ -188,6 +187,14 @@ class KnownTask(BaseModel):
         description: str,
         omit_args: list[str] | None = None,
     ) -> str:
+        try:
+            import ruamel.yaml
+        except ImportError as e:
+            raise ImportError(
+                "The `ruamel.yaml` package is required to generate YAML parameters. "
+                "Please install `ecoscope-workflows[compile]` dependencies."
+            ) from e
+
         yaml = ruamel.yaml.YAML(typ="rt")
         yaml_str = f"{description}\n{title}:\n"
         for line in self._iter_parameters_annotation(
