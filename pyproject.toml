@@ -34,7 +34,7 @@ compile = [
     "ruff",  # for linting compiled workflows
 ]
 tasks-runtime = [
-    "ecoscope>=1.8.2"  # note: not required by all tasks
+    "ecoscope @ git+https://github.com/wildlife-dynamics/ecoscope.git@v1.8.2"  # note: not required by all tasks
 ]
 test = [
     "pytest",
