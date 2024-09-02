@@ -882,6 +882,12 @@
             "required": [],
             "type": "object"
         },
+        "Merge Pie Chart Widget Views": {
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+        },
         "Calculate Time Density from Trajectory": {
             "additionalProperties": false,
             "properties": {
