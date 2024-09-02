@@ -3,6 +3,8 @@ FROM mambaorg/micromamba:latest as build
 
 ARG RATTLER_BUILD_OUTPUT_DIR=.rattler-build/artifacts
 
+ENV MAMBA_NO_LOW_SPEED_LIMIT=1
+
 RUN micromamba create --name env
 RUN --mount=type=bind,source=$RATTLER_BUILD_OUTPUT_DIR,target=/opt/rattler-output \
     micromamba install -n env ecoscope-workflows \
