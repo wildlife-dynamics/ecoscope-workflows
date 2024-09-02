@@ -7,58 +7,72 @@ on:
     branches: ["*"]
 
 jobs:
-  test:
+  build-base:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-
     steps:
+      # ~~~~~ rattler build local conda channel ~~~~~
       - uses: actions/checkout@v4
-      - name: Setup Micromamba
+      - name: Setup micromamba env for rattler build
         uses: mamba-org/setup-micromamba@v1
         with:
           environment-name: rattler
           init-shell: bash
-
-      - name: Install build deps
+      - name: Install rattler-build
         shell: bash -leo pipefail {0}
         run: |
           micromamba install -c conda-forge rattler-build --yes
-
-      - name: Set short commit sha on env (this will be the container tag)
-        # note conditional logic to get the commit sha regardless of event type
-        run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            export COMMIT_SHA=${{ github.event.pull_request.head.sha }}
-          else
-            export COMMIT_SHA=${{ github.sha }}
-          fi
-          echo "SHORT_COMMIT_SHA=$(echo $COMMIT_SHA | cut -c1-7)" >> $GITHUB_ENV
-
       - name: Build local conda channel (i.e. rattler-build artifacts)
         shell: bash -leo pipefail {0}
         run: |
           chmod +x .rattler-build/build.sh
           ./.rattler-build/build.sh
 
-      - name: Build testable container
-        run: |
-          docker buildx build -t $SHORT_COMMIT_SHA --target=testable_runtime -f Dockerfile .
+      # ~~~~~~~~~~ build testable base container ~~~~~~~~~~
+      # xref https://docs.docker.com/build/ci/github-actions/share-image-jobs/
+      # build locally with: `docker buildx build -t $TAG --target=testable_runtime -f Dockerfile .`
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build and export testable container
+        uses: docker/build-push-action@v6
+        with:
+          tags: test-image:latest
+          outputs: type=docker,dest=/tmp/test-image.tar
+          target: testable_runtime
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-image
+          path: /tmp/test-image.tar
 
-      - name: Test worker container - sequential end-to-end
-        shell: bash -leo pipefail {0}
-        run: |
-          docker run \
-          -v `pwd`/tests:/opt/tests \
-          -v `pwd`/examples:/opt/examples \
-          $SHORT_COMMIT_SHA /env/bin/python -m pytest -v /opt/tests/test_examples.py \
-          -k "end_to_end and sequential"
+    local-e2e-test:
+      runs-on: ubuntu-latest
+      needs: build
+      steps:
+        - name: Download artifact
+          uses: actions/download-artifact@v4
+          with:
+            name: test-image
+            path: /tmp
 
-      - name: Test worker container - async end-to-end
-        shell: bash -leo pipefail {0}
-        run: |
-          docker run \
-          -v `pwd`/tests:/opt/tests \
-          -v `pwd`/examples:/opt/examples \
-          $SHORT_COMMIT_SHA /env/bin/python -m pytest -v /opt/tests/test_examples.py \
-          -k "end_to_end and async"
+        - name: Load image
+          run: |
+            docker load --input /tmp/test-image.tar
+            docker image ls -a
+
+        - name: Test worker container - sequential end-to-end
+          shell: bash -leo pipefail {0}
+          run: |
+            docker run \
+            -v `pwd`/tests:/opt/tests \
+            -v `pwd`/examples:/opt/examples \
+            test-image /env/bin/python -m pytest -v /opt/tests/test_examples.py \
+            -k "end_to_end and sequential"
+
+        - name: Test worker container - async end-to-end
+          shell: bash -leo pipefail {0}
+          run: |
+            docker run \
+            -v `pwd`/tests:/opt/tests \
+            -v `pwd`/examples:/opt/examples \
+            test-image /env/bin/python -m pytest -v /opt/tests/test_examples.py \
+            -k "end_to_end and async"
