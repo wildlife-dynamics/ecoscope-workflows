@@ -21,16 +21,18 @@ classifiers = [
 # license = { text = "" }
 # keywords = []
 dependencies = [
-    "jinja2",
     "pandera",
     "pydantic",
     "pydantic-settings",
-    "ruamel.yaml",
-    "ruff",  # for linting compiled workflows
     "tomli-w",
 ]
 
 [project.optional-dependencies]
+compile = [
+    "jinja2",
+    "ruamel.yaml",
+    "ruff",  # for linting compiled workflows
+]
 test = [
     "pytest",
 ]
