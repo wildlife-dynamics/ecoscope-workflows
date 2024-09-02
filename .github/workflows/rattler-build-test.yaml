@@ -29,15 +29,12 @@ jobs:
 
       # ~~~~~~~~~~ build testable base container ~~~~~~~~~~
       # xref https://docs.docker.com/build/ci/github-actions/share-image-jobs/
-      # build locally with: `docker buildx build -t $TAG --target=testable_runtime -f Dockerfile .`
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      # build locally with: ``
       - name: Build and export testable container
-        uses: docker/build-push-action@v6
-        with:
-          tags: test-image:latest
-          outputs: type=docker,dest=/tmp/test-image.tar
-          target: testable_runtime
+        run: |
+          docker buildx build \
+          -o type=docker,dest=/tmp/test-image.tar \
+          -t test-image --target=testable_runtime -f Dockerfile .
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -76,3 +73,5 @@ jobs:
           -v `pwd`/examples:/opt/examples \
           test-image /env/bin/python -m pytest -v /opt/tests/test_examples.py \
           -k "end_to_end and async"
+
+  # test-cloud-run:
