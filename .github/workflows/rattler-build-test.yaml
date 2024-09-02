@@ -23,33 +23,27 @@ jobs:
       - name: Install build deps
         shell: bash -leo pipefail {0}
         run: |
-          micromamba install -c conda-forge rattler-build PyYAML "python>=3.10" --yes
+          micromamba install -c conda-forge rattler-build --yes
 
-      - name: Build local channel
-        shell: bash -leo pipefail {0}
-        working-directory: deploy
-        run: |
-          chmod +x scripts/build_local_channel_in_order.sh
-          ./scripts/build_local_channel_in_order.sh
-
-      - name: Get correct COMMIT_SHA (regardless of event type)
+      - name: Set short commit sha on env (this will be the container tag)
+        # note conditional logic to get the commit sha regardless of event type
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "COMMIT_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+            export COMMIT_SHA=${{ github.event.pull_request.head.sha }}
           else
-            echo "COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
+            export COMMIT_SHA=${{ github.sha }}
           fi
-
-      - name: Build ecoscope-workflows worker container at current commit
-        shell: bash -leo pipefail {0}
-        working-directory: deploy
-        run: |
-          chmod +x scripts/build_container_at_sha.sh
-          ./scripts/build_container_at_sha.sh $COMMIT_SHA
-
-      - name: Set short commit sha on env (this is the container tag)
-        run: |
           echo "SHORT_COMMIT_SHA=$(echo $COMMIT_SHA | cut -c1-7)" >> $GITHUB_ENV
+
+      - name: Build local conda channel (i.e. rattler-build artifacts)
+        shell: bash -leo pipefail {0}
+        run: |
+          chmod +x .rattler-build/build.sh
+          ./.rattler-build/build.sh
+
+      - name: Build testable container
+        run: |
+          docker buildx build -t $SHORT_COMMIT_SHA --target=testable_runtime -f Dockerfile .
 
       - name: Test worker container - sequential end-to-end
         shell: bash -leo pipefail {0}

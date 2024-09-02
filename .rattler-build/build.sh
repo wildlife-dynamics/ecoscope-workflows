@@ -6,9 +6,10 @@ DEPENDENCIES=(
     "earthranger-client"
     "lonboard"
     "ecoscope-core"
+    "ecoscope-workflows"
 )
 
 for dep in "${DEPENDENCIES[@]}"; do
     echo "Building $dep"
-    rattler-build build --recipe rattler/${dep}.yaml --skip-existing=all
+    rattler-build build --recipe $(pwd)/.rattler-build/recipes/${dep}.yaml --output-dir $(pwd)/.rattler-build/artifacts --skip-existing=all
     done

@@ -1,14 +1,14 @@
 context:
   name: ecoscope-workflows
-  version: ae1ba8733de848e34d742b780ac2443ab60f61a1
+  version: HEAD
 
 package:
   name: ecoscope-workflows
   version: ${{ version }}
 
 source:
-  git: https://github.com/wildlife-dynamics/ecoscope-workflows.git
-  rev: ${{ version }}
+  git: .  # relative to invocation, which is from repo root
+  depth: 1
 
 build:
   python:
@@ -16,6 +16,7 @@ build:
       - ecoscope-workflows = ecoscope_workflows.__main__:main
   noarch: python
   script: pip install . -v
+  number: 1
 
 requirements:
   host:
@@ -35,6 +36,7 @@ requirements:
     # optionals that we want for deployment
     - lithops
     - cloudpathlib-gs
+    - ecoscope==v1.8.2
 
 tests:
   - python:

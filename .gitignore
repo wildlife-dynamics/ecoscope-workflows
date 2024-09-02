@@ -1,8 +1,7 @@
-# deploy
-deploy/output/bld/
-deploy/output/noarch/ecoscope-workflows-*
-deploy/output/src_cache/
-deploy/tmp/
+# rattler-build
+.rattler-build/artifacts/bld/
+.rattler-build/artifacts/*/ecoscope-workflows-*
+.rattler-build/artifacts/src_cache/
 
 .DS_Store
 
