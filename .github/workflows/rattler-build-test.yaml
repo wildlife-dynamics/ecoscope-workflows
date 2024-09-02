@@ -35,6 +35,7 @@ jobs:
       - name: Build and export testable container
         uses: docker/build-push-action@v6
         with:
+          context: .  # path context to get results of rattler-build mutations in build context
           tags: test-image:latest
           outputs: type=docker,dest=/tmp/test-image.tar
           target: testable_runtime
