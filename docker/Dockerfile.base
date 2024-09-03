@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 # stage 1: build the environment with micromamba
 FROM mambaorg/micromamba:latest as build
 
