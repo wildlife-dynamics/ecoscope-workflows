@@ -63,6 +63,6 @@ USER $MAMBA_USER
 
 # stage 3: create a testable runtime image
 # this is testable because we haven't removed pytest yet
-FROM debian:bullseye-slim AS testable_runtime
+FROM bitnami/minideb:bullseye AS testable_runtime
 
 COPY --from=clean /env /env
