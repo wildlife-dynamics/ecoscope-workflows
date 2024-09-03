@@ -1,5 +1,5 @@
 # stage 1: build the environment with micromamba
-FROM mambaorg/micromamba:latest as build
+FROM mambaorg/micromamba:latest AS build
 
 ARG RATTLER_BUILD_OUTPUT_DIR=.rattler-build/artifacts
 
@@ -15,7 +15,7 @@ RUN micromamba clean --all -f --yes
 
 # stage 2: clean the environment by removing unnecessary files
 # that cannot otherwise (currently) be excluded by micromamba create
-FROM mambaorg/micromamba:latest as clean
+FROM mambaorg/micromamba:latest AS clean
 
 COPY --from=build /opt/conda/envs/env /opt/conda/envs/env
 
@@ -61,34 +61,6 @@ USER $MAMBA_USER
 
 # stage 3: create a testable distroless runtime image
 # this is testable because we haven't removed pytest yet
-FROM gcr.io/distroless/base-debian12 as testable_runtime
+FROM gcr.io/distroless/base-debian12 AS testable_runtime
 
 COPY --from=clean /opt/conda/envs/env /env
-
-
-# stage 4: unzip the lithops proxy
-FROM python:3.10-slim-buster as unzip_proxy
-
-RUN apt-get update && apt-get install -y \
-    zip \
-    && rm -rf /var/lib/apt/lists/*
-
-ENV APP_HOME /lithops
-WORKDIR $APP_HOME
-# assumes the build context is running the lithops runtime build command
-# in a context with the same lithops version as the one in the container (?)
-COPY lithops_cloudrun.zip .
-RUN unzip lithops_cloudrun.zip && rm lithops_cloudrun.zip
-
-
-# stage 5: copy the lithops proxy into the distroless
-# image and remove test dependencies
-FROM testable_runtime as serve
-
-COPY --from=unzip_proxy /lithops /lithops
-
-ENV CONCURRENCY 1
-ENV TIMEOUT 600
-WORKDIR /lithops
-
-CMD /env/bin/gunicorn --bind :$PORT --workers $CONCURRENCY --timeout $TIMEOUT lithopsproxy:proxy

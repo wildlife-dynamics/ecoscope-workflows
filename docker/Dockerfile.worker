@@ -1,0 +1,28 @@
+ARG ECOSCOPE_WORKFLOWS_BASE_IMAGE=ecoscope-workflows-base:latest
+
+# stage 1: unzip the lithops proxy
+FROM python:3.10-slim-buster AS unzip_proxy
+
+RUN apt-get update && apt-get install -y \
+    zip \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV APP_HOME /lithops
+WORKDIR $APP_HOME
+# assumes the build context is running the lithops runtime build command
+# in a context with the same lithops version as the one in the container (?)
+COPY lithops_cloudrun.zip .
+RUN unzip lithops_cloudrun.zip && rm lithops_cloudrun.zip
+
+
+# stage 2: copy the lithops proxy into the distroless
+# image and remove test dependencies
+FROM $ECOSCOPE_WORKFLOWS_BASE_IMAGE AS serve
+
+COPY --from=unzip_proxy /lithops /lithops
+
+ENV CONCURRENCY 1
+ENV TIMEOUT 600
+WORKDIR /lithops
+
+CMD /env/bin/gunicorn --bind :$PORT --workers $CONCURRENCY --timeout $TIMEOUT lithopsproxy:proxy

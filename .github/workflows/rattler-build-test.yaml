@@ -37,14 +37,13 @@ jobs:
         with:
           context: .  # path context to get results of rattler-build mutations in build context
           file: docker/Dockerfile.base
-          tags: test-image:latest
-          outputs: type=docker,dest=/tmp/test-image.tar
-          target: testable_runtime  # TODO: split dockerfiles into base, worker, and runner
+          tags: ecoscope-workflows-base:latest
+          outputs: type=docker,dest=/tmp/ecoscope-workflows-base.tar
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: test-image
-          path: /tmp/test-image.tar
+          name: ecoscope-workflows-base
+          path: /tmp/ecoscope-workflows-base.tar
 
   local-e2e-test:
     runs-on: ubuntu-latest
@@ -54,10 +53,10 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: test-image
+          name: ecoscope-workflows-base
           path: /tmp
       - name: Load image
-        run: docker load --input /tmp/test-image.tar && docker image ls -a
+        run: docker load --input /tmp/ecoscope-workflows-base.tar && docker image ls -a
 
       # ~~~~~~~~~~ run local e2e tests ~~~~~~~~~~~~~~~
       - uses: actions/checkout@v4
@@ -67,7 +66,7 @@ jobs:
           docker run \
           -v `pwd`/tests:/opt/tests \
           -v `pwd`/examples:/opt/examples \
-          test-image /env/bin/python -m pytest -v /opt/tests/test_examples.py \
+          ecoscope-workflows-base /env/bin/python -m pytest -v /opt/tests/test_examples.py \
           -k "end_to_end and sequential"
 
       - name: Test worker container - async end-to-end
@@ -76,7 +75,7 @@ jobs:
           docker run \
           -v `pwd`/tests:/opt/tests \
           -v `pwd`/examples:/opt/examples \
-          test-image /env/bin/python -m pytest -v /opt/tests/test_examples.py \
+          ecoscope-workflows-base /env/bin/python -m pytest -v /opt/tests/test_examples.py \
           -k "end_to_end and async"
 
   remote-e2e-test:
@@ -87,10 +86,10 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: test-image
+          name: ecoscope-workflows-base
           path: /tmp
       - name: Load image
-        run: docker load --input /tmp/test-image.tar && docker image ls -a
+        run: docker load --input /tmp/ecoscope-workflows-base.tar && docker image ls -a
 
       # ~~~ build & deploy lithops worker container ~~~
       - uses: actions/checkout@v4
@@ -143,7 +142,7 @@ jobs:
         shell: bash -leo pipefail {0}
         run: |
           LITHOPS_CONFIG_FILE=.lithops-config.yaml \
-          lithops runtime build -b gcp_cloudrun -f docker/Dockerfile.base ${{ env.LITHOPS_RUNTIME_NAME }}
+          lithops runtime build -b gcp_cloudrun -f docker/Dockerfile.worker ${{ env.LITHOPS_RUNTIME_NAME }}
 
       - name: Lithops deploy
         shell: bash -leo pipefail {0}
@@ -157,7 +156,7 @@ jobs:
       #     docker run \
       #     -v `pwd`/tests:/opt/tests \
       #     -v `pwd`/examples:/opt/examples \
-      #     test-image /env/bin/python -m pytest -v /opt/tests/test_examples.py \
+      #     ecoscope-workflows-base /env/bin/python -m pytest -v /opt/tests/test_examples.py \
       #     -k "end_to_end and remote"
 
       - name: Post Lithops deploy (teardown)
