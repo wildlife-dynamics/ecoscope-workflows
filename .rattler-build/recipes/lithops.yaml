@@ -16,6 +16,7 @@ build:
       - lithops = lithops.scripts.cli:lithops_cli
   noarch: python
   script: pip install . -v
+  number: 1
 
 requirements:
   host:
