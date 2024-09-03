@@ -143,7 +143,7 @@ jobs:
         shell: bash -leo pipefail {0}
         run: |
           LITHOPS_CONFIG_FILE=.lithops-config.yaml \
-          lithops runtime build -b gcp_cloudrun -f Dockerfile ${{ env.LITHOPS_RUNTIME_NAME }}
+          lithops runtime build -b gcp_cloudrun -f docker/Dockerfile.base ${{ env.LITHOPS_RUNTIME_NAME }}
 
       - name: Lithops deploy
         shell: bash -leo pipefail {0}
