@@ -160,4 +160,10 @@ jobs:
       #     test-image /env/bin/python -m pytest -v /opt/tests/test_examples.py \
       #     -k "end_to_end and remote"
 
+      - name: Post Lithops deploy (teardown)
+        if: always()  # always run teardown even if previous steps fail
+        shell: bash -leo pipefail {0}
+        run: |
+          LITHOPS_CONFIG_FILE=.lithops-config.yaml \
+          lithops runtime delete ${{ env.LITHOPS_RUNTIME_NAME }}
       # TODO: teardown lithops runtime with lithops delete
