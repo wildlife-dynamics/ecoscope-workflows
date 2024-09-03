@@ -36,9 +36,10 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .  # path context to get results of rattler-build mutations in build context
+          file: docker/Dockerfile.base
           tags: test-image:latest
           outputs: type=docker,dest=/tmp/test-image.tar
-          target: testable_runtime
+          target: testable_runtime  # TODO: split dockerfiles into base, worker, and runner
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -108,7 +109,7 @@ jobs:
 
       - name: Google auth
         id: google-auth
-        uses: google-github-actions/auth@v0
+        uses: google-github-actions/auth@v2
         with:
           # TODO: change to workload identity
           credentials_json: '${{ secrets.GCP_CLOUDRUN_LITHOPS_TESTING_SERVICE_ACCOUNT_KEY }}'
@@ -132,7 +133,6 @@ jobs:
             data_limit: 500
           gcp:
             region: us-central1
-            credentials_path: ${{ steps.google-auth.outputs.credentials_file_path }}
           gcp_cloudrun:
             runtime: us.gcr.io/${{ steps.google-auth.outputs.project_id }}/${{ env.LITHOPS_RUNTIME_NAME }}
             runtime_cpu: 2
@@ -166,4 +166,3 @@ jobs:
         run: |
           LITHOPS_CONFIG_FILE=.lithops-config.yaml \
           lithops runtime delete ${{ env.LITHOPS_RUNTIME_NAME }}
-      # TODO: teardown lithops runtime with lithops delete
