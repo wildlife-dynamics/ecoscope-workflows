@@ -26,4 +26,4 @@ ENV CONCURRENCY 1
 ENV TIMEOUT 600
 WORKDIR /lithops
 
-CMD ["/env/bin/gunicorn", "--bind", ":$PORT", "--workers", "$CONCURRENCY", "--timeout", "$TIMEOUT", "lithopsproxy:proxy"]
+CMD ["/env/bin/python", "-m", "gunicorn", "--bind", ":$PORT", "--workers", "$CONCURRENCY", "--timeout", "$TIMEOUT", "lithopsproxy:proxy"]
