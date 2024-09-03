@@ -9,7 +9,7 @@ from ecoscope_workflows.indexes import CompositeFilter
 
 WidgetTypes = Literal["plot", "map", "text", "single_value"]
 
-PrecomputedHTMLWidgetData: TypeAlias = Path | Url
+PrecomputedHTMLWidgetData: TypeAlias = Url | Path
 TextWidgetData: TypeAlias = str
 SingleValueWidgetData: TypeAlias = int | float
 
