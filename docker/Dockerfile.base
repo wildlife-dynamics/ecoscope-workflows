@@ -3,7 +3,6 @@ FROM mambaorg/micromamba:bullseye-slim AS build
 
 ARG RATTLER_BUILD_OUTPUT_DIR=.rattler-build/artifacts
 
-# todo: defaults channel
 USER root
 RUN micromamba create -p /env
 RUN --mount=type=bind,source=$RATTLER_BUILD_OUTPUT_DIR,target=/opt/rattler-output \
