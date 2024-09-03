@@ -29,13 +29,6 @@ jobs:
       # build locally with: `docker buildx build -t $TAG --target=testable_runtime -f Dockerfile .`
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
       - name: Build and export testable container
         uses: docker/build-push-action@v6
         with:
@@ -43,16 +36,11 @@ jobs:
           file: docker/Dockerfile.base
           tags: ecoscope-workflows-base:latest
           outputs: type=docker,dest=/tmp/ecoscope-workflows-base.tar
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ecoscope-workflows-base
           path: /tmp/ecoscope-workflows-base.tar
-      - name: Update Docker cache
-        if: success()
-        run: mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   local-e2e-test:
     runs-on: ubuntu-latest
@@ -111,8 +99,8 @@ jobs:
         shell: bash -leo pipefail {0}
         run: |
           micromamba install -c conda-forge rattler-build --yes
-          rattler-build build --recipe .rattler-build/recipes/ps-mem.yaml --skip-existing=all
-          rattler-build build --recipe .rattler-build/recipes/lithops.yaml --skip-existing=all
+          rattler-build build --recipe .rattler-build/recipes/ps-mem.yaml --output-dir .rattler-build/artifacts --skip-existing=all
+          rattler-build build --recipe .rattler-build/recipes/lithops.yaml  --output-dir .rattler-build/artifacts --skip-existing=all
           micromamba install -c file://$(pwd)/.rattler-build/artifacts lithops --yes
 
       - name: Google auth
