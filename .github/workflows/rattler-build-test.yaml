@@ -132,9 +132,9 @@ jobs:
             data_limit: 500
           gcp:
             region: us-central1
-            credentials_path: ${{ steps.google-auth.outputs.credentials_path }}
+            credentials_path: ${{ steps.google-auth.outputs.credentials_file_path }}
           gcp_cloudrun:
-            runtime: us.gcr.io/ecoscope-poc/${{ env.LITHOPS_RUNTIME_NAME }}
+            runtime: us.gcr.io/${{ steps.google-auth.outputs.project_id }}/${{ env.LITHOPS_RUNTIME_NAME }}
             runtime_cpu: 2
             runtime_memory: 1000
           EOF
