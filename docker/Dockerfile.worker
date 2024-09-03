@@ -21,6 +21,7 @@ FROM $ECOSCOPE_WORKFLOWS_BASE_IMAGE AS serve
 
 COPY --from=unzip_proxy /lithops /lithops
 
+ENV PORT 8080
 ENV CONCURRENCY 1
 ENV TIMEOUT 600
 WORKDIR /lithops
