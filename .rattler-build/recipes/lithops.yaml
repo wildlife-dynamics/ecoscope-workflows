@@ -43,6 +43,9 @@ requirements:
     # - google-cloud-pubsub
     - google-api-python-client
     - google-auth
+# For serving proxy
+    - flask
+    - gunicorn
 
 tests:
   - python:
