@@ -102,6 +102,7 @@ jobs:
         shell: bash -leo pipefail {0}
         run: |
           micromamba install -c conda-forge rattler-build --yes
+          rattler-build build --recipe .rattler-build/recipes/ps-mem.yaml --skip-existing=all
           rattler-build build --recipe .rattler-build/recipes/lithops.yaml --skip-existing=all
           micromamba install -c file://$(pwd)/.rattler-build/artifacts lithops --yes
 
