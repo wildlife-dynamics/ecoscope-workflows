@@ -120,7 +120,8 @@ jobs:
           else
             export COMMIT_SHA=${{ github.sha }}
           fi
-          echo "LITHOPS_RUNTIME_NAME=lithops-runtime-${{ github.event_name }}-$COMMIT_SHA" >> $GITHUB_ENV
+          export SHORT_COMMIT_SHA=$(echo $COMMIT_SHA | cut -c1-7)
+          echo "LITHOPS_RUNTIME_NAME=lithops-runtime-${{ github.event_name }}-$SHORT_COMMIT_SHA" >> $GITHUB_ENV
 
       - name: Create lithops config
         run: |
