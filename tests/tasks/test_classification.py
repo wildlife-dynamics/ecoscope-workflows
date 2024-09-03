@@ -1,4 +1,3 @@
-import matplotlib
 import numpy as np
 import pandas as pd
 import pytest
@@ -20,15 +19,19 @@ def test_df():
 
 def test_color_map():
     df = pd.DataFrame({"column_name": ["A", "B", "A", "C", "B", "C"]})
-    result = apply_color_map(df, "column_name", "viridis")
+    result = apply_color_map(df, "column_name", ["#FF0000", "#00FF00", "#0000FF"])
 
-    assert "label" in result.columns
+    assert "column_name_colormap" in result.columns
 
-    color_mapping = {"A": 0, "B": 1, "C": 2}
+    color_mapping = {
+        "A": (255, 0, 0, 255),
+        "B": (0, 255, 0, 255),
+        "C": (0, 0, 255, 255),
+    }
     for _, row in result.iterrows():
         np.testing.assert_array_equal(
-            row["label"],
-            matplotlib.colormaps["viridis"](color_mapping[row["column_name"]]),
+            row["column_name_colormap"],
+            color_mapping[row["column_name"]],
         )
 
 

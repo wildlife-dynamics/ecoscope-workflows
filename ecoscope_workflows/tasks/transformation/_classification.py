@@ -116,12 +116,19 @@ def apply_classification(
 @task
 def apply_color_map(
     df: DataFrame[JsonSerializableDataFrameModel],
-    column_name: Annotated[
+    input_column_name: Annotated[
         str, Field(description="The name of the column with categorical values.")
     ],
-    colormap_name: Annotated[
-        str, Field(default="viridis", description="matplotlib.colors.Colormap")
-    ],
+    colormap: Annotated[
+        str | list[str],
+        Field(
+            description="Either a named mpl.colormap or a list of string hex values."
+        ),
+    ] = "viridis",
+    output_column_name: Annotated[
+        str | SkipJsonSchema[None],
+        Field(description="The dataframe column that will contain the color values."),
+    ] = None,
 ) -> DataFrame[JsonSerializableDataFrameModel]:
     """
     Adds a color column to the dataframe based on the categorical values in the specified column.
@@ -129,27 +136,18 @@ def apply_color_map(
     Args:
     dataframe (pd.DataFrame): The input dataframe.
     column_name (str): The name of the column with categorical values.
-    colormap_name (str): The name of the matplotlib colormap to use.
+    colormap (str): Either a named mpl.colormap or a list of string hex values.
+    output_column_name (str): The dataframe column that will contain the classification.
+            Defaults to "<input_column_name>_colormap"
 
     Returns:
     pd.DataFrame: The dataframe with an additional color column.
     """
+    from ecoscope.analysis.classifier import apply_color_map
 
-    import matplotlib
-
-    # Get the colormap
-    colormap = matplotlib.colormaps[colormap_name]
-
-    # Get unique categories
-    unique_categories = df[column_name].unique()
-
-    # Create a dictionary to map categories to colors
-    colors = colormap(range(len(unique_categories)))
-    category_colors = {
-        category: colors[i] for i, category in enumerate(unique_categories)
-    }
-
-    # Add the color column to the dataframe
-    df["label"] = df[column_name].map(category_colors)
-
-    return df
+    return apply_color_map(
+        dataframe=df,
+        input_column_name=input_column_name,
+        cmap=colormap,
+        output_column_name=output_column_name,
+    )
