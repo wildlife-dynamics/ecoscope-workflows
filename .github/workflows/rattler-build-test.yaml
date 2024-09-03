@@ -98,14 +98,12 @@ jobs:
         with:
           environment-name: rattler
           init-shell: bash
-      - name: Build & install ecoscope-workflows, lithops, and pytest
+      - name: Build & install lithops
         shell: bash -leo pipefail {0}
-        # note: ecoscope-workflows brings in lithops as a dependency
         run: |
           micromamba install -c conda-forge rattler-build --yes
-          chmod +x .rattler-build/build.sh && ./.rattler-build/build.sh
-          micromamba install -c file://.rattler-build/artifacts ecoscope-workflows --yes
-          micromamba install -c conda-forge pytest --yes
+          rattler-build build --recipe .rattler-build/recipes/lithops.yaml --skip-existing=all
+          micromamba install -c file://$(pwd)/.rattler-build/artifacts lithops --yes
 
       - name: Google auth
         id: google-auth
@@ -141,12 +139,13 @@ jobs:
           EOF
 
       - name: Lithops build
-        # note: lithops cli is installed by ecoscope-workflows when we build & install it above
+        shell: bash -leo pipefail {0}
         run: |
           LITHOPS_CONFIG_FILE=.lithops-config.yaml \
           lithops runtime build -b gcp_cloudrun -f Dockerfile ${{ env.LITHOPS_RUNTIME_NAME }}
 
       - name: Lithops deploy
+        shell: bash -leo pipefail {0}
         run: |
           LITHOPS_CONFIG_FILE=.lithops-config.yaml \
           lithops runtime deploy ${{ env.LITHOPS_RUNTIME_NAME }}
