@@ -1,5 +1,5 @@
 # stage 1: build the environment with micromamba
-FROM mambaorg/micromamba:bookworm-slim AS build
+FROM mambaorg/micromamba:bullseye-slim AS build
 
 ARG RATTLER_BUILD_OUTPUT_DIR=.rattler-build/artifacts
 
@@ -17,7 +17,7 @@ USER $MAMBA_USER
 
 # stage 2: clean the environment by removing unnecessary files
 # that cannot otherwise (currently) be excluded by micromamba create
-FROM mambaorg/micromamba:bookworm-slim AS clean
+FROM mambaorg/micromamba:bullseye-slim AS clean
 
 COPY --from=build /env /env
 
@@ -63,6 +63,6 @@ USER $MAMBA_USER
 
 # stage 3: create a testable runtime image
 # this is testable because we haven't removed pytest yet
-FROM debian:bookworm-slim AS testable_runtime
+FROM debian:bullseye-slim AS testable_runtime
 
 COPY --from=clean /env /env
