@@ -2,15 +2,14 @@
 FROM mambaorg/micromamba:bullseye-slim AS build
 
 ARG RATTLER_BUILD_OUTPUT_DIR=.rattler-build/artifacts
+ARG LOCKFILE=.rattler-build/lock.txt
 
 USER root
 RUN micromamba create -p /env
 RUN --mount=type=bind,source=$RATTLER_BUILD_OUTPUT_DIR,target=/opt/rattler-output \
-    micromamba install -p /env ecoscope-workflows \
-    -c file:///opt/rattler-output \
-    -c conda-forge \
+    --mount=type=bind,source=$LOCKFILE,target=/opt/lock.txt \
+    micromamba install -p /env --file /opt/lock.txt \
     --yes
-RUN micromamba install -p /env pytest -c conda-forge --yes
 RUN micromamba clean --all -f --yes
 USER $MAMBA_USER
 
