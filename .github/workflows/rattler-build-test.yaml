@@ -17,13 +17,10 @@ jobs:
         with:
           environment-name: rattler
           init-shell: bash
-      - name: Install rattler-build
+      - name: Install rattler-build & build artifacts (i.e. local conda channel)
         shell: bash -leo pipefail {0}
         run: |
           micromamba install -c conda-forge rattler-build --yes
-      - name: Build local conda channel (i.e. rattler-build artifacts)
-        shell: bash -leo pipefail {0}
-        run: |
           chmod +x .rattler-build/build.sh
           ./.rattler-build/build.sh
 
