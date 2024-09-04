@@ -32,22 +32,22 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Set only deps image name and tag on env
+      - name: Set only deps image tag on env
         run: |  # todo: change tag to :${{ dependency-files-hash }}
-          export IMAGE_NAME=wildlife-dynamics/ecoscope-workflows-only-deps
-          export IMAGE_TAG=latest
-          echo "FULL_IMAGE_NAME=ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
+          export NAME=wildlife-dynamics/ecoscope-workflows-only-deps
+          export TAG=latest
+          echo "ONLY_DEPS_IMAGE_TAG=ghcr.io/$NAME:$TAG" >> $GITHUB_ENV
       # TODO: if cache hit, just pull the image
       - name: Build Inventory Image
         run: |
           docker buildx build \
-          --tag ${{ env.FULL_IMAGE_NAME }} \
+          --tag ${{ env.ONLY_DEPS_IMAGE_TAG }} \
           --platform=linux/amd64 \
           --file docker/Dockerfile.only-deps \
           --cache-from=type=gha \
           --cache-to=type=gha \
           .
-          docker push ${{ env.FULL_IMAGE_NAME }}
+          docker push ${{ env.ONLY_DEPS_IMAGE_TAG }}
       - name: Build and export testable container
         run: |
           docker buildx build \
