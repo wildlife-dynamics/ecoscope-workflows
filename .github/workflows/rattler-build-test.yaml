@@ -17,6 +17,7 @@ jobs:
         with:
           environment-name: rattler
           init-shell: bash
+      # todo: this takes almost a minute: skip if cache hit
       - name: Install rattler-build & build artifacts (i.e. local conda channel)
         shell: bash -leo pipefail {0}
         run: |
@@ -29,7 +30,7 @@ jobs:
       # build locally with: `docker buildx build -t $TAG --target=testable_runtime -f Dockerfile .`
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build and export only deps
+      - name: Build and export only deps  # todo: skip if cache hit
         uses: docker/build-push-action@v6
         with:
           context: .  # path context to get results of rattler-build mutations in build context
@@ -39,12 +40,13 @@ jobs:
       - name: Load image
         run: docker load --input /tmp/ecoscope-workflows-only-deps.tar && docker image ls -a
       - name: Build and export testable container
-        uses: docker/build-push-action@v6
-        with:
-          context: .  # path context to get results of rattler-build mutations in build context
-          file: docker/Dockerfile.base
-          tags: ecoscope-workflows-base:latest
-          outputs: type=docker,dest=/tmp/ecoscope-workflows-base.tar
+        run: | # todo: change tag to ecoscope/workflows:${{ hash }}
+          docker buildx build \
+          -t ecoscope-workflows-base:latest \
+          --platform=linux/amd64 \
+          -f docker/Dockerfile.base \
+          -o type=docker,dest=/tmp/ecoscope-workflows-base.tar \
+          .
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
