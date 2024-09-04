@@ -7,8 +7,10 @@ on:
     branches: ["*"]
 
 jobs:
-  build-base:
+  build-only-deps:
     runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ steps.set-tag.outputs.image-tag }}
     steps:
       # ~~~~~ rattler build local conda channel ~~~~~
       - uses: actions/checkout@v4
@@ -25,7 +27,7 @@ jobs:
           chmod +x .rattler-build/build.sh
           ./.rattler-build/build.sh
 
-      # ~~~~~~~~~~ build testable base container ~~~~~~~~~~
+      # ~~~~~~~~~~ build only deps base container ~~~~~~~~~~
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -33,27 +35,30 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Set only deps image tag on env and output for downstream jobs
+        id: set-tag
         run: |  # todo: change tag to :${{ dependency-files-hash }}
           export NAME=wildlife-dynamics/ecoscope-workflows-only-deps
           export TAG=latest
-          echo "ONLY_DEPS_IMAGE_TAG=ghcr.io/$NAME:$TAG" >> $GITHUB_ENV
-          echo "ONLY_DEPS_IMAGE_TAG=ghcr.io/$NAME:$TAG" >> $GITHUB_OUTPUT
+          echo "IMAGE_TAG=ghcr.io/$NAME:$TAG" >> $GITHUB_ENV
+          echo "image-tag=ghcr.io/$NAME:$TAG" >> $GITHUB_OUTPUT
 
       # TODO: if cache hit, just pull the image
-      - name: Build Inventory Image
+      - name: Build and push only deps image
         run: |
           docker buildx build \
-          --tag ${{ env.ONLY_DEPS_IMAGE_TAG }} \
+          --tag ${{ env.IMAGE_TAG }} \
           --platform=linux/amd64 \
           --file docker/Dockerfile.only-deps \
           --cache-from=type=gha \
           --cache-to=type=gha \
           .
-          docker push ${{ env.ONLY_DEPS_IMAGE_TAG }}
+          docker push ${{ env.IMAGE_TAG }}
 
-  local-e2e-test:
+  build-testable:
     runs-on: ubuntu-latest
     needs: build-base
+    outputs:
+      image-tag: ${{ steps.set-tag.outputs.image-tag }}
     steps:
       - uses: actions/checkout@v4
       - name: Login to GitHub Container Registry
@@ -62,21 +67,35 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set testable image tag on env and output for downstream jobs
+        id: set-tag
+        run: |  # todo: change tag to :${{ dependency-files-hash }}-${{ commit-sha }}
+          export NAME=wildlife-dynamics/ecoscope-workflows-testable
+          export TAG=latest
+          echo "IMAGE_TAG=ghcr.io/$NAME:$TAG" >> $GITHUB_ENV
+          echo "image-tag=ghcr.io/$NAME:$TAG" >> $GITHUB_OUTPUT
       - name: Build testable container
         run: |
           docker buildx build \
-          --build-arg ONLY_DEPS_IMAGE_TAG=${{ needs.build-base.outputs.only-deps-image-tag }} \
-          --tag ecoscope-workflows-base:latest \
+          --build-arg ONLY_DEPS_IMAGE_TAG=${{ needs.build-only-deps.outputs.image-tag }} \
+          --tag ${{ env.IMAGE_TAG }} \
           --platform=linux/amd64 \
           --file docker/Dockerfile.base \
           .
+          docker push ${{ env.IMAGE_TAG }}
+
+  local-e2e-test:
+    runs-on: ubuntu-latest
+    needs: build-testable
+    steps:
       - name: Test worker container - sequential end-to-end
         shell: bash -leo pipefail {0}
         run: |
           docker run \
           -v `pwd`/tests:/opt/tests \
           -v `pwd`/examples:/opt/examples \
-          ecoscope-workflows-base /env/bin/python -m pytest -v /opt/tests/test_examples.py \
+          ${{ needs.build-testable.outputs.image-tag }} \
+          /env/bin/python -m pytest -v /opt/tests/test_examples.py \
           -k "end_to_end and sequential"
 
       - name: Test worker container - async end-to-end
@@ -85,28 +104,15 @@ jobs:
           docker run \
           -v `pwd`/tests:/opt/tests \
           -v `pwd`/examples:/opt/examples \
-          ecoscope-workflows-base /env/bin/python -m pytest -v /opt/tests/test_examples.py \
+          ${{ needs.build-testable.outputs.image-tag }} \
+          /env/bin/python -m pytest -v /opt/tests/test_examples.py \
           -k "end_to_end and async"
 
   remote-e2e-test:
     runs-on: ubuntu-latest
-    needs: build-base
+    needs: build-testable
     steps:
       - uses: actions/checkout@v4
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build testable container
-        run: |
-          docker buildx build \
-          --build-arg ONLY_DEPS_IMAGE_TAG=${{ needs.build-base.outputs.only-deps-image-tag }} \
-          --tag ecoscope-workflows-base:latest \
-          --platform=linux/amd64 \
-          --file docker/Dockerfile.base \
-          .
       - name: Setup build environment
         uses: mamba-org/setup-micromamba@v1
         with:
@@ -157,7 +163,9 @@ jobs:
         shell: bash -leo pipefail {0}
         run: |
           LITHOPS_CONFIG_FILE=.lithops-config.yaml \
-          lithops runtime build -b gcp_cloudrun -f docker/Dockerfile.worker ${{ env.LITHOPS_RUNTIME_NAME }}
+          lithops runtime build -b gcp_cloudrun \
+          -f docker/Dockerfile.worker \
+          ${{ env.LITHOPS_RUNTIME_NAME }}
 
       - name: Lithops deploy
         shell: bash -leo pipefail {0}
