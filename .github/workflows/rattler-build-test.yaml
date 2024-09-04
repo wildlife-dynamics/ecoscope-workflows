@@ -148,14 +148,14 @@ jobs:
           LITHOPS_CONFIG_FILE=.lithops-config.yaml \
           lithops runtime deploy ${{ env.LITHOPS_RUNTIME_NAME }}
 
-      # - name: Test worker container - remote end-to-end
-      #   shell: bash -leo pipefail {0}
-      #   run: |
-      #     docker run \
-      #     -v `pwd`/tests:/opt/tests \
-      #     -v `pwd`/examples:/opt/examples \
-      #     ecoscope-workflows-base /env/bin/python -m pytest -v /opt/tests/test_examples.py \
-      #     -k "end_to_end and remote"
+      - name: Test remote worker container - async end-to-end
+        shell: bash -leo pipefail {0}
+        run: |
+          docker run \
+          -v `pwd`/tests:/opt/tests \
+          -v `pwd`/examples:/opt/examples \
+          ecoscope-workflows-base /env/bin/python -m pytest -v /opt/tests/test_examples.py \
+          -k "end_to_end and async"
 
       - name: Post Lithops deploy (teardown)
         if: always()  # always run teardown even if previous steps fail

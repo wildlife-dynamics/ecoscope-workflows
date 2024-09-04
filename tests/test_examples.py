@@ -197,7 +197,10 @@ def test_end_to_end(template: str, end_to_end: EndToEndFixture, tmp_path: Path):
     cmd = f"{shell} -c '{python_cmd}'" if shell else python_cmd
     env = os.environ.copy()
     env["ECOSCOPE_WORKFLOWS_RESULTS"] = tmp.as_posix()
-    if template == "script-async.jinja2":
+    if template == "script-async.jinja2" and not os.environ.get("LITHOPS_CONFIG_FILE"):
+        # a lithops test is requested but no lithops config is set in the environment
+        # users can set this in their environment to avoid this, to test particular
+        # lithops configurations. but if they don't, we'll set a default one here.
         lithops_config_outpath = tmp / "lithops.yaml"
         lithops_config = {
             "lithops": {
