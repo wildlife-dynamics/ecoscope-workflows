@@ -1,6 +1,6 @@
 ARG TAG=latest
 
-FROM ecoscope/workflows-only-deps:$TAG AS build
+FROM ghcr.io/wildlife-dynamics/ecoscope-workflows-only-deps:$TAG AS build
 
 # todo: this can just be the workflows artifact only
 ARG CHANNEL_MOUNT=.rattler-build/artifacts
