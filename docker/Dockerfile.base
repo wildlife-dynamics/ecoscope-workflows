@@ -1,21 +1,20 @@
-# stage 1: build the environment with micromamba
-FROM mambaorg/micromamba:bullseye-slim AS build
+ARG TAG=latest
 
-ARG RATTLER_BUILD_OUTPUT_DIR=.rattler-build/artifacts
-ARG LOCKFILE=.rattler-build/lock.txt
+FROM ecoscope/workflows-only-deps:$TAG AS build
+
+# todo: this can just be the workflows artifact only
+ARG CHANNEL_MOUNT=.rattler-build/artifacts
 
 USER root
-RUN micromamba create -p /env
-RUN --mount=type=bind,source=$RATTLER_BUILD_OUTPUT_DIR,target=/opt/rattler-output \
-    --mount=type=bind,source=$LOCKFILE,target=/opt/lock.txt \
-    micromamba install -p /env --file /opt/lock.txt \
+RUN --mount=type=bind,source=$CHANNEL_MOUNT,target=/opt/channel-mount \
+    micromamba install -p /env \
+    ecoscope-workflows \
+    -c file:///opt/channel-mount \
+    --no-deps \
     --yes
-RUN micromamba clean --all -f --yes
 USER $MAMBA_USER
 
-# stage 2: clean the environment by removing unnecessary files
-# that cannot otherwise (currently) be excluded by micromamba create
-FROM mambaorg/micromamba:bullseye-slim AS clean
+FROM build AS clean
 
 COPY --from=build /env /env
 
