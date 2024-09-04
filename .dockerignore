@@ -1,0 +1,17 @@
+.dockerignore
+.ecoscope-workflows-tmp
+.env
+.git
+.gitattributes
+.gitignore
+.github
+.mypy_cache
+.pre-commit-config.yaml
+.pytest_cache
+.readthedocs.yml
+.ruff_cache
+.vscode
+ci
+docker
+LICENSE
+README.md
