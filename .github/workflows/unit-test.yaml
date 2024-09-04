@@ -51,8 +51,8 @@ jobs:
           EARTHRANGER_USERNAME: ${{ secrets.EARTHRANGER_USERNAME }}
           EARTHRANGER_PASSWORD: ${{ secrets.EARTHRANGER_PASSWORD }}
         shell: bash -leo pipefail {0}
-        run: |
-          python -m pytest tests -vvv
+        run: |  # FIXME: run IO tests separately since they require credentials which could expire and fail the tests
+          python -m pytest -m "not io" tests -vvv
 
     # - name: Upload Coverage to Codecov
     #   uses: codecov/codecov-action@v2
