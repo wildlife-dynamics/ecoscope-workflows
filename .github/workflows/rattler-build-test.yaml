@@ -56,7 +56,7 @@ jobs:
 
   build-testable:
     runs-on: ubuntu-latest
-    needs: build-base
+    needs: build-only-deps
     outputs:
       image-tag: ${{ steps.set-tag.outputs.image-tag }}
     steps:
