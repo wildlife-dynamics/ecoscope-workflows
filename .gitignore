@@ -1,5 +1,4 @@
 # rattler-build
-.conda-pkg-cache/
 .rattler-build/artifacts/bld/
 .rattler-build/artifacts/*/ecoscope-workflows-*
 .rattler-build/artifacts/src_cache/
