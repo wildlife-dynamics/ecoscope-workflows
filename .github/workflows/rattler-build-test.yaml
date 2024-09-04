@@ -33,7 +33,7 @@ jobs:
           -t ecoscope/workflows-only-deps \
           --platform=linux/amd64 \
           -f docker/Dockerfile.only-deps \
-          -o dest=/tmp/ecoscope-workflows-only-deps.tar \
+          -o type=local,dest=/tmp/ecoscope-workflows-only-deps.tar \
           .
       # TODO: if cache hit, just load
       # - name: Load image
