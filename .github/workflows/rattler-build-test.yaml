@@ -33,7 +33,7 @@ jobs:
           -t ecoscope/workflows-only-deps \
           --platform=linux/amd64 \
           -f docker/Dockerfile.only-deps \
-          -o type=docker,dest=/tmp/ecoscope-workflows-only-deps.tar \
+          -o type=tar,dest=/tmp/ecoscope-workflows-only-deps.tar \
           .
       # TODO: if cache hit, just load
       # - name: Load image
@@ -44,7 +44,7 @@ jobs:
           -t ecoscope-workflows-base:latest \
           --platform=linux/amd64 \
           -f docker/Dockerfile.base \
-          -o type=docker,dest=/tmp/ecoscope-workflows-base.tar \
+          -o type=tar,dest=/tmp/ecoscope-workflows-base.tar \
           .
       - name: Upload artifact
         uses: actions/upload-artifact@v4
