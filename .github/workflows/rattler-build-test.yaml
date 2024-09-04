@@ -34,8 +34,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Set only deps image name and tag on env
         run: |  # todo: change tag to :${{ dependency-files-hash }}
-          echo "IMAGE_NAME=wildlife-dynamics/ecoscope-workflows-only-deps" >> $GITHUB_ENV
-          echo "IMAGE_TAG=latest" >> $GITHUB_ENV
+          export IMAGE_NAME=wildlife-dynamics/ecoscope-workflows-only-deps
+          export IMAGE_TAG=latest
           echo "FULL_IMAGE_NAME=ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
       # TODO: if cache hit, just pull the image
       - name: Build Inventory Image
