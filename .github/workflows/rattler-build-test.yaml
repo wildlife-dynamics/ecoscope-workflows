@@ -27,20 +27,23 @@ jobs:
 
       # ~~~~~~~~~~ build testable base container ~~~~~~~~~~
       # todo: skip if cache hit
-      - name: Build and export only deps
-        run: |
-          docker buildx build \
-          -t ecoscope/workflows-only-deps \
-          --platform=linux/amd64 \
-          -f docker/Dockerfile.only-deps \
-          -o type=tar,dest=/tmp/ecoscope-workflows-only-deps.tar \
-          .
+      # - name: Build and export only deps
+      #   run: |
+      #     docker buildx build \
+      #     -t ecoscope/workflows-only-deps \
+      #     --platform=linux/amd64 \
+      #     -f docker/Dockerfile.only-deps \
+      #     -o type=tar,dest=/tmp/ecoscope-workflows-only-deps.tar \
+      #     .
       # TODO: if cache hit, just load
       # - name: Load image
       - name: Build and export testable container
         run: | # todo: change tag to ecoscope/workflows:${{ hash }}
-          docker load --input /tmp/ecoscope-workflows-only-deps.tar
-          docker image ls -a
+          docker buildx build \
+          -t ecoscope/workflows-only-deps \
+          --platform=linux/amd64 \
+          -f docker/Dockerfile.only-deps \
+          .
           docker buildx build \
           -t ecoscope-workflows-base:latest \
           --platform=linux/amd64 \
