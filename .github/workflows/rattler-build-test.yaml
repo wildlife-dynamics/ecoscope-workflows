@@ -9,6 +9,11 @@ on:
 jobs:
   build-base:
     runs-on: ubuntu-latest
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
     steps:
       # ~~~~~ rattler build local conda channel ~~~~~
       - uses: actions/checkout@v4
@@ -29,12 +34,15 @@ jobs:
       # build locally with: `docker buildx build -t $TAG --target=testable_runtime -f Dockerfile .`
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: network=host
       - name: Build and export only deps
         uses: docker/build-push-action@v6
         with:
           context: .  # path context to get results of rattler-build mutations in build context
           file: docker/Dockerfile.only-deps
-          tags: ecoscope/workflows-only-deps:latest
+          push: true
+          tags: localhost:5000/ecoscope/workflows-only-deps:latest  # todo: persist between builds / or cache + load ?
       - name: Build and export testable container
         uses: docker/build-push-action@v6
         with:
