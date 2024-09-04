@@ -48,7 +48,6 @@ jobs:
           --cache-to=type=gha \
           .
           docker push ${{ env.FULL_IMAGE_NAME }}
-      - name: Load image
       - name: Build and export testable container
         run: |
           docker buildx build \
