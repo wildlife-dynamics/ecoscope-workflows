@@ -5,12 +5,12 @@ FROM $ONLY_DEPS_IMAGE_TAG AS build
 ARG CHANNEL_MOUNT=.rattler-build/artifacts
 
 USER root
-# todo: --freeze-installed; use current head ref of workflows
+# todo: use current head ref of workflows
 RUN --mount=type=bind,source=$CHANNEL_MOUNT,target=/opt/channel-mount \
     micromamba install -p /env \
     ecoscope-workflows \
     -c file:///opt/channel-mount \
-    --no-deps \
+    --freeze-installed \
     --yes
 USER $MAMBA_USER
 
