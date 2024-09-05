@@ -11,7 +11,6 @@
 .readthedocs.yml
 .ruff_cache
 .vscode
-ci
 docker
 LICENSE
 README.md
