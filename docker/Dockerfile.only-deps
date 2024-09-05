@@ -16,4 +16,5 @@ RUN --mount=type=bind,source=$CHANNEL_MOUNT,target=/opt/channel-mount \
     -c conda-forge \
     --only-deps \
     --yes
+RUN micromamba install -p /env pytest -c conda-forge --yes
 USER $MAMBA_USER
