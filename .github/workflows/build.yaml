@@ -93,8 +93,6 @@ jobs:
       - name: Setup Micromamba
         uses: mamba-org/setup-micromamba@v1
         with:
-          cache-environment: true  # todo how to handle caching in this case?
-          cache-downloads: true
           init-shell: bash
       - name: Install all dependencies with conda
         shell: bash -leo pipefail {0}
