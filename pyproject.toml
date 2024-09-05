@@ -76,7 +76,7 @@ exclude = ["deploy"]
 namespaces = false
 
 [tool.setuptools.package-data]
-ecoscope_workflows = ["py.typed", "templates/*.jinja", "templates/*.jinja2"]
+ecoscope_workflows = ["py.typed", "tasks/**/*.parquet", "templates/*.jinja", "templates/*.jinja2"]
 
 [tool.isort]
 # Prevent isort & black from fighting each other

@@ -1,2 +1,3 @@
+include tasks/**/*.parquet
 include templates/*.jinja
 include templates/*.jinja2
