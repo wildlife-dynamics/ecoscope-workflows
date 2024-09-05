@@ -1,7 +1,5 @@
 # rattler-build
-.rattler-build/artifacts/bld/
-.rattler-build/artifacts/*/ecoscope-workflows-*
-.rattler-build/artifacts/src_cache/
+.rattler-build/artifacts
 
 .DS_Store
 
