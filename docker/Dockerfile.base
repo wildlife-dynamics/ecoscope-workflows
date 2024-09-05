@@ -7,7 +7,10 @@ COPY . /opt/ecoscope-workflows
 
 USER root
 RUN SETUPTOOLS_SCM_PRETEND_VERSION=$VERSION \
-    /env/bin/pip install /opt/ecoscope-workflows --no-deps --no-build-isolation
+    /env/bin/pip install /opt/ecoscope-workflows \
+    --target /env/lib/python3.12/site-packages \
+    --no-deps \
+    --no-build-isolation
 USER $MAMBA_USER
 
 FROM build AS clean
@@ -47,10 +50,6 @@ RUN export SITEPKGS=/env/lib/python3.12/site-packages \
     && rm -rf $SITEPKGS/setuptools* \
     && rm -rf $SITEPKGS/wheel* \
     && rm -rf $SITEPKGS/xarray*
-
-RUN cd /opt/conda \
-    && find -name '*.a' -delete \
-    && find -name '__pycache__' -type d -exec rm -rf '{}' '+'
 
 USER $MAMBA_USER
 
