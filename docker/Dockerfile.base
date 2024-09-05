@@ -2,7 +2,6 @@ ARG ONLY_DEPS_IMAGE_TAG=ghcr.io/wildlife-dynamics/ecoscope-workflows-only-deps:l
 
 FROM $ONLY_DEPS_IMAGE_TAG AS build
 
-# todo: this can just be the workflows artifact only
 ARG CHANNEL_MOUNT=.rattler-build/artifacts
 
 USER root
@@ -12,6 +11,8 @@ RUN --mount=type=bind,source=$CHANNEL_MOUNT,target=/opt/channel-mount \
     -c file:///opt/channel-mount \
     --no-deps \
     --yes
+# todo: remove pytest before serving
+RUN micromamba install -p /env pytest -c conda-forge --yes
 USER $MAMBA_USER
 
 FROM build AS clean
