@@ -162,7 +162,6 @@ jobs:
           --platform=linux/amd64 \
           --file ./docker/Dockerfile.base \
           --build-arg ONLY_DEPS_IMAGE_TAG=${{ needs.build-only-deps.outputs.image-tag }} \
-          --build-arg CHANNEL_MOUNT=tmp/conda-channel \
           --cache-from=type=gha \
           --cache-to=type=gha \
           .
