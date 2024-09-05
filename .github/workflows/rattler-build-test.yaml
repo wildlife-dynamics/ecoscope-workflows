@@ -16,7 +16,9 @@ jobs:
       - name: Set dependency files hash
         id: set-hash
         run: |
-          echo "deps-hash=${{ hashFiles('.rattler-build/recipes/**.yaml', '.rattler-build/build.sh', 'pyproject.toml') }}" >> $GITHUB_OUTPUT
+          echo "deps-hash=\
+          ${{ hashFiles('.rattler-build/recipes/**.yaml', '.rattler-build/build.sh', 'pyproject.toml', 'docker/Dockerfile.only-deps') }}" \
+          >> $GITHUB_OUTPUT
   set-commit-sha:
     runs-on: ubuntu-latest
     outputs:
