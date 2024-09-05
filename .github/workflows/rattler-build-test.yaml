@@ -7,12 +7,9 @@ on:
     branches: ["*"]
 
 jobs:
-  build-only-deps:
+  build-conda-channel:
     runs-on: ubuntu-latest
-    outputs:
-      image-tag: ${{ steps.set-tag.outputs.image-tag }}
     steps:
-      # ~~~~~ rattler build local conda channel ~~~~~
       - uses: actions/checkout@v4
       - name: Setup micromamba env for rattler build
         uses: mamba-org/setup-micromamba@v1
@@ -26,8 +23,23 @@ jobs:
           micromamba install -c conda-forge rattler-build --yes
           chmod +x .rattler-build/build.sh
           ./.rattler-build/build.sh
+      - name: Upload conda channel
+        uses: actions/upload-artifact@v3
+        with:
+          name: rattler-artifacts
+          path: .rattler-build/artifacts
 
-      # ~~~~~~~~~~ build only deps base container ~~~~~~~~~~
+  build-only-deps:
+    runs-on: ubuntu-latest
+    needs: build-conda-channel
+    outputs:
+      image-tag: ${{ steps.set-tag.outputs.image-tag }}
+    steps:
+      - name: Download conda channel
+        uses: actions/download-artifact@v4
+        with:
+          name: rattler-artifacts
+          path: .rattler-build/artifacts
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -41,11 +53,11 @@ jobs:
           export TAG=latest
           echo "IMAGE_TAG=ghcr.io/$NAME:$TAG" >> $GITHUB_ENV
           echo "image-tag=ghcr.io/$NAME:$TAG" >> $GITHUB_OUTPUT
-
       # TODO: if cache hit, just pull the image
       - name: Build and push only deps image
         run: |
           docker buildx build \
+          --build-arg CHANNEL_MOUNT=.rattler-build/artifacts \
           --tag ${{ env.IMAGE_TAG }} \
           --platform=linux/amd64 \
           --file docker/Dockerfile.only-deps \
@@ -56,7 +68,9 @@ jobs:
 
   build-testable:
     runs-on: ubuntu-latest
-    needs: build-only-deps
+    needs:
+      - build-conda-channel
+      - build-only-deps
     outputs:
       image-tag: ${{ steps.set-tag.outputs.image-tag }}
     steps:
@@ -78,6 +92,7 @@ jobs:
         run: |
           docker buildx build \
           --build-arg ONLY_DEPS_IMAGE_TAG=${{ needs.build-only-deps.outputs.image-tag }} \
+          --build-arg CHANNEL_MOUNT=.rattler-build/artifacts \
           --tag ${{ env.IMAGE_TAG }} \
           --platform=linux/amd64 \
           --file docker/Dockerfile.base \
