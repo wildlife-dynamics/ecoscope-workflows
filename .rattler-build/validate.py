@@ -1,9 +1,11 @@
 import pathlib
 import tomllib
+from typing import Annotated
 
 import yaml
 from packaging.requirements import Requirement
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
+from pydantic.functional_validators import BeforeValidator
 
 
 HERE = pathlib.Path(__file__).parent
@@ -27,27 +29,35 @@ class _AllowArbitraryTypes(BaseModel):
     model_config = dict(arbitrary_types_allowed=True)
 
 
-class Project(_AllowArbitraryTypes):
+RequirementList = Annotated[
+    list[Requirement], BeforeValidator(lambda v: [Requirement(dep) for dep in v])
+]
+
+
+class PPProject(_AllowArbitraryTypes):
     name: str
     description: str
     requires_python: str = Field(..., alias="requires-python")
-    dependencies: list[Requirement]
-
-    @field_validator("dependencies", mode="before")
-    @classmethod
-    def name_must_contain_space(cls, v: list[str]) -> list[Requirement]:
-        return [Requirement(dep) for dep in v]
+    dependencies: RequirementList
 
 
 class Pyproject(BaseModel):
-    model_config = dict(arbitrary_types_allowed=True)
+    project: PPProject
 
-    project: Project
+
+class RBRequirements(_AllowArbitraryTypes):
+    host: RequirementList
+    run: RequirementList
+
+
+class RattlerBuildRecipe(BaseModel):
+    requirements: RBRequirements
 
 
 if __name__ == "__main__":
-    pyproject = load_pyproject()
+    pyproject_dict = load_pyproject()
+    pyproject = Pyproject(**pyproject_dict)
     print(pyproject)
-    recipe = load_rattler_build_recipe()
+    recipe_dict = load_rattler_build_recipe()
+    recipe = RattlerBuildRecipe(**recipe_dict)
     print(recipe)
-    breakpoint()
