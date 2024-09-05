@@ -188,7 +188,7 @@ patrol_events_bar_chart:
   y_axis: "event_type" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the y axis.'))
   category: "event_type" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to stack in the y axis.'))
   agg_function: "count" # (typing.Literal['count', 'mean', 'sum', 'min', 'max'], FieldInfo(annotation=NoneType, required=True, description='The aggregate function to apply to the group.'))
-  time_interval: "day" # (typing.Literal['year', 'month', 'week', 'day', 'hour'], FieldInfo(annotation=NoneType, required=True, description='Sets the time interval of the x axis.'))
+  time_interval: "month" # (typing.Literal['year', 'month', 'week', 'day', 'hour'], FieldInfo(annotation=NoneType, required=True, description='Sets the time interval of the x axis.'))
   grouped_styles:
     - category: "wildlife_sighting_rep"
       plot_style:
@@ -210,8 +210,6 @@ patrol_events_bar_chart:
         marker_color: "#8c1700"
   plot_style:
     xperiodalignment: "middle"
-  layout_style:
-    xaxis_dtick: 86400000
 
 # Parameters for 'Persist Patrols Bar Chart as Text' using task `persist_text`.
 patrol_events_bar_chart_html_url: {}
@@ -227,11 +225,14 @@ patrol_events_pie_chart:
     textinfo: "value"
 
 # Parameters for 'Persist Patrols Pie Chart as Text' using task `persist_text`.
-patrol_events_pie_chart_html_url: {}
+pe_pie_chart_html_urls: {}
 
 # Parameters for 'Create Plot Widget for Patrol Events' using task `create_plot_widget_single_view`.
-patrol_events_pie_chart_widget:
+patrol_events_pie_chart_widgets:
   title: "Patrol Events Pie Chart" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Merge Pie Chart Widget Views' using task `merge_widget_views`.
+patrol_events_pie_widget_grouped: {}
 
 # Parameters for 'Calculate Time Density from Trajectory' using task `calculate_time_density`.
 td:

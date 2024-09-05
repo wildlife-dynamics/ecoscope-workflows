@@ -83,9 +83,10 @@ if __name__ == "__main__":
         "patrol_events_bar_chart": ["filter_patrol_events"],
         "patrol_events_bar_chart_html_url": ["patrol_events_bar_chart"],
         "patrol_events_bar_chart_widget": ["patrol_events_bar_chart_html_url"],
-        "patrol_events_pie_chart": ["filter_patrol_events"],
-        "patrol_events_pie_chart_html_url": ["patrol_events_pie_chart"],
-        "patrol_events_pie_chart_widget": ["patrol_events_pie_chart_html_url"],
+        "patrol_events_pie_chart": ["split_pe_groups"],
+        "pe_pie_chart_html_urls": ["patrol_events_pie_chart"],
+        "patrol_events_pie_chart_widgets": ["pe_pie_chart_html_urls"],
+        "patrol_events_pie_widget_grouped": ["patrol_events_pie_chart_widgets"],
         "td": ["patrol_traj"],
         "td_map_layer": ["td"],
         "td_ecomap": ["td_map_layer"],
@@ -95,7 +96,7 @@ if __name__ == "__main__":
             "traj_pe_grouped_map_widget",
             "td_map_widget",
             "patrol_events_bar_chart_widget",
-            "patrol_events_pie_chart_widget",
+            "patrol_events_pie_widget_grouped",
             "total_patrols_grouped_sv_widget",
             "patrol_time_grouped_widget",
             "patrol_dist_grouped_widget",
@@ -435,29 +436,42 @@ if __name__ == "__main__":
         ),
         "patrol_events_pie_chart": Node(
             async_task=draw_pie_chart.validate().set_executor("lithops"),
-            partial={
-                "dataframe": DependsOn("filter_patrol_events"),
-            }
-            | params["patrol_events_pie_chart"],
-            method="call",
+            partial=params["patrol_events_pie_chart"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["dataframe"],
+                "argvalues": DependsOn("split_pe_groups"),
+            },
         ),
-        "patrol_events_pie_chart_html_url": Node(
+        "pe_pie_chart_html_urls": Node(
             async_task=persist_text.validate().set_executor("lithops"),
             partial={
-                "text": DependsOn("patrol_events_pie_chart"),
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
-            | params["patrol_events_pie_chart_html_url"],
-            method="call",
+            | params["pe_pie_chart_html_urls"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["text"],
+                "argvalues": DependsOn("patrol_events_pie_chart"),
+            },
         ),
-        "patrol_events_pie_chart_widget": Node(
+        "patrol_events_pie_chart_widgets": Node(
             async_task=create_plot_widget_single_view.validate().set_executor(
                 "lithops"
             ),
+            partial=params["patrol_events_pie_chart_widgets"],
+            method="map",
+            kwargs={
+                "argnames": ["view", "data"],
+                "argvalues": DependsOn("pe_pie_chart_html_urls"),
+            },
+        ),
+        "patrol_events_pie_widget_grouped": Node(
+            async_task=merge_widget_views.validate().set_executor("lithops"),
             partial={
-                "data": DependsOn("patrol_events_pie_chart_html_url"),
+                "widgets": DependsOn("patrol_events_pie_chart_widgets"),
             }
-            | params["patrol_events_pie_chart_widget"],
+            | params["patrol_events_pie_widget_grouped"],
             method="call",
         ),
         "td": Node(
@@ -509,7 +523,7 @@ if __name__ == "__main__":
                         DependsOn("traj_pe_grouped_map_widget"),
                         DependsOn("td_map_widget"),
                         DependsOn("patrol_events_bar_chart_widget"),
-                        DependsOn("patrol_events_pie_chart_widget"),
+                        DependsOn("patrol_events_pie_widget_grouped"),
                         DependsOn("total_patrols_grouped_sv_widget"),
                         DependsOn("patrol_time_grouped_widget"),
                         DependsOn("patrol_dist_grouped_widget"),
