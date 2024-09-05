@@ -5,13 +5,13 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["*"]
+    types: [ opened, reopened, synchronize, labeled ]
   schedule:
     - cron: '0 4 * * *' # run once a day at 4 AM
 
 
 jobs:
   docker-switch:
-    runs-on: ubuntu-latest
     # run if:
     #  - all pushes to main
     #  - schedule defined above
@@ -23,6 +23,7 @@ jobs:
       github.event_name == 'schedule' ||
       github.event.label.name == 'test-docker' ||
       contains( github.event.pull_request.labels.*.name, 'test-docker')
+    runs-on: ubuntu-latest
     steps:
       - name: Switch
         run: |
