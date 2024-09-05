@@ -85,8 +85,10 @@ jobs:
       - name: Check if tag already exists on ghcr
         id: check-tag
         run: |
-          export tag_exists=$(curl -s -H "Authorization: Bearer YOUR_GITHUB_TOKEN" \
-            https://ghcr.io/v2/OWNER/REPO/tags/list | jq -r '.tags | index("YOUR_TAG")')
+          export tag_exists=$(\
+            curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://ghcr.io/v2/${IMAGE_NAME}/tags/list | jq -r '.tags | index("${{ env.SHORT_DEPS_HASH }}")')
+          echo "tag_exists=$tag_exists" >> $GITHUB_ENV
           if [ "$tag_exists" != "null" ]; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
