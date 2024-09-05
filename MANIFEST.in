@@ -1,0 +1,2 @@
+include templates/*.jinja
+include templates/*.jinja2

@@ -68,12 +68,15 @@ Tracker = "https://github.com/wildlife-dynamics/ecoscope-workflows/issues"
 write_to = "ecoscope_workflows/_version.py"
 write_to_template = "__version__ = '{version}'"
 
+[tool.setuptools]
+include-package-data = true
+
 [tool.setuptools.packages.find]
 exclude = ["deploy"]
 namespaces = false
 
 [tool.setuptools.package-data]
-ecoscope_workflows = ["py.typed"]
+ecoscope_workflows = ["py.typed", "templates/*.jinja", "templates/*.jinja2"]
 
 [tool.isort]
 # Prevent isort & black from fighting each other
