@@ -4,8 +4,8 @@ requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
 [project]
 name = "ecoscope_workflows"
 dynamic = ["version"]
-# requires-python = ">=3.9"
-description = ""
+requires-python = ">=3.10"
+description = "An extensible task specification and compiler for local and distributed workflows."
 readme = "README.md"
 authors = [
   { name = "Charles Stern", email = "charless@earthranger.com" }
@@ -18,35 +18,34 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Scientific/Engineering",
 ]
-# license = { text = "" }
-# keywords = []
+license = {file = "LICENSE"}
 dependencies = [
+    # core
     "pandera",
     "pydantic",
     "pydantic-settings",
     "tomli-w",
+    # compile-time only; todo: these could actually be optional dependencies
+    "jinja2",
+    "ruamel.yaml",
+    "ruff",
 ]
 
 [project.optional-dependencies]
-compile = [
-    "jinja2",
-    "ruamel.yaml",
-    "ruff",  # for linting compiled workflows
-]
-tasks-runtime = [
-    "ecoscope @ git+https://github.com/wildlife-dynamics/ecoscope.git@v1.8.2"  # note: not required by all tasks
-]
-test = [
-    "pytest",
-]
-lithops = [
-    "lithops",
+ecoscope-core-tasks = [
+    "ecoscope @ git+https://github.com/wildlife-dynamics/ecoscope.git@v1.8.2"
 ]
 gcs = [
     "cloudpathlib[gs]",
 ]
+lithops = [
+    "lithops",
+]
 notebook = [
-    "jupytext",
+    "jupytext",  # note: not actually used anywhere, but could use this to get an ipynb notebook directly
+]
+test = [
+    "pytest",
 ]
 visualize = [
     "pydot"  # requires system install of `graphviz` for the `dot` executable

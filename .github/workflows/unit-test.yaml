@@ -32,7 +32,7 @@ jobs:
         shell: bash -leo pipefail {0}
         run: |
           python -m pip install -U pip
-          python -m pip install -e ".[test,lithops,compile,tasks-runtime]" --config-settings editable_mode=compat
+          python -m pip install -e ".[test,lithops,ecoscope-core-tasks]" --config-settings editable_mode=compat
 
       - name: Run doctests
         shell: bash -leo pipefail {0}
