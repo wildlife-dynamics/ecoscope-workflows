@@ -7,7 +7,7 @@ COPY . /opt/ecoscope-workflows
 
 USER root
 RUN SETUPTOOLS_SCM_PRETEND_VERSION=$VERSION \
-    /env/bin/pip install /opt/ecoscope-workflows --no-deps
+    /env/bin/pip install /opt/ecoscope-workflows --no-deps --no-build-isolation
 USER $MAMBA_USER
 
 FROM build AS clean
