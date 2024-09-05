@@ -179,22 +179,10 @@ def test_end_to_end(template: str, end_to_end: EndToEndFixture, tmp_path: Path):
     with open(script_outpath, mode="w") as f:
         f.write(script)
 
-    python_exe = (
-        # workaround for https://github.com/mamba-org/mamba/issues/2577
-        f"{os.environ['MAMBA_EXE']} run -n {os.environ['CONDA_ENV_NAME']} python"
-        if "mamba" in sys.executable
-        else sys.executable
-    )
-    python_cmd = (
-        f"{python_exe} -W ignore {script_outpath.as_posix()} "
+    cmd = (
+        f"{sys.executable} -W ignore {script_outpath.as_posix()} "
         f"--config-file {end_to_end.param_path.as_posix()}"
     )
-    shell = (
-        os.environ.get("ECOSCOPE_WORKFLOWS_TESTING_SHELL", "")
-        .replace('"', "")
-        .replace("'", "")
-    )
-    cmd = f"{shell} -c '{python_cmd}'" if shell else python_cmd
     env = os.environ.copy()
     env["ECOSCOPE_WORKFLOWS_RESULTS"] = tmp.as_posix()
     if template == "script-async.jinja2" and not os.environ.get("LITHOPS_CONFIG_FILE"):
@@ -209,13 +197,8 @@ def test_end_to_end(template: str, end_to_end: EndToEndFixture, tmp_path: Path):
                 "log_level": "INFO",
                 "data_limit": 16,
             },
+            "localhost": {"runtime": sys.executable},
         }
-        if "mamba" not in python_exe:
-            # in the distroless setting, we need to specify the python runtime
-            # but this breaks the mamba setting, so only set this if we are not
-            # in the mamba setting. ultimately, we can avoid these workarounds
-            # once we drop `mamba run` for ci and converge on a single approach.
-            lithops_config |= {"localhost": {"runtime": python_exe}}
         yaml = ruamel.yaml.YAML(typ="safe")
         with open(lithops_config_outpath, mode="w") as f:
             yaml.dump(lithops_config, f)
@@ -223,12 +206,11 @@ def test_end_to_end(template: str, end_to_end: EndToEndFixture, tmp_path: Path):
         env["LITHOPS_CONFIG_FILE"] = lithops_config_outpath.as_posix()
 
     proc = subprocess.Popen(
-        (cmd if shell else cmd.split()),
+        cmd.split(),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
         env=env,
-        shell=(True if shell else False),
     )
     returncode = proc.wait()
     if returncode != 0:
