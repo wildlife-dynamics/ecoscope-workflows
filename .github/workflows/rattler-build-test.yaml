@@ -201,6 +201,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - set-commit-sha
+      - build-conda-channel
       - build-testable
     steps:
       - uses: actions/checkout@v4
@@ -216,13 +217,15 @@ jobs:
         with:
           environment-name: rattler
           init-shell: bash
+      - name: Download conda channel
+        uses: actions/download-artifact@v4
+        with:
+          name: rattler-artifacts
+          path: tmp/conda-channel
       - name: Build & install lithops
         shell: bash -leo pipefail {0}
         run: |
-          micromamba install -c conda-forge rattler-build --yes
-          rattler-build build --recipe .rattler-build/recipes/ps-mem.yaml --output-dir .rattler-build/artifacts --skip-existing=all
-          rattler-build build --recipe .rattler-build/recipes/lithops.yaml  --output-dir .rattler-build/artifacts --skip-existing=all
-          micromamba install -c file://$(pwd)/.rattler-build/artifacts lithops --yes
+          micromamba install -c file://$(pwd)/tmp/conda-channel lithops --yes
 
       - name: Google auth
         id: google-auth
