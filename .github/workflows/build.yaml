@@ -12,24 +12,21 @@ on:
 jobs:
   docker-switch:
     runs-on: ubuntu-latest
-    outputs:
-      run: ${{ steps.switch.outputs.run }}
+    # run if:
+    #  - all pushes to main
+    #  - schedule defined above
+    #  - a PR was just labeled 'test-docker'
+    #  - a PR with labeled 'test-docker' label was opened, reopened, or synchronized
+    # if at least one of these conditions is met, then the job will not run, thereby skipping all docker-based jobs
+    if: |
+      github.event_name == 'push' ||
+      github.event_name == 'schedule' ||
+      github.event.label.name == 'test-docker' ||
+      contains( github.event.pull_request.labels.*.name, 'test-docker')
     steps:
       - name: Switch
-        id: switch
-        # run on:
-        #  - all pushes to main
-        #  - schedule defined above
-        #  - a PR was just labeled 'test-docker'
-        #  - a PR with labeled 'test-docker' label was opened, reopened, or synchronized
         run: |
-          run=${{\
-          github.event_name == 'push' ||\
-          github.event_name == 'schedule' ||\
-          github.event.label.name == 'test-docker' ||\
-          contains( github.event.pull_request.labels.*.name, 'test-docker') ||\
-          }}
-          echo "run=$run" >> $GITHUB_OUTPUT
+          echo "🐳 Docker tests are switched on, enjoy!"
 
   set-deps-hash:
     runs-on: ubuntu-latest
@@ -160,7 +157,6 @@ jobs:
       - docker-switch
       - set-deps-hash
       - build-conda-channel
-    if: needs.docker-switch.outputs.run == 'true'
     outputs:
       image-tag: ${{ steps.set-tag.outputs.image-tag }}
     steps:
