@@ -61,3 +61,6 @@ if __name__ == "__main__":
     recipe_dict = load_rattler_build_recipe()
     recipe = RattlerBuildRecipe(**recipe_dict)
     print(recipe)
+
+    for req in pyproject.project.dependencies:
+        assert req.name in {r.name for r in recipe.requirements.run}
