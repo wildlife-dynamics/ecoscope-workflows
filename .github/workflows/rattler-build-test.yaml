@@ -24,10 +24,12 @@ jobs:
           chmod +x .rattler-build/build.sh
           ./.rattler-build/build.sh
       - name: Upload conda channel
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: rattler-artifacts
           path: .rattler-build/artifacts
+          if-no-files-found: error
+          compression-level: 0
 
   build-only-deps:
     runs-on: ubuntu-latest
@@ -39,7 +41,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: rattler-artifacts
-          path: .rattler-build/artifacts
+          path: /opt/conda-channel
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -57,7 +59,7 @@ jobs:
       - name: Build and push only deps image
         run: |
           docker buildx build \
-          --build-arg CHANNEL_MOUNT=.rattler-build/artifacts \
+          --build-arg CHANNEL_MOUNT=/opt/conda-channel \
           --tag ${{ env.IMAGE_TAG }} \
           --platform=linux/amd64 \
           --file docker/Dockerfile.only-deps \
@@ -79,7 +81,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: rattler-artifacts
-          path: .rattler-build/artifacts
+          path: /opt/conda-channel
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -97,7 +99,7 @@ jobs:
         run: |
           docker buildx build \
           --build-arg ONLY_DEPS_IMAGE_TAG=${{ needs.build-only-deps.outputs.image-tag }} \
-          --build-arg CHANNEL_MOUNT=.rattler-build/artifacts \
+          --build-arg CHANNEL_MOUNT=/opt/conda-channel \
           --tag ${{ env.IMAGE_TAG }} \
           --platform=linux/amd64 \
           --file docker/Dockerfile.base \
