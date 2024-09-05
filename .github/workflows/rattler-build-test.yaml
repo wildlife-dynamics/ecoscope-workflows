@@ -86,7 +86,7 @@ jobs:
           docker buildx build \
           --tag ${{ env.IMAGE_TAG }} \
           --platform=linux/amd64 \
-          --file docker/Dockerfile.only-deps \
+          --file ./docker/Dockerfile.only-deps \
           --build-arg CHANNEL_MOUNT=tmp/conda-channel \
           --cache-from=type=gha \
           --cache-to=type=gha \
@@ -127,7 +127,7 @@ jobs:
           docker buildx build \
           --tag ${{ env.IMAGE_TAG }} \
           --platform=linux/amd64 \
-          --file docker/Dockerfile.base \
+          --file ./docker/Dockerfile.base \
           --build-arg ONLY_DEPS_IMAGE_TAG=${{ needs.build-only-deps.outputs.image-tag }} \
           --build-arg CHANNEL_MOUNT=tmp/conda-channel \
           --cache-from=type=gha \
