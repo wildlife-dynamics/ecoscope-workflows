@@ -1,4 +1,4 @@
-id: patrol_events
+id: patrol_events_workflow
 workflow:
   # set 'global' groupers
   - name: Set Groupers
@@ -28,14 +28,14 @@ workflow:
       geodataframe: ${{ workflow.patrol_events.return }}
   - name: Patrol Events Colormap
     id: pe_colormap
-    task: apply_colormap
+    task: apply_color_map
     partial:
       geodataframe: ${{ workflow.apply_classification.return }}
   - name: Create map layer from Patrol Events
     id: pe_map_layer
     task: create_map_layer
     partial:
-      geodataframe: ${{ workflow.apply_colormap.return }}
+      geodataframe: ${{ workflow.apply_color_map.return }}
   - name: Draw Ecomap from Time Density
     id: pe_ecomap
     task: draw_ecomap
@@ -124,7 +124,7 @@ workflow:
       argvalues: ${{ workflow.split_patrol_event_groups.return }}
   - name: Grouped Patrol Events Colormap
     id: grouped_pe_colormap
-    task: apply_colormap
+    task: apply_color_map
     mapvalues:
       argnames: geodataframe
       argvalues: ${{ workflow.grouped_pe_classify.return }}
@@ -149,7 +149,7 @@ workflow:
   - name: Create grouped Patrol Events Map Widget
     id: grouped_pe_map_widget
     task: create_map_widget_single_view
-    mapvalues:
+    map:
       argnames: [view, data]
       argvalues: ${{ workflow.grouped_pe_ecomap_html_url.return }}
 
