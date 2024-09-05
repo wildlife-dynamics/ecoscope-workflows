@@ -1,10 +1,10 @@
 import builtins
 import functools
 import keyword
+import pathlib
 import subprocess
 import sys
 from importlib import resources
-from importlib.resources.abc import Traversable
 from typing import Annotated, Any, Callable, Literal, TypeAlias, TypeVar
 
 from pydantic import (
@@ -453,7 +453,7 @@ class DagCompiler(BaseModel):
 
     # jinja kwargs; TODO: nest in separate model
     template: str = "script-sequential.jinja2"
-    template_dir: Traversable = TEMPLATES
+    template_dir: pathlib.Path = TEMPLATES  # type: ignore[assignment]
 
     # compilation settings
     testing: bool = False
