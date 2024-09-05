@@ -16,15 +16,16 @@ jobs:
         with:
           environment-name: rattler
           init-shell: bash
-      # - uses: actions/cache@v4
-      #   id: restore-cache
-      #   with:
-      #     path: path/to/dependencies
-      #     key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - uses: actions/cache@v4
+        id: restore-cache
+        with:
+          path: .rattler-build/artifacts/  # this path is gitignored, so it won't be in the checkout, only the cache
+          # todo: use the same cache key to also skip no-deps build in subsequent job if cache hit
+          key: ${{ runner.os }}-${{ hashFiles('.rattler-build/recipes/**.yaml', '.rattler-build/build.sh', 'pyproject.toml') }}
       - name: Install rattler-build & build artifacts (i.e. local conda channel)
-        # if: steps.restore-cache.outputs.cache-hit != 'true'
+        if: steps.restore-cache.outputs.cache-hit != 'true'
         shell: bash -leo pipefail {0}
-        run: |  # todo: build to different path and .gitignore artifacts
+        run: |
           micromamba install -c conda-forge rattler-build --yes
           chmod +x .rattler-build/build.sh
           ./.rattler-build/build.sh
@@ -32,7 +33,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: rattler-artifacts
-          path: |  # todo: build to different path and .gitignore artifacts
+          path: |
             .rattler-build/artifacts/
             !.rattler-build/artifacts/bld
             !.rattler-build/artifacts/src_cache
