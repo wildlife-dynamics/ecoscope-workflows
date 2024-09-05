@@ -59,6 +59,7 @@ jobs:
     outputs:
       image-tag: ${{ steps.set-tag.outputs.image-tag }}
     steps:
+      - uses: actions/checkout@v4
       - name: Download conda channel
         uses: actions/download-artifact@v4
         with:
@@ -82,15 +83,23 @@ jobs:
           echo "IMAGE_TAG=ghcr.io/$IMAGE_NAME:$SHORT_DEPS_HASH" >> $GITHUB_ENV
           echo "image-tag=ghcr.io/$IMAGE_NAME:$SHORT_DEPS_HASH" >> $GITHUB_OUTPUT
       - name: Check if tag already exists on ghcr
+        id: check-tag
         run: |
-          curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-          https://ghcr.io/v2/${IMAGE_NAME}/tags/list | jq '.tags | index("${{ env.SHORT_DEPS_HASH }}")'
-      # TODO: if cache hit, just pull the image
+          if curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          https://ghcr.io/v2/${IMAGE_NAME}/tags/list | jq '.tags | index("${{ env.SHORT_DEPS_HASH }}")' > /dev/null; then
+            echo "Tag already exists, skipping build"
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "Tag not found, building"
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
       - name: Build and push only deps image
+        if: steps.check-tag.outputs.exists != 'true'  # todo: some way to force rebuild if needed
         run: |
-          cat docker/Dockerfile.only-deps | docker buildx build -f - \
+          docker buildx build \
           --tag ${{ env.IMAGE_TAG }} \
           --platform=linux/amd64 \
+          --file docker/Dockerfile.only-deps \
           --build-arg CHANNEL_MOUNT=tmp/conda-channel \
           --cache-from=type=gha \
           --cache-to=type=gha \
