@@ -93,6 +93,7 @@ jobs:
       - name: Setup Micromamba
         uses: mamba-org/setup-micromamba@v1
         with:
+          environment-name: unit-test
           init-shell: bash
       - name: Install all dependencies with conda
         shell: bash -leo pipefail {0}
