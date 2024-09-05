@@ -9,11 +9,11 @@ workflow:
   - name: Get Patrol Events from EarthRanger
     id: patrol_events
     task: get_patrol_events
-  # - name: Apply Relocation Coordinate Filter
-  #   id: filter_patrol_events
-  #   task: apply_reloc_coord_filter
-  #   partial:
-  #     df: ${{ workflow.patrol_events.return }}
+  - name: Apply Relocation Coordinate Filter
+    id: filter_patrol_events
+    task: apply_reloc_coord_filter
+    partial:
+      df: ${{ workflow.patrol_events.return }}
   - name: Add temporal index to Patrol Events
     id: pe_add_temporal_index
     task: add_temporal_index
@@ -25,17 +25,17 @@ workflow:
     id: pe_classify
     task: apply_classification
     partial:
-      geodataframe: ${{ workflow.patrol_events.return }}
+      geodataframe: ${{ workflow.filter_patrol_events.return }}
   - name: Patrol Events Colormap
     id: pe_colormap
     task: apply_color_map
     partial:
-      geodataframe: ${{ workflow.apply_classification.return }}
+      geodataframe: ${{ workflow.pe_classify.return }}
   - name: Create map layer from Patrol Events
     id: pe_map_layer
     task: create_map_layer
     partial:
-      geodataframe: ${{ workflow.apply_color_map.return }}
+      geodataframe: ${{ workflow.pe_colormap.return }}
   - name: Draw Ecomap from Time Density
     id: pe_ecomap
     task: draw_ecomap
@@ -77,12 +77,12 @@ workflow:
     id: pe_meshgrid
     task: create_meshgrid
     partial:
-      aoi: ${{ workflow.patrol_events.return }}
+      aoi: ${{ workflow.filter_patrol_events.return }}
   - name: Patrol Events Feature Density
     id: pe_feature_density
     task: calculate_feature_density
     partial:
-      geodataframe: ${{ workflow.patrol_events.return }}
+      geodataframe: ${{ workflow.filter_patrol_events.return }}
       meshgrid: ${{ workflow.pe_meshgrid.return }}
   - name: Create map layer from Feature Density
     id: fd_map_layer
@@ -112,7 +112,7 @@ workflow:
     id: split_patrol_event_groups
     task: split_groups
     partial:
-      df: ${{ workflow.traj_add_temporal_index.return }}
+      df: ${{ workflow.pe_add_temporal_index.return }}
       groupers: ${{ workflow.groupers.return }}
 
   # Grouped Patrol Events Map
