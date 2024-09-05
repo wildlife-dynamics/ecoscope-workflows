@@ -1,9 +1,10 @@
 import builtins
 import functools
 import keyword
-import pathlib
 import subprocess
 import sys
+from importlib import resources
+from importlib.resources.abc import Traversable
 from typing import Annotated, Any, Callable, Literal, TypeAlias, TypeVar
 
 from pydantic import (
@@ -23,7 +24,7 @@ from ecoscope_workflows.registry import KnownTask, known_tasks
 
 T = TypeVar("T")
 
-TEMPLATES = pathlib.Path(__file__).parent / "templates"
+TEMPLATES = resources.files("ecoscope_workflows.templates")
 
 
 class _ForbidExtra(BaseModel):
@@ -452,7 +453,7 @@ class DagCompiler(BaseModel):
 
     # jinja kwargs; TODO: nest in separate model
     template: str = "script-sequential.jinja2"
-    template_dir: pathlib.Path = TEMPLATES
+    template_dir: Traversable = TEMPLATES
 
     # compilation settings
     testing: bool = False
