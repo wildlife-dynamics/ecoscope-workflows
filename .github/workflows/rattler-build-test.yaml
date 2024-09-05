@@ -91,20 +91,21 @@ jobs:
       - name: Set only deps image tag on env and output for downstream jobs
         id: set-tag
         run: |  # note: tag is based on deps hash, so we can avoid rebuilding if deps haven't changed
-          export IMAGE_NAME=wildlife-dynamics/ecoscope-workflows-only-deps
+          export IMAGE_NAME=ecoscope-workflows-only-deps
           export SHORT_DEPS_HASH=$(echo ${{ needs.set-deps-hash.outputs.deps-hash }} | cut -c1-7)
           echo "SHORT_DEPS_HASH=$SHORT_DEPS_HASH" >> $GITHUB_ENV
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
-          echo "IMAGE_TAG=ghcr.io/$IMAGE_NAME:$SHORT_DEPS_HASH" >> $GITHUB_ENV
-          echo "image-tag=ghcr.io/$IMAGE_NAME:$SHORT_DEPS_HASH" >> $GITHUB_OUTPUT
+          echo "IMAGE_TAG=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:$SHORT_DEPS_HASH" >> $GITHUB_ENV
+          echo "image-tag=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:$SHORT_DEPS_HASH" >> $GITHUB_OUTPUT
       - name: Check if tag already exists on ghcr
         id: check-tag
         run: |
-          export tag_exists=$(\
+          export has_tag=$(\
             curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            https://ghcr.io/v2/${IMAGE_NAME}/tags/list | jq -r '.tags | index("${{ env.SHORT_DEPS_HASH }}")')
-          echo "tag_exists=$tag_exists" >> $GITHUB_ENV
-          if [ "$tag_exists" != "null" ]; then
+            https://api.github.com/orgs/${{ github.repository_owner }}/packages/container/${{ env.IMAGE_NAME }}/versions | \
+            jq '[ .[] | select(.metadata.container.tags[] == "${{ env.SHORT_DEPS_HASH }}") ]')
+          echo $has_tag
+          if [ "$has_tag" != "[]" ]; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
