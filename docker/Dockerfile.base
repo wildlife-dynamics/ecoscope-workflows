@@ -1,5 +1,6 @@
 ARG ONLY_DEPS_IMAGE_TAG=ghcr.io/wildlife-dynamics/ecoscope-workflows-only-deps:latest
 
+# stage 1: install our package
 FROM $ONLY_DEPS_IMAGE_TAG AS build
 
 ARG VERSION="0.0.0"
@@ -13,44 +14,18 @@ RUN SETUPTOOLS_SCM_PRETEND_VERSION=$VERSION \
     --no-build-isolation
 USER $MAMBA_USER
 
+# step 2: clean up the environment
 FROM build AS clean
 
 COPY --from=build /env /env
-
 USER root
 RUN rm -rf /env/conda-meta
-
-RUN export BIN=/env/bin \
-    && rm -rf $BIN/h4* \
-    && rm -rf $BIN/h5* \
-    && rm -rf $BIN/hdf* \
-    && rm -rf $BIN/ipython* \
-    && rm -rf $BIN/openssl \
-    && rm -rf $BIN/pdf* \
-    && rm -rf $BIN/pip* \
-    && rm -rf $BIN/sqlite3 \
-    && rm -rf $BIN/wheel
-
-RUN export SHARE=/env/share \
-    && rm -rf $SHARE/bash-completion \
-    && rm -rf $SHARE/cmake \
-    && rm -rf $SHARE/doc \
-    && rm -rf $SHARE/examples \
-    && rm -rf $SHARE/hdf5_examples \
-    && rm -rf $SHARE/jupyter \
-    && rm -rf $SHARE/man \
-    && rm -rf $SHARE/pg_* \
-    && rm -rf $SHARE/postgres* \
-    && rm -rf $SHARE/psql* \
-    && rm -rf $SHARE/terminfo
-
-RUN export SITEPKGS=/env/lib/python3.12/site-packages \
-    && rm -rf $SITEPKGS/numba/tests \
-    && rm -rf $SITEPKGS/pip* \
-    && rm -rf $SITEPKGS/setuptools* \
-    && rm -rf $SITEPKGS/wheel* \
-    && rm -rf $SITEPKGS/xarray*
-
+WORKDIR /env/bin
+RUN rm -rf h4* h5* ipython* openssl pdf* pip* sqlite3 wheel
+WORKDIR /env/share
+RUN rm -rf bash-completion cmake doc examples hdf5_examples jupyter man pg_* postgres* psql* terminfo
+WORKDIR /env/lib/python3.12/site-packages
+RUN rm -rf numba/tests pip* setuptools* wheel* xarray*
 USER $MAMBA_USER
 
 # stage 3: create a testable runtime image
