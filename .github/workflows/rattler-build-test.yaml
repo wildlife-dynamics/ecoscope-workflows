@@ -75,18 +75,22 @@ jobs:
       - name: Set only deps image tag on env and output for downstream jobs
         id: set-tag
         run: |  # note: tag is based on deps hash, so we can avoid rebuilding if deps haven't changed
-          export NAME=wildlife-dynamics/ecoscope-workflows-only-deps
+          export IMAGE_NAME=wildlife-dynamics/ecoscope-workflows-only-deps
           export SHORT_DEPS_HASH=$(echo ${{ needs.set-deps-hash.outputs.deps-hash }} | cut -c1-7)
-          export TAG=$SHORT_DEPS_HASH
-          echo "IMAGE_TAG=ghcr.io/$NAME:$TAG" >> $GITHUB_ENV
-          echo "image-tag=ghcr.io/$NAME:$TAG" >> $GITHUB_OUTPUT
+          echo "SHORT_DEPS_HASH=$SHORT_DEPS_HASH" >> $GITHUB_ENV
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+          echo "IMAGE_TAG=ghcr.io/$IMAGE_NAME:$SHORT_DEPS_HASH" >> $GITHUB_ENV
+          echo "image-tag=ghcr.io/$IMAGE_NAME:$SHORT_DEPS_HASH" >> $GITHUB_OUTPUT
+      - name: Check if tag already exists on ghcr
+        run: |
+          curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          https://ghcr.io/v2/${IMAGE_NAME}/tags/list | jq '.tags | index("${{ env.SHORT_DEPS_HASH }}")'
       # TODO: if cache hit, just pull the image
       - name: Build and push only deps image
         run: |
-          docker buildx build \
+          cat docker/Dockerfile.only-deps | docker buildx build -f - \
           --tag ${{ env.IMAGE_TAG }} \
           --platform=linux/amd64 \
-          --file ./docker/Dockerfile.only-deps \
           --build-arg CHANNEL_MOUNT=tmp/conda-channel \
           --cache-from=type=gha \
           --cache-to=type=gha \
