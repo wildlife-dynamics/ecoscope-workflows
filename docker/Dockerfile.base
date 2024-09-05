@@ -6,9 +6,8 @@ ARG VERSION="0.0.0"
 COPY . /opt/ecoscope-workflows
 
 USER root
-RUN cd /opt/ecoscope-workflows \
-    && SETUPTOOLS_SCM_PRETEND_VERSION=$VERSION \
-    /env/bin/pip install . --no-deps
+RUN SETUPTOOLS_SCM_PRETEND_VERSION=$VERSION \
+    /env/bin/pip install /opt/ecoscope-workflows --no-deps
 USER $MAMBA_USER
 
 FROM build AS clean
