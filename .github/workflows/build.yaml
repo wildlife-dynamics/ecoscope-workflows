@@ -5,8 +5,32 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["*"]
+  schedule:
+    - cron: '0 4 * * *' # run once a day at 4 AM
+
 
 jobs:
+  docker-switch:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.switch.outputs.run }}
+    steps:
+      - name: Switch
+        id: switch
+        # run on:
+        #  - all pushes to main
+        #  - schedule defined above
+        #  - a PR was just labeled 'test-docker'
+        #  - a PR with labeled 'test-docker' label was opened, reopened, or synchronized
+        run: |
+          run=${{\
+          github.event_name == 'push' ||\
+          github.event_name == 'schedule' ||\
+          github.event.label.name == 'test-docker' ||\
+          contains( github.event.pull_request.labels.*.name, 'test-docker') ||\
+          }}
+          echo "run=$run" >> $GITHUB_OUTPUT
+
   set-deps-hash:
     runs-on: ubuntu-latest
     outputs:
@@ -133,8 +157,10 @@ jobs:
   build-only-deps:
     runs-on: ubuntu-latest
     needs:
+      - docker-switch
       - set-deps-hash
       - build-conda-channel
+    if: needs.docker-switch.outputs.run == 'true'
     outputs:
       image-tag: ${{ steps.set-tag.outputs.image-tag }}
     steps:
