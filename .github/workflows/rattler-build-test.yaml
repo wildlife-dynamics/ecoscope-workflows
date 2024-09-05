@@ -76,7 +76,7 @@ jobs:
         id: set-tag
         run: |  # note: tag is based on deps hash, so we can avoid rebuilding if deps haven't changed
           export NAME=wildlife-dynamics/ecoscope-workflows-only-deps
-          export SHORT_DEPS_HASH=$(${{ needs.set-deps-hash.outputs.deps-hash }} | cut -c1-7)
+          export SHORT_DEPS_HASH=$(echo ${{ needs.set-deps-hash.outputs.deps-hash }} | cut -c1-7)
           export TAG=$SHORT_DEPS_HASH
           echo "IMAGE_TAG=ghcr.io/$NAME:$TAG" >> $GITHUB_ENV
           echo "image-tag=ghcr.io/$NAME:$TAG" >> $GITHUB_OUTPUT
