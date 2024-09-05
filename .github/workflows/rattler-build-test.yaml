@@ -16,10 +16,15 @@ jobs:
         with:
           environment-name: rattler
           init-shell: bash
-      # todo: this takes almost a minute: skip if cache hit
+      # - uses: actions/cache@v4
+      #   id: restore-cache
+      #   with:
+      #     path: path/to/dependencies
+      #     key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Install rattler-build & build artifacts (i.e. local conda channel)
+        # if: steps.restore-cache.outputs.cache-hit != 'true'
         shell: bash -leo pipefail {0}
-        run: |
+        run: |  # todo: build to different path and .gitignore artifacts
           micromamba install -c conda-forge rattler-build --yes
           chmod +x .rattler-build/build.sh
           ./.rattler-build/build.sh
@@ -27,7 +32,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: rattler-artifacts
-          path: .rattler-build/artifacts
+          path: |  # todo: build to different path and .gitignore artifacts
+            .rattler-build/artifacts/
+            !.rattler-build/artifacts/bld
+            !.rattler-build/artifacts/src_cache
           if-no-files-found: error
           compression-level: 0
 
@@ -61,7 +69,7 @@ jobs:
       - name: Build and push only deps image
         run: |
           docker buildx build \
-          --build-arg CHANNEL_MOUNT=tmp/conda-channel \
+          --build-arg CHANNEL_MOUNT=${{ github.workspace }}/tmp/conda-channel \
           --tag ${{ env.IMAGE_TAG }} \
           --platform=linux/amd64 \
           --file docker/Dockerfile.only-deps \
@@ -103,7 +111,7 @@ jobs:
         run: |
           docker buildx build \
           --build-arg ONLY_DEPS_IMAGE_TAG=${{ needs.build-only-deps.outputs.image-tag }} \
-          --build-arg CHANNEL_MOUNT=tmp/conda-channel \
+          --build-arg CHANNEL_MOUNT=${{ github.workspace }}/tmp/conda-channel \
           --tag ${{ env.IMAGE_TAG }} \
           --platform=linux/amd64 \
           --file docker/Dockerfile.base \
