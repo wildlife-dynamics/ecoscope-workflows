@@ -258,7 +258,9 @@ jobs:
 
       - name: Lithops build
         shell: bash -leo pipefail {0}
-        run: |
+        run: |  # note: pull + re-tag is bc iiuc we cannot pass a --build-arg to lithops runtime build?
+          docker pull ${{ needs.build-testable.outputs.image-tag }}
+          docker tag ${{ needs.build-testable.outputs.image-tag }} ecoscope-workflows-base:latest
           LITHOPS_CONFIG_FILE=.lithops-config.yaml \
           lithops runtime build -b gcp_cloudrun \
           -f docker/Dockerfile.worker \
@@ -276,7 +278,7 @@ jobs:
           docker run \
           -v `pwd`/tests:/opt/tests \
           -v `pwd`/examples:/opt/examples \
-          ecoscope-workflows-base /env/bin/python -m pytest -v /opt/tests/test_examples.py \
+          ${{ needs.build-testable.outputs.image-tag }} /env/bin/python -m pytest -v /opt/tests/test_examples.py \
           -k "end_to_end and async"
 
       - name: Post Lithops deploy (teardown)
