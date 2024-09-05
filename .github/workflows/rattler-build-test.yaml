@@ -11,14 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       deps-hash: ${{ steps.set-hash.outputs.deps-hash }}
+      short-deps-hash: ${{ steps.set-hash.outputs.short-deps-hash }}
     steps:
       - uses: actions/checkout@v4
       - name: Set dependency files hash
         id: set-hash
         run: |
-          echo "deps-hash=\
-          ${{ hashFiles('.rattler-build/recipes/**.yaml', '.rattler-build/build.sh', 'pyproject.toml', 'docker/Dockerfile.only-deps') }}" \
-          >> $GITHUB_OUTPUT
+          export DEPS_HASH=${{ hashFiles('.rattler-build/recipes/**.yaml', '.rattler-build/build.sh', 'pyproject.toml', 'docker/Dockerfile.only-deps') }}
+          echo "deps-hash=$DEPS_HASH" >> $GITHUB_OUTPUT
+          echo "short-deps-hash=$(echo $DEPS_HASH | cut -c1-7)" >> $GITHUB_OUTPUT
   set-commit-sha:
     runs-on: ubuntu-latest
     outputs:
@@ -94,18 +95,16 @@ jobs:
         id: set-tag
         run: |  # note: tag is based on deps hash, so we can avoid rebuilding if deps haven't changed
           export IMAGE_NAME=ecoscope-workflows-only-deps
-          export SHORT_DEPS_HASH=$(echo ${{ needs.set-deps-hash.outputs.deps-hash }} | cut -c1-7)
-          echo "SHORT_DEPS_HASH=$SHORT_DEPS_HASH" >> $GITHUB_ENV
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
-          echo "IMAGE_TAG=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:$SHORT_DEPS_HASH" >> $GITHUB_ENV
-          echo "image-tag=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:$SHORT_DEPS_HASH" >> $GITHUB_OUTPUT
+          echo "IMAGE_TAG=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:${{ needs.set-deps-hash.outputs.short-deps-hash }}" >> $GITHUB_ENV
+          echo "image-tag=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:${{ needs.set-deps-hash.outputs.short-deps-hash }}" >> $GITHUB_OUTPUT
       - name: Check if tag already exists on ghcr
         id: check-tag
         run: |
           export has_tag=$(\
             curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             https://api.github.com/orgs/${{ github.repository_owner }}/packages/container/${{ env.IMAGE_NAME }}/versions | \
-            jq '[ .[] | select(.metadata.container.tags[] == "${{ env.SHORT_DEPS_HASH }}") ]')
+            jq '[ .[] | select(.metadata.container.tags[] == "${{ needs.set-deps-hash.outputs.short-deps-hash }}") ]')
           echo $has_tag
           if [ "$has_tag" != "[]" ]; then
             echo "exists=true" >> $GITHUB_OUTPUT
@@ -153,7 +152,7 @@ jobs:
         id: set-tag
         run: |
           export NAME=wildlife-dynamics/ecoscope-workflows-testable
-          export TAG=${{ needs.set-deps-hash.outputs.deps-hash }}-${{ needs.set-commit-sha.outputs.commit-sha }}
+          export TAG=${{ needs.set-deps-hash.outputs.short-deps-hash }}-${{ needs.set-commit-sha.outputs.commit-sha }}
           echo "IMAGE_TAG=ghcr.io/$NAME:$TAG" >> $GITHUB_ENV
           echo "image-tag=ghcr.io/$NAME:$TAG" >> $GITHUB_OUTPUT
       - name: Build testable container
