@@ -53,6 +53,12 @@ def draw_ecoplot(
         PlotStyle | SkipJsonSchema[None],
         Field(description="Style arguments passed to plotly.graph_objects.Scatter."),
     ],
+    color_column: Annotated[
+        str | SkipJsonSchema[None],
+        Field(
+            description="The name of the dataframe column to color each plot group with."
+        ),
+    ] = None,
 ) -> Annotated[str, Field()]:
     """
     Generates an EcoPlot from the provided params
@@ -75,6 +81,7 @@ def draw_ecoplot(
         grouped=grouped,
         x_col=x_axis,
         y_col=y_axis,
+        color_col=color_column,
         **(plot_style.model_dump(exclude_none=True) if plot_style else {}),
     )
 
@@ -114,6 +121,10 @@ def draw_time_series_bar_chart(
         Literal["year", "month", "week", "day", "hour"],
         Field(description="Sets the time interval of the x axis."),
     ],
+    color_column: Annotated[
+        str | SkipJsonSchema[None],
+        Field(description="The name of the dataframe column to color bars with."),
+    ] = None,
     grouped_styles: Annotated[
         list[GroupedPlotStyle],
         Field(
@@ -122,7 +133,7 @@ def draw_time_series_bar_chart(
     ] = [],
     plot_style: Annotated[
         PlotStyle | SkipJsonSchema[None],
-        Field(description="Additional style kwargs passed to go.Pie()."),
+        Field(description="Additional style kwargs passed to go.Bar()."),
     ] = None,
     layout_style: Annotated[
         BarLayoutStyle | SkipJsonSchema[None],
@@ -190,6 +201,7 @@ def draw_time_series_bar_chart(
         grouped=grouped,
         x_col="truncated_time",
         y_col=y_axis,
+        color_col=color_column,
         groupby_style=groupby_style,
         **(plot_style.model_dump(exclude_none=True) if plot_style else {}),
     )
@@ -228,6 +240,10 @@ def draw_pie_chart(
             description="The name of the dataframe column to label slices with, required if the data in value_column is numeric."
         ),
     ] = None,
+    color_column: Annotated[
+        str | SkipJsonSchema[None],
+        Field(description="The name of the dataframe column to color slices with."),
+    ] = None,
     plot_style: Annotated[
         PlotStyle | SkipJsonSchema[None],
         Field(description="Additional style kwargs passed to go.Pie()."),
@@ -256,6 +272,7 @@ def draw_pie_chart(
         data=dataframe,
         value_column=value_column,
         label_column=label_column,
+        color_column=color_column,
         style_kwargs=plot_style.model_dump(exclude_none=True) if plot_style else {},
         layout_kwargs=layout_style.model_dump(exclude_none=True)
         if layout_style
