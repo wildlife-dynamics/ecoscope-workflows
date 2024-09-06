@@ -33,28 +33,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-ecoscope-core = [
-    # note: this is technically installable from
-    # git+https://github.com/wildlife-dynamics/ecoscope.git@v1.8.2
-    # but that is discouraged. please use micromamba or pixi to install
-    # from our custom channel to ensure compatibility.
-    "ecoscope>=1.8.2"
-]
-gcs = [
-    "cloudpathlib[gs]",
-]
-lithops = [
-    "lithops",
-]
-notebook = [
-    "jupytext",  # note: not actually used anywhere, but could use this to get an ipynb notebook directly
-]
-test = [
-    "pytest",
-]
-visualize = [
-    "pydot"  # requires system install of `graphviz` for the `dot` executable
-]
+test = ["pytest"]
+visualize = ["pydot"]  # requires system install of `graphviz` for the `dot` executable
 
 
 [project.scripts]
@@ -113,13 +93,13 @@ jinja2 = "*"
 ruff = "*"
 
 [tool.pixi.feature.ecoscope-core.dependencies]
-ecoscope = ">=v1.8.2"  # from our custom channel
+ecoscope = { version = ">=v1.8.2", channel = "file:///usr/local/etc/wildlife-dynamics/channel" }
 
 [tool.pixi.feature.gcs.dependencies]
 cloudpathlib-gs = "*"
 
 [tool.pixi.feature.lithops.dependencies]
-lithops = ">=3.4.1"  # from our custom channel
+lithops = { version = ">=3.4.1", channel = "file:///usr/local/etc/wildlife-dynamics/channel" }
 
 [tool.pixi.feature.test.dependencies]
 pytest = "*"
