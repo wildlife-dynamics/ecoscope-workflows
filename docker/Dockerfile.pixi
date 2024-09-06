@@ -1,26 +1,39 @@
+FROM bitnami/minideb:bullseye as fetch
+
+RUN apt-get update && apt-get install -y curl
+RUN curl -fsSL https://pixi.sh/install.sh | bash
+
 FROM bitnami/minideb:bullseye as build
 
 ARG CHANNEL_MOUNT=.rattler-build/artifacts
 ARG VERSION="0.0.0"
 
-RUN apt-get update && apt-get install -y curl
-RUN curl -fsSL https://pixi.sh/install.sh | bash
+COPY --from=fetch /root/.pixi /root/.pixi
 ENV PATH="/root/.pixi/bin:${PATH}"
 
+# ENV PIXI_CACHE_DIR=/root/.pixi/cache
+
+# copy our project files
 COPY pyproject.toml /app/pyproject.toml
 COPY ecoscope_workflows /app/ecoscope_workflows
+# COPY pixi.lock /app/pixi.lock
 WORKDIR /app
 
+# install our package and dependencies
 RUN --mount=type=bind,source=$CHANNEL_MOUNT,target=/usr/local/etc/wildlife-dynamics/channel \
     SETUPTOOLS_SCM_PRETEND_VERSION=$VERSION \
-    pixi run python -c "import ecoscope_workflows"
+    pixi run --environment lithops \
+    python -c "import ecoscope_workflows"
 RUN pixi clean cache -v --yes
+# RUN rm -rf $PIXI_CACHE_DIR
 
+# FROM bitnami/minideb:bullseye as run
 
-FROM bitnami/minideb:bullseye as run
+# # move pixi resources from build to run
+# COPY --from=build /app /app
+# COPY --from=build /root/.pixi /root/.pixi
+# ENV PATH="/root/.pixi/bin:${PATH}"
+# ENV $PIXI_CACHE_DIR=/root/.pixi/cache
 
-COPY --from=build /app /app
-COPY --from=build /root/.pixi /root/.pixi
-WORKDIR /app
-ENV PATH="/root/.pixi/bin:${PATH}"
-RUN pixi run python -c "import ecoscope_workflows"
+# WORKDIR /app
+# RUN pixi run python -c "import ecoscope_workflows"
