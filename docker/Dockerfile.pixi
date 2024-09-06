@@ -11,29 +11,13 @@ ARG VERSION="0.0.0"
 COPY --from=fetch /root/.pixi /root/.pixi
 ENV PATH="/root/.pixi/bin:${PATH}"
 
-# ENV PIXI_CACHE_DIR=/root/.pixi/cache
-
-# copy our project files
 COPY pyproject.toml /app/pyproject.toml
 COPY ecoscope_workflows /app/ecoscope_workflows
-# COPY pixi.lock /app/pixi.lock
-WORKDIR /app
+COPY pixi.lock /app/pixi.lock
 
-# install our package and dependencies
+WORKDIR /app
 RUN --mount=type=bind,source=$CHANNEL_MOUNT,target=/usr/local/etc/wildlife-dynamics/channel \
     SETUPTOOLS_SCM_PRETEND_VERSION=$VERSION \
     pixi run --environment lithops \
     python -c "import ecoscope_workflows"
 RUN pixi clean cache -v --yes
-# RUN rm -rf $PIXI_CACHE_DIR
-
-# FROM bitnami/minideb:bullseye as run
-
-# # move pixi resources from build to run
-# COPY --from=build /app /app
-# COPY --from=build /root/.pixi /root/.pixi
-# ENV PATH="/root/.pixi/bin:${PATH}"
-# ENV $PIXI_CACHE_DIR=/root/.pixi/cache
-
-# WORKDIR /app
-# RUN pixi run python -c "import ecoscope_workflows"
