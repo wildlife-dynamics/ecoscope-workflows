@@ -1,6 +1,5 @@
 import pandas as pd
 import pytest
-from shapely.geometry import Point
 
 from ecoscope_workflows.tasks.transformation._filtering import (
     Coordinate,
@@ -10,6 +9,8 @@ from ecoscope_workflows.tasks.transformation._filtering import (
 
 @pytest.fixture
 def df_with_geometry():
+    from shapely.geometry import Point
+
     data = {
         "geometry": [
             Point(0.0, 0.0),
@@ -21,7 +22,10 @@ def df_with_geometry():
     return pd.DataFrame(data)
 
 
+@pytest.mark.requires_ecoscope_core(transitive_dependencies=["shapely"])
 def test_filter_points(df_with_geometry):
+    from shapely.geometry import Point
+
     # Sample data fixture (can be replaced with a parametrized fixture)
     expected_df = pd.DataFrame(
         {
@@ -42,7 +46,10 @@ def test_filter_points(df_with_geometry):
     pd.testing.assert_frame_equal(filtered_df, expected_df)
 
 
+@pytest.mark.requires_ecoscope_core(transitive_dependencies=["shapely"])
 def test_filter_range(df_with_geometry):
+    from shapely.geometry import Point
+
     # Sample data fixture (can be replaced with a parametrized fixture)
     expected_df = pd.DataFrame({"geometry": [Point(-170.0, 80.0)]})
 

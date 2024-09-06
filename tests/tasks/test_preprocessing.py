@@ -1,6 +1,5 @@
 from importlib.resources import files
 
-import geopandas as gpd
 import pandas as pd
 import pytest
 
@@ -10,10 +9,11 @@ from ecoscope_workflows.tasks.preprocessing import (
 )
 from ecoscope_workflows.tasks.transformation._filtering import Coordinate
 
-pytestmark = pytest.mark.requires_ecoscope_core
 
-
+@pytest.mark.requires_ecoscope_core(transitive_dependencies=["geopandas"])
 def test_process_relocations():
+    import geopandas as gpd
+
     example_input_df_path = (
         files("ecoscope_workflows.tasks.io")
         / "get-subjectgroup-observations.example-return.parquet"
@@ -36,7 +36,10 @@ def test_process_relocations():
     pd.testing.assert_frame_equal(result, cached)
 
 
+@pytest.mark.requires_ecoscope_core(transitive_dependencies=["geopandas"])
 def test_relocations_to_trajectory():
+    import geopandas as gpd
+
     example_input_df_path = (
         files("ecoscope_workflows.tasks.preprocessing")
         / "process-relocations.example-return.parquet"

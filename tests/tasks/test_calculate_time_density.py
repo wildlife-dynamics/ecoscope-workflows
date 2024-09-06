@@ -1,14 +1,15 @@
 from importlib.resources import files
 
-import geopandas as gpd
 import pandas as pd
 import pytest
 
 from ecoscope_workflows.tasks.analysis import calculate_time_density
 
 
-@pytest.mark.requires_ecoscope_core
+@pytest.mark.requires_ecoscope_core(transitive_dependencies=["geopandas"])
 def test_calculate_time_density():
+    import geopandas as gpd
+
     example_input_df_path = (
         files("ecoscope_workflows.tasks.preprocessing")
         / "relocations-to-trajectory.example-return.parquet"
