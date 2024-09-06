@@ -28,7 +28,6 @@ pe_add_temporal_index:
 
 # Parameters for 'Patrol Events Colormap' using task `apply_color_map`.
 pe_colormap:
-  df:   # (pandera.typing.pandas.DataFrame[ecoscope_workflows.annotations.JsonSerializableDataFrameModel], WithJsonSchema(json_schema={'type': 'ecoscope_workflows.annotations.DataFrame'}, mode=None), FieldInfo(annotation=NoneType, required=True, description='The dataframe to apply the color map to.', exclude=True))
   input_column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
   colormap:   # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
   output_column_name:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='The dataframe column that will contain the color values.'))
@@ -87,7 +86,6 @@ pe_feature_density:
 
 # Parameters for 'Feature Density Colormap' using task `apply_color_map`.
 fd_colormap:
-  df:   # (pandera.typing.pandas.DataFrame[ecoscope_workflows.annotations.JsonSerializableDataFrameModel], WithJsonSchema(json_schema={'type': 'ecoscope_workflows.annotations.DataFrame'}, mode=None), FieldInfo(annotation=NoneType, required=True, description='The dataframe to apply the color map to.', exclude=True))
   input_column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
   colormap:   # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
   output_column_name:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='The dataframe column that will contain the color values.'))
@@ -117,7 +115,6 @@ split_patrol_event_groups:
 
 # Parameters for 'Grouped Patrol Events Colormap' using task `apply_color_map`.
 grouped_pe_colormap:
-  df:   # (pandera.typing.pandas.DataFrame[ecoscope_workflows.annotations.JsonSerializableDataFrameModel], WithJsonSchema(json_schema={'type': 'ecoscope_workflows.annotations.DataFrame'}, mode=None), FieldInfo(annotation=NoneType, required=True, description='The dataframe to apply the color map to.', exclude=True))
   input_column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
   colormap:   # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
   output_column_name:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='The dataframe column that will contain the color values.'))

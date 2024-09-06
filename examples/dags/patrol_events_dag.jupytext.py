@@ -117,7 +117,6 @@ pe_add_temporal_index = add_temporal_index.partial(
 # parameters
 
 pe_colormap_params = dict(
-    df=...,
     input_column_name=...,
     colormap=...,
     output_column_name=...,
@@ -128,7 +127,7 @@ pe_colormap_params = dict(
 
 
 pe_colormap = apply_color_map.partial(
-    geodataframe=filter_patrol_events, **pe_colormap_params
+    df=filter_patrol_events, **pe_colormap_params
 ).call()
 
 
@@ -328,7 +327,6 @@ pe_feature_density = calculate_feature_density.partial(
 # parameters
 
 fd_colormap_params = dict(
-    df=...,
     input_column_name=...,
     colormap=...,
     output_column_name=...,
@@ -339,7 +337,7 @@ fd_colormap_params = dict(
 
 
 fd_colormap = apply_color_map.partial(
-    geodataframe=pe_feature_density, **fd_colormap_params
+    df=pe_feature_density, **fd_colormap_params
 ).call()
 
 
@@ -447,7 +445,6 @@ split_patrol_event_groups = split_groups.partial(
 # parameters
 
 grouped_pe_colormap_params = dict(
-    df=...,
     input_column_name=...,
     colormap=...,
     output_column_name=...,
@@ -458,7 +455,7 @@ grouped_pe_colormap_params = dict(
 
 
 grouped_pe_colormap = apply_color_map.partial(**grouped_pe_colormap_params).mapvalues(
-    argnames=["geodataframe"], argvalues=split_patrol_event_groups
+    argnames=["df"], argvalues=split_patrol_event_groups
 )
 
 

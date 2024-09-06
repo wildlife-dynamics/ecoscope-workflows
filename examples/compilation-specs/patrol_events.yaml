@@ -21,16 +21,11 @@ workflow:
       df: ${{ workflow.filter_patrol_events.return }}
 
   # Combined Events map layer
-  # - name: Patrol Events Classify
-  #   id: pe_classify
-  #   task: apply_classification
-  #   partial:
-  #     geodataframe: ${{ workflow.filter_patrol_events.return }}
   - name: Patrol Events Colormap
     id: pe_colormap
     task: apply_color_map
     partial:
-      geodataframe: ${{ workflow.filter_patrol_events.return }}
+      df: ${{ workflow.filter_patrol_events.return }}
   - name: Create map layer from Patrol Events
     id: pe_map_layer
     task: create_map_layer
@@ -88,7 +83,7 @@ workflow:
     id: fd_colormap
     task: apply_color_map
     partial:
-      geodataframe: ${{ workflow.pe_feature_density.return }}
+      df: ${{ workflow.pe_feature_density.return }}
   - name: Create map layer from Feature Density
     id: fd_map_layer
     task: create_map_layer
@@ -121,17 +116,11 @@ workflow:
       groupers: ${{ workflow.groupers.return }}
 
   # Grouped Patrol Events Map
-  # - name: Grouped Patrol Events Classify
-  #   id: grouped_pe_classify
-  #   task: apply_classification
-  #   mapvalues:
-  #     argnames: geodataframe
-  #     argvalues: ${{ workflow.split_patrol_event_groups.return }}
   - name: Grouped Patrol Events Colormap
     id: grouped_pe_colormap
     task: apply_color_map
     mapvalues:
-      argnames: geodataframe
+      argnames: df
       argvalues: ${{ workflow.split_patrol_event_groups.return }}
   - name: Create map layer from grouped Patrol Events
     id: grouped_pe_map_layer

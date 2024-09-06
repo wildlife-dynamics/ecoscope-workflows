@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
     pe_colormap = (
         apply_color_map.validate()
-        .partial(geodataframe=filter_patrol_events, **params["pe_colormap"])
+        .partial(df=filter_patrol_events, **params["pe_colormap"])
         .call()
     )
 
@@ -124,7 +124,7 @@ if __name__ == "__main__":
 
     fd_colormap = (
         apply_color_map.validate()
-        .partial(geodataframe=pe_feature_density, **params["fd_colormap"])
+        .partial(df=pe_feature_density, **params["fd_colormap"])
         .call()
     )
 
@@ -169,7 +169,7 @@ if __name__ == "__main__":
     grouped_pe_colormap = (
         apply_color_map.validate()
         .partial(**params["grouped_pe_colormap"])
-        .mapvalues(argnames=["geodataframe"], argvalues=split_patrol_event_groups)
+        .mapvalues(argnames=["df"], argvalues=split_patrol_event_groups)
     )
 
     grouped_pe_map_layer = (

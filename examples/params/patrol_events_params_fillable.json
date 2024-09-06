@@ -197,7 +197,6 @@
                 }
             },
             "required": [
-                "df",
                 "input_column_name"
             ],
             "type": "object"
@@ -483,7 +482,6 @@
                 }
             },
             "required": [
-                "df",
                 "input_column_name"
             ],
             "type": "object"
@@ -619,7 +617,6 @@
                 }
             },
             "required": [
-                "df",
                 "input_column_name"
             ],
             "type": "object"

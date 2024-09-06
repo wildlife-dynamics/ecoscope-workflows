@@ -110,7 +110,7 @@ if __name__ == "__main__":
         "pe_colormap": Node(
             async_task=apply_color_map.validate().set_executor("lithops"),
             partial={
-                "geodataframe": DependsOn("filter_patrol_events"),
+                "df": DependsOn("filter_patrol_events"),
             }
             | params["pe_colormap"],
             method="call",
@@ -195,7 +195,7 @@ if __name__ == "__main__":
         "fd_colormap": Node(
             async_task=apply_color_map.validate().set_executor("lithops"),
             partial={
-                "geodataframe": DependsOn("pe_feature_density"),
+                "df": DependsOn("pe_feature_density"),
             }
             | params["fd_colormap"],
             method="call",
@@ -247,7 +247,7 @@ if __name__ == "__main__":
             partial=params["grouped_pe_colormap"],
             method="mapvalues",
             kwargs={
-                "argnames": ["geodataframe"],
+                "argnames": ["df"],
                 "argvalues": DependsOn("split_patrol_event_groups"),
             },
         ),
