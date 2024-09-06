@@ -4,12 +4,19 @@ ARG CHANNEL_MOUNT=.rattler-build/artifacts
 
 RUN apt-get update && apt-get install -y curl
 RUN curl -fsSL https://pixi.sh/install.sh | bash
+ENV PATH="/root/.pixi/bin:${PATH}"
 
 WORKDIR /app
 COPY .rattler-build/artifacts .rattler-build/artifacts
-COPY pixi.toml .
+RUN echo '\
+[project] \n\
+name = "ecoscope-workflows-pixi-build"\n\
+channels = ["file:///app/.rattler-build/artifacts ", "conda-forge"] \n\
+platforms = ["linux-aarch64"] \n\
+[dependencies] \n\
+ecoscope-workflows = { version = "*", channel = "file:///app/.rattler-build/artifacts " } \n\
+pytest = ">=8.3.2,<9"' >> pixi.toml
 
-ENV PATH="/root/.pixi/bin:${PATH}"
 RUN pixi run python -c "import ecoscope_workflows"
 RUN pixi clean cache -v --yes
 
