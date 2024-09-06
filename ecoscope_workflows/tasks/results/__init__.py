@@ -8,7 +8,6 @@ from ._widget_tasks import (
     create_single_value_widget_single_view,
     merge_widget_views,
 )
-from ._raster import grid_to_raster
 
 __all__ = [
     "create_map_widget_single_view",
@@ -22,5 +21,4 @@ __all__ = [
     "draw_pie_chart",
     "gather_dashboard",
     "merge_widget_views",
-    "grid_to_raster",
 ]
