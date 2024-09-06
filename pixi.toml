@@ -1,0 +1,16 @@
+[project]
+authors = ["Charles Stern <62192187+cisaacstern@users.noreply.github.com>"]
+channels = ["file:///app/.rattler-build/artifacts ", "conda-forge"]
+description = "Add a short description here"
+name = "ecoscope-workflows"
+platforms = ["linux-aarch64", "osx-arm64"]
+version = "0.1.0"
+
+
+[tool.pixi.project]
+channels = ["file://./.rattler-build/artifacts", "conda-forge"]
+platforms = ["linux-aarch64"]
+
+[dependencies]
+ecoscope-workflows = { version = "*", channel = "file:///app/.rattler-build/artifacts " }
+pytest = ">=8.3.2,<9"

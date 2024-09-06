@@ -1,0 +1,23 @@
+FROM bitnami/minideb:bullseye as build
+
+ARG CHANNEL_MOUNT=.rattler-build/artifacts
+
+RUN apt-get update && apt-get install -y curl
+RUN curl -fsSL https://pixi.sh/install.sh | bash
+
+WORKDIR /app
+COPY .rattler-build/artifacts .rattler-build/artifacts
+COPY pixi.toml .
+
+ENV PATH="/root/.pixi/bin:${PATH}"
+RUN pixi run python -c "import ecoscope_workflows"
+RUN pixi clean cache -v --yes
+
+
+FROM bitnami/minideb:bullseye as run
+
+COPY --from=build /app /app
+COPY --from=build /root/.pixi /root/.pixi
+WORKDIR /app
+ENV PATH="/root/.pixi/bin:${PATH}"
+RUN pixi run python -c "import ecoscope_workflows"
