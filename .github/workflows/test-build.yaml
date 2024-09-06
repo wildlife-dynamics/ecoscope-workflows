@@ -1,4 +1,4 @@
-name: Build & Test (conda)
+name: Build (conda)
 
 on:
   push:
