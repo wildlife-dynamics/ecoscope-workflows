@@ -111,4 +111,5 @@ gcs = { features = ["gcs"], solve-group = "default" }
 lithops = { features = ["lithops"], solve-group = "default" }
 test = { features = ["test"], solve-group = "default" }
 
-ecoscope-core-lithops = { features = ["ecoscope-core", "lithops"], solve-group = "default" }
+workflows-runtime-gcp = { features = ["ecoscope-core", "gcs", "lithops"], solve-group = "default" }
+workflows-runtime-gcp-test = { features = ["ecoscope-core", "gcs", "lithops", "test"], solve-group = "default" }

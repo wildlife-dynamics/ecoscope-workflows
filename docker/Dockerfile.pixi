@@ -6,6 +6,7 @@ RUN curl -fsSL https://pixi.sh/install.sh | bash
 FROM bitnami/minideb:bullseye as build
 
 ARG CHANNEL_MOUNT=.rattler-build/artifacts
+ARG ECOSCOPE_WORKFLOWS_ENVIRONMENT=workflows-runtime-gcp-test
 ARG VERSION="0.0.0"
 
 COPY --from=fetch /root/.pixi /root/.pixi
@@ -18,5 +19,5 @@ COPY pixi.lock /app/pixi.lock
 WORKDIR /app
 RUN --mount=type=bind,source=$CHANNEL_MOUNT,target=/usr/local/etc/wildlife-dynamics/channel \
     SETUPTOOLS_SCM_PRETEND_VERSION=$VERSION \
-    pixi install --environment ecoscope-core-lithops --locked
+    pixi install --environment $ECOSCOPE_WORKFLOWS_ENVIRONMENT --locked
 RUN pixi clean cache -v --yes
