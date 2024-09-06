@@ -4,8 +4,17 @@ import keyword
 import subprocess
 import sys
 from importlib import resources
-from importlib.resources.abc import Traversable
 from typing import Annotated, Any, Callable, Literal, TypeAlias, TypeVar
+
+if sys.version_info >= (3, 11):
+    from importlib.resources.abc import Traversable
+else:
+    from typing import Protocol
+
+    class Traversable(Protocol):
+        def joinpath(self, *args): ...
+        def open(self, *args, **kwargs): ...
+
 
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
