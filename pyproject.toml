@@ -2,7 +2,7 @@
 requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
 
 [project]
-name = "ecoscope_workflows"
+name = "ecoscope-workflows"
 dynamic = ["version"]
 requires-python = ">=3.10"
 description = "An extensible task specification and compiler for local and distributed workflows."
@@ -87,3 +87,42 @@ markers = [
     "io: interfaces with 3rd party data services, which may likely require credentials (deselect with '-m \"not io\"')",
     "requires_ecoscope_core: requires `ecoscope` to be installed (deselect with '-m \"not requires_ecoscope_core\"')",
 ]
+
+[tool.pixi.project]
+channels = [
+    "file:///usr/local/etc/wildlife-dynamics/channel",
+    # TODO: "https://repo.prefix.dev/wildlife-dynamics",
+    "conda-forge",
+]
+platforms = ["linux-64", "osx-arm64"]
+
+[tool.pixi.pypi-dependencies]
+ecoscope-workflows = { path = ".", editable = true }
+
+[tool.pixi.dependencies]  # TODO: validate equality with `pyproject.toml` dependencies
+pandera = "*"
+pydantic = "<2.9.0"
+pydantic-settings = "*"
+tomli-w = "*"
+jinja2 = "*"
+ruamel.yaml = "*"
+ruff = "*"
+
+[tool.pixi.feature.ecoscope-core.dependencies]
+ecoscope = ">=v1.8.2"  # from our custom channel
+
+[tool.pixi.feature.gcs.dependencies]
+cloudpathlib-gs = "*"
+
+[tool.pixi.feature.lithops.dependencies]
+lithops = ">=3.4.1"  # from our custom channel
+
+[tool.pixi.feature.test.dependencies]
+pytest = "*"
+
+[tool.pixi.environments]
+default = { solve-group = "default" }
+ecoscope-core = { features = ["ecoscope-core"], solve-group = "default" }
+gcs = { features = ["gcs"], solve-group = "default" }
+lithops = { features = ["lithops"], solve-group = "default" }
+test = { features = ["test"], solve-group = "default" }
