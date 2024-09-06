@@ -16,15 +16,18 @@ class LayerStyleBase(BaseModel):
 
 class PolylineLayerStyle(LayerStyleBase):
     layer_type: Literal["polyline"] = Field("polyline", exclude=True)
-    get_color: str | list[int] | list[list[int]] = [0, 0, 0, 255]
+    get_color: str | list[int] | list[list[int]] | None = None
     get_width: float = 1
+    color_column: str | None = None
 
 
 class ShapeLayerStyle(LayerStyleBase):
     filled: bool = True
-    get_fill_color: str | list[int] | list[list[int]] = [0, 0, 0, 255]
-    get_line_color: str | list[int] | list[list[int]] = [0, 0, 0, 255]
+    get_fill_color: str | list[int] | list[list[int]] | None = None
+    get_line_color: str | list[int] | list[list[int]] | None = None
     get_line_width: float = 1
+    fill_color_column: str | None = None
+    line_color_column: str | None = None
 
 
 class PointLayerStyle(ShapeLayerStyle):
