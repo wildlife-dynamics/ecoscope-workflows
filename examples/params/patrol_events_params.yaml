@@ -1,0 +1,183 @@
+# Parameters for 'Set Groupers' using task `set_groupers`.
+groupers:
+  groupers: # (list[ecoscope_workflows.tasks.groupby._groupby.Grouper], FieldInfo(annotation=NoneType, required=True, description='            Index(es) and/or column(s) to group by, along with\n            optional display names and help text.\n            '))
+    - index_name: "month"
+      display_name: "Month"
+      help_text: "The month in which the patrol began or the event was updated."
+
+# Parameters for 'Get Patrol Events from EarthRanger' using task `get_patrol_events`.
+patrol_events:
+  client: "mep_dev" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
+  since: "2011-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
+  until: "2023-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
+  patrol_type: [
+      "804c75f0-ed55-4bf5-b6fc-1aaf166bcf84",
+      "fde19413-cb55-443e-9be6-d10e4a48c668",
+      "0ef3bf48-b44c-4a4e-a145-7ab2e38c9a57",
+    ] # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default=None, description='Comma-separated list of type of patrol UUID'))
+  status: ["active", "done"]
+
+# Parameters for 'Apply Relocation Coordinate Filter' using task `apply_reloc_coord_filter`.
+filter_patrol_events:
+  max_y: 0.0 # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=90.0))
+  filter_point_coords:
+    - x: 180.0
+      y: 90.0
+    - x: 0.0
+      y: 0.0
+
+# Parameters for 'Add temporal index to Patrol Events' using task `add_temporal_index`.
+pe_add_temporal_index:
+  index_name: "month" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A name for the new index which will be added.'))
+  time_col: "updated_at" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of existing column containing time data.'))
+  directive: "%B" # (typing.Literal['%a', '%A', '%b', '%B', '%c', '%d', '%f', '%H', '%I', '%j', '%m', '%M', '%p', '%S', '%U', '%w', '%W', '%x', '%X', '%y', '%Y', '%z', '%%'], FieldInfo(annotation=NoneType, required=True, description='A directive for formatting the time data.'))
+
+# Parameters for 'Patrol Events Colormap' using task `apply_color_map`.
+pe_colormap:
+  input_column_name: "event_type"   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
+  colormap: "tab20b"  # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
+  output_column_name: "event_type_colormap"
+
+# Parameters for 'Create map layer from Patrol Events' using task `create_map_layer`.
+pe_map_layer:
+  layer_style:   # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
+    layer_type: "point"
+    fill_color_column: "event_type_colormap"
+
+# Parameters for 'Draw Ecomap from Time Density' using task `draw_ecomap`.
+pe_ecomap:
+  tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
+  static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
+  title: "All Patrol Events" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
+
+# Parameters for 'Persist Ecomap as Text' using task `persist_text`.
+pe_ecomap_html_url: {}
+
+# Parameters for 'Create Time Density Map Widget' using task `create_map_widget_single_view`.
+pe_map_widget:
+  title: "Patrol Events Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Draw Time Series Bar Chart for Patrols Events' using task `draw_time_series_bar_chart`.
+pe_bar_chart:
+  x_axis: "updated_at" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the x axis.'))
+  y_axis: "event_type" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the y axis.'))
+  category: "event_type" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to stack in the y axis.'))
+  agg_function: "count" # (typing.Literal['count', 'mean', 'sum', 'min', 'max'], FieldInfo(annotation=NoneType, required=True, description='The aggregate function to apply to the group.'))
+  time_interval: "month" # (typing.Literal['year', 'month', 'week', 'day', 'hour'], FieldInfo(annotation=NoneType, required=True, description='Sets the time interval of the x axis.'))
+  color_column: "event_type_colormap"
+  plot_style:
+    xperiodalignment: "middle"
+
+# Parameters for 'Persist Patrols Bar Chart as Text' using task `persist_text`.
+pe_bar_chart_html_url: {}
+
+# Parameters for 'Create Plot Widget for Patrol Events' using task `create_plot_widget_single_view`.
+pe_bar_chart_widget:
+  title: "Patrol Events Bar Chart" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Create Patrol Events Meshgrid' using task `create_meshgrid`.
+pe_meshgrid:
+  cell_width: 10000  # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='The width of a grid cell in meters.'))
+  cell_height: 10000  # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='The height of a grid cell in meters.'))
+
+# Parameters for 'Patrol Events Feature Density' using task `calculate_feature_density`.
+pe_feature_density:
+  geometry_type: "point"  # (typing.Literal['point', 'line'], FieldInfo(annotation=NoneType, required=True, description='The geometry type of the provided geodataframe'))
+
+# Parameters for 'Feature Density Colormap' using task `apply_color_map`.
+fd_colormap:
+  input_column_name: "density"   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
+  colormap: "viridis"  # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
+  output_column_name: "density_colormap"
+
+# Parameters for 'Create map layer from Feature Density' using task `create_map_layer`.
+fd_map_layer:
+  layer_style:  # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
+    layer_type: "polygon"
+    fill_color_column: "density_colormap"
+
+# Parameters for 'Draw Ecomap from Feature Density' using task `draw_ecomap`.
+fd_ecomap:
+  tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
+  static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
+  title: "Event Density" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
+
+# Parameters for 'Persist Feature Density Ecomap as Text' using task `persist_text`.
+fd_ecomap_html_url: {}
+
+# Parameters for 'Create Feature Density Map Widget' using task `create_map_widget_single_view`.
+fd_map_widget:
+  title: "Density Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Split Patrol Events by Group' using task `split_groups`.
+split_patrol_event_groups: {}
+
+# Parameters for 'Grouped Patrol Events Colormap' using task `apply_color_map`.
+grouped_pe_colormap:
+  input_column_name: "event_type"   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
+  colormap: "tab20b"  # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
+  output_column_name: "event_type_colormap"
+
+# Parameters for 'Create map layer from grouped Patrol Events' using task `create_map_layer`.
+grouped_pe_map_layer:
+  layer_style:   # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
+    layer_type: "point"
+    fill_color_column: "event_type_colormap"
+
+# Parameters for 'Draw Ecomap from grouped Patrol Events' using task `draw_ecomap`.
+grouped_pe_ecomap:
+  tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
+  static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
+  title: "Grouped Patrol Events" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
+
+# Parameters for 'Persist grouped Patrol Events Ecomap as Text' using task `persist_text`.
+grouped_pe_ecomap_html_url: {}
+
+# Parameters for 'Create grouped Patrol Events Map Widget' using task `create_map_widget_single_view`.
+grouped_pe_map_widget:
+  title: "Grouped Patrol Events Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Draw Pie Chart for Patrols Events' using task `draw_pie_chart`.
+grouped_pe_pie_chart:
+  value_column: "event_type" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the dataframe column to pull slice values from.'))
+  color_column: "event_type_colormap"
+  plot_style:
+    textinfo: "value"
+
+# Parameters for 'Persist Patrols Pie Chart as Text' using task `persist_text`.
+grouped_pe_pie_chart_html_urls: {}
+
+# Parameters for 'Create Plot Widget for Patrol Events' using task `create_plot_widget_single_view`.
+grouped_pe_pie_chart_widgets:
+  title: "Patrol Events Pie Chart" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Merge Pie Chart Widget Views' using task `merge_widget_views`.
+grouped_pe_pie_widget_grouped: {}
+
+# Parameters for 'Grouped Patrol Events Feature Density' using task `calculate_feature_density`.
+grouped_pe_feature_density:
+  geometry_type: "point"  # (typing.Literal['point', 'line'], FieldInfo(annotation=NoneType, required=True, description='The geometry type of the provided geodataframe'))
+
+# Parameters for 'Create map layer from Feature Density' using task `create_map_layer`.
+grouped_fd_map_layer:
+  layer_style:  # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
+    layer_type: "polygon"
+    fill_color_column: "density_colormap"
+
+# Parameters for 'Draw Ecomap from Feature Density' using task `draw_ecomap`.
+grouped_fd_ecomap:
+  tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
+  static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
+  title: "Grouped Event Density" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
+
+# Parameters for 'Persist Feature Density Ecomap as Text' using task `persist_text`.
+grouped_fd_ecomap_html_url: {}
+
+# Parameters for 'Create Feature Density Map Widget' using task `create_map_widget_single_view`.
+grouped_fd_map_widget:
+  title: "Grouped Density Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Create Dashboard with Patrol Map Widgets' using task `gather_dashboard`.
+patrol_dashboard:
+  title: "Patrol Events Dashboard"
+  description: "A dashboard for visualizing patrol events."
