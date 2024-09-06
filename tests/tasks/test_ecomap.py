@@ -10,6 +10,8 @@ from ecoscope_workflows.tasks.results._ecomap import (
     draw_ecomap,
 )
 
+pytestmark = pytest.mark.requires_ecoscope_core
+
 
 @pytest.fixture
 def relocations():

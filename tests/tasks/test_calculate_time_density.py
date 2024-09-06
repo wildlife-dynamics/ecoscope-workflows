@@ -2,10 +2,12 @@ from importlib.resources import files
 
 import geopandas as gpd
 import pandas as pd
+import pytest
 
 from ecoscope_workflows.tasks.analysis import calculate_time_density
 
 
+@pytest.mark.requires_ecoscope_core
 def test_calculate_time_density():
     example_input_df_path = (
         files("ecoscope_workflows.tasks.preprocessing")

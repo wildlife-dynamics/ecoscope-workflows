@@ -2,12 +2,15 @@ from importlib.resources import files
 
 import geopandas as gpd
 import pandas as pd
+import pytest
 
 from ecoscope_workflows.tasks.preprocessing import (
     process_relocations,
     relocations_to_trajectory,
 )
 from ecoscope_workflows.tasks.transformation._filtering import Coordinate
+
+pytestmark = pytest.mark.requires_ecoscope_core
 
 
 def test_process_relocations():

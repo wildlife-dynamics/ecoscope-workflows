@@ -80,3 +80,8 @@ ecoscope_workflows = ["py.typed", "tasks/**/*.parquet", "templates/*.jinja", "te
 [tool.isort]
 # Prevent isort & black from fighting each other
 profile = "black"
+
+[tool.pytest.ini_options]
+markers = [
+    "requires_ecoscope_core: requires `ecoscope` to be installed (deselect with '-m \"not requires_ecoscope_core\"')",
+]

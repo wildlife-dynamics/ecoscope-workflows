@@ -163,6 +163,7 @@ def end_to_end(spec_fixture: SpecFixture) -> EndToEndFixture:
     )
 
 
+@pytest.mark.requires_ecoscope_core
 @pytest.mark.parametrize(
     "template", ["script-sequential.jinja2", "script-async.jinja2"]
 )

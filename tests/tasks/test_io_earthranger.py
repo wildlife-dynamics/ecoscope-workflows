@@ -10,7 +10,7 @@ from ecoscope_workflows.tasks.io import (
     get_subjectgroup_observations,
 )
 
-pytestmark = pytest.mark.io
+pytestmark = [pytest.mark.io, pytest.mark.requires_ecoscope_core]
 
 
 @pytest.fixture
