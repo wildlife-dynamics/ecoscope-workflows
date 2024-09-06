@@ -12,6 +12,8 @@ from ecoscope_workflows.tasks.results._ecoplot import (
     draw_time_series_bar_chart,
 )
 
+pytestmark = pytest.mark.requires_ecoscope_core
+
 
 @pytest.fixture
 def sample_dataframe():

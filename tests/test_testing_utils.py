@@ -1,9 +1,11 @@
 import pandas as pd
+import pytest
 
 from ecoscope_workflows.testing import MockSyncTask, create_task_magicmock
 from ecoscope_workflows.util import load_example_return_from_task_reference
 
 
+@pytest.mark.requires_ecoscope_core
 def test_create_task_magicmock():
     anchor = "ecoscope_workflows.tasks.io"
     func_name = "get_subjectgroup_observations"
@@ -14,6 +16,7 @@ def test_create_task_magicmock():
     pd.testing.assert_frame_equal(result, expected)
 
 
+@pytest.mark.requires_ecoscope_core
 def test_create_task_magicmock_lithops_executor():
     anchor = "ecoscope_workflows.tasks.io"
     func_name = "get_subjectgroup_observations"

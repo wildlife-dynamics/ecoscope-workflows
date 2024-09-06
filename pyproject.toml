@@ -22,7 +22,7 @@ license = {file = "LICENSE"}
 dependencies = [
     # core
     "pandera",
-    "pydantic",
+    "pydantic<2.9.0",  # fixme: 2.9.0 released sept 5, breaks `test_examples.py::test_dag_params_jsonschema`
     "pydantic-settings",
     "tomli-w",
     # compile-time only; todo: these could actually be optional dependencies

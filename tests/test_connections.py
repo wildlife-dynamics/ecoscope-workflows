@@ -139,6 +139,7 @@ def test_connection_named_from_toml_with_env_secrets(mock_toml_config_no_secrets
                 assert conn.sub_page_size == 4000
 
 
+@pytest.mark.requires_ecoscope_core
 def test_resolve_client_from_env(named_mock_env):
     @validate_call(config={"arbitrary_types_allowed": True})
     def f(client: EarthRangerClient):
@@ -151,6 +152,7 @@ def test_resolve_client_from_env(named_mock_env):
             assert callable(client.get_subjectgroup_observations)
 
 
+@pytest.mark.requires_ecoscope_core
 def test_resolve_client_from_toml(mock_toml_config: Path):
     @validate_call(config={"arbitrary_types_allowed": True})
     def f(client: EarthRangerClient):
