@@ -11,6 +11,7 @@ ARG VERSION="0.0.0"
 
 COPY --from=fetch /root/.pixi /root/.pixi
 ENV PATH="/root/.pixi/bin:${PATH}"
+ENV ECOSCOPE_WORKFLOWS_ENVIRONMENT=$ECOSCOPE_WORKFLOWS_ENVIRONMENT
 
 COPY pyproject.toml /app/pyproject.toml
 COPY ecoscope_workflows /app/ecoscope_workflows
@@ -21,3 +22,5 @@ RUN --mount=type=bind,source=$CHANNEL_MOUNT,target=/usr/local/etc/wildlife-dynam
     SETUPTOOLS_SCM_PRETEND_VERSION=$VERSION \
     pixi install --environment $ECOSCOPE_WORKFLOWS_ENVIRONMENT --locked
 RUN pixi clean cache -v --yes
+
+ENTRYPOINT ["/bin/sh", "-c", "pixi run --environment $ECOSCOPE_WORKFLOWS_ENVIRONMENT \"$@\"", "--"]
