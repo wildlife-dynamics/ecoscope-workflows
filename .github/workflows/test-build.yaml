@@ -152,65 +152,10 @@ jobs:
         run: |
           python -m pytest -m "io" tests -vvv
 
-  build-only-deps:
-    runs-on: ubuntu-latest
-    needs:
-      - docker-switch
-      - set-deps-hash
-      - build-conda-channel
-    outputs:
-      image-tag: ${{ steps.set-tag.outputs.image-tag }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download conda channel
-        uses: actions/download-artifact@v4
-        with:
-          name: rattler-artifacts
-          path: tmp/conda-channel
-      - name: Log conda channel contents
-        run: ls -lR tmp/conda-channel
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Set only deps image tag on env and output for downstream jobs
-        id: set-tag
-        run: |  # note: tag is based on deps hash, so we can avoid rebuilding if deps haven't changed
-          export IMAGE_NAME=ecoscope-workflows-only-deps
-          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
-          echo "IMAGE_TAG=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:${{ needs.set-deps-hash.outputs.short-deps-hash }}" >> $GITHUB_ENV
-          echo "image-tag=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:${{ needs.set-deps-hash.outputs.short-deps-hash }}" >> $GITHUB_OUTPUT
-      - name: Check if tag already exists on ghcr
-        id: check-tag
-        run: |
-          export has_tag=$(\
-            curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/orgs/${{ github.repository_owner }}/packages/container/${{ env.IMAGE_NAME }}/versions | \
-            jq '[ .[] | select(.metadata.container.tags[] == "${{ needs.set-deps-hash.outputs.short-deps-hash }}") ]')
-          echo $has_tag
-          if [ "$has_tag" != "[]" ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
-      - name: Build and push only deps image
-        if: steps.check-tag.outputs.exists != 'true'  # todo: some way to force rebuild if needed
-        run: |
-          docker buildx build \
-          --tag ${{ env.IMAGE_TAG }} \
-          --platform=linux/amd64 \
-          --file docker/Dockerfile.only-deps \
-          --build-arg CHANNEL_MOUNT=tmp/conda-channel \
-          --cache-from=type=gha \
-          --cache-to=type=gha \
-          .
-          docker push ${{ env.IMAGE_TAG }}
-
   build-testable:
     runs-on: ubuntu-latest
     needs:
+      - docker-switch
       - set-deps-hash
       - set-commit-sha
       - build-conda-channel
@@ -244,8 +189,8 @@ jobs:
           docker buildx build \
           --tag ${{ env.IMAGE_TAG }} \
           --platform=linux/amd64 \
-          --file ./docker/Dockerfile.base \
-          --build-arg ONLY_DEPS_IMAGE_TAG=${{ needs.build-only-deps.outputs.image-tag }} \
+          --file ./docker/Dockerfile.pixi \
+          --build-arg CHANNEL_MOUNT=tmp/conda-channel \
           --cache-from=type=gha \
           --cache-to=type=gha \
           .
@@ -270,7 +215,7 @@ jobs:
           -v `pwd`/tests:/opt/tests \
           -v `pwd`/examples:/opt/examples \
           ${{ needs.build-testable.outputs.image-tag }} \
-          /env/bin/python -m pytest -v /opt/tests/test_examples.py \
+          python -m pytest -v /opt/tests/test_examples.py \
           -k "end_to_end and sequential"
 
       - name: Test worker container - async end-to-end
@@ -280,7 +225,7 @@ jobs:
           -v `pwd`/tests:/opt/tests \
           -v `pwd`/examples:/opt/examples \
           ${{ needs.build-testable.outputs.image-tag }} \
-          /env/bin/python -m pytest -v /opt/tests/test_examples.py \
+          python -m pytest -v /opt/tests/test_examples.py \
           -k "end_to_end and async"
 
   remote-e2e-test:
@@ -362,7 +307,7 @@ jobs:
           docker run \
           -v `pwd`/tests:/opt/tests \
           -v `pwd`/examples:/opt/examples \
-          ${{ needs.build-testable.outputs.image-tag }} /env/bin/python -m pytest -v /opt/tests/test_examples.py \
+          ${{ needs.build-testable.outputs.image-tag }} python -m pytest -v /opt/tests/test_examples.py \
           -k "end_to_end and async"
 
       - name: Post Lithops deploy (teardown)
