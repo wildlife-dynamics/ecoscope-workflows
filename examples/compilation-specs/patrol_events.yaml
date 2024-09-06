@@ -21,16 +21,16 @@ workflow:
       df: ${{ workflow.filter_patrol_events.return }}
 
   # Combined Events map layer
-  - name: Patrol Events Classify
-    id: pe_classify
-    task: apply_classification
-    partial:
-      geodataframe: ${{ workflow.filter_patrol_events.return }}
+  # - name: Patrol Events Classify
+  #   id: pe_classify
+  #   task: apply_classification
+  #   partial:
+  #     geodataframe: ${{ workflow.filter_patrol_events.return }}
   - name: Patrol Events Colormap
     id: pe_colormap
     task: apply_color_map
     partial:
-      geodataframe: ${{ workflow.pe_classify.return }}
+      geodataframe: ${{ workflow.filter_patrol_events.return }}
   - name: Create map layer from Patrol Events
     id: pe_map_layer
     task: create_map_layer
@@ -84,11 +84,16 @@ workflow:
     partial:
       geodataframe: ${{ workflow.filter_patrol_events.return }}
       meshgrid: ${{ workflow.pe_meshgrid.return }}
+  - name: Feature Density Colormap
+    id: fd_colormap
+    task: apply_color_map
+    partial:
+      geodataframe: ${{ workflow.pe_feature_density.return }}
   - name: Create map layer from Feature Density
     id: fd_map_layer
     task: create_map_layer
     partial:
-      geodataframe: ${{ workflow.pe_feature_density.return }}
+      geodataframe: ${{ workflow.fd_colormap.return }}
   - name: Draw Ecomap from Feature Density
     id: fd_ecomap
     task: draw_ecomap
@@ -116,18 +121,18 @@ workflow:
       groupers: ${{ workflow.groupers.return }}
 
   # Grouped Patrol Events Map
-  - name: Grouped Patrol Events Classify
-    id: grouped_pe_classify
-    task: apply_classification
-    mapvalues:
-      argnames: geodataframe
-      argvalues: ${{ workflow.split_patrol_event_groups.return }}
+  # - name: Grouped Patrol Events Classify
+  #   id: grouped_pe_classify
+  #   task: apply_classification
+  #   mapvalues:
+  #     argnames: geodataframe
+  #     argvalues: ${{ workflow.split_patrol_event_groups.return }}
   - name: Grouped Patrol Events Colormap
     id: grouped_pe_colormap
     task: apply_color_map
     mapvalues:
       argnames: geodataframe
-      argvalues: ${{ workflow.grouped_pe_classify.return }}
+      argvalues: ${{ workflow.split_patrol_event_groups.return }}
   - name: Create map layer from grouped Patrol Events
     id: grouped_pe_map_layer
     task: create_map_layer
