@@ -29,7 +29,10 @@ class NaturalBreaksArgs(SharedArgs):
 
 @task
 def apply_classification(
-    df: DataFrame[JsonSerializableDataFrameModel],
+    df: Annotated[
+        DataFrame[JsonSerializableDataFrameModel],
+        Field(description="The dataframe to classify.", exclude=True),
+    ],
     input_column_name: Annotated[
         str, Field(description="The dataframe column to classify.")
     ],
@@ -115,7 +118,10 @@ def apply_classification(
 
 @task
 def apply_color_map(
-    df: DataFrame[JsonSerializableDataFrameModel],
+    df: Annotated[
+        DataFrame[JsonSerializableDataFrameModel],
+        Field(description="The dataframe to apply the color map to.", exclude=True),
+    ],
     input_column_name: Annotated[
         str, Field(description="The name of the column with categorical values.")
     ],
