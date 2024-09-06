@@ -1,7 +1,9 @@
+import sys
 from dataclasses import dataclass
 from functools import lru_cache
 from typing import Sequence, TypeVar
 
+import lithops
 import pytest
 
 from ecoscope_workflows.decorators import task
@@ -97,7 +99,12 @@ def test_graph_basic_tasks_lithops_same_executor_instance():
     def add(x: int, y: int) -> int:
         return x + y
 
-    le = LithopsExecutor()
+    config = {
+        "lithops": {"backend": "localhost", "storage": "localhost"},
+        "localhost": {"runtime": sys.executable},
+    }
+    fexec = lithops.FunctionExecutor(config=config)
+    le = LithopsExecutor(fexec=fexec)
 
     dependencies = {"D": {"B", "C"}, "C": {"A"}, "B": {"A"}}
     nodes = {
@@ -154,7 +161,12 @@ def test_graph_tasks_lithops_map_same_executor_instance():
     def dec(x: int) -> int:
         return x - 1
 
-    le = LithopsExecutor()
+    config = {
+        "lithops": {"backend": "localhost", "storage": "localhost"},
+        "localhost": {"runtime": sys.executable},
+    }
+    fexec = lithops.FunctionExecutor(config=config)
+    le = LithopsExecutor(fexec=fexec)
 
     dependencies = {"A": [], "B": [], "C": [], "D": ["A", "B", "C"]}
     nodes = {
@@ -224,7 +236,12 @@ def test_graph_tasks_lithops_partial_map_same_executor_instance():
     def dec(x: int, y: int) -> int:
         return x - y - 1
 
-    le = LithopsExecutor()
+    config = {
+        "lithops": {"backend": "localhost", "storage": "localhost"},
+        "localhost": {"runtime": sys.executable},
+    }
+    fexec = lithops.FunctionExecutor(config=config)
+    le = LithopsExecutor(fexec=fexec)
 
     dependencies = {"A": [], "B": [], "C": [], "D": ["A", "B", "C"]}
     nodes = {
