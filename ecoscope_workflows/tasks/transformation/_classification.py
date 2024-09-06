@@ -4,7 +4,7 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, Field
 from pydantic.json_schema import SkipJsonSchema
 
-from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
+from ecoscope_workflows.annotations import AnyDataFrame
 from ecoscope_workflows.decorators import task
 
 logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ class NaturalBreaksArgs(SharedArgs):
 @task
 def apply_classification(
     df: Annotated[
-        DataFrame[JsonSerializableDataFrameModel],
+        AnyDataFrame,
         Field(description="The dataframe to classify.", exclude=True),
     ],
     input_column_name: Annotated[
@@ -67,7 +67,7 @@ def apply_classification(
         | SkipJsonSchema[None],
         Field(description="Additional options specific to the classification scheme."),
     ] = None,
-) -> DataFrame[JsonSerializableDataFrameModel]:
+) -> AnyDataFrame:
     """
     Classifies a dataframe column using specified classification scheme.
 
@@ -119,7 +119,7 @@ def apply_classification(
 @task
 def apply_color_map(
     df: Annotated[
-        DataFrame[JsonSerializableDataFrameModel],
+        AnyDataFrame,
         Field(description="The dataframe to apply the color map to.", exclude=True),
     ],
     input_column_name: Annotated[
@@ -135,7 +135,7 @@ def apply_color_map(
         str | SkipJsonSchema[None],
         Field(description="The dataframe column that will contain the color values."),
     ] = None,
-) -> DataFrame[JsonSerializableDataFrameModel]:
+) -> AnyDataFrame:
     """
     Adds a color column to the dataframe based on the categorical values in the specified column.
 
