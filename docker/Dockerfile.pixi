@@ -18,5 +18,5 @@ COPY pixi.lock /app/pixi.lock
 WORKDIR /app
 RUN --mount=type=bind,source=$CHANNEL_MOUNT,target=/usr/local/etc/wildlife-dynamics/channel \
     SETUPTOOLS_SCM_PRETEND_VERSION=$VERSION \
-    pixi install --environment ecoscope-core-lithops
+    pixi install --environment ecoscope-core-lithops --locked
 RUN pixi clean cache -v --yes
