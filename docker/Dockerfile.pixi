@@ -11,13 +11,14 @@ COPY .rattler-build/artifacts .rattler-build/artifacts
 RUN echo '\
 [project] \n\
 name = "ecoscope-workflows-pixi-build"\n\
-channels = ["file:///app/.rattler-build/artifacts ", "conda-forge"] \n\
+channels = ["file:///opt/channel-mount ", "conda-forge"] \n\
 platforms = ["linux-aarch64"] \n\
 [dependencies] \n\
-ecoscope-workflows = { version = "*", channel = "file:///app/.rattler-build/artifacts " } \n\
+ecoscope-workflows = { version = "*", channel = "file:///opt/channel-mount " } \n\
 pytest = ">=8.3.2,<9"' >> pixi.toml
 
-RUN pixi run python -c "import ecoscope_workflows"
+RUN --mount=type=bind,source=$CHANNEL_MOUNT,target=/opt/channel-mount \
+    pixi run python -c "import ecoscope_workflows"
 RUN pixi clean cache -v --yes
 
 
