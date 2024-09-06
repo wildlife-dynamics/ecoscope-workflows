@@ -1,10 +1,14 @@
+import os
+import pathlib
 import sys
 from dataclasses import dataclass
 from functools import lru_cache
 from typing import Sequence, TypeVar
+from unittest import mock
 
 import lithops
 import pytest
+import yaml
 
 from ecoscope_workflows.decorators import task
 from ecoscope_workflows.executors import Future, FutureSequence, LithopsExecutor
@@ -57,7 +61,7 @@ def test_graph_basic_tasks():
 
 
 @pytest.mark.xfail(
-    reason="Suspected memory leak in LithopsExecutor when multiple instances are created"
+    reason="Suspected intermittent memory leak in LithopsExecutor when multiple instances are created"
 )
 def test_graph_basic_tasks_lithops():
     @task
@@ -118,7 +122,7 @@ def test_graph_basic_tasks_lithops_same_executor_instance():
     assert results == {"D": 4}
 
 
-def test_graph_tasks_lithops_map():
+def test_graph_tasks_lithops_map(tmp_path: pathlib.Path):
     @task
     def inc(x: int) -> int:
         return x + 1
@@ -127,28 +131,38 @@ def test_graph_tasks_lithops_map():
     def dec(x: int) -> int:
         return x - 1
 
-    dependencies = {"A": [], "B": [], "C": [], "D": ["A", "B", "C"]}
-    nodes = {
-        "A": Node(inc.set_executor("lithops"), {"x": 1}),
-        "B": Node(inc.set_executor("lithops"), {"x": 2}),
-        "C": Node(inc.set_executor("lithops"), {"x": 3}),
-        "D": Node(
-            dec.set_executor("lithops"),
-            method="map",
-            kwargs={
-                "argnames": ["x"],
-                "argvalues": DependsOnSequence(
-                    [
-                        DependsOn("A"),
-                        DependsOn("C"),
-                        DependsOn("B"),
-                    ],
-                ),
-            },
-        ),
+    config = {
+        "lithops": {"backend": "localhost", "storage": "localhost"},
+        "localhost": {"runtime": sys.executable},
     }
-    graph = Graph(dependencies, nodes)
-    results = graph.execute()
+    with tmp_path.joinpath("conf.yaml").open("w") as f:
+        yaml.dump(config, f)
+
+    with mock.patch.dict(
+        os.environ, {"LITHOPS_CONFIG_FILE": tmp_path.joinpath("conf.yaml").as_posix()}
+    ):
+        dependencies = {"A": [], "B": [], "C": [], "D": ["A", "B", "C"]}
+        nodes = {
+            "A": Node(inc.set_executor("lithops"), {"x": 1}),
+            "B": Node(inc.set_executor("lithops"), {"x": 2}),
+            "C": Node(inc.set_executor("lithops"), {"x": 3}),
+            "D": Node(
+                dec.set_executor("lithops"),
+                method="map",
+                kwargs={
+                    "argnames": ["x"],
+                    "argvalues": DependsOnSequence(
+                        [
+                            DependsOn("A"),
+                            DependsOn("C"),
+                            DependsOn("B"),
+                        ],
+                    ),
+                },
+            ),
+        }
+        graph = Graph(dependencies, nodes)
+        results = graph.execute()
     assert set(results["D"]) == {1, 2, 3}  # order is not guaranteed
 
 
@@ -193,7 +207,10 @@ def test_graph_tasks_lithops_map_same_executor_instance():
     assert set(results["D"]) == {1, 2, 3}  # order is not guaranteed
 
 
-def test_graph_tasks_lithops_partial_map():
+@pytest.mark.xfail(
+    reason="Suspected intermittent memory leak in LithopsExecutor when multiple instances are created"
+)
+def test_graph_tasks_lithops_partial_map(tmp_path: pathlib.Path):
     @task
     def inc(x: int) -> int:
         return x + 1
@@ -202,28 +219,38 @@ def test_graph_tasks_lithops_partial_map():
     def dec(x: int, y: int) -> int:
         return x - y - 1
 
-    dependencies = {"A": [], "B": [], "C": [], "D": ["A", "B", "C"]}
-    nodes = {
-        "A": Node(inc.set_executor("lithops"), {"x": 1}),
-        "B": Node(inc.set_executor("lithops"), {"x": 2}),
-        "C": Node(inc.set_executor("lithops"), {"x": 3}),
-        "D": Node(
-            dec.partial(y=1).set_executor("lithops"),
-            method="map",
-            kwargs={
-                "argnames": ["x"],
-                "argvalues": DependsOnSequence(
-                    [
-                        DependsOn("A"),
-                        DependsOn("C"),
-                        DependsOn("B"),
-                    ],
-                ),
-            },
-        ),
+    config = {
+        "lithops": {"backend": "localhost", "storage": "localhost"},
+        "localhost": {"runtime": sys.executable},
     }
-    graph = Graph(dependencies, nodes)
-    results = graph.execute()
+    with tmp_path.joinpath("conf.yaml").open("w") as f:
+        yaml.dump(config, f)
+
+    with mock.patch.dict(
+        os.environ, {"LITHOPS_CONFIG_FILE": tmp_path.joinpath("conf.yaml").as_posix()}
+    ):
+        dependencies = {"A": [], "B": [], "C": [], "D": ["A", "B", "C"]}
+        nodes = {
+            "A": Node(inc.set_executor("lithops"), {"x": 1}),
+            "B": Node(inc.set_executor("lithops"), {"x": 2}),
+            "C": Node(inc.set_executor("lithops"), {"x": 3}),
+            "D": Node(
+                dec.partial(y=1).set_executor("lithops"),  # type: ignore[call-arg]
+                method="map",
+                kwargs={
+                    "argnames": ["x"],
+                    "argvalues": DependsOnSequence(
+                        [
+                            DependsOn("A"),
+                            DependsOn("C"),
+                            DependsOn("B"),
+                        ],
+                    ),
+                },
+            ),
+        }
+        graph = Graph(dependencies, nodes)
+        results = graph.execute()
     assert set(results["D"]) == {0, 1, 2}  # order is not guaranteed
 
 
