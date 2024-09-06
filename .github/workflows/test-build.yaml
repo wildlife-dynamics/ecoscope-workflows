@@ -159,7 +159,6 @@ jobs:
       - set-deps-hash
       - set-commit-sha
       - build-conda-channel
-      - build-only-deps
     outputs:
       image-tag: ${{ steps.set-tag.outputs.image-tag }}
     steps:
