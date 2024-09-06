@@ -2,11 +2,13 @@ import re
 from textwrap import dedent
 
 import pytest
-import yaml
+import ruamel.yaml
 from pydantic_core import ValidationError
 
 from ecoscope_workflows.compiler import DagCompiler, Spec, TaskInstance, TaskIdVariable
 from ecoscope_workflows.registry import KnownTask, known_tasks
+
+yaml = ruamel.yaml.YAML(typ="safe")
 
 
 def test_task_instance_known_task_parsing():
@@ -32,7 +34,7 @@ def test_dag_compiler_from_spec():
               observations: ${{ workflow.obs.return }}
         """
     )
-    spec = Spec(**yaml.safe_load(s))
+    spec = Spec(**yaml.load(s))
     dc = DagCompiler(spec=spec)
     assert isinstance(dc.spec.workflow[0], TaskInstance)
 
@@ -54,7 +56,7 @@ def test_extra_forbid_raises():
         """
     )
     with pytest.raises(ValidationError):
-        _ = Spec(**yaml.safe_load(s))
+        _ = Spec(**yaml.load(s))
 
 
 @pytest.mark.parametrize(
@@ -90,7 +92,7 @@ def test_invalid_id_raises(invalid_id: str, raises_match: str):
         """
     )
     with pytest.raises(ValidationError, match=raises_match):
-        _ = Spec(**yaml.safe_load(s))
+        _ = Spec(**yaml.load(s))
 
 
 def test_ids_must_be_unique():
@@ -111,7 +113,7 @@ def test_ids_must_be_unique():
         "id='obs' is shared by ['Get Subjectgroup Observations', 'Process Relocations']"
     )
     with pytest.raises(ValidationError, match=expected_error_text):
-        _ = Spec(**yaml.safe_load(s))
+        _ = Spec(**yaml.load(s))
 
 
 @pytest.mark.parametrize(
@@ -134,13 +136,13 @@ def test_invalid_known_task_name_raises(task: str, valid_known_task_name: bool):
         """
     )
     if valid_known_task_name:
-        spec = Spec(**yaml.safe_load(s))
+        spec = Spec(**yaml.load(s))
         assert spec.workflow[0].known_task == known_tasks[task]
     else:
         with pytest.raises(
             ValidationError, match=f"`{task}` is not a registered known task name."
         ):
-            _ = Spec(**yaml.safe_load(s))
+            _ = Spec(**yaml.load(s))
 
 
 @pytest.mark.parametrize(
@@ -169,7 +171,7 @@ def test_partial_args_must_be_valid_id_of_another_task(
         """
     )
     if valid_id_of_another_task:
-        spec = Spec(**yaml.safe_load(s))
+        spec = Spec(**yaml.load(s))
         assert spec.workflow[1].partial == {
             "observations": [TaskIdVariable(value="obs", suffix="return")]
         }
@@ -181,7 +183,7 @@ def test_partial_args_must_be_valid_id_of_another_task(
                 "not a valid task id. Valid task ids for this workflow are: ['obs', 'relocs']",
             ),
         ):
-            _ = Spec(**yaml.safe_load(s))
+            _ = Spec(**yaml.load(s))
 
 
 @pytest.mark.parametrize(
@@ -218,7 +220,7 @@ def test_all_partial_array_members_must_be_valid_id_of_another_task(
         """
     )
     if all_valid_ids_of_another_task:
-        spec = Spec(**yaml.safe_load(s))
+        spec = Spec(**yaml.load(s))
         assert spec.workflow[2].partial == {
             "widgets": [TaskIdVariable(value=v, suffix="return") for v in arg_dep_ids]
         }
@@ -231,7 +233,7 @@ def test_all_partial_array_members_must_be_valid_id_of_another_task(
                 "['map_widget', 'plot_widget', 'dashboard']",
             ),
         ):
-            _ = Spec(**yaml.safe_load(s))
+            _ = Spec(**yaml.load(s))
 
 
 @pytest.mark.parametrize(
@@ -263,7 +265,7 @@ def test_invaild_spec_name_raises(invalid_name: str, raises_match: str):
         """
     )
     with pytest.raises(ValidationError, match=raises_match):
-        _ = Spec(**yaml.safe_load(s))
+        _ = Spec(**yaml.load(s))
 
 
 def test_method_default():
@@ -276,7 +278,7 @@ def test_method_default():
             task: get_subjectgroup_observations
         """
     )
-    spec = Spec(**yaml.safe_load(s))
+    spec = Spec(**yaml.load(s))
     assert spec.workflow[0].method == "call"
 
 
@@ -306,7 +308,7 @@ def test_only_oneof_map_or_mapvalues():
             "Please choose one or the other."
         ),
     ):
-        _ = Spec(**yaml.safe_load(s))
+        _ = Spec(**yaml.load(s))
 
 
 def test_depends_on_self_in_partial_raises():
@@ -331,7 +333,7 @@ def test_depends_on_self_in_partial_raises():
             "`relocs`. Task instances cannot depend on their own return values."
         ),
     ):
-        _ = Spec(**yaml.safe_load(s))
+        _ = Spec(**yaml.load(s))
 
 
 def test_depends_on_self_in_map_raises():
@@ -357,7 +359,7 @@ def test_depends_on_self_in_map_raises():
             "`relocs`. Task instances cannot depend on their own return values."
         ),
     ):
-        _ = Spec(**yaml.safe_load(s))
+        _ = Spec(**yaml.load(s))
 
 
 def test_depends_on_self_in_mapvalues_raises():
@@ -383,7 +385,7 @@ def test_depends_on_self_in_mapvalues_raises():
             "`relocs`. Task instances cannot depend on their own return values."
         ),
     ):
-        _ = Spec(**yaml.safe_load(s))
+        _ = Spec(**yaml.load(s))
 
 
 def test_task_id_collides_with_spec_id_raises():
@@ -405,7 +407,7 @@ def test_task_id_collides_with_spec_id_raises():
             "Please choose a different `id` for this task."
         ),
     ):
-        _ = Spec(**yaml.safe_load(s))
+        _ = Spec(**yaml.load(s))
 
 
 def test_task_instance_dependencies_property():
@@ -428,7 +430,7 @@ def test_task_instance_dependencies_property():
               relocations: ${{ workflow.relocs.return }}
         """
     )
-    spec = Spec(**yaml.safe_load(s))
+    spec = Spec(**yaml.load(s))
     assert spec.task_instance_dependencies == {
         "obs": [],
         "relocs": ["obs"],
@@ -459,7 +461,7 @@ def test_wrong_topological_order_partial_raises():
             "but `Get Subjectgroup Observations` is defined after `Process Relocations`."
         ),
     ):
-        _ = Spec(**yaml.safe_load(s))
+        _ = Spec(**yaml.load(s))
 
 
 def test_wrong_topological_order_map_raises():
@@ -486,7 +488,7 @@ def test_wrong_topological_order_map_raises():
             "but `Get Subjectgroup Observations` is defined after `Process Relocations`."
         ),
     ):
-        _ = Spec(**yaml.safe_load(s))
+        _ = Spec(**yaml.load(s))
 
 
 def test_wrong_topological_order_mapvalues_raises():
@@ -513,7 +515,7 @@ def test_wrong_topological_order_mapvalues_raises():
             "but `Get Subjectgroup Observations` is defined after `Process Relocations`."
         ),
     ):
-        _ = Spec(**yaml.safe_load(s))
+        _ = Spec(**yaml.load(s))
 
 
 def test_generate_dag_smoke():
@@ -536,7 +538,7 @@ def test_generate_dag_smoke():
               relocations: ${{ workflow.relocs.return }}
         """
     )
-    spec = Spec(**yaml.safe_load(s))
+    spec = Spec(**yaml.load(s))
     dc = DagCompiler(spec=spec)
     dag = dc.generate_dag()
     assert isinstance(dag, str)
@@ -570,7 +572,7 @@ def test_map_both_fields_required_if_either_given(
             "Both `argnames` and `argvalues` must be provided if either is given."
         ),
     ):
-        _ = Spec(**yaml.safe_load(s))
+        _ = Spec(**yaml.load(s))
 
 
 def test_per_taskinstance_omit_args():
@@ -592,7 +594,7 @@ def test_per_taskinstance_omit_args():
               groupers: ${{ workflow.groupers.return }}
         """
     )
-    spec = Spec(**yaml.safe_load(s))
+    spec = Spec(**yaml.load(s))
     dc = DagCompiler(spec=spec)
     assert dc.per_taskinstance_omit_args == {
         "obs": ["return"],
@@ -620,10 +622,10 @@ def test_duplicate_argnames_dont_result_in_omissions():
               groupers: ${{ workflow.groupers.return }}
         """
     )
-    spec = Spec(**yaml.safe_load(s))
+    spec = Spec(**yaml.load(s))
     dc = DagCompiler(spec=spec)
     params = dc.get_params_fillable_yaml()
-    fillable_yaml_form_params = yaml.safe_load(params)
+    fillable_yaml_form_params = yaml.load(params)
     # we _did_ set partial dependencies for all args on task id `split_obs`,
     # (including for `groupers` ) so the params for that field should be empty
     assert fillable_yaml_form_params["split_obs"] is None
@@ -661,7 +663,7 @@ def test_partial_argnames_not_identifiers_raises(invalid_argname):
         ValidationError,
         match=re.escape(f"`{invalid_argname}` is not a valid python identifier."),
     ):
-        _ = Spec(**yaml.safe_load(s))
+        _ = Spec(**yaml.load(s))
 
 
 @pytest.mark.parametrize(
@@ -694,4 +696,4 @@ def test_parallel_op_argnames_not_identifiers_raises(method, invalid_argname):
         ValidationError,
         match=re.escape(f"`{invalid_argname}` is not a valid python identifier."),
     ):
-        _ = Spec(**yaml.safe_load(s))
+        _ = Spec(**yaml.load(s))

@@ -1,5 +1,6 @@
 import functools
 import inspect
+import warnings
 from dataclasses import dataclass, field
 from typing import Callable, Iterable, Sequence
 
@@ -8,9 +9,17 @@ try:
     from lithops.future import ResponseFuture
     from lithops.utils import FuturesList
 except ImportError:
-    raise ImportError(
-        "Please install the `lithops` package to use the `LithopsExecutor`."
-    )
+    warnings.warn("Please install the `lithops` package to use the `LithopsExecutor`.")
+
+    class FunctionExecutor:  # type: ignore[no-redef]
+        pass
+
+    class ResponseFuture:  # type: ignore[no-redef]
+        pass
+
+    class FuturesList:  # type: ignore[no-redef]
+        pass
+
 
 from .base import AsyncExecutor, Future, FutureSequence, mapvalues_wrapper, P, R, T
 

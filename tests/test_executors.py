@@ -4,10 +4,12 @@ from unittest import mock
 from dataclasses import FrozenInstanceError
 
 import pytest
-import yaml
+import ruamel.yaml
 
 from ecoscope_workflows.decorators import AsyncTask, SyncTask, task
 from ecoscope_workflows.executors import LithopsExecutor, PythonExecutor, FutureSequence
+
+yaml = ruamel.yaml.YAML(typ="safe")
 
 
 def test_default_python_executor():
