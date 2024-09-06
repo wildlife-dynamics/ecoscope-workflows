@@ -138,19 +138,19 @@ jobs:
           python -m pytest -v ecoscope_workflows/ --doctest-modules \
           --ignore=ecoscope_workflows/visualize.py
 
-      - name: Export shell name and conda env name to env
+      - name: Test with pytest (not io)
+        shell: bash -leo pipefail {0}
         run: |
-          echo 'SHELL="bash -leo pipefail"' >> $GITHUB_ENV
-          echo "CONDA_ENV_NAME=${{ matrix.environment-name }}" >> $GITHUB_ENV
+          python -m pytest -m "not io" tests -vvv
 
-      - name: Test with pytest
+      - name: Test with pytest (io)
         env:
           EARTHRANGER_SERVER: ${{ secrets.EARTHRANGER_SERVER }}
           EARTHRANGER_USERNAME: ${{ secrets.EARTHRANGER_USERNAME }}
           EARTHRANGER_PASSWORD: ${{ secrets.EARTHRANGER_PASSWORD }}
         shell: bash -leo pipefail {0}
-        run: |  # FIXME: run IO tests separately since they require credentials which could expire and fail the tests
-          python -m pytest -m "not io" tests -vvv
+        run: |
+          python -m pytest -m "io" tests -vvv
 
   build-only-deps:
     runs-on: ubuntu-latest
