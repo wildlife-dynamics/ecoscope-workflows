@@ -13,6 +13,7 @@ def test_create_task_magicmock():
     assert isinstance(get_subjectgroup_observations, MockSyncTask)
     result = get_subjectgroup_observations()
     expected = load_example_return_from_task_reference(anchor, func_name)
+    assert isinstance(result, pd.DataFrame)
     pd.testing.assert_frame_equal(result, expected)
 
 
@@ -34,4 +35,5 @@ def test_create_task_magicmock_lithops_executor():
     future = get_subjectgroup_observations.set_executor("lithops").call(**kws)
     result = future.gather()
     expected = load_example_return_from_task_reference(anchor, func_name)
+    assert isinstance(result, pd.DataFrame)
     pd.testing.assert_frame_equal(result, expected)
