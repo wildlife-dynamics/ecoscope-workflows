@@ -450,6 +450,8 @@ class Spec(_ForbidExtra):
 
 
 class DagCompiler(BaseModel):
+    model_config = dict(arbitrary_types_allowed=True)
+
     spec: Spec
 
     # jinja kwargs; TODO: nest in separate model
