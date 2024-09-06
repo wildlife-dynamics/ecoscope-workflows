@@ -6,7 +6,6 @@ from ecoscope_workflows.tasks.groupby import set_groupers
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
 from ecoscope_workflows.tasks.transformation import add_temporal_index
-from ecoscope_workflows.tasks.transformation import apply_classification
 from ecoscope_workflows.tasks.transformation import apply_color_map
 from ecoscope_workflows.tasks.results import create_map_layer
 from ecoscope_workflows.tasks.results import draw_ecomap
@@ -51,15 +50,9 @@ if __name__ == "__main__":
         .call()
     )
 
-    pe_classify = (
-        apply_classification.validate()
-        .partial(geodataframe=filter_patrol_events, **params["pe_classify"])
-        .call()
-    )
-
     pe_colormap = (
         apply_color_map.validate()
-        .partial(geodataframe=pe_classify, **params["pe_colormap"])
+        .partial(geodataframe=filter_patrol_events, **params["pe_colormap"])
         .call()
     )
 
@@ -129,9 +122,15 @@ if __name__ == "__main__":
         .call()
     )
 
+    fd_colormap = (
+        apply_color_map.validate()
+        .partial(geodataframe=pe_feature_density, **params["fd_colormap"])
+        .call()
+    )
+
     fd_map_layer = (
         create_map_layer.validate()
-        .partial(geodataframe=pe_feature_density, **params["fd_map_layer"])
+        .partial(geodataframe=fd_colormap, **params["fd_map_layer"])
         .call()
     )
 
@@ -167,16 +166,10 @@ if __name__ == "__main__":
         .call()
     )
 
-    grouped_pe_classify = (
-        apply_classification.validate()
-        .partial(**params["grouped_pe_classify"])
-        .mapvalues(argnames=["geodataframe"], argvalues=split_patrol_event_groups)
-    )
-
     grouped_pe_colormap = (
         apply_color_map.validate()
         .partial(**params["grouped_pe_colormap"])
-        .mapvalues(argnames=["geodataframe"], argvalues=grouped_pe_classify)
+        .mapvalues(argnames=["geodataframe"], argvalues=split_patrol_event_groups)
     )
 
     grouped_pe_map_layer = (

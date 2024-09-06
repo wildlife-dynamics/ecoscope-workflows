@@ -8,7 +8,6 @@ from ecoscope_workflows.tasks.groupby import set_groupers
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
 from ecoscope_workflows.tasks.transformation import add_temporal_index
-from ecoscope_workflows.tasks.transformation import apply_classification
 from ecoscope_workflows.tasks.transformation import apply_color_map
 from ecoscope_workflows.tasks.results import create_map_layer
 from ecoscope_workflows.tasks.results import draw_ecomap
@@ -40,8 +39,7 @@ if __name__ == "__main__":
         "patrol_events": [],
         "filter_patrol_events": ["patrol_events"],
         "pe_add_temporal_index": ["filter_patrol_events"],
-        "pe_classify": ["filter_patrol_events"],
-        "pe_colormap": ["pe_classify"],
+        "pe_colormap": ["filter_patrol_events"],
         "pe_map_layer": ["pe_colormap"],
         "pe_ecomap": ["pe_map_layer"],
         "pe_ecomap_html_url": ["pe_ecomap"],
@@ -51,13 +49,13 @@ if __name__ == "__main__":
         "pe_bar_chart_widget": ["pe_bar_chart_html_url"],
         "pe_meshgrid": ["filter_patrol_events"],
         "pe_feature_density": ["filter_patrol_events", "pe_meshgrid"],
-        "fd_map_layer": ["pe_feature_density"],
+        "fd_colormap": ["pe_feature_density"],
+        "fd_map_layer": ["fd_colormap"],
         "fd_ecomap": ["fd_map_layer"],
         "fd_ecomap_html_url": ["fd_ecomap"],
         "fd_map_widget": ["fd_ecomap_html_url"],
         "split_patrol_event_groups": ["pe_add_temporal_index", "groupers"],
-        "grouped_pe_classify": ["split_patrol_event_groups"],
-        "grouped_pe_colormap": ["grouped_pe_classify"],
+        "grouped_pe_colormap": ["split_patrol_event_groups"],
         "grouped_pe_map_layer": ["grouped_pe_colormap"],
         "grouped_pe_ecomap": ["grouped_pe_map_layer"],
         "grouped_pe_ecomap_html_url": ["grouped_pe_ecomap"],
@@ -109,18 +107,10 @@ if __name__ == "__main__":
             | params["pe_add_temporal_index"],
             method="call",
         ),
-        "pe_classify": Node(
-            async_task=apply_classification.validate().set_executor("lithops"),
-            partial={
-                "geodataframe": DependsOn("filter_patrol_events"),
-            }
-            | params["pe_classify"],
-            method="call",
-        ),
         "pe_colormap": Node(
             async_task=apply_color_map.validate().set_executor("lithops"),
             partial={
-                "geodataframe": DependsOn("pe_classify"),
+                "geodataframe": DependsOn("filter_patrol_events"),
             }
             | params["pe_colormap"],
             method="call",
@@ -202,10 +192,18 @@ if __name__ == "__main__":
             | params["pe_feature_density"],
             method="call",
         ),
+        "fd_colormap": Node(
+            async_task=apply_color_map.validate().set_executor("lithops"),
+            partial={
+                "geodataframe": DependsOn("pe_feature_density"),
+            }
+            | params["fd_colormap"],
+            method="call",
+        ),
         "fd_map_layer": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
             partial={
-                "geodataframe": DependsOn("pe_feature_density"),
+                "geodataframe": DependsOn("fd_colormap"),
             }
             | params["fd_map_layer"],
             method="call",
@@ -244,22 +242,13 @@ if __name__ == "__main__":
             | params["split_patrol_event_groups"],
             method="call",
         ),
-        "grouped_pe_classify": Node(
-            async_task=apply_classification.validate().set_executor("lithops"),
-            partial=params["grouped_pe_classify"],
-            method="mapvalues",
-            kwargs={
-                "argnames": ["geodataframe"],
-                "argvalues": DependsOn("split_patrol_event_groups"),
-            },
-        ),
         "grouped_pe_colormap": Node(
             async_task=apply_color_map.validate().set_executor("lithops"),
             partial=params["grouped_pe_colormap"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geodataframe"],
-                "argvalues": DependsOn("grouped_pe_classify"),
+                "argvalues": DependsOn("split_patrol_event_groups"),
             },
         ),
         "grouped_pe_map_layer": Node(

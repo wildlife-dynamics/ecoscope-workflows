@@ -165,80 +165,9 @@
             ],
             "type": "object"
         },
-        "Patrol Events Classify": {
-            "additionalProperties": false,
-            "properties": {
-                "df": {
-                    "title": "Df",
-                    "type": "ecoscope_workflows.annotations.DataFrame"
-                },
-                "input_column_name": {
-                    "title": "Input Column Name",
-                    "type": "string",
-                    "description": "The dataframe column to classify."
-                },
-                "output_column_name": {
-                    "default": null,
-                    "title": "Output Column Name",
-                    "type": "string",
-                    "description": "The dataframe column that will contain the classification values."
-                },
-                "labels": {
-                    "default": null,
-                    "items": {
-                        "type": "string"
-                    },
-                    "title": "Labels",
-                    "type": "array",
-                    "description": "Labels of classification bins, uses bin edges if not provied."
-                },
-                "scheme": {
-                    "default": "equal_interval",
-                    "enum": [
-                        "equal_interval",
-                        "natural_breaks",
-                        "quantile",
-                        "std_mean",
-                        "max_breaks",
-                        "fisher_jenks"
-                    ],
-                    "title": "Scheme",
-                    "type": "string",
-                    "description": "The classification scheme to use."
-                },
-                "classification_options": {
-                    "anyOf": [
-                        {
-                            "$ref": "#/$defs/NaturalBreaksArgs"
-                        },
-                        {
-                            "$ref": "#/$defs/MaxBreaksArgs"
-                        },
-                        {
-                            "$ref": "#/$defs/StdMeanArgs"
-                        },
-                        {
-                            "$ref": "#/$defs/SharedArgs"
-                        }
-                    ],
-                    "default": null,
-                    "title": "Classification Options",
-                    "description": "Additional options specific to the classification scheme."
-                }
-            },
-            "required": [
-                "df",
-                "input_column_name"
-            ],
-            "type": "object"
-        },
         "Patrol Events Colormap": {
             "additionalProperties": false,
             "properties": {
-                "df": {
-                    "title": "Df",
-                    "type": "ecoscope_workflows.annotations.DataFrame"
-                },
                 "input_column_name": {
                     "title": "Input Column Name",
                     "type": "string",
@@ -401,6 +330,12 @@
                     "type": "string",
                     "description": "Sets the time interval of the x axis."
                 },
+                "color_column": {
+                    "default": null,
+                    "title": "Color Column",
+                    "type": "string",
+                    "description": "The name of the dataframe column to color bars with."
+                },
                 "grouped_styles": {
                     "default": [],
                     "items": {
@@ -418,7 +353,7 @@
                     ],
                     "default": null,
                     "title": "Plot Style",
-                    "description": "Additional style kwargs passed to go.Pie()."
+                    "description": "Additional style kwargs passed to go.Bar()."
                 },
                 "layout_style": {
                     "allOf": [
@@ -483,7 +418,7 @@
                     "description": "The height of a grid cell in meters."
                 },
                 "intersecting_only": {
-                    "default": true,
+                    "default": false,
                     "title": "Intersecting Only",
                     "type": "boolean",
                     "description": "Whether to return only grid cells intersecting with the aoi."
@@ -513,6 +448,43 @@
             },
             "required": [
                 "geometry_type"
+            ],
+            "type": "object"
+        },
+        "Feature Density Colormap": {
+            "additionalProperties": false,
+            "properties": {
+                "input_column_name": {
+                    "title": "Input Column Name",
+                    "type": "string",
+                    "description": "The name of the column with categorical values."
+                },
+                "colormap": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    ],
+                    "default": "viridis",
+                    "title": "Colormap",
+                    "description": "Either a named mpl.colormap or a list of string hex values."
+                },
+                "output_column_name": {
+                    "default": null,
+                    "title": "Output Column Name",
+                    "type": "string",
+                    "description": "The dataframe column that will contain the color values."
+                }
+            },
+            "required": [
+                "df",
+                "input_column_name"
             ],
             "type": "object"
         },
@@ -615,82 +587,9 @@
             "required": [],
             "type": "object"
         },
-        "Grouped Patrol Events Classify": {
-            "additionalProperties": false,
-            "properties": {
-                "df": {
-                    "default": null,
-                    "title": "Df",
-                    "type": "ecoscope_workflows.annotations.DataFrame"
-                },
-                "input_column_name": {
-                    "title": "Input Column Name",
-                    "type": "string",
-                    "description": "The dataframe column to classify."
-                },
-                "output_column_name": {
-                    "default": null,
-                    "title": "Output Column Name",
-                    "type": "string",
-                    "description": "The dataframe column that will contain the classification values."
-                },
-                "labels": {
-                    "default": null,
-                    "items": {
-                        "type": "string"
-                    },
-                    "title": "Labels",
-                    "type": "array",
-                    "description": "Labels of classification bins, uses bin edges if not provied."
-                },
-                "scheme": {
-                    "default": "equal_interval",
-                    "enum": [
-                        "equal_interval",
-                        "natural_breaks",
-                        "quantile",
-                        "std_mean",
-                        "max_breaks",
-                        "fisher_jenks"
-                    ],
-                    "title": "Scheme",
-                    "type": "string",
-                    "description": "The classification scheme to use."
-                },
-                "classification_options": {
-                    "anyOf": [
-                        {
-                            "$ref": "#/$defs/NaturalBreaksArgs"
-                        },
-                        {
-                            "$ref": "#/$defs/MaxBreaksArgs"
-                        },
-                        {
-                            "$ref": "#/$defs/StdMeanArgs"
-                        },
-                        {
-                            "$ref": "#/$defs/SharedArgs"
-                        }
-                    ],
-                    "default": null,
-                    "title": "Classification Options",
-                    "description": "Additional options specific to the classification scheme."
-                }
-            },
-            "required": [
-                "df",
-                "input_column_name"
-            ],
-            "type": "object"
-        },
         "Grouped Patrol Events Colormap": {
             "additionalProperties": false,
             "properties": {
-                "df": {
-                    "default": null,
-                    "title": "Df",
-                    "type": "ecoscope_workflows.annotations.DataFrame"
-                },
                 "input_column_name": {
                     "title": "Input Column Name",
                     "type": "string",
@@ -834,6 +733,12 @@
                     "type": "string",
                     "description": "The name of the dataframe column to label slices with, required if the data in value_column is numeric."
                 },
+                "color_column": {
+                    "default": null,
+                    "title": "Color Column",
+                    "type": "string",
+                    "description": "The name of the dataframe column to color slices with."
+                },
                 "plot_style": {
                     "allOf": [
                         {
@@ -960,73 +865,6 @@
             "title": "Coordinate",
             "type": "object"
         },
-        "MaxBreaksArgs": {
-            "properties": {
-                "k": {
-                    "default": 5,
-                    "title": "K",
-                    "type": "integer"
-                },
-                "mindiff": {
-                    "default": 0,
-                    "title": "Mindiff",
-                    "type": "number"
-                }
-            },
-            "title": "MaxBreaksArgs",
-            "type": "object"
-        },
-        "NaturalBreaksArgs": {
-            "properties": {
-                "k": {
-                    "default": 5,
-                    "title": "K",
-                    "type": "integer"
-                },
-                "initial": {
-                    "default": 10,
-                    "title": "Initial",
-                    "type": "integer"
-                }
-            },
-            "title": "NaturalBreaksArgs",
-            "type": "object"
-        },
-        "SharedArgs": {
-            "properties": {
-                "k": {
-                    "default": 5,
-                    "title": "K",
-                    "type": "integer"
-                }
-            },
-            "title": "SharedArgs",
-            "type": "object"
-        },
-        "StdMeanArgs": {
-            "properties": {
-                "multiples": {
-                    "default": [
-                        -2,
-                        -1,
-                        1,
-                        2
-                    ],
-                    "items": {
-                        "type": "integer"
-                    },
-                    "title": "Multiples",
-                    "type": "array"
-                },
-                "anchor": {
-                    "default": false,
-                    "title": "Anchor",
-                    "type": "boolean"
-                }
-            },
-            "title": "StdMeanArgs",
-            "type": "object"
-        },
         "PointLayerStyle": {
             "properties": {
                 "auto_highlight": {
@@ -1068,14 +906,12 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Fill Color"
                 },
                 "get_line_color": {
@@ -1097,20 +933,42 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Line Color"
                 },
                 "get_line_width": {
                     "default": 1,
                     "title": "Get Line Width",
                     "type": "number"
+                },
+                "fill_color_column": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Fill Color Column"
+                },
+                "line_color_column": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Line Color Column"
                 },
                 "layer_type": {
                     "const": "point",
@@ -1171,14 +1029,12 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Fill Color"
                 },
                 "get_line_color": {
@@ -1200,20 +1056,42 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Line Color"
                 },
                 "get_line_width": {
                     "default": 1,
                     "title": "Get Line Width",
                     "type": "number"
+                },
+                "fill_color_column": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Fill Color Column"
+                },
+                "line_color_column": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Line Color Column"
                 },
                 "layer_type": {
                     "const": "polygon",
@@ -1283,20 +1161,30 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Color"
                 },
                 "get_width": {
                     "default": 1,
                     "title": "Get Width",
                     "type": "number"
+                },
+                "color_column": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Color Column"
                 }
             },
             "title": "PolylineLayerStyle",

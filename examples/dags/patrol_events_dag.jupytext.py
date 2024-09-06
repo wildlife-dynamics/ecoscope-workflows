@@ -12,7 +12,6 @@ from ecoscope_workflows.tasks.groupby import set_groupers
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
 from ecoscope_workflows.tasks.transformation import add_temporal_index
-from ecoscope_workflows.tasks.transformation import apply_classification
 from ecoscope_workflows.tasks.transformation import apply_color_map
 from ecoscope_workflows.tasks.results import create_map_layer
 from ecoscope_workflows.tasks.results import draw_ecomap
@@ -112,30 +111,6 @@ pe_add_temporal_index = add_temporal_index.partial(
 
 
 # %% [markdown]
-# ## Patrol Events Classify
-
-# %%
-# parameters
-
-pe_classify_params = dict(
-    df=...,
-    input_column_name=...,
-    output_column_name=...,
-    labels=...,
-    scheme=...,
-    classification_options=...,
-)
-
-# %%
-# call the task
-
-
-pe_classify = apply_classification.partial(
-    geodataframe=filter_patrol_events, **pe_classify_params
-).call()
-
-
-# %% [markdown]
 # ## Patrol Events Colormap
 
 # %%
@@ -153,7 +128,7 @@ pe_colormap_params = dict(
 
 
 pe_colormap = apply_color_map.partial(
-    geodataframe=pe_classify, **pe_colormap_params
+    geodataframe=filter_patrol_events, **pe_colormap_params
 ).call()
 
 
@@ -249,6 +224,7 @@ pe_bar_chart_params = dict(
     category=...,
     agg_function=...,
     time_interval=...,
+    color_column=...,
     grouped_styles=...,
     plot_style=...,
     layout_style=...,
@@ -346,6 +322,28 @@ pe_feature_density = calculate_feature_density.partial(
 
 
 # %% [markdown]
+# ## Feature Density Colormap
+
+# %%
+# parameters
+
+fd_colormap_params = dict(
+    df=...,
+    input_column_name=...,
+    colormap=...,
+    output_column_name=...,
+)
+
+# %%
+# call the task
+
+
+fd_colormap = apply_color_map.partial(
+    geodataframe=pe_feature_density, **fd_colormap_params
+).call()
+
+
+# %% [markdown]
 # ## Create map layer from Feature Density
 
 # %%
@@ -360,7 +358,7 @@ fd_map_layer_params = dict(
 
 
 fd_map_layer = create_map_layer.partial(
-    geodataframe=pe_feature_density, **fd_map_layer_params
+    geodataframe=fd_colormap, **fd_map_layer_params
 ).call()
 
 
@@ -443,30 +441,6 @@ split_patrol_event_groups = split_groups.partial(
 
 
 # %% [markdown]
-# ## Grouped Patrol Events Classify
-
-# %%
-# parameters
-
-grouped_pe_classify_params = dict(
-    df=...,
-    input_column_name=...,
-    output_column_name=...,
-    labels=...,
-    scheme=...,
-    classification_options=...,
-)
-
-# %%
-# call the task
-
-
-grouped_pe_classify = apply_classification.partial(
-    **grouped_pe_classify_params
-).mapvalues(argnames=["geodataframe"], argvalues=split_patrol_event_groups)
-
-
-# %% [markdown]
 # ## Grouped Patrol Events Colormap
 
 # %%
@@ -484,7 +458,7 @@ grouped_pe_colormap_params = dict(
 
 
 grouped_pe_colormap = apply_color_map.partial(**grouped_pe_colormap_params).mapvalues(
-    argnames=["geodataframe"], argvalues=grouped_pe_classify
+    argnames=["geodataframe"], argvalues=split_patrol_event_groups
 )
 
 
@@ -578,6 +552,7 @@ grouped_pe_map_widget = create_map_widget_single_view.partial(
 grouped_pe_pie_chart_params = dict(
     value_column=...,
     label_column=...,
+    color_column=...,
     plot_style=...,
     layout_style=...,
 )

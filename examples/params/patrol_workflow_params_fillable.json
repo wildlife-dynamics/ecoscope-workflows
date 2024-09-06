@@ -763,6 +763,12 @@
                     "type": "string",
                     "description": "Sets the time interval of the x axis."
                 },
+                "color_column": {
+                    "default": null,
+                    "title": "Color Column",
+                    "type": "string",
+                    "description": "The name of the dataframe column to color bars with."
+                },
                 "grouped_styles": {
                     "default": [],
                     "items": {
@@ -780,7 +786,7 @@
                     ],
                     "default": null,
                     "title": "Plot Style",
-                    "description": "Additional style kwargs passed to go.Pie()."
+                    "description": "Additional style kwargs passed to go.Bar()."
                 },
                 "layout_style": {
                     "allOf": [
@@ -842,6 +848,12 @@
                     "title": "Label Column",
                     "type": "string",
                     "description": "The name of the dataframe column to label slices with, required if the data in value_column is numeric."
+                },
+                "color_column": {
+                    "default": null,
+                    "title": "Color Column",
+                    "type": "string",
+                    "description": "The name of the dataframe column to color slices with."
                 },
                 "plot_style": {
                     "allOf": [
@@ -1131,14 +1143,12 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Fill Color"
                 },
                 "get_line_color": {
@@ -1160,20 +1170,42 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Line Color"
                 },
                 "get_line_width": {
                     "default": 1,
                     "title": "Get Line Width",
                     "type": "number"
+                },
+                "fill_color_column": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Fill Color Column"
+                },
+                "line_color_column": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Line Color Column"
                 },
                 "layer_type": {
                     "const": "point",
@@ -1234,14 +1266,12 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Fill Color"
                 },
                 "get_line_color": {
@@ -1263,20 +1293,42 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Line Color"
                 },
                 "get_line_width": {
                     "default": 1,
                     "title": "Get Line Width",
                     "type": "number"
+                },
+                "fill_color_column": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Fill Color Column"
+                },
+                "line_color_column": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Line Color Column"
                 },
                 "layer_type": {
                     "const": "polygon",
@@ -1346,20 +1398,30 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Color"
                 },
                 "get_width": {
                     "default": 1,
                     "title": "Get Width",
                     "type": "number"
+                },
+                "color_column": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Color Column"
                 }
             },
             "title": "PolylineLayerStyle",

@@ -236,14 +236,12 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Fill Color"
                 },
                 "get_line_color": {
@@ -265,20 +263,42 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Line Color"
                 },
                 "get_line_width": {
                     "default": 1,
                     "title": "Get Line Width",
                     "type": "number"
+                },
+                "fill_color_column": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Fill Color Column"
+                },
+                "line_color_column": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Line Color Column"
                 },
                 "layer_type": {
                     "const": "point",
@@ -339,14 +359,12 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Fill Color"
                 },
                 "get_line_color": {
@@ -368,20 +386,42 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Line Color"
                 },
                 "get_line_width": {
                     "default": 1,
                     "title": "Get Line Width",
                     "type": "number"
+                },
+                "fill_color_column": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Fill Color Column"
+                },
+                "line_color_column": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Line Color Column"
                 },
                 "layer_type": {
                     "const": "polygon",
@@ -451,20 +491,30 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Color"
                 },
                 "get_width": {
                     "default": 1,
                     "title": "Get Width",
                     "type": "number"
+                },
+                "color_column": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Color Column"
                 }
             },
             "title": "PolylineLayerStyle",

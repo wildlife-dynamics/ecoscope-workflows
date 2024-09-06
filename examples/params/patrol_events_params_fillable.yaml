@@ -26,18 +26,9 @@ pe_add_temporal_index:
   cast_to_datetime:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether to attempt casting `time_col` to datetime.'))
   format:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='            If `cast_to_datetime=True`, the format to pass to `pd.to_datetime`\n            when attempting to cast `time_col` to datetime. Defaults to "mixed".\n            '))
 
-# Parameters for 'Patrol Events Classify' using task `apply_classification`.
-pe_classify:
-  df:   # (pandera.typing.pandas.DataFrame[ecoscope_workflows.annotations.JsonSerializableDataFrameModel], WithJsonSchema(json_schema={'type': 'ecoscope_workflows.annotations.DataFrame'}, mode=None))
-  input_column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to classify.'))
-  output_column_name:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='The dataframe column that will contain the classification values.'))
-  labels:   # (typing.Union[list[str], typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Labels of classification bins, uses bin edges if not provied.'))
-  scheme:   # (typing.Literal['equal_interval', 'natural_breaks', 'quantile', 'std_mean', 'max_breaks', 'fisher_jenks'], FieldInfo(annotation=NoneType, required=True, description='The classification scheme to use.'))
-  classification_options:   # (typing.Union[ecoscope_workflows.tasks.transformation._classification.NaturalBreaksArgs, ecoscope_workflows.tasks.transformation._classification.MaxBreaksArgs, ecoscope_workflows.tasks.transformation._classification.StdMeanArgs, ecoscope_workflows.tasks.transformation._classification.SharedArgs, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional options specific to the classification scheme.'))
-
 # Parameters for 'Patrol Events Colormap' using task `apply_color_map`.
 pe_colormap:
-  df:   # (pandera.typing.pandas.DataFrame[ecoscope_workflows.annotations.JsonSerializableDataFrameModel], WithJsonSchema(json_schema={'type': 'ecoscope_workflows.annotations.DataFrame'}, mode=None))
+  df:   # (pandera.typing.pandas.DataFrame[ecoscope_workflows.annotations.JsonSerializableDataFrameModel], WithJsonSchema(json_schema={'type': 'ecoscope_workflows.annotations.DataFrame'}, mode=None), FieldInfo(annotation=NoneType, required=True, description='The dataframe to apply the color map to.', exclude=True))
   input_column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
   colormap:   # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
   output_column_name:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='The dataframe column that will contain the color values.'))
@@ -69,8 +60,9 @@ pe_bar_chart:
   category:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to stack in the y axis.'))
   agg_function:   # (typing.Literal['count', 'mean', 'sum', 'min', 'max'], FieldInfo(annotation=NoneType, required=True, description='The aggregate function to apply to the group.'))
   time_interval:   # (typing.Literal['year', 'month', 'week', 'day', 'hour'], FieldInfo(annotation=NoneType, required=True, description='Sets the time interval of the x axis.'))
+  color_column:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='The name of the dataframe column to color bars with.'))
   grouped_styles:   # (list[ecoscope_workflows.tasks.results._ecoplot.GroupedPlotStyle], FieldInfo(annotation=NoneType, required=True, description='Style arguments passed to plotly.graph_objects.Bar and applied to individual groups.'))
-  plot_style:   # (typing.Union[ecoscope_workflows.tasks.results._ecoplot.PlotStyle, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional style kwargs passed to go.Pie().'))
+  plot_style:   # (typing.Union[ecoscope_workflows.tasks.results._ecoplot.PlotStyle, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional style kwargs passed to go.Bar().'))
   layout_style:   # (typing.Union[ecoscope_workflows.tasks.results._ecoplot.BarLayoutStyle, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional kwargs passed to plotly.go.Figure(layout).'))
 
 # Parameters for 'Persist Patrols Bar Chart as Text' using task `persist_text`.
@@ -92,6 +84,13 @@ pe_meshgrid:
 # Parameters for 'Patrol Events Feature Density' using task `calculate_feature_density`.
 pe_feature_density:
   geometry_type:   # (typing.Literal['point', 'line'], FieldInfo(annotation=NoneType, required=True, description='The geometry type of the provided geodataframe'))
+
+# Parameters for 'Feature Density Colormap' using task `apply_color_map`.
+fd_colormap:
+  df:   # (pandera.typing.pandas.DataFrame[ecoscope_workflows.annotations.JsonSerializableDataFrameModel], WithJsonSchema(json_schema={'type': 'ecoscope_workflows.annotations.DataFrame'}, mode=None), FieldInfo(annotation=NoneType, required=True, description='The dataframe to apply the color map to.', exclude=True))
+  input_column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
+  colormap:   # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
+  output_column_name:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='The dataframe column that will contain the color values.'))
 
 # Parameters for 'Create map layer from Feature Density' using task `create_map_layer`.
 fd_map_layer:
@@ -116,18 +115,9 @@ fd_map_widget:
 # Parameters for 'Split Patrol Events by Group' using task `split_groups`.
 split_patrol_event_groups:
 
-# Parameters for 'Grouped Patrol Events Classify' using task `apply_classification`.
-grouped_pe_classify:
-  df:   # (pandera.typing.pandas.DataFrame[ecoscope_workflows.annotations.JsonSerializableDataFrameModel], WithJsonSchema(json_schema={'type': 'ecoscope_workflows.annotations.DataFrame'}, mode=None))
-  input_column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to classify.'))
-  output_column_name:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='The dataframe column that will contain the classification values.'))
-  labels:   # (typing.Union[list[str], typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Labels of classification bins, uses bin edges if not provied.'))
-  scheme:   # (typing.Literal['equal_interval', 'natural_breaks', 'quantile', 'std_mean', 'max_breaks', 'fisher_jenks'], FieldInfo(annotation=NoneType, required=True, description='The classification scheme to use.'))
-  classification_options:   # (typing.Union[ecoscope_workflows.tasks.transformation._classification.NaturalBreaksArgs, ecoscope_workflows.tasks.transformation._classification.MaxBreaksArgs, ecoscope_workflows.tasks.transformation._classification.StdMeanArgs, ecoscope_workflows.tasks.transformation._classification.SharedArgs, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional options specific to the classification scheme.'))
-
 # Parameters for 'Grouped Patrol Events Colormap' using task `apply_color_map`.
 grouped_pe_colormap:
-  df:   # (pandera.typing.pandas.DataFrame[ecoscope_workflows.annotations.JsonSerializableDataFrameModel], WithJsonSchema(json_schema={'type': 'ecoscope_workflows.annotations.DataFrame'}, mode=None))
+  df:   # (pandera.typing.pandas.DataFrame[ecoscope_workflows.annotations.JsonSerializableDataFrameModel], WithJsonSchema(json_schema={'type': 'ecoscope_workflows.annotations.DataFrame'}, mode=None), FieldInfo(annotation=NoneType, required=True, description='The dataframe to apply the color map to.', exclude=True))
   input_column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
   colormap:   # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
   output_column_name:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='The dataframe column that will contain the color values.'))
@@ -157,6 +147,7 @@ grouped_pe_map_widget:
 grouped_pe_pie_chart:
   value_column:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the dataframe column to pull slice values from.'))
   label_column:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='The name of the dataframe column to label slices with, required if the data in value_column is numeric.'))
+  color_column:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='The name of the dataframe column to color slices with.'))
   plot_style:   # (typing.Union[ecoscope_workflows.tasks.results._ecoplot.PlotStyle, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional style kwargs passed to go.Pie().'))
   layout_style:   # (typing.Union[ecoscope_workflows.tasks.results._ecoplot.LayoutStyle, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional kwargs passed to plotly.go.Figure(layout).'))
 
