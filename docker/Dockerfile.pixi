@@ -1,15 +1,18 @@
 FROM bitnami/minideb:bullseye as build
 
 ARG CHANNEL_MOUNT=.rattler-build/artifacts
+ARG VERSION="0.0.0"
 
 RUN apt-get update && apt-get install -y curl
 RUN curl -fsSL https://pixi.sh/install.sh | bash
 ENV PATH="/root/.pixi/bin:${PATH}"
 
 COPY pyproject.toml /app/pyproject.toml
+COPY ecoscope_workflows /app/ecoscope_workflows
 WORKDIR /app
 
 RUN --mount=type=bind,source=$CHANNEL_MOUNT,target=/usr/local/etc/wildlife-dynamics/channel \
+    SETUPTOOLS_SCM_PRETEND_VERSION=$VERSION \
     pixi run python -c "import ecoscope_workflows"
 RUN pixi clean cache -v --yes
 
