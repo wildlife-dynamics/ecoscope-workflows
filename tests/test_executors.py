@@ -6,8 +6,8 @@ from dataclasses import FrozenInstanceError
 import pytest
 import yaml
 
-from ecoscope_workflows.decorators import task
-from ecoscope_workflows.executors import LithopsExecutor, PythonExecutor
+from ecoscope_workflows.decorators import AsyncTask, SyncTask, task
+from ecoscope_workflows.executors import LithopsExecutor, PythonExecutor, FutureSequence
 
 
 def test_default_python_executor():
@@ -66,7 +66,7 @@ def test_lithops_executor_basic(lithops_executor: LithopsExecutor):
     def f(a: int, b: int) -> int:
         return a + b
 
-    f_new = f.set_executor(lithops_executor)
+    f_new: AsyncTask = f.set_executor(lithops_executor)
     future = f_new(a=1, b=2)
     res = future.gather()
     assert res == 3
@@ -77,7 +77,7 @@ def test_lithops_executor_validate(lithops_executor: LithopsExecutor):
     def f(a: int, b: int) -> int:
         return a + b
 
-    future = f.validate().set_executor(lithops_executor)(a="1", b="2")
+    future = f.validate().set_executor(lithops_executor)(a="1", b="2")  # type: ignore[arg-type]
     res = future.gather()
     assert res == 3
 
@@ -87,7 +87,7 @@ def test_lithops_executor_validate_partial(lithops_executor: LithopsExecutor):
     def f(a: int, b: int) -> int:
         return a + b
 
-    partial = f.validate().partial(b="2")
+    partial: SyncTask = f.validate().partial(b="2")  # type: ignore[arg-type,call-arg]
 
     async_partial = partial.set_executor(lithops_executor)
     future = async_partial.call(a="1")
@@ -100,7 +100,7 @@ def test_lithops_executor_map(lithops_executor: LithopsExecutor):
     def f(a: int, b: int) -> int:
         return a + b
 
-    future = f.set_executor(lithops_executor).map(["a", "b"], [(1, 1), (2, 2), (3, 3)])
+    future = f.set_executor(lithops_executor).map(["a", "b"], [(1, 1), (2, 2), (3, 3)])  # type: ignore[arg-type]
     res = future.gather()
     assert res == [2, 4, 6]
 
@@ -111,9 +111,9 @@ def test_lithops_executor_partial_map(lithops_executor: LithopsExecutor):
         return a + b
 
     future = (
-        f.set_executor(lithops_executor)
+        f.set_executor(lithops_executor)  # type: ignore[call-arg]
         .partial(a=1)
-        .map(argnames=["b"], argvalues=[(1,), (2,), (3,)])
+        .map(argnames=["b"], argvalues=[(1,), (2,), (3,)])  # type: ignore[arg-type]
     )
     res = future.gather()
     assert res == [2, 3, 4]
@@ -124,9 +124,9 @@ def test_lithops_executor_mapvalues(lithops_executor: LithopsExecutor):
     def f(a: int) -> int:
         return a * 2
 
-    future = f.set_executor(lithops_executor).mapvalues(
-        ["a"],
-        [("x", 1), ("y", 2), ("z", 3)],
+    future: FutureSequence = f.set_executor(lithops_executor).mapvalues(
+        ["a"],  # type: ignore[arg-type]
+        [("x", 1), ("y", 2), ("z", 3)],  # type: ignore[arg-type]
     )
     res = future.gather()
     assert res == [("x", 2), ("y", 4), ("z", 6)]
