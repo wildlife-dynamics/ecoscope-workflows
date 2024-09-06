@@ -34,7 +34,11 @@ dependencies = [
 
 [project.optional-dependencies]
 ecoscope-core = [
-    "ecoscope @ git+https://github.com/wildlife-dynamics/ecoscope.git@v1.8.2"
+    # note: this is technically installable from
+    # git+https://github.com/wildlife-dynamics/ecoscope.git@v1.8.2
+    # but that is discouraged. please use micromamba or pixi to install
+    # from our custom channel to ensure compatibility.
+    "ecoscope>=1.8.2"
 ]
 gcs = [
     "cloudpathlib[gs]",
@@ -94,10 +98,10 @@ channels = [
     # TODO: "https://repo.prefix.dev/wildlife-dynamics",
     "conda-forge",
 ]
-platforms = ["linux-64", "osx-arm64"]
+platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
 
 [tool.pixi.pypi-dependencies]
-ecoscope-workflows = { path = ".", editable = true }
+ecoscope_workflows = { path = ".", editable = true }
 
 [tool.pixi.dependencies]  # TODO: validate equality with `pyproject.toml` dependencies
 pandera = "*"
