@@ -1,10 +1,10 @@
 import builtins
 import functools
 import keyword
-import pathlib
 import subprocess
 import sys
 from importlib import resources
+from importlib.resources.abc import Traversable
 from typing import Annotated, Any, Callable, Literal, TypeAlias, TypeVar
 
 from jinja2 import Environment, FileSystemLoader
@@ -454,7 +454,7 @@ class DagCompiler(BaseModel):
 
     # jinja kwargs; TODO: nest in separate model
     template: str = "script-sequential.jinja2"
-    template_dir: pathlib.Path = TEMPLATES  # type: ignore[assignment]
+    template_dir: Traversable = TEMPLATES
 
     # compilation settings
     testing: bool = False
