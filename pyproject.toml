@@ -110,3 +110,5 @@ ecoscope-core = { features = ["ecoscope-core"], solve-group = "default" }
 gcs = { features = ["gcs"], solve-group = "default" }
 lithops = { features = ["lithops"], solve-group = "default" }
 test = { features = ["test"], solve-group = "default" }
+
+ecoscope-core-lithops = { features = ["ecoscope-core", "lithops"], solve-group = "default" }

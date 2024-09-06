@@ -18,6 +18,6 @@ COPY pixi.lock /app/pixi.lock
 WORKDIR /app
 RUN --mount=type=bind,source=$CHANNEL_MOUNT,target=/usr/local/etc/wildlife-dynamics/channel \
     SETUPTOOLS_SCM_PRETEND_VERSION=$VERSION \
-    pixi run --environment lithops \
+    pixi run --environment ecoscope-core-lithops \
     python -c "import ecoscope_workflows"
 RUN pixi clean cache -v --yes
