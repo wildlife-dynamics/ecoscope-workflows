@@ -26,6 +26,7 @@ repos:
     hooks:
       - id: mypy
         exclude: "examples/dags/"
+        args: [--python-version=3.10]
         additional_dependencies: [
             # Type stubs
             types-python-dateutil,
