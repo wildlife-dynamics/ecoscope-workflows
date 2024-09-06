@@ -26,13 +26,14 @@ dependencies = [
     "pydantic-settings",
     "tomli-w",
     # compile-time only; todo: these could actually be optional dependencies
+    # as they are not required for running workflows (just for compiling them)
     "jinja2",
     "ruamel.yaml",
     "ruff",
 ]
 
 [project.optional-dependencies]
-ecoscope-core-tasks = [
+ecoscope-core = [
     "ecoscope @ git+https://github.com/wildlife-dynamics/ecoscope.git@v1.8.2"
 ]
 gcs = [

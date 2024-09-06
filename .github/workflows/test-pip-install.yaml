@@ -1,0 +1,45 @@
+name: Test (pip)
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - uses: actions/cache@v4
+        id: restore-cache
+        with:
+          key: "pip-venv-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}"
+          path: |
+            .venv/
+
+      - name: If no cache hit, recreate venv
+        if: steps.restore-cache.outputs.cache-hit == false
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/python -m pip install -e ".[test,lithops]"
+
+      - name: Run doctests
+        run: |
+          .venv/bin/python -m pytest -v ecoscope_workflows/ --doctest-modules \
+          --ignore=ecoscope_workflows/visualize.py
+
+      - name: Test with pytest
+        run: |
+          .venv/bin/python -m pytest -m "not requires_ecoscope_core" tests -vvv

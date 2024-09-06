@@ -1,4 +1,4 @@
-name: Build
+name: Build & Test (conda)
 
 on:
   push:
@@ -119,7 +119,7 @@ jobs:
           init-shell: bash
       - name: Install all dependencies with conda
         shell: bash -leo pipefail {0}
-        run: |  # todo: ecoscope-workflows build variants (e.g. "compile-only" w/out ecoscope-core-tasks, etc.)
+        run: |  # todo: ecoscope-workflows build variants (e.g. "compile-only" w/out ecoscope-core, etc.)
           micromamba install python=${{ matrix.python-version }} pytest -c conda-forge --yes
           micromamba install ecoscope-workflows \
           -c file://$(pwd)/tmp/conda-channel \
