@@ -523,7 +523,6 @@
         "LayerDefinition": {
             "properties": {
                 "geodataframe": {
-                    "default": null,
                     "title": "Geodataframe",
                     "type": "ecoscope_workflows.annotations.DataFrame"
                 },

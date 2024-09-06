@@ -548,11 +548,6 @@
         "Persist Feature Density Ecomap as Text": {
             "additionalProperties": false,
             "properties": {
-                "root_path": {
-                    "title": "Root Path",
-                    "type": "string",
-                    "description": "Root path to persist text to"
-                },
                 "filename": {
                     "default": null,
                     "title": "Filename",
@@ -560,9 +555,7 @@
                     "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
                 }
             },
-            "required": [
-                "root_path"
-            ],
+            "required": [],
             "type": "object"
         },
         "Create Feature Density Map Widget": {
@@ -677,19 +670,12 @@
                     "description": "Additional arguments for configuring the North Arrow."
                 }
             },
-            "required": [
-                "geo_layers"
-            ],
+            "required": [],
             "type": "object"
         },
         "Persist grouped Patrol Events Ecomap as Text": {
             "additionalProperties": false,
             "properties": {
-                "root_path": {
-                    "title": "Root Path",
-                    "type": "string",
-                    "description": "Root path to persist text to"
-                },
                 "filename": {
                     "default": null,
                     "title": "Filename",
@@ -697,9 +683,7 @@
                     "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
                 }
             },
-            "required": [
-                "root_path"
-            ],
+            "required": [],
             "type": "object"
         },
         "Create grouped Patrol Events Map Widget": {
@@ -714,6 +698,12 @@
             "required": [
                 "title"
             ],
+            "type": "object"
+        },
+        "Merge Patrol Events Map Widget Views": {
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
             "type": "object"
         },
         "Draw Pie Chart for Patrols Events": {
@@ -797,6 +787,48 @@
             "required": [
                 "geometry_type"
             ],
+            "type": "object"
+        },
+        "Grouped Feature Density Colormap": {
+            "additionalProperties": false,
+            "properties": {
+                "input_column_name": {
+                    "title": "Input Column Name",
+                    "type": "string",
+                    "description": "The name of the column with categorical values."
+                },
+                "colormap": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    ],
+                    "default": "viridis",
+                    "title": "Colormap",
+                    "description": "Either a named mpl.colormap or a list of string hex values."
+                },
+                "output_column_name": {
+                    "default": null,
+                    "title": "Output Column Name",
+                    "type": "string",
+                    "description": "The dataframe column that will contain the color values."
+                }
+            },
+            "required": [
+                "input_column_name"
+            ],
+            "type": "object"
+        },
+        "Merge Feature Density Widget Views": {
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
             "type": "object"
         },
         "Create Dashboard with Patrol Map Widgets": {
@@ -1354,32 +1386,6 @@
             "title": "PlotStyle",
             "type": "object"
         },
-        "LayoutStyle": {
-            "properties": {
-                "font_color": {
-                    "default": null,
-                    "title": "Font Color",
-                    "type": "string"
-                },
-                "font_style": {
-                    "default": null,
-                    "title": "Font Style",
-                    "type": "string"
-                },
-                "plot_bgcolor": {
-                    "default": null,
-                    "title": "Plot Bgcolor",
-                    "type": "string"
-                },
-                "showlegend": {
-                    "default": null,
-                    "title": "Showlegend",
-                    "type": "boolean"
-                }
-            },
-            "title": "LayoutStyle",
-            "type": "object"
-        },
         "WidgetSingleView": {
             "properties": {
                 "widget_type": {
@@ -1458,6 +1464,32 @@
                 "data"
             ],
             "title": "WidgetSingleView",
+            "type": "object"
+        },
+        "LayoutStyle": {
+            "properties": {
+                "font_color": {
+                    "default": null,
+                    "title": "Font Color",
+                    "type": "string"
+                },
+                "font_style": {
+                    "default": null,
+                    "title": "Font Style",
+                    "type": "string"
+                },
+                "plot_bgcolor": {
+                    "default": null,
+                    "title": "Plot Bgcolor",
+                    "type": "string"
+                },
+                "showlegend": {
+                    "default": null,
+                    "title": "Showlegend",
+                    "type": "boolean"
+                }
+            },
+            "title": "LayoutStyle",
             "type": "object"
         },
         "GroupedWidget": {

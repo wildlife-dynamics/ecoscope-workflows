@@ -54,7 +54,7 @@ workflow:
     id: pe_bar_chart
     task: draw_time_series_bar_chart
     partial:
-      dataframe: ${{ workflow.filter_patrol_events.return }}
+      dataframe: ${{ workflow.pe_colormap.return }}
   - name: Persist Patrols Bar Chart as Text
     id: pe_bar_chart_html_url
     task: persist_text
@@ -132,11 +132,13 @@ workflow:
     id: grouped_pe_ecomap
     task: draw_ecomap
     mapvalues:
-      argnames: geodataframe
+      argnames: geo_layers
       argvalues: ${{ workflow.grouped_pe_map_layer.return }}
   - name: Persist grouped Patrol Events Ecomap as Text
     id: grouped_pe_ecomap_html_url
     task: persist_text
+    partial:
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
     mapvalues:
       argnames: text
       argvalues: ${{ workflow.grouped_pe_ecomap.return }}
@@ -146,6 +148,11 @@ workflow:
     map:
       argnames: [view, data]
       argvalues: ${{ workflow.grouped_pe_ecomap_html_url.return }}
+  - name: Merge Patrol Events Map Widget Views
+    id: grouped_pe_map_widget_merge
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.grouped_pe_map_widget.return }}
 
   # Grouped Patrol Events Pie Chart
   - name: Draw Pie Chart for Patrols Events
@@ -153,7 +160,7 @@ workflow:
     task: draw_pie_chart
     mapvalues:
       argnames: dataframe
-      argvalues: ${{ workflow.split_patrol_event_groups.return }}
+      argvalues: ${{ workflow.grouped_pe_colormap.return }}
   - name: Persist Patrols Pie Chart as Text
     id: grouped_pe_pie_chart_html_urls
     task: persist_text
@@ -169,7 +176,7 @@ workflow:
       argnames: [view, data]
       argvalues: ${{ workflow.grouped_pe_pie_chart_html_urls.return }}
   - name: Merge Pie Chart Widget Views
-    id: grouped_pe_pie_widget_grouped
+    id: grouped_pe_pie_widget_merge
     task: merge_widget_views
     partial:
       widgets: ${{ workflow.grouped_pe_pie_chart_widgets.return }}
@@ -180,15 +187,21 @@ workflow:
     task: calculate_feature_density
     partial:
       meshgrid: ${{ workflow.pe_meshgrid.return }}
-    map:
+    mapvalues:
       argnames: geodataframe
       argvalues: ${{ workflow.split_patrol_event_groups.return }}
+  - name: Grouped Feature Density Colormap
+    id: grouped_fd_colormap
+    task: apply_color_map
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.grouped_pe_feature_density.return }}
   - name: Create map layer from Feature Density
     id: grouped_fd_map_layer
     task: create_map_layer
     mapvalues:
       argnames: geodataframe
-      argvalues: ${{ workflow.pe_feature_density.return}}
+      argvalues: ${{ workflow.grouped_fd_colormap.return}}
   - name: Draw Ecomap from Feature Density
     id: grouped_fd_ecomap
     task: draw_ecomap
@@ -198,6 +211,8 @@ workflow:
   - name: Persist Feature Density Ecomap as Text
     id: grouped_fd_ecomap_html_url
     task: persist_text
+    partial:
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
     mapvalues:
       argnames: text
       argvalues: ${{ workflow.grouped_fd_ecomap.return }}
@@ -207,6 +222,11 @@ workflow:
     map:
       argnames: [view, data]
       argvalues: ${{ workflow.grouped_fd_ecomap_html_url.return }}
+  - name: Merge Feature Density Widget Views
+    id: grouped_fd_map_widget_merge
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.grouped_fd_map_widget.return }}
 
   # dashboard
   - name: Create Dashboard with Patrol Map Widgets
@@ -217,7 +237,7 @@ workflow:
         - ${{ workflow.pe_map_widget.return }}
         - ${{ workflow.pe_bar_chart_widget.return }}
         - ${{ workflow.fd_map_widget.return }}
-        - ${{ workflow.grouped_pe_map_widget.return }}
-        - ${{ workflow.grouped_pe_pie_widget_grouped.return }}
-        - ${{ workflow.grouped_fd_map_widget.return }}
+        - ${{ workflow.grouped_pe_map_widget_merge.return }}
+        - ${{ workflow.grouped_pe_pie_widget_merge.return }}
+        - ${{ workflow.grouped_fd_map_widget_merge.return }}
       groupers: ${{ workflow.groupers.return }}

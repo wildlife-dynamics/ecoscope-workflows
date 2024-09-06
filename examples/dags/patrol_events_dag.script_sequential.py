@@ -16,8 +16,8 @@ from ecoscope_workflows.tasks.results import create_plot_widget_single_view
 from ecoscope_workflows.tasks.analysis import create_meshgrid
 from ecoscope_workflows.tasks.analysis import calculate_feature_density
 from ecoscope_workflows.tasks.groupby import split_groups
-from ecoscope_workflows.tasks.results import draw_pie_chart
 from ecoscope_workflows.tasks.results import merge_widget_views
+from ecoscope_workflows.tasks.results import draw_pie_chart
 from ecoscope_workflows.tasks.results import gather_dashboard
 
 if __name__ == "__main__":
@@ -86,7 +86,7 @@ if __name__ == "__main__":
 
     pe_bar_chart = (
         draw_time_series_bar_chart.validate()
-        .partial(dataframe=filter_patrol_events, **params["pe_bar_chart"])
+        .partial(dataframe=pe_colormap, **params["pe_bar_chart"])
         .call()
     )
 
@@ -181,12 +181,15 @@ if __name__ == "__main__":
     grouped_pe_ecomap = (
         draw_ecomap.validate()
         .partial(**params["grouped_pe_ecomap"])
-        .mapvalues(argnames=["geodataframe"], argvalues=grouped_pe_map_layer)
+        .mapvalues(argnames=["geo_layers"], argvalues=grouped_pe_map_layer)
     )
 
     grouped_pe_ecomap_html_url = (
         persist_text.validate()
-        .partial(**params["grouped_pe_ecomap_html_url"])
+        .partial(
+            root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            **params["grouped_pe_ecomap_html_url"],
+        )
         .mapvalues(argnames=["text"], argvalues=grouped_pe_ecomap)
     )
 
@@ -196,10 +199,16 @@ if __name__ == "__main__":
         .map(argnames=["view", "data"], argvalues=grouped_pe_ecomap_html_url)
     )
 
+    grouped_pe_map_widget_merge = (
+        merge_widget_views.validate()
+        .partial(widgets=grouped_pe_map_widget, **params["grouped_pe_map_widget_merge"])
+        .call()
+    )
+
     grouped_pe_pie_chart = (
         draw_pie_chart.validate()
         .partial(**params["grouped_pe_pie_chart"])
-        .mapvalues(argnames=["dataframe"], argvalues=split_patrol_event_groups)
+        .mapvalues(argnames=["dataframe"], argvalues=grouped_pe_colormap)
     )
 
     grouped_pe_pie_chart_html_urls = (
@@ -217,11 +226,11 @@ if __name__ == "__main__":
         .map(argnames=["view", "data"], argvalues=grouped_pe_pie_chart_html_urls)
     )
 
-    grouped_pe_pie_widget_grouped = (
+    grouped_pe_pie_widget_merge = (
         merge_widget_views.validate()
         .partial(
             widgets=grouped_pe_pie_chart_widgets,
-            **params["grouped_pe_pie_widget_grouped"],
+            **params["grouped_pe_pie_widget_merge"],
         )
         .call()
     )
@@ -229,13 +238,19 @@ if __name__ == "__main__":
     grouped_pe_feature_density = (
         calculate_feature_density.validate()
         .partial(meshgrid=pe_meshgrid, **params["grouped_pe_feature_density"])
-        .map(argnames=["geodataframe"], argvalues=split_patrol_event_groups)
+        .mapvalues(argnames=["geodataframe"], argvalues=split_patrol_event_groups)
+    )
+
+    grouped_fd_colormap = (
+        apply_color_map.validate()
+        .partial(**params["grouped_fd_colormap"])
+        .mapvalues(argnames=["df"], argvalues=grouped_pe_feature_density)
     )
 
     grouped_fd_map_layer = (
         create_map_layer.validate()
         .partial(**params["grouped_fd_map_layer"])
-        .mapvalues(argnames=["geodataframe"], argvalues=pe_feature_density)
+        .mapvalues(argnames=["geodataframe"], argvalues=grouped_fd_colormap)
     )
 
     grouped_fd_ecomap = (
@@ -246,7 +261,10 @@ if __name__ == "__main__":
 
     grouped_fd_ecomap_html_url = (
         persist_text.validate()
-        .partial(**params["grouped_fd_ecomap_html_url"])
+        .partial(
+            root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            **params["grouped_fd_ecomap_html_url"],
+        )
         .mapvalues(argnames=["text"], argvalues=grouped_fd_ecomap)
     )
 
@@ -256,6 +274,12 @@ if __name__ == "__main__":
         .map(argnames=["view", "data"], argvalues=grouped_fd_ecomap_html_url)
     )
 
+    grouped_fd_map_widget_merge = (
+        merge_widget_views.validate()
+        .partial(widgets=grouped_fd_map_widget, **params["grouped_fd_map_widget_merge"])
+        .call()
+    )
+
     patrol_dashboard = (
         gather_dashboard.validate()
         .partial(
@@ -263,9 +287,9 @@ if __name__ == "__main__":
                 pe_map_widget,
                 pe_bar_chart_widget,
                 fd_map_widget,
-                grouped_pe_map_widget,
-                grouped_pe_pie_widget_grouped,
-                grouped_fd_map_widget,
+                grouped_pe_map_widget_merge,
+                grouped_pe_pie_widget_merge,
+                grouped_fd_map_widget_merge,
             ],
             groupers=groupers,
             **params["patrol_dashboard"],

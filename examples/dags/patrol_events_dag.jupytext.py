@@ -22,8 +22,8 @@ from ecoscope_workflows.tasks.results import create_plot_widget_single_view
 from ecoscope_workflows.tasks.analysis import create_meshgrid
 from ecoscope_workflows.tasks.analysis import calculate_feature_density
 from ecoscope_workflows.tasks.groupby import split_groups
-from ecoscope_workflows.tasks.results import draw_pie_chart
 from ecoscope_workflows.tasks.results import merge_widget_views
+from ecoscope_workflows.tasks.results import draw_pie_chart
 from ecoscope_workflows.tasks.results import gather_dashboard
 
 # %% [markdown]
@@ -234,7 +234,7 @@ pe_bar_chart_params = dict(
 
 
 pe_bar_chart = draw_time_series_bar_chart.partial(
-    dataframe=filter_patrol_events, **pe_bar_chart_params
+    dataframe=pe_colormap, **pe_bar_chart_params
 ).call()
 
 
@@ -485,7 +485,6 @@ grouped_pe_map_layer = create_map_layer.partial(
 # parameters
 
 grouped_pe_ecomap_params = dict(
-    geo_layers=...,
     tile_layer=...,
     static=...,
     title=...,
@@ -497,7 +496,7 @@ grouped_pe_ecomap_params = dict(
 
 
 grouped_pe_ecomap = draw_ecomap.partial(**grouped_pe_ecomap_params).mapvalues(
-    argnames=["geodataframe"], argvalues=grouped_pe_map_layer
+    argnames=["geo_layers"], argvalues=grouped_pe_map_layer
 )
 
 
@@ -508,7 +507,6 @@ grouped_pe_ecomap = draw_ecomap.partial(**grouped_pe_ecomap_params).mapvalues(
 # parameters
 
 grouped_pe_ecomap_html_url_params = dict(
-    root_path=...,
     filename=...,
 )
 
@@ -517,7 +515,8 @@ grouped_pe_ecomap_html_url_params = dict(
 
 
 grouped_pe_ecomap_html_url = persist_text.partial(
-    **grouped_pe_ecomap_html_url_params
+    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+    **grouped_pe_ecomap_html_url_params,
 ).mapvalues(argnames=["text"], argvalues=grouped_pe_ecomap)
 
 
@@ -541,6 +540,23 @@ grouped_pe_map_widget = create_map_widget_single_view.partial(
 
 
 # %% [markdown]
+# ## Merge Patrol Events Map Widget Views
+
+# %%
+# parameters
+
+grouped_pe_map_widget_merge_params = dict()
+
+# %%
+# call the task
+
+
+grouped_pe_map_widget_merge = merge_widget_views.partial(
+    widgets=grouped_pe_map_widget, **grouped_pe_map_widget_merge_params
+).call()
+
+
+# %% [markdown]
 # ## Draw Pie Chart for Patrols Events
 
 # %%
@@ -559,7 +575,7 @@ grouped_pe_pie_chart_params = dict(
 
 
 grouped_pe_pie_chart = draw_pie_chart.partial(**grouped_pe_pie_chart_params).mapvalues(
-    argnames=["dataframe"], argvalues=split_patrol_event_groups
+    argnames=["dataframe"], argvalues=grouped_pe_colormap
 )
 
 
@@ -608,14 +624,14 @@ grouped_pe_pie_chart_widgets = create_plot_widget_single_view.partial(
 # %%
 # parameters
 
-grouped_pe_pie_widget_grouped_params = dict()
+grouped_pe_pie_widget_merge_params = dict()
 
 # %%
 # call the task
 
 
-grouped_pe_pie_widget_grouped = merge_widget_views.partial(
-    widgets=grouped_pe_pie_chart_widgets, **grouped_pe_pie_widget_grouped_params
+grouped_pe_pie_widget_merge = merge_widget_views.partial(
+    widgets=grouped_pe_pie_chart_widgets, **grouped_pe_pie_widget_merge_params
 ).call()
 
 
@@ -635,7 +651,28 @@ grouped_pe_feature_density_params = dict(
 
 grouped_pe_feature_density = calculate_feature_density.partial(
     meshgrid=pe_meshgrid, **grouped_pe_feature_density_params
-).map(argnames=["geodataframe"], argvalues=split_patrol_event_groups)
+).mapvalues(argnames=["geodataframe"], argvalues=split_patrol_event_groups)
+
+
+# %% [markdown]
+# ## Grouped Feature Density Colormap
+
+# %%
+# parameters
+
+grouped_fd_colormap_params = dict(
+    input_column_name=...,
+    colormap=...,
+    output_column_name=...,
+)
+
+# %%
+# call the task
+
+
+grouped_fd_colormap = apply_color_map.partial(**grouped_fd_colormap_params).mapvalues(
+    argnames=["df"], argvalues=grouped_pe_feature_density
+)
 
 
 # %% [markdown]
@@ -654,7 +691,7 @@ grouped_fd_map_layer_params = dict(
 
 grouped_fd_map_layer = create_map_layer.partial(
     **grouped_fd_map_layer_params
-).mapvalues(argnames=["geodataframe"], argvalues=pe_feature_density)
+).mapvalues(argnames=["geodataframe"], argvalues=grouped_fd_colormap)
 
 
 # %% [markdown]
@@ -686,7 +723,6 @@ grouped_fd_ecomap = draw_ecomap.partial(**grouped_fd_ecomap_params).mapvalues(
 # parameters
 
 grouped_fd_ecomap_html_url_params = dict(
-    root_path=...,
     filename=...,
 )
 
@@ -695,7 +731,8 @@ grouped_fd_ecomap_html_url_params = dict(
 
 
 grouped_fd_ecomap_html_url = persist_text.partial(
-    **grouped_fd_ecomap_html_url_params
+    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+    **grouped_fd_ecomap_html_url_params,
 ).mapvalues(argnames=["text"], argvalues=grouped_fd_ecomap)
 
 
@@ -719,6 +756,23 @@ grouped_fd_map_widget = create_map_widget_single_view.partial(
 
 
 # %% [markdown]
+# ## Merge Feature Density Widget Views
+
+# %%
+# parameters
+
+grouped_fd_map_widget_merge_params = dict()
+
+# %%
+# call the task
+
+
+grouped_fd_map_widget_merge = merge_widget_views.partial(
+    widgets=grouped_fd_map_widget, **grouped_fd_map_widget_merge_params
+).call()
+
+
+# %% [markdown]
 # ## Create Dashboard with Patrol Map Widgets
 
 # %%
@@ -738,9 +792,9 @@ patrol_dashboard = gather_dashboard.partial(
         pe_map_widget,
         pe_bar_chart_widget,
         fd_map_widget,
-        grouped_pe_map_widget,
-        grouped_pe_pie_widget_grouped,
-        grouped_fd_map_widget,
+        grouped_pe_map_widget_merge,
+        grouped_pe_pie_widget_merge,
+        grouped_fd_map_widget_merge,
     ],
     groupers=groupers,
     **patrol_dashboard_params,

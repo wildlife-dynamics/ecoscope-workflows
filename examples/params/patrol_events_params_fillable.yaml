@@ -125,7 +125,6 @@ grouped_pe_map_layer:
 
 # Parameters for 'Draw Ecomap from grouped Patrol Events' using task `draw_ecomap`.
 grouped_pe_ecomap:
-  geo_layers:   # (ecoscope_workflows.tasks.results._ecomap.LayerDefinition | list[ecoscope_workflows.tasks.results._ecomap.LayerDefinition], FieldInfo(annotation=NoneType, required=True, description='A list of map layers to add to the map.', exclude=True))
   tile_layer:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A named tile layer, ie OpenStreetMap.'))
   static:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Set to true to disable map pan/zoom.'))
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The map title.'))
@@ -133,12 +132,14 @@ grouped_pe_ecomap:
 
 # Parameters for 'Persist grouped Patrol Events Ecomap as Text' using task `persist_text`.
 grouped_pe_ecomap_html_url:
-  root_path:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
   filename:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
 # Parameters for 'Create grouped Patrol Events Map Widget' using task `create_map_widget_single_view`.
 grouped_pe_map_widget:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Merge Patrol Events Map Widget Views' using task `merge_widget_views`.
+grouped_pe_map_widget_merge:
 
 # Parameters for 'Draw Pie Chart for Patrols Events' using task `draw_pie_chart`.
 grouped_pe_pie_chart:
@@ -157,11 +158,17 @@ grouped_pe_pie_chart_widgets:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
 
 # Parameters for 'Merge Pie Chart Widget Views' using task `merge_widget_views`.
-grouped_pe_pie_widget_grouped:
+grouped_pe_pie_widget_merge:
 
 # Parameters for 'Grouped Patrol Events Feature Density' using task `calculate_feature_density`.
 grouped_pe_feature_density:
   geometry_type:   # (typing.Literal['point', 'line'], FieldInfo(annotation=NoneType, required=True, description='The geometry type of the provided geodataframe'))
+
+# Parameters for 'Grouped Feature Density Colormap' using task `apply_color_map`.
+grouped_fd_colormap:
+  input_column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
+  colormap:   # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
+  output_column_name:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='The dataframe column that will contain the color values.'))
 
 # Parameters for 'Create map layer from Feature Density' using task `create_map_layer`.
 grouped_fd_map_layer:
@@ -176,12 +183,14 @@ grouped_fd_ecomap:
 
 # Parameters for 'Persist Feature Density Ecomap as Text' using task `persist_text`.
 grouped_fd_ecomap_html_url:
-  root_path:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Root path to persist text to'))
   filename:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            '))
 
 # Parameters for 'Create Feature Density Map Widget' using task `create_map_widget_single_view`.
 grouped_fd_map_widget:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+# Parameters for 'Merge Feature Density Widget Views' using task `merge_widget_views`.
+grouped_fd_map_widget_merge:
 
 # Parameters for 'Create Dashboard with Patrol Map Widgets' using task `gather_dashboard`.
 patrol_dashboard:
