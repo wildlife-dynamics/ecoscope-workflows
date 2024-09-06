@@ -24,7 +24,7 @@ def create_meshgrid(
         Field(
             description="Whether to return only grid cells intersecting with the aoi."
         ),
-    ] = True,
+    ] = False,
     existing_grid: Annotated[
         AnyGeoDataFrame | pa.typing.pandas.Series | SkipJsonSchema[None],
         Field(
