@@ -9,8 +9,9 @@ from typing import Annotated, Any, Callable, Literal, TypeAlias, TypeVar
 if sys.version_info >= (3, 11):
     from importlib.resources.abc import Traversable
 else:
-    from typing import Protocol
+    from typing import Protocol, runtime_checkable
 
+    @runtime_checkable
     class Traversable(Protocol):
         def joinpath(self, *args): ...
         def open(self, *args, **kwargs): ...
