@@ -84,5 +84,6 @@ profile = "black"
 
 [tool.pytest.ini_options]
 markers = [
+    "io: interfaces with 3rd party data services, which may likely require credentials (deselect with '-m \"not io\"')",
     "requires_ecoscope_core: requires `ecoscope` to be installed (deselect with '-m \"not requires_ecoscope_core\"')",
 ]
