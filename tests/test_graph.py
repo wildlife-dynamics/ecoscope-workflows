@@ -6,15 +6,17 @@ from functools import lru_cache
 from typing import Sequence, TypeVar
 from unittest import mock
 
-import lithops
 import pytest
-import yaml
+import ruamel.yaml as yaml
 
 from ecoscope_workflows.decorators import task
 from ecoscope_workflows.executors import Future, FutureSequence, LithopsExecutor
 from ecoscope_workflows.graph import DependsOn, DependsOnSequence, Graph, Node
 
 T = TypeVar("T")
+
+lithops = pytest.importorskip("lithops")
+yaml = yaml.YAML(typ="safe")
 
 
 @dataclass(frozen=True)

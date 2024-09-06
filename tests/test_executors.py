@@ -22,6 +22,8 @@ def test_default_python_executor():
 
 
 def test_reassign_executor_field():
+    pytest.importorskip("lithops")
+
     @task
     def f(a: int, b: int) -> int:
         return a + b
@@ -64,6 +66,8 @@ def lithops_executor(lithops_env: dict):
 
 
 def test_lithops_executor_basic(lithops_executor: LithopsExecutor):
+    pytest.importorskip("lithops")
+
     @task
     def f(a: int, b: int) -> int:
         return a + b
@@ -75,6 +79,8 @@ def test_lithops_executor_basic(lithops_executor: LithopsExecutor):
 
 
 def test_lithops_executor_validate(lithops_executor: LithopsExecutor):
+    pytest.importorskip("lithops")
+
     @task
     def f(a: int, b: int) -> int:
         return a + b
@@ -85,6 +91,8 @@ def test_lithops_executor_validate(lithops_executor: LithopsExecutor):
 
 
 def test_lithops_executor_validate_partial(lithops_executor: LithopsExecutor):
+    pytest.importorskip("lithops")
+
     @task
     def f(a: int, b: int) -> int:
         return a + b
@@ -98,6 +106,8 @@ def test_lithops_executor_validate_partial(lithops_executor: LithopsExecutor):
 
 
 def test_lithops_executor_map(lithops_executor: LithopsExecutor):
+    pytest.importorskip("lithops")
+
     @task
     def f(a: int, b: int) -> int:
         return a + b
@@ -108,6 +118,8 @@ def test_lithops_executor_map(lithops_executor: LithopsExecutor):
 
 
 def test_lithops_executor_partial_map(lithops_executor: LithopsExecutor):
+    pytest.importorskip("lithops")
+
     @task
     def f(a: int, b: int) -> int:
         return a + b
@@ -122,6 +134,8 @@ def test_lithops_executor_partial_map(lithops_executor: LithopsExecutor):
 
 
 def test_lithops_executor_mapvalues(lithops_executor: LithopsExecutor):
+    pytest.importorskip("lithops")
+
     @task
     def f(a: int) -> int:
         return a * 2
