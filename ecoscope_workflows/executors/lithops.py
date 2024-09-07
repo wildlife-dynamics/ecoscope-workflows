@@ -9,7 +9,9 @@ try:
     from lithops.future import ResponseFuture
     from lithops.utils import FuturesList
 except ImportError:
-    warnings.warn("Please install the `lithops` package to use the `LithopsExecutor`.")
+    warnings.warn(
+        "To use the `LithopsExecutor`, please install the 'lithops' environment with pixi."
+    )
 
     class FunctionExecutor:  # type: ignore[no-redef]
         pass

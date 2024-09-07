@@ -1,9 +1,10 @@
+import warnings
+
 try:
     from pydot import Dot, Node, Edge
 except ImportError:
-    raise ImportError(
-        "To use this module, you will need to install visualization dependencies "
-        "with 'pip install \".[visualize]\"'."
+    warnings.warn(
+        "To visualize workflow graphs, please install the 'visualize' environment with pixi."
     )
 
 from ecoscope_workflows.compiler import Spec

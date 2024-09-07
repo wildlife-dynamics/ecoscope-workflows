@@ -34,8 +34,6 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest"]
-visualize = ["pydot"]  # requires system install of `graphviz` for the `dot` executable
-
 
 [project.scripts]
 ecoscope-workflows = "ecoscope_workflows.__main__:main"
@@ -104,12 +102,16 @@ lithops = { version = ">=3.4.1", channel = "file:///usr/local/etc/wildlife-dynam
 [tool.pixi.feature.test.dependencies]
 pytest = "*"
 
+[tool.pixi.feature.visualize.dependencies]
+pydot = "*"
+
 [tool.pixi.environments]
 default = { solve-group = "default" }
 ecoscope-core = { features = ["ecoscope-core"], solve-group = "default" }
 gcs = { features = ["gcs"], solve-group = "default" }
 lithops = { features = ["lithops"], solve-group = "default" }
 test = { features = ["test"], solve-group = "default" }
+visualize = { features = ["visualize"], solve-group = "default" }
 
 workflows-runtime-gcp = { features = ["ecoscope-core", "gcs", "lithops"], solve-group = "default" }
 workflows-runtime-gcp-test = { features = ["ecoscope-core", "gcs", "lithops", "test"], solve-group = "default" }
