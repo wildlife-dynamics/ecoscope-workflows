@@ -7,6 +7,8 @@ from pydantic.json_schema import SkipJsonSchema
 from ecoscope_workflows.annotations import AnyGeoDataFrame
 from ecoscope_workflows.decorators import task
 
+UnitType = Literal["meters", "pixels"]
+
 
 class LayerStyleBase(BaseModel):
     auto_highlight: bool = False
@@ -19,6 +21,7 @@ class PolylineLayerStyle(LayerStyleBase):
     get_color: str | list[int] | list[list[int]] | None = None
     get_width: float = 1
     color_column: str | None = None
+    width_units: UnitType = "pixels"
 
 
 class ShapeLayerStyle(LayerStyleBase):
@@ -27,12 +30,13 @@ class ShapeLayerStyle(LayerStyleBase):
     get_line_color: str | list[int] | list[list[int]] | None = None
     get_line_width: float = 1
     fill_color_column: str | None = None
-    line_color_column: str | None = None
+    line_width_units: UnitType = "pixels"
 
 
 class PointLayerStyle(ShapeLayerStyle):
     layer_type: Literal["point"] = Field("point", exclude=True)
     get_radius: float = 1
+    radius_units: UnitType = "pixels"
 
 
 class PolygonLayerStyle(ShapeLayerStyle):
