@@ -22,6 +22,7 @@ class PolylineLayerStyle(LayerStyleBase):
     get_width: float = 1
     color_column: str | None = None
     width_units: UnitType = "pixels"
+    cap_rounded: bool = True
 
 
 class ShapeLayerStyle(LayerStyleBase):
