@@ -6,6 +6,17 @@ except ImportError:
     warnings.warn(
         "To visualize workflow graphs, please install the 'visualize' environment with pixi."
     )
+    from typing import Protocol
+
+    class Dot(Protocol):  # type: ignore[no-redef]
+        pass
+
+    class Node(Protocol):  # type: ignore[no-redef]
+        pass
+
+    class Edge(Protocol):  # type: ignore[no-redef]
+        pass
+
 
 from ecoscope_workflows.compiler import Spec
 
