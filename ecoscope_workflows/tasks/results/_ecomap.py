@@ -56,6 +56,7 @@ class NorthArrowStyle(BaseModel):
     placement: Literal[
         "top-left", "top-right", "bottom-left", "bottom-right", "fill"
     ] = "top-left"
+    style: dict = {"transorm": "scale(0.8)"}
 
 
 @dataclass
