@@ -234,11 +234,7 @@
                     "description": "The map title."
                 },
                 "north_arrow_style": {
-                    "allOf": [
-                        {
-                            "$ref": "#/$defs/NorthArrowStyle"
-                        }
-                    ],
+                    "$ref": "#/$defs/NorthArrowStyle",
                     "default": null,
                     "title": "North Arrow Style",
                     "description": "Additional arguments for configuring the North Arrow."
@@ -499,11 +495,7 @@
                     "description": "The map title."
                 },
                 "north_arrow_style": {
-                    "allOf": [
-                        {
-                            "$ref": "#/$defs/NorthArrowStyle"
-                        }
-                    ],
+                    "$ref": "#/$defs/NorthArrowStyle",
                     "default": null,
                     "title": "North Arrow Style",
                     "description": "Additional arguments for configuring the North Arrow."

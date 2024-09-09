@@ -23,7 +23,7 @@ classifiers = [
 dependencies = [
     "jinja2",
     "pandera",
-    "pydantic",
+    "pydantic<2.9.0",
     "pydantic-settings",
     "ruamel.yaml",
     "ruff",  # for linting compiled workflows
