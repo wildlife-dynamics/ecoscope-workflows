@@ -1,8 +1,6 @@
 from typing import Annotated
 
-import pandera as pa
 from pydantic import Field
-from pydantic.json_schema import SkipJsonSchema
 from ecoscope_workflows.annotations import AnyGeoDataFrame
 from ecoscope_workflows.decorators import task
 
@@ -25,12 +23,6 @@ def create_meshgrid(
             description="Whether to return only grid cells intersecting with the aoi."
         ),
     ] = False,
-    existing_grid: Annotated[
-        AnyGeoDataFrame | pa.typing.pandas.Series | SkipJsonSchema[None],
-        Field(
-            description="If provided, attempts to align created grid to start of existing grid. Requires a CRS and valid geometry."
-        ),
-    ] = None,
 ) -> AnyGeoDataFrame:
     """
     Create a grid from the provided area of interest.
@@ -45,7 +37,6 @@ def create_meshgrid(
         xlen=cell_width,
         ylen=cell_height,
         return_intersecting_only=intersecting_only,
-        align_to_existing=existing_grid,
     )
 
     return gpd.GeoDataFrame(geometry=result)

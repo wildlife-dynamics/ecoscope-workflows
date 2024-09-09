@@ -127,7 +127,7 @@ pe_colormap_params = dict(
 
 
 pe_colormap = apply_color_map.partial(
-    df=filter_patrol_events, **pe_colormap_params
+    df=pe_add_temporal_index, **pe_colormap_params
 ).call()
 
 
@@ -289,7 +289,6 @@ pe_meshgrid_params = dict(
     cell_width=...,
     cell_height=...,
     intersecting_only=...,
-    existing_grid=...,
 )
 
 # %%
@@ -297,7 +296,7 @@ pe_meshgrid_params = dict(
 
 
 pe_meshgrid = create_meshgrid.partial(
-    aoi=filter_patrol_events, **pe_meshgrid_params
+    aoi=pe_add_temporal_index, **pe_meshgrid_params
 ).call()
 
 
@@ -316,7 +315,9 @@ pe_feature_density_params = dict(
 
 
 pe_feature_density = calculate_feature_density.partial(
-    geodataframe=filter_patrol_events, meshgrid=pe_meshgrid, **pe_feature_density_params
+    geodataframe=pe_add_temporal_index,
+    meshgrid=pe_meshgrid,
+    **pe_feature_density_params,
 ).call()
 
 
@@ -434,29 +435,8 @@ split_patrol_event_groups_params = dict()
 
 
 split_patrol_event_groups = split_groups.partial(
-    df=pe_add_temporal_index, groupers=groupers, **split_patrol_event_groups_params
+    df=pe_colormap, groupers=groupers, **split_patrol_event_groups_params
 ).call()
-
-
-# %% [markdown]
-# ## Grouped Patrol Events Colormap
-
-# %%
-# parameters
-
-grouped_pe_colormap_params = dict(
-    input_column_name=...,
-    colormap=...,
-    output_column_name=...,
-)
-
-# %%
-# call the task
-
-
-grouped_pe_colormap = apply_color_map.partial(**grouped_pe_colormap_params).mapvalues(
-    argnames=["df"], argvalues=split_patrol_event_groups
-)
 
 
 # %% [markdown]
@@ -475,7 +455,7 @@ grouped_pe_map_layer_params = dict(
 
 grouped_pe_map_layer = create_map_layer.partial(
     **grouped_pe_map_layer_params
-).mapvalues(argnames=["geodataframe"], argvalues=grouped_pe_colormap)
+).mapvalues(argnames=["geodataframe"], argvalues=split_patrol_event_groups)
 
 
 # %% [markdown]
@@ -575,7 +555,7 @@ grouped_pe_pie_chart_params = dict(
 
 
 grouped_pe_pie_chart = draw_pie_chart.partial(**grouped_pe_pie_chart_params).mapvalues(
-    argnames=["dataframe"], argvalues=grouped_pe_colormap
+    argnames=["dataframe"], argvalues=split_patrol_event_groups
 )
 
 

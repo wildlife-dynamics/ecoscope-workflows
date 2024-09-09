@@ -39,7 +39,7 @@ if __name__ == "__main__":
         "patrol_events": [],
         "filter_patrol_events": ["patrol_events"],
         "pe_add_temporal_index": ["filter_patrol_events"],
-        "pe_colormap": ["filter_patrol_events"],
+        "pe_colormap": ["pe_add_temporal_index"],
         "pe_map_layer": ["pe_colormap"],
         "pe_ecomap": ["pe_map_layer"],
         "pe_ecomap_html_url": ["pe_ecomap"],
@@ -47,21 +47,20 @@ if __name__ == "__main__":
         "pe_bar_chart": ["pe_colormap"],
         "pe_bar_chart_html_url": ["pe_bar_chart"],
         "pe_bar_chart_widget": ["pe_bar_chart_html_url"],
-        "pe_meshgrid": ["filter_patrol_events"],
-        "pe_feature_density": ["filter_patrol_events", "pe_meshgrid"],
+        "pe_meshgrid": ["pe_add_temporal_index"],
+        "pe_feature_density": ["pe_add_temporal_index", "pe_meshgrid"],
         "fd_colormap": ["pe_feature_density"],
         "fd_map_layer": ["fd_colormap"],
         "fd_ecomap": ["fd_map_layer"],
         "fd_ecomap_html_url": ["fd_ecomap"],
         "fd_map_widget": ["fd_ecomap_html_url"],
-        "split_patrol_event_groups": ["pe_add_temporal_index", "groupers"],
-        "grouped_pe_colormap": ["split_patrol_event_groups"],
-        "grouped_pe_map_layer": ["grouped_pe_colormap"],
+        "split_patrol_event_groups": ["pe_colormap", "groupers"],
+        "grouped_pe_map_layer": ["split_patrol_event_groups"],
         "grouped_pe_ecomap": ["grouped_pe_map_layer"],
         "grouped_pe_ecomap_html_url": ["grouped_pe_ecomap"],
         "grouped_pe_map_widget": ["grouped_pe_ecomap_html_url"],
         "grouped_pe_map_widget_merge": ["grouped_pe_map_widget"],
-        "grouped_pe_pie_chart": ["grouped_pe_colormap"],
+        "grouped_pe_pie_chart": ["split_patrol_event_groups"],
         "grouped_pe_pie_chart_html_urls": ["grouped_pe_pie_chart"],
         "grouped_pe_pie_chart_widgets": ["grouped_pe_pie_chart_html_urls"],
         "grouped_pe_pie_widget_merge": ["grouped_pe_pie_chart_widgets"],
@@ -113,7 +112,7 @@ if __name__ == "__main__":
         "pe_colormap": Node(
             async_task=apply_color_map.validate().set_executor("lithops"),
             partial={
-                "df": DependsOn("filter_patrol_events"),
+                "df": DependsOn("pe_add_temporal_index"),
             }
             | params["pe_colormap"],
             method="call",
@@ -181,7 +180,7 @@ if __name__ == "__main__":
         "pe_meshgrid": Node(
             async_task=create_meshgrid.validate().set_executor("lithops"),
             partial={
-                "aoi": DependsOn("filter_patrol_events"),
+                "aoi": DependsOn("pe_add_temporal_index"),
             }
             | params["pe_meshgrid"],
             method="call",
@@ -189,7 +188,7 @@ if __name__ == "__main__":
         "pe_feature_density": Node(
             async_task=calculate_feature_density.validate().set_executor("lithops"),
             partial={
-                "geodataframe": DependsOn("filter_patrol_events"),
+                "geodataframe": DependsOn("pe_add_temporal_index"),
                 "meshgrid": DependsOn("pe_meshgrid"),
             }
             | params["pe_feature_density"],
@@ -239,20 +238,11 @@ if __name__ == "__main__":
         "split_patrol_event_groups": Node(
             async_task=split_groups.validate().set_executor("lithops"),
             partial={
-                "df": DependsOn("pe_add_temporal_index"),
+                "df": DependsOn("pe_colormap"),
                 "groupers": DependsOn("groupers"),
             }
             | params["split_patrol_event_groups"],
             method="call",
-        ),
-        "grouped_pe_colormap": Node(
-            async_task=apply_color_map.validate().set_executor("lithops"),
-            partial=params["grouped_pe_colormap"],
-            method="mapvalues",
-            kwargs={
-                "argnames": ["df"],
-                "argvalues": DependsOn("split_patrol_event_groups"),
-            },
         ),
         "grouped_pe_map_layer": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
@@ -260,7 +250,7 @@ if __name__ == "__main__":
             method="mapvalues",
             kwargs={
                 "argnames": ["geodataframe"],
-                "argvalues": DependsOn("grouped_pe_colormap"),
+                "argvalues": DependsOn("split_patrol_event_groups"),
             },
         ),
         "grouped_pe_ecomap": Node(
@@ -307,7 +297,7 @@ if __name__ == "__main__":
             method="mapvalues",
             kwargs={
                 "argnames": ["dataframe"],
-                "argvalues": DependsOn("grouped_pe_colormap"),
+                "argvalues": DependsOn("split_patrol_event_groups"),
             },
         ),
         "grouped_pe_pie_chart_html_urls": Node(

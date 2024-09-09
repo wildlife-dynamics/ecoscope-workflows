@@ -20,12 +20,14 @@ workflow:
     partial:
       df: ${{ workflow.filter_patrol_events.return }}
 
-  # Combined Events map layer
+  # Colormap patrol events
   - name: Patrol Events Colormap
     id: pe_colormap
     task: apply_color_map
     partial:
-      df: ${{ workflow.filter_patrol_events.return }}
+      df: ${{ workflow.pe_add_temporal_index.return }}
+
+  # Combined Events map layer
   - name: Create map layer from Patrol Events
     id: pe_map_layer
     task: create_map_layer
@@ -72,12 +74,12 @@ workflow:
     id: pe_meshgrid
     task: create_meshgrid
     partial:
-      aoi: ${{ workflow.filter_patrol_events.return }}
+      aoi: ${{ workflow.pe_add_temporal_index.return }}
   - name: Patrol Events Feature Density
     id: pe_feature_density
     task: calculate_feature_density
     partial:
-      geodataframe: ${{ workflow.filter_patrol_events.return }}
+      geodataframe: ${{ workflow.pe_add_temporal_index.return }}
       meshgrid: ${{ workflow.pe_meshgrid.return }}
   - name: Feature Density Colormap
     id: fd_colormap
@@ -112,22 +114,16 @@ workflow:
     id: split_patrol_event_groups
     task: split_groups
     partial:
-      df: ${{ workflow.pe_add_temporal_index.return }}
+      df: ${{ workflow.pe_colormap.return }}
       groupers: ${{ workflow.groupers.return }}
 
   # Grouped Patrol Events Map
-  - name: Grouped Patrol Events Colormap
-    id: grouped_pe_colormap
-    task: apply_color_map
-    mapvalues:
-      argnames: df
-      argvalues: ${{ workflow.split_patrol_event_groups.return }}
   - name: Create map layer from grouped Patrol Events
     id: grouped_pe_map_layer
     task: create_map_layer
     mapvalues:
       argnames: geodataframe
-      argvalues: ${{ workflow.grouped_pe_colormap.return }}
+      argvalues: ${{ workflow.split_patrol_event_groups.return }}
   - name: Draw Ecomap from grouped Patrol Events
     id: grouped_pe_ecomap
     task: draw_ecomap
@@ -160,7 +156,7 @@ workflow:
     task: draw_pie_chart
     mapvalues:
       argnames: dataframe
-      argvalues: ${{ workflow.grouped_pe_colormap.return }}
+      argvalues: ${{ workflow.split_patrol_event_groups.return }}
   - name: Persist Patrols Pie Chart as Text
     id: grouped_pe_pie_chart_html_urls
     task: persist_text

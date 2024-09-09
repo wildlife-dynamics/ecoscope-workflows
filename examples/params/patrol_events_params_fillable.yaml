@@ -78,7 +78,6 @@ pe_meshgrid:
   cell_width:   # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='The width of a grid cell in meters.'))
   cell_height:   # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='The height of a grid cell in meters.'))
   intersecting_only:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether to return only grid cells intersecting with the aoi.'))
-  existing_grid:   # (typing.Union[typing.Annotated[pandera.typing.pandas.DataFrame[ecoscope_workflows.annotations.AnyGeoDataFrameSchema], WithJsonSchema(json_schema={'type': 'ecoscope_workflows.annotations.DataFrame'}, mode=None)], pandera.typing.pandas.Series, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='If provided, attempts to align created grid to start of existing grid. Requires a CRS and valid geometry.'))
 
 # Parameters for 'Patrol Events Feature Density' using task `calculate_feature_density`.
 pe_feature_density:
@@ -112,12 +111,6 @@ fd_map_widget:
 
 # Parameters for 'Split Patrol Events by Group' using task `split_groups`.
 split_patrol_event_groups:
-
-# Parameters for 'Grouped Patrol Events Colormap' using task `apply_color_map`.
-grouped_pe_colormap:
-  input_column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
-  colormap:   # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
-  output_column_name:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='The dataframe column that will contain the color values.'))
 
 # Parameters for 'Create map layer from grouped Patrol Events' using task `create_map_layer`.
 grouped_pe_map_layer:

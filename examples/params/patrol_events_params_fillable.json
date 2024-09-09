@@ -421,12 +421,6 @@
                     "title": "Intersecting Only",
                     "type": "boolean",
                     "description": "Whether to return only grid cells intersecting with the aoi."
-                },
-                "existing_grid": {
-                    "default": null,
-                    "title": "Existing Grid",
-                    "type": "ecoscope_workflows.annotations.DataFrame",
-                    "description": "If provided, attempts to align created grid to start of existing grid. Requires a CRS and valid geometry."
                 }
             },
             "required": [],
@@ -576,42 +570,6 @@
             "additionalProperties": false,
             "properties": {},
             "required": [],
-            "type": "object"
-        },
-        "Grouped Patrol Events Colormap": {
-            "additionalProperties": false,
-            "properties": {
-                "input_column_name": {
-                    "title": "Input Column Name",
-                    "type": "string",
-                    "description": "The name of the column with categorical values."
-                },
-                "colormap": {
-                    "anyOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "items": {
-                                "type": "string"
-                            },
-                            "type": "array"
-                        }
-                    ],
-                    "default": "viridis",
-                    "title": "Colormap",
-                    "description": "Either a named mpl.colormap or a list of string hex values."
-                },
-                "output_column_name": {
-                    "default": null,
-                    "title": "Output Column Name",
-                    "type": "string",
-                    "description": "The dataframe column that will contain the color values."
-                }
-            },
-            "required": [
-                "input_column_name"
-            ],
             "type": "object"
         },
         "Create map layer from grouped Patrol Events": {
@@ -1239,7 +1197,6 @@
         "LayerDefinition": {
             "properties": {
                 "geodataframe": {
-                    "default": null,
                     "title": "Geodataframe",
                     "type": "ecoscope_workflows.annotations.DataFrame"
                 },

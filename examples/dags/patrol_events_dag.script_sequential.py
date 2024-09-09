@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
     pe_colormap = (
         apply_color_map.validate()
-        .partial(df=filter_patrol_events, **params["pe_colormap"])
+        .partial(df=pe_add_temporal_index, **params["pe_colormap"])
         .call()
     )
 
@@ -108,14 +108,14 @@ if __name__ == "__main__":
 
     pe_meshgrid = (
         create_meshgrid.validate()
-        .partial(aoi=filter_patrol_events, **params["pe_meshgrid"])
+        .partial(aoi=pe_add_temporal_index, **params["pe_meshgrid"])
         .call()
     )
 
     pe_feature_density = (
         calculate_feature_density.validate()
         .partial(
-            geodataframe=filter_patrol_events,
+            geodataframe=pe_add_temporal_index,
             meshgrid=pe_meshgrid,
             **params["pe_feature_density"],
         )
@@ -159,23 +159,15 @@ if __name__ == "__main__":
     split_patrol_event_groups = (
         split_groups.validate()
         .partial(
-            df=pe_add_temporal_index,
-            groupers=groupers,
-            **params["split_patrol_event_groups"],
+            df=pe_colormap, groupers=groupers, **params["split_patrol_event_groups"]
         )
         .call()
-    )
-
-    grouped_pe_colormap = (
-        apply_color_map.validate()
-        .partial(**params["grouped_pe_colormap"])
-        .mapvalues(argnames=["df"], argvalues=split_patrol_event_groups)
     )
 
     grouped_pe_map_layer = (
         create_map_layer.validate()
         .partial(**params["grouped_pe_map_layer"])
-        .mapvalues(argnames=["geodataframe"], argvalues=grouped_pe_colormap)
+        .mapvalues(argnames=["geodataframe"], argvalues=split_patrol_event_groups)
     )
 
     grouped_pe_ecomap = (
@@ -208,7 +200,7 @@ if __name__ == "__main__":
     grouped_pe_pie_chart = (
         draw_pie_chart.validate()
         .partial(**params["grouped_pe_pie_chart"])
-        .mapvalues(argnames=["dataframe"], argvalues=grouped_pe_colormap)
+        .mapvalues(argnames=["dataframe"], argvalues=split_patrol_event_groups)
     )
 
     grouped_pe_pie_chart_html_urls = (
