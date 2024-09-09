@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+
+[project]
+name = "ecoscope-workflows"
+dynamic = ["version"]
+requires-python = ">=3.10"
+description = "An extensible task specification and compiler for local and distributed workflows."
+readme = "README.md"
+authors = [
+  { name = "Charles Stern", email = "charless@earthranger.com" }
+]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+]
+license = {file = "LICENSE"}
+dependencies = [
+    "pandera",
+    "pydantic<2.9.0",  # fixme: 2.9.0 released sept 5, breaks `test_examples.py::test_dag_params_jsonschema`
+    "pydantic-settings",
+    "tomli-w",
+]
+
+[project.urls]
+Homepage = "https://github.com/wildlife-dynamics/ecoscope-workflows"
+Tracker = "https://github.com/wildlife-dynamics/ecoscope-workflows/issues"
+
+[tool.setuptools_scm]
+write_to = "ecoscope_workflows/_version.py"
+write_to_template = "__version__ = '{version}'"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+ecoscope_workflows = ["py.typed"]
+
+[tool.pixi.project]
+channels = ["conda-forge"]
+platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
+
+[tool.pixi.pypi-dependencies]
+ecoscope_workflows = { path = ".", editable = true }
+
+[tool.pixi.dependencies]  # TODO: validate equality with `pyproject.toml` dependencies
+pandera = "*"  # todo: .[dataframe] could actually be optional? if so, big win bc no required pandas/numpy
+pydantic = "<2.9.0"
+pydantic-settings = "*"
+tomli-w = "*"
+
+[tool.pixi.feature.gcs.dependencies]
+cloudpathlib-gs = "*"
+
+[tool.pixi.feature.lithops.dependencies]
+lithops = { version = ">=3.4.1", channel = "file:///usr/local/etc/wildlife-dynamics/channel" }
+
+[tool.pixi.feature.test.dependencies]
+pytest = "*"
+
+[tool.pixi.environments]
+default = { solve-group = "default" }
+gcs = { features = ["gcs"], solve-group = "default" }
+lithops = { features = ["lithops"], solve-group = "default" }
+lithops-gcs = { features = ["lithops", "gcs"], solve-group = "default" }
+test-all = { features = ["lithops", "gcs", "test"], solve-group = "default" }
