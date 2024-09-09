@@ -60,9 +60,16 @@ class NorthArrowStyle(BaseModel):
 
 
 @dataclass
+class LegendDefiniion:
+    label_column: AnyGeoDataFrame
+    color_column: LayerStyle
+
+
+@dataclass
 class LayerDefinition:
     geodataframe: AnyGeoDataFrame
     layer_style: LayerStyle
+    legend: LegendDefiniion
 
 
 @task
@@ -75,6 +82,10 @@ def create_map_layer(
         PolylineLayerStyle | PolygonLayerStyle | PointLayerStyle,
         Field(description="Style arguments for the layer."),
     ],
+    legend: Annotated[
+        LegendDefiniion | SkipJsonSchema[None],
+        Field(description="If present, includes this layer in the map legend"),
+    ] = None,
 ) -> Annotated[LayerDefinition, Field()]:
     """
     Creates a map layer definition based on the provided configuration.
@@ -90,6 +101,7 @@ def create_map_layer(
     return LayerDefinition(
         geodataframe=geodataframe,
         layer_style=layer_style,
+        legend=legend,
     )
 
 
