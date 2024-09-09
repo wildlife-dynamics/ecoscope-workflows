@@ -2,7 +2,7 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
-from ecoscope_workflows.decorators import task
+from ecoscope_workflows.core.decorators import task
 
 
 def test_frozen():

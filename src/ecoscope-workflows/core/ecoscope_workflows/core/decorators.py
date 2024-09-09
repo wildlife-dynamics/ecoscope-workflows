@@ -22,14 +22,14 @@ else:
 
 from pydantic import validate_call
 
-from ecoscope_workflows.executors import (
+from ecoscope_workflows.core.executors import (
     AsyncExecutor,
     Future,
     FutureSequence,
     SyncExecutor,
     mapvalues_wrapper,
 )
-from ecoscope_workflows.executors.python import PythonExecutor
+from ecoscope_workflows.core.executors.python import PythonExecutor
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -105,26 +105,28 @@ class _Task(Generic[P, R, K, V]):
             ),
         )
 
+    # TODO(cisaacstern): fix mypy errors with overloads
+
     @overload
-    def set_executor(
+    def set_executor(  # type: ignore[overload-overlap]
         self,
         name_or_executor: Literal["python"],
     ) -> "SyncTask[P, R, K, V]": ...
 
     @overload
-    def set_executor(
+    def set_executor(  # type: ignore[overload-overlap]
         self,
         name_or_executor: Literal["lithops"],
     ) -> "AsyncTask[P, R, K, V]": ...
 
     @overload
-    def set_executor(
+    def set_executor(  # type: ignore[misc]
         self,
         name_or_executor: SyncExecutor,
     ) -> "SyncTask[P, R, K, V]": ...
 
     @overload
-    def set_executor(
+    def set_executor(  # type: ignore[misc]
         self,
         name_or_executor: AsyncExecutor,
     ) -> "AsyncTask[P, R, K, V]": ...

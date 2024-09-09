@@ -16,8 +16,10 @@ jobs:
 
       - name: Install environment
         run: |
-          pixi install --environment=test src/ecoscope_workflows/core
+          pixi install --environment=test-all --manifest-path src/ecoscope-workflows/core/pyproject.toml
 
       - name: Test ecoscope_workflows.core
         run: |
-          pixi run - pytest src/titiler/core --cov=titiler.core --cov-report=xml --cov-append --cov-report=term-missing
+          pixi run --environment test-all \
+          --manifest-path src/ecoscope-workflows/core/pyproject.toml \
+          pytest -v src/ecoscope-workflows/core
