@@ -1,4 +1,4 @@
-name: py3.11-ecoscope1.8.2
+name: py3.11-ecoscope1.8.3
 channels:
   - conda-forge
 dependencies:
@@ -8,4 +8,4 @@ dependencies:
   - numpy<2
   - pip
   - pip:
-    - ecoscope[analysis,mapping,plotting] @ git+https://github.com/wildlife-dynamics/ecoscope@v1.8.2
+    - ecoscope[analysis,mapping,plotting] @ git+https://github.com/wildlife-dynamics/ecoscope@v1.8.3

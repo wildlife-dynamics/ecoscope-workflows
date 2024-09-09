@@ -13,9 +13,9 @@ jobs:
       fail-fast: false
       matrix:
         environment-name: [
-          "py3.10-ecoscope1.8.2",
-          "py3.11-ecoscope1.8.2",
-          "py3.12-ecoscope1.8.2",
+          "py3.10-ecoscope1.8.3",
+          "py3.11-ecoscope1.8.3",
+          "py3.12-ecoscope1.8.3",
         ]
 
     steps:
