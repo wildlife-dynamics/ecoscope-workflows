@@ -13,9 +13,9 @@ jobs:
       fail-fast: false
       matrix:
         environment-name: [
-          "py3.10-ecoscope1.8.2",
-          "py3.11-ecoscope1.8.2",
-          "py3.12-ecoscope1.8.2",
+          "py3.10-ecoscope1.8.3",
+          "py3.11-ecoscope1.8.3",
+          "py3.12-ecoscope1.8.3",
         ]
 
     steps:
@@ -52,7 +52,7 @@ jobs:
           EARTHRANGER_PASSWORD: ${{ secrets.EARTHRANGER_PASSWORD }}
         shell: bash -leo pipefail {0}
         run: |
-          python -m pytest tests -vvv
+          python -m pytest tests -v
 
     # - name: Upload Coverage to Codecov
     #   uses: codecov/codecov-action@v2

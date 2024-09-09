@@ -2,10 +2,8 @@ import pandas as pd
 import pytest
 
 from ecoscope_workflows.tasks.results._ecoplot import (
-    GroupedPlotStyle,
     LayoutStyle,
     LineStyle,
-    PlotCategoryStyle,
     PlotStyle,
     draw_ecoplot,
     draw_pie_chart,
@@ -19,6 +17,13 @@ def sample_dataframe():
     data = {
         "value": [500, 200, 300, 150, 400],
         "category": ["A", "B", "A", "B", "B"],
+        "color_column": [
+            (255, 0, 0, 255),
+            (0, 0, 255, 255),
+            (255, 0, 0, 255),
+            (0, 0, 255, 255),
+            (0, 0, 255, 255),
+        ],
         "time": [
             pd.to_datetime("2024-06-01", utc=True),
             pd.to_datetime("2024-06-02", utc=True),
@@ -36,6 +41,13 @@ def time_series_dataframe(time_interval):
     """Fixture to provide a sample DataFrame for testing."""
     data = {
         "category": ["A", "B", "A", "B", "B"],
+        "color_column": [
+            (255, 0, 0, 255),
+            (0, 0, 255, 255),
+            (255, 0, 0, 255),
+            (0, 0, 255, 255),
+            (0, 0, 255, 255),
+        ],
     }
     match time_interval:
         case "year":
@@ -88,6 +100,13 @@ def pie_dataframe():
     data = {
         "value": [500, 200, 300, 150, 400],
         "category": ["A", "B", "A", "B", "C"],
+        "color_column": [
+            (255, 0, 0, 255),
+            (0, 0, 255, 255),
+            (255, 0, 0, 255),
+            (0, 0, 255, 255),
+            (0, 255, 0, 255),
+        ],
     }
 
     return pd.DataFrame(data)
@@ -103,6 +122,7 @@ def test_draw_ecoplot(sample_dataframe):
         group_by=groupby,
         x_axis=x_axis,
         y_axis=y_axis,
+        color_column="color_column",
         plot_style=PlotStyle(line_style=LineStyle(color="green")),
     )
 
@@ -128,14 +148,7 @@ def test_draw_time_series_bar_chart(time_series_dataframe, time_interval):
         category="category",
         agg_function="count",
         time_interval=time_interval,
-        grouped_styles=[
-            GroupedPlotStyle(
-                category="A", plot_style=PlotCategoryStyle(marker_color="red")
-            ),
-            GroupedPlotStyle(
-                category="B", plot_style=PlotCategoryStyle(marker_color="blue")
-            ),
-        ],
+        color_column="color_column",
         plot_style=PlotStyle(xperiodalignment="middle"),
     )
 
@@ -147,12 +160,11 @@ def test_draw_pie_chart(pie_dataframe):
         pie_dataframe,
         value_column="value",
         label_column="category",
+        color_column="color_column",
         plot_style=PlotStyle(
-            marker_colors=["chartreuse", "red", "magenta"],
             textinfo="value",
         ),
         layout_style=LayoutStyle(font_color="orange", font_style="italic"),
     )
 
-    assert isinstance(plot, str)
     assert isinstance(plot, str)

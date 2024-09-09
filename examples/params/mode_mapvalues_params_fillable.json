@@ -246,14 +246,12 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Fill Color"
                 },
                 "get_line_color": {
@@ -275,20 +273,39 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Line Color"
                 },
                 "get_line_width": {
                     "default": 1,
                     "title": "Get Line Width",
                     "type": "number"
+                },
+                "fill_color_column": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Fill Color Column"
+                },
+                "line_width_units": {
+                    "default": "pixels",
+                    "enum": [
+                        "meters",
+                        "pixels"
+                    ],
+                    "title": "Line Width Units",
+                    "type": "string"
                 },
                 "layer_type": {
                     "const": "point",
@@ -303,6 +320,15 @@
                     "default": 1,
                     "title": "Get Radius",
                     "type": "number"
+                },
+                "radius_units": {
+                    "default": "pixels",
+                    "enum": [
+                        "meters",
+                        "pixels"
+                    ],
+                    "title": "Radius Units",
+                    "type": "string"
                 }
             },
             "title": "PointLayerStyle",
@@ -349,14 +375,12 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Fill Color"
                 },
                 "get_line_color": {
@@ -378,20 +402,39 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Line Color"
                 },
                 "get_line_width": {
                     "default": 1,
                     "title": "Get Line Width",
                     "type": "number"
+                },
+                "fill_color_column": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Fill Color Column"
+                },
+                "line_width_units": {
+                    "default": "pixels",
+                    "enum": [
+                        "meters",
+                        "pixels"
+                    ],
+                    "title": "Line Width Units",
+                    "type": "string"
                 },
                 "layer_type": {
                     "const": "polygon",
@@ -461,20 +504,44 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        {
+                            "type": "null"
                         }
                     ],
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        255
-                    ],
+                    "default": null,
                     "title": "Get Color"
                 },
                 "get_width": {
                     "default": 1,
                     "title": "Get Width",
                     "type": "number"
+                },
+                "color_column": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Color Column"
+                },
+                "width_units": {
+                    "default": "pixels",
+                    "enum": [
+                        "meters",
+                        "pixels"
+                    ],
+                    "title": "Width Units",
+                    "type": "string"
+                },
+                "cap_rounded": {
+                    "default": true,
+                    "title": "Cap Rounded",
+                    "type": "boolean"
                 }
             },
             "title": "PolylineLayerStyle",
@@ -529,6 +596,13 @@
                     ],
                     "title": "Placement",
                     "type": "string"
+                },
+                "style": {
+                    "default": {
+                        "transorm": "scale(0.8)"
+                    },
+                    "title": "Style",
+                    "type": "object"
                 }
             },
             "title": "NorthArrowStyle",

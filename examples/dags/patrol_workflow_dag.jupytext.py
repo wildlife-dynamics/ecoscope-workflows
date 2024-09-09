@@ -702,6 +702,7 @@ patrol_events_bar_chart_params = dict(
     category=...,
     agg_function=...,
     time_interval=...,
+    color_column=...,
     grouped_styles=...,
     plot_style=...,
     layout_style=...,
@@ -766,6 +767,7 @@ patrol_events_bar_chart_widget = create_plot_widget_single_view.partial(
 patrol_events_pie_chart_params = dict(
     value_column=...,
     label_column=...,
+    color_column=...,
     plot_style=...,
     layout_style=...,
 )

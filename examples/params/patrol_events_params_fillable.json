@@ -18,7 +18,7 @@
             ],
             "type": "object"
         },
-        "Get Subject Group Observations from EarthRanger": {
+        "Get Patrol Events from EarthRanger": {
             "additionalProperties": false,
             "properties": {
                 "client": {
@@ -26,100 +26,83 @@
                     "title": "Client",
                     "type": "string"
                 },
-                "subject_group_name": {
-                    "title": "Subject Group Name",
-                    "type": "string",
-                    "description": "Name of EarthRanger Subject"
-                },
                 "since": {
-                    "format": "date-time",
                     "title": "Since",
                     "type": "string",
                     "description": "Start date"
                 },
                 "until": {
-                    "format": "date-time",
                     "title": "Until",
                     "type": "string",
                     "description": "End date"
                 },
-                "include_inactive": {
-                    "default": true,
-                    "title": "Include Inactive",
-                    "type": "boolean",
-                    "description": "Whether or not to include inactive subjects"
+                "patrol_type": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "Patrol Type",
+                    "type": "array",
+                    "description": "list of UUID of patrol types"
+                },
+                "status": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "Status",
+                    "type": "array",
+                    "description": "list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"
                 }
             },
             "required": [
                 "client",
-                "subject_group_name",
                 "since",
-                "until"
+                "until",
+                "patrol_type",
+                "status"
             ],
             "type": "object"
         },
-        "Transform Observations to Relocations": {
+        "Apply Relocation Coordinate Filter": {
             "additionalProperties": false,
             "properties": {
+                "min_x": {
+                    "default": -180.0,
+                    "title": "Min X",
+                    "type": "number"
+                },
+                "max_x": {
+                    "default": 180.0,
+                    "title": "Max X",
+                    "type": "number"
+                },
+                "min_y": {
+                    "default": -90.0,
+                    "title": "Min Y",
+                    "type": "number"
+                },
+                "max_y": {
+                    "default": 90.0,
+                    "title": "Max Y",
+                    "type": "number"
+                },
                 "filter_point_coords": {
+                    "default": [
+                        {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    ],
                     "items": {
                         "$ref": "#/$defs/Coordinate"
                     },
                     "title": "Filter Point Coords",
                     "type": "array"
-                },
-                "relocs_columns": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "title": "Relocs Columns",
-                    "type": "array"
-                }
-            },
-            "required": [
-                "filter_point_coords",
-                "relocs_columns"
-            ],
-            "type": "object"
-        },
-        "Transform Relocations to Trajectories": {
-            "additionalProperties": false,
-            "properties": {
-                "min_length_meters": {
-                    "default": 0.1,
-                    "title": "Min Length Meters",
-                    "type": "number"
-                },
-                "max_length_meters": {
-                    "default": 10000,
-                    "title": "Max Length Meters",
-                    "type": "number"
-                },
-                "max_time_secs": {
-                    "default": 3600,
-                    "title": "Max Time Secs",
-                    "type": "number"
-                },
-                "min_time_secs": {
-                    "default": 1,
-                    "title": "Min Time Secs",
-                    "type": "number"
-                },
-                "max_speed_kmhr": {
-                    "default": 120,
-                    "title": "Max Speed Kmhr",
-                    "type": "number"
-                },
-                "min_speed_kmhr": {
-                    "default": 0.0,
-                    "title": "Min Speed Kmhr",
-                    "type": "number"
                 }
             },
             "required": [],
             "type": "object"
         },
-        "Add temporal index to Subject Trajectories": {
+        "Add temporal index to Patrol Events": {
             "additionalProperties": false,
             "properties": {
                 "index_name": {
@@ -182,278 +165,43 @@
             ],
             "type": "object"
         },
-        "Split Subject Trajectories by Group": {
-            "additionalProperties": false,
-            "properties": {},
-            "required": [],
-            "type": "object"
-        },
-        "Create map layer for each trajectory group": {
+        "Patrol Events Colormap": {
             "additionalProperties": false,
             "properties": {
-                "layer_style": {
+                "input_column_name": {
+                    "title": "Input Column Name",
+                    "type": "string",
+                    "description": "The name of the column with categorical values."
+                },
+                "colormap": {
                     "anyOf": [
                         {
-                            "$ref": "#/$defs/PolylineLayerStyle"
+                            "type": "string"
                         },
                         {
-                            "$ref": "#/$defs/PolygonLayerStyle"
-                        },
-                        {
-                            "$ref": "#/$defs/PointLayerStyle"
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
                         }
                     ],
-                    "title": "Layer Style",
-                    "description": "Style arguments for the layer."
-                }
-            },
-            "required": [
-                "layer_style"
-            ],
-            "type": "object"
-        },
-        "Draw Ecomaps for each trajectory group": {
-            "additionalProperties": false,
-            "properties": {
-                "tile_layer": {
-                    "default": "",
-                    "title": "Tile Layer",
-                    "type": "string",
-                    "description": "A named tile layer, ie OpenStreetMap."
+                    "default": "viridis",
+                    "title": "Colormap",
+                    "description": "Either a named mpl.colormap or a list of string hex values."
                 },
-                "static": {
-                    "default": false,
-                    "title": "Static",
-                    "type": "boolean",
-                    "description": "Set to true to disable map pan/zoom."
-                },
-                "title": {
-                    "default": "",
-                    "title": "Title",
-                    "type": "string",
-                    "description": "The map title."
-                },
-                "north_arrow_style": {
-                    "allOf": [
-                        {
-                            "$ref": "#/$defs/NorthArrowStyle"
-                        }
-                    ],
+                "output_column_name": {
                     "default": null,
-                    "title": "North Arrow Style",
-                    "description": "Additional arguments for configuring the North Arrow."
-                }
-            },
-            "required": [],
-            "type": "object"
-        },
-        "Persist ecomap as Text": {
-            "additionalProperties": false,
-            "properties": {
-                "filename": {
-                    "default": null,
-                    "title": "Filename",
+                    "title": "Output Column Name",
                     "type": "string",
-                    "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
-                }
-            },
-            "required": [],
-            "type": "object"
-        },
-        "Create Map Widgets for Trajectories": {
-            "additionalProperties": false,
-            "properties": {
-                "title": {
-                    "title": "Title",
-                    "type": "string",
-                    "description": "The title of the widget"
+                    "description": "The dataframe column that will contain the color values."
                 }
             },
             "required": [
-                "title"
+                "input_column_name"
             ],
             "type": "object"
         },
-        "Merge EcoMap Widget Views": {
-            "additionalProperties": false,
-            "properties": {},
-            "required": [],
-            "type": "object"
-        },
-        "Calculate Mean Speed Per Group": {
-            "additionalProperties": false,
-            "properties": {
-                "column_name": {
-                    "title": "Column Name",
-                    "type": "string",
-                    "description": "Column to aggregate"
-                }
-            },
-            "required": [
-                "column_name"
-            ],
-            "type": "object"
-        },
-        "Create Single Value Widgets for Mean Speed Per Group": {
-            "additionalProperties": false,
-            "properties": {
-                "title": {
-                    "title": "Title",
-                    "type": "string",
-                    "description": "The title of the widget"
-                }
-            },
-            "required": [
-                "title"
-            ],
-            "type": "object"
-        },
-        "Merge per group Mean Speed SV widgets": {
-            "additionalProperties": false,
-            "properties": {},
-            "required": [],
-            "type": "object"
-        },
-        "Calculate Max Speed Per Group": {
-            "additionalProperties": false,
-            "properties": {
-                "column_name": {
-                    "title": "Column Name",
-                    "type": "string",
-                    "description": "Column to aggregate"
-                }
-            },
-            "required": [
-                "column_name"
-            ],
-            "type": "object"
-        },
-        "Create Single Value Widgets for Max Speed Per Group": {
-            "additionalProperties": false,
-            "properties": {
-                "title": {
-                    "title": "Title",
-                    "type": "string",
-                    "description": "The title of the widget"
-                }
-            },
-            "required": [
-                "title"
-            ],
-            "type": "object"
-        },
-        "Merge per group Max Speed SV widgets": {
-            "additionalProperties": false,
-            "properties": {},
-            "required": [],
-            "type": "object"
-        },
-        "Calculate Number of Locations Per Group": {
-            "additionalProperties": false,
-            "properties": {},
-            "required": [],
-            "type": "object"
-        },
-        "Create Single Value Widgets for Number of Location Per Group": {
-            "additionalProperties": false,
-            "properties": {
-                "title": {
-                    "title": "Title",
-                    "type": "string",
-                    "description": "The title of the widget"
-                }
-            },
-            "required": [
-                "title"
-            ],
-            "type": "object"
-        },
-        "Merge per group Number of Locations SV widgets": {
-            "additionalProperties": false,
-            "properties": {},
-            "required": [],
-            "type": "object"
-        },
-        "Calculate Day/Night Ratio Per Group": {
-            "additionalProperties": false,
-            "properties": {},
-            "required": [],
-            "type": "object"
-        },
-        "Create Single Value Widgets for Day/Night Ratio Per Group": {
-            "additionalProperties": false,
-            "properties": {
-                "title": {
-                    "title": "Title",
-                    "type": "string",
-                    "description": "The title of the widget"
-                }
-            },
-            "required": [
-                "title"
-            ],
-            "type": "object"
-        },
-        "Merge per group Day/Night Ratio SV widgets": {
-            "additionalProperties": false,
-            "properties": {},
-            "required": [],
-            "type": "object"
-        },
-        "Calculate Time Density from Trajectory": {
-            "additionalProperties": false,
-            "properties": {
-                "pixel_size": {
-                    "default": 250.0,
-                    "title": "Pixel Size",
-                    "type": "number",
-                    "description": "Pixel size for raster profile."
-                },
-                "crs": {
-                    "default": "ESRI:102022",
-                    "title": "Crs",
-                    "type": "string"
-                },
-                "nodata_value": {
-                    "default": "nan",
-                    "title": "Nodata Value",
-                    "type": "number"
-                },
-                "band_count": {
-                    "default": 1,
-                    "title": "Band Count",
-                    "type": "integer"
-                },
-                "max_speed_factor": {
-                    "default": 1.05,
-                    "title": "Max Speed Factor",
-                    "type": "number"
-                },
-                "expansion_factor": {
-                    "default": 1.3,
-                    "title": "Expansion Factor",
-                    "type": "number"
-                },
-                "percentiles": {
-                    "default": [
-                        50.0,
-                        60.0,
-                        70.0,
-                        80.0,
-                        90.0,
-                        95.0
-                    ],
-                    "items": {
-                        "type": "number"
-                    },
-                    "title": "Percentiles",
-                    "type": "array"
-                }
-            },
-            "required": [],
-            "type": "object"
-        },
-        "Create map layer from Time Density": {
+        "Create map layer from Patrol Events": {
             "additionalProperties": false,
             "properties": {
                 "layer_style": {
@@ -539,13 +287,509 @@
             ],
             "type": "object"
         },
-        "Merge Time Density Map Widget Views": {
+        "Draw Time Series Bar Chart for Patrols Events": {
+            "additionalProperties": false,
+            "properties": {
+                "x_axis": {
+                    "title": "X Axis",
+                    "type": "string",
+                    "description": "The dataframe column to plot in the x/time axis."
+                },
+                "y_axis": {
+                    "title": "Y Axis",
+                    "type": "string",
+                    "description": "The dataframe column to plot in the y axis."
+                },
+                "category": {
+                    "title": "Category",
+                    "type": "string",
+                    "description": "The dataframe column to stack in the y axis."
+                },
+                "agg_function": {
+                    "enum": [
+                        "count",
+                        "mean",
+                        "sum",
+                        "min",
+                        "max"
+                    ],
+                    "title": "Agg Function",
+                    "type": "string",
+                    "description": "The aggregate function to apply to the group."
+                },
+                "time_interval": {
+                    "enum": [
+                        "year",
+                        "month",
+                        "week",
+                        "day",
+                        "hour"
+                    ],
+                    "title": "Time Interval",
+                    "type": "string",
+                    "description": "Sets the time interval of the x axis."
+                },
+                "color_column": {
+                    "default": null,
+                    "title": "Color Column",
+                    "type": "string",
+                    "description": "The name of the dataframe column to color bars with."
+                },
+                "grouped_styles": {
+                    "default": [],
+                    "items": {
+                        "$ref": "#/$defs/GroupedPlotStyle"
+                    },
+                    "title": "Grouped Styles",
+                    "type": "array",
+                    "description": "Style arguments passed to plotly.graph_objects.Bar and applied to individual groups."
+                },
+                "plot_style": {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/PlotStyle"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Plot Style",
+                    "description": "Additional style kwargs passed to go.Bar()."
+                },
+                "layout_style": {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/BarLayoutStyle"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Layout Style",
+                    "description": "Additional kwargs passed to plotly.go.Figure(layout)."
+                }
+            },
+            "required": [
+                "x_axis",
+                "y_axis",
+                "category",
+                "agg_function",
+                "time_interval"
+            ],
+            "type": "object"
+        },
+        "Persist Patrols Bar Chart as Text": {
+            "additionalProperties": false,
+            "properties": {
+                "filename": {
+                    "default": null,
+                    "title": "Filename",
+                    "type": "string",
+                    "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+                }
+            },
+            "required": [],
+            "type": "object"
+        },
+        "Create Plot Widget for Patrol Events": {
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "title": "Title",
+                    "type": "string",
+                    "description": "The title of the widget"
+                }
+            },
+            "required": [
+                "title"
+            ],
+            "type": "object"
+        },
+        "Create Patrol Events Meshgrid": {
+            "additionalProperties": false,
+            "properties": {
+                "cell_width": {
+                    "default": 5000,
+                    "title": "Cell Width",
+                    "type": "integer",
+                    "description": "The width of a grid cell in meters."
+                },
+                "cell_height": {
+                    "default": 5000,
+                    "title": "Cell Height",
+                    "type": "integer",
+                    "description": "The height of a grid cell in meters."
+                },
+                "intersecting_only": {
+                    "default": false,
+                    "title": "Intersecting Only",
+                    "type": "boolean",
+                    "description": "Whether to return only grid cells intersecting with the aoi."
+                }
+            },
+            "required": [],
+            "type": "object"
+        },
+        "Patrol Events Feature Density": {
+            "additionalProperties": false,
+            "properties": {
+                "geometry_type": {
+                    "enum": [
+                        "point",
+                        "line"
+                    ],
+                    "title": "Geometry Type",
+                    "type": "string",
+                    "description": "The geometry type of the provided geodataframe"
+                }
+            },
+            "required": [
+                "geometry_type"
+            ],
+            "type": "object"
+        },
+        "Feature Density Colormap": {
+            "additionalProperties": false,
+            "properties": {
+                "input_column_name": {
+                    "title": "Input Column Name",
+                    "type": "string",
+                    "description": "The name of the column with categorical values."
+                },
+                "colormap": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    ],
+                    "default": "viridis",
+                    "title": "Colormap",
+                    "description": "Either a named mpl.colormap or a list of string hex values."
+                },
+                "output_column_name": {
+                    "default": null,
+                    "title": "Output Column Name",
+                    "type": "string",
+                    "description": "The dataframe column that will contain the color values."
+                }
+            },
+            "required": [
+                "input_column_name"
+            ],
+            "type": "object"
+        },
+        "Create map layer from Feature Density": {
+            "additionalProperties": false,
+            "properties": {
+                "layer_style": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/PolylineLayerStyle"
+                        },
+                        {
+                            "$ref": "#/$defs/PolygonLayerStyle"
+                        },
+                        {
+                            "$ref": "#/$defs/PointLayerStyle"
+                        }
+                    ],
+                    "title": "Layer Style",
+                    "description": "Style arguments for the layer."
+                }
+            },
+            "required": [
+                "layer_style"
+            ],
+            "type": "object"
+        },
+        "Draw Ecomap from Feature Density": {
+            "additionalProperties": false,
+            "properties": {
+                "tile_layer": {
+                    "default": "",
+                    "title": "Tile Layer",
+                    "type": "string",
+                    "description": "A named tile layer, ie OpenStreetMap."
+                },
+                "static": {
+                    "default": false,
+                    "title": "Static",
+                    "type": "boolean",
+                    "description": "Set to true to disable map pan/zoom."
+                },
+                "title": {
+                    "default": "",
+                    "title": "Title",
+                    "type": "string",
+                    "description": "The map title."
+                },
+                "north_arrow_style": {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/NorthArrowStyle"
+                        }
+                    ],
+                    "default": null,
+                    "title": "North Arrow Style",
+                    "description": "Additional arguments for configuring the North Arrow."
+                }
+            },
+            "required": [],
+            "type": "object"
+        },
+        "Persist Feature Density Ecomap as Text": {
+            "additionalProperties": false,
+            "properties": {
+                "filename": {
+                    "default": null,
+                    "title": "Filename",
+                    "type": "string",
+                    "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+                }
+            },
+            "required": [],
+            "type": "object"
+        },
+        "Create Feature Density Map Widget": {
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "title": "Title",
+                    "type": "string",
+                    "description": "The title of the widget"
+                }
+            },
+            "required": [
+                "title"
+            ],
+            "type": "object"
+        },
+        "Split Patrol Events by Group": {
             "additionalProperties": false,
             "properties": {},
             "required": [],
             "type": "object"
         },
-        "Create Dashboard with Subject Tracking Widgets": {
+        "Create map layer from grouped Patrol Events": {
+            "additionalProperties": false,
+            "properties": {
+                "layer_style": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/PolylineLayerStyle"
+                        },
+                        {
+                            "$ref": "#/$defs/PolygonLayerStyle"
+                        },
+                        {
+                            "$ref": "#/$defs/PointLayerStyle"
+                        }
+                    ],
+                    "title": "Layer Style",
+                    "description": "Style arguments for the layer."
+                }
+            },
+            "required": [
+                "layer_style"
+            ],
+            "type": "object"
+        },
+        "Draw Ecomap from grouped Patrol Events": {
+            "additionalProperties": false,
+            "properties": {
+                "tile_layer": {
+                    "default": "",
+                    "title": "Tile Layer",
+                    "type": "string",
+                    "description": "A named tile layer, ie OpenStreetMap."
+                },
+                "static": {
+                    "default": false,
+                    "title": "Static",
+                    "type": "boolean",
+                    "description": "Set to true to disable map pan/zoom."
+                },
+                "title": {
+                    "default": "",
+                    "title": "Title",
+                    "type": "string",
+                    "description": "The map title."
+                },
+                "north_arrow_style": {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/NorthArrowStyle"
+                        }
+                    ],
+                    "default": null,
+                    "title": "North Arrow Style",
+                    "description": "Additional arguments for configuring the North Arrow."
+                }
+            },
+            "required": [],
+            "type": "object"
+        },
+        "Persist grouped Patrol Events Ecomap as Text": {
+            "additionalProperties": false,
+            "properties": {
+                "filename": {
+                    "default": null,
+                    "title": "Filename",
+                    "type": "string",
+                    "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+                }
+            },
+            "required": [],
+            "type": "object"
+        },
+        "Create grouped Patrol Events Map Widget": {
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "title": "Title",
+                    "type": "string",
+                    "description": "The title of the widget"
+                }
+            },
+            "required": [
+                "title"
+            ],
+            "type": "object"
+        },
+        "Merge Patrol Events Map Widget Views": {
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+        },
+        "Draw Pie Chart for Patrols Events": {
+            "additionalProperties": false,
+            "properties": {
+                "value_column": {
+                    "title": "Value Column",
+                    "type": "string",
+                    "description": "The name of the dataframe column to pull slice values from."
+                },
+                "label_column": {
+                    "default": null,
+                    "title": "Label Column",
+                    "type": "string",
+                    "description": "The name of the dataframe column to label slices with, required if the data in value_column is numeric."
+                },
+                "color_column": {
+                    "default": null,
+                    "title": "Color Column",
+                    "type": "string",
+                    "description": "The name of the dataframe column to color slices with."
+                },
+                "plot_style": {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/PlotStyle"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Plot Style",
+                    "description": "Additional style kwargs passed to go.Pie()."
+                },
+                "layout_style": {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/LayoutStyle"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Layout Style",
+                    "description": "Additional kwargs passed to plotly.go.Figure(layout)."
+                }
+            },
+            "required": [
+                "value_column"
+            ],
+            "type": "object"
+        },
+        "Persist Patrols Pie Chart as Text": {
+            "additionalProperties": false,
+            "properties": {
+                "filename": {
+                    "default": null,
+                    "title": "Filename",
+                    "type": "string",
+                    "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+                }
+            },
+            "required": [],
+            "type": "object"
+        },
+        "Merge Pie Chart Widget Views": {
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+        },
+        "Grouped Patrol Events Feature Density": {
+            "additionalProperties": false,
+            "properties": {
+                "geometry_type": {
+                    "enum": [
+                        "point",
+                        "line"
+                    ],
+                    "title": "Geometry Type",
+                    "type": "string",
+                    "description": "The geometry type of the provided geodataframe"
+                }
+            },
+            "required": [
+                "geometry_type"
+            ],
+            "type": "object"
+        },
+        "Grouped Feature Density Colormap": {
+            "additionalProperties": false,
+            "properties": {
+                "input_column_name": {
+                    "title": "Input Column Name",
+                    "type": "string",
+                    "description": "The name of the column with categorical values."
+                },
+                "colormap": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    ],
+                    "default": "viridis",
+                    "title": "Colormap",
+                    "description": "Either a named mpl.colormap or a list of string hex values."
+                },
+                "output_column_name": {
+                    "default": null,
+                    "title": "Output Column Name",
+                    "type": "string",
+                    "description": "The dataframe column that will contain the color values."
+                }
+            },
+            "required": [
+                "input_column_name"
+            ],
+            "type": "object"
+        },
+        "Merge Feature Density Widget Views": {
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+        },
+        "Create Dashboard with Patrol Map Widgets": {
             "additionalProperties": false,
             "properties": {
                 "title": {
@@ -1011,6 +1255,118 @@
             "title": "NorthArrowStyle",
             "type": "object"
         },
+        "BarLayoutStyle": {
+            "properties": {
+                "font_color": {
+                    "default": null,
+                    "title": "Font Color",
+                    "type": "string"
+                },
+                "font_style": {
+                    "default": null,
+                    "title": "Font Style",
+                    "type": "string"
+                },
+                "plot_bgcolor": {
+                    "default": null,
+                    "title": "Plot Bgcolor",
+                    "type": "string"
+                },
+                "showlegend": {
+                    "default": null,
+                    "title": "Showlegend",
+                    "type": "boolean"
+                },
+                "bargap": {
+                    "default": null,
+                    "maximum": 1.0,
+                    "minimum": 0.0,
+                    "title": "Bargap",
+                    "type": "number"
+                },
+                "bargroupgap": {
+                    "default": null,
+                    "maximum": 1.0,
+                    "minimum": 0.0,
+                    "title": "Bargroupgap",
+                    "type": "number"
+                }
+            },
+            "title": "BarLayoutStyle",
+            "type": "object"
+        },
+        "GroupedPlotStyle": {
+            "properties": {
+                "category": {
+                    "title": "Category",
+                    "type": "string"
+                },
+                "plot_style": {
+                    "$ref": "#/$defs/PlotCategoryStyle"
+                }
+            },
+            "required": [
+                "category",
+                "plot_style"
+            ],
+            "title": "GroupedPlotStyle",
+            "type": "object"
+        },
+        "LineStyle": {
+            "properties": {
+                "color": {
+                    "default": null,
+                    "title": "Color",
+                    "type": "string"
+                }
+            },
+            "title": "LineStyle",
+            "type": "object"
+        },
+        "PlotCategoryStyle": {
+            "properties": {
+                "marker_color": {
+                    "default": null,
+                    "title": "Marker Color",
+                    "type": "string"
+                }
+            },
+            "title": "PlotCategoryStyle",
+            "type": "object"
+        },
+        "PlotStyle": {
+            "properties": {
+                "xperiodalignment": {
+                    "default": null,
+                    "title": "Xperiodalignment",
+                    "type": "string"
+                },
+                "marker_colors": {
+                    "default": null,
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "Marker Colors",
+                    "type": "array"
+                },
+                "textinfo": {
+                    "default": null,
+                    "title": "Textinfo",
+                    "type": "string"
+                },
+                "line": {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/LineStyle"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Line"
+                }
+            },
+            "title": "PlotStyle",
+            "type": "object"
+        },
         "WidgetSingleView": {
             "properties": {
                 "widget_type": {
@@ -1089,6 +1445,32 @@
                 "data"
             ],
             "title": "WidgetSingleView",
+            "type": "object"
+        },
+        "LayoutStyle": {
+            "properties": {
+                "font_color": {
+                    "default": null,
+                    "title": "Font Color",
+                    "type": "string"
+                },
+                "font_style": {
+                    "default": null,
+                    "title": "Font Style",
+                    "type": "string"
+                },
+                "plot_bgcolor": {
+                    "default": null,
+                    "title": "Plot Bgcolor",
+                    "type": "string"
+                },
+                "showlegend": {
+                    "default": null,
+                    "title": "Showlegend",
+                    "type": "boolean"
+                }
+            },
+            "title": "LayoutStyle",
             "type": "object"
         },
         "GroupedWidget": {
