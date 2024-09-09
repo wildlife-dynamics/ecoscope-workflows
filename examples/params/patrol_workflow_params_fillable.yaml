@@ -4,7 +4,7 @@ groupers:
 
 # Parameters for 'Get Patrol Observations from EarthRanger' using task `get_patrol_observations`.
 patrol_obs:
-  client:   # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>, json_schema_input_type=PydanticUndefined), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
+  client:   # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
   since:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
   until:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
   patrol_type:   # (list[str], FieldInfo(annotation=NoneType, required=True, description='list of UUID of patrol types'))
@@ -42,7 +42,7 @@ patrol_traj_map_layers:
 
 # Parameters for 'Get Patrol Events from EarthRanger' using task `get_patrol_events`.
 patrol_events:
-  client:   # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>, json_schema_input_type=PydanticUndefined), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
+  client:   # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
   since:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
   until:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
   patrol_type:   # (list[str], FieldInfo(annotation=NoneType, required=True, description='list of UUID of patrol types'))

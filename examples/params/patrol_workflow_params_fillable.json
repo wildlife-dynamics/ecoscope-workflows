@@ -433,7 +433,11 @@
                     "description": "The map title."
                 },
                 "north_arrow_style": {
-                    "$ref": "#/$defs/NorthArrowStyle",
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/NorthArrowStyle"
+                        }
+                    ],
                     "default": null,
                     "title": "North Arrow Style",
                     "description": "Additional arguments for configuring the North Arrow."
@@ -775,13 +779,21 @@
                     "description": "Style arguments passed to plotly.graph_objects.Bar and applied to individual groups."
                 },
                 "plot_style": {
-                    "$ref": "#/$defs/PlotStyle",
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/PlotStyle"
+                        }
+                    ],
                     "default": null,
                     "title": "Plot Style",
                     "description": "Additional style kwargs passed to go.Bar()."
                 },
                 "layout_style": {
-                    "$ref": "#/$defs/BarLayoutStyle",
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/BarLayoutStyle"
+                        }
+                    ],
                     "default": null,
                     "title": "Layout Style",
                     "description": "Additional kwargs passed to plotly.go.Figure(layout)."
@@ -844,13 +856,21 @@
                     "description": "The name of the dataframe column to color slices with."
                 },
                 "plot_style": {
-                    "$ref": "#/$defs/PlotStyle",
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/PlotStyle"
+                        }
+                    ],
                     "default": null,
                     "title": "Plot Style",
                     "description": "Additional style kwargs passed to go.Pie()."
                 },
                 "layout_style": {
-                    "$ref": "#/$defs/LayoutStyle",
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/LayoutStyle"
+                        }
+                    ],
                     "default": null,
                     "title": "Layout Style",
                     "description": "Additional kwargs passed to plotly.go.Figure(layout)."
@@ -979,7 +999,11 @@
                     "description": "The map title."
                 },
                 "north_arrow_style": {
-                    "$ref": "#/$defs/NorthArrowStyle",
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/NorthArrowStyle"
+                        }
+                    ],
                     "default": null,
                     "title": "North Arrow Style",
                     "description": "Additional arguments for configuring the North Arrow."
@@ -1661,7 +1685,11 @@
                     "type": "string"
                 },
                 "line": {
-                    "$ref": "#/$defs/LineStyle",
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/LineStyle"
+                        }
+                    ],
                     "default": null,
                     "title": "Line"
                 }
