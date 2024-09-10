@@ -25,7 +25,7 @@ def apply_reloc_coord_filter(
         list[Coordinate], Field(default=[Coordinate(x=0.0, y=0.0)])
     ] = [Coordinate(x=0.0, y=0.0)],
 ) -> DataFrame[AnyGeoDataFrameSchema]:
-    import geopandas
+    import geopandas  # type: ignore[import-untyped]
     import shapely
 
     # TODO: move it to ecoscope core

@@ -101,7 +101,7 @@ class _Task(Generic[P, R, K, V]):
         """
         return replace(
             self,
-            func=validate_call(
+            func=validate_call(  # type: ignore[call-overload]
                 self.func,
                 validate_return=True,
                 config={"arbitrary_types_allowed": True},

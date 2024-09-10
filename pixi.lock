@@ -2249,6 +2249,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zlib-ng-2.2.1-he02047a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstandard-0.23.0-py310ha39cb0e_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.6-ha6fb4c9_0.conda
+      - pypi: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
       - pypi: .
       linux-aarch64:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
@@ -2627,6 +2628,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zlib-ng-2.2.1-h0a1ffab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zstandard-0.23.0-py310h6a57b22_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zstd-1.5.6-h02f22dd_0.conda
+      - pypi: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
       - pypi: .
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_0.conda
@@ -2986,6 +2988,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zlib-ng-2.2.1-h00cdb27_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstandard-0.23.0-py310h2665a74_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.6-hb46c0d2_0.conda
+      - pypi: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
       - pypi: .
   mypy-py311:
     channels:
@@ -3370,6 +3373,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zlib-ng-2.2.1-he02047a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstandard-0.23.0-py311hbc35293_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.6-ha6fb4c9_0.conda
+      - pypi: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
       - pypi: .
       linux-aarch64:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
@@ -3746,6 +3750,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zlib-ng-2.2.1-h0a1ffab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zstandard-0.23.0-py311hd5293d8_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zstd-1.5.6-h02f22dd_0.conda
+      - pypi: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
       - pypi: .
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_0.conda
@@ -4103,6 +4108,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zlib-ng-2.2.1-h00cdb27_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstandard-0.23.0-py311ha60cc69_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.6-hb46c0d2_0.conda
+      - pypi: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
       - pypi: .
   mypy-py312:
     channels:
@@ -4487,6 +4493,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zlib-ng-2.2.1-he02047a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstandard-0.23.0-py312hef9b889_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.6-ha6fb4c9_0.conda
+      - pypi: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
       - pypi: .
       linux-aarch64:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
@@ -4863,6 +4870,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zlib-ng-2.2.1-h0a1ffab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zstandard-0.23.0-py312hb698573_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zstd-1.5.6-h02f22dd_0.conda
+      - pypi: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
       - pypi: .
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_0.conda
@@ -5220,6 +5228,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zlib-ng-2.2.1-h00cdb27_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstandard-0.23.0-py312h15fbf35_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.6-hb46c0d2_0.conda
+      - pypi: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
       - pypi: .
   test-all:
     channels:
@@ -13510,9 +13519,9 @@ packages:
   timestamp: 1725949860221
 - kind: pypi
   name: ecoscope-workflows
-  version: 0.0.2.dev69+g0459c36.d20240910
+  version: 0.0.2.dev70+ge1215e3.d20240910
   path: .
-  sha256: bcaec6faabe30def09f5c26651b144731b2d1dceba970a217b76a017914300a9
+  sha256: 4da38312131917c79925eefaa5ad35f522e68782fba0cf76f044989bb0188848
   requires_python: '>=3.10'
   editable: true
 - kind: conda
@@ -31855,6 +31864,14 @@ packages:
   - pkg:pypi/types-pytz?source=hash-mapping
   size: 18725
   timestamp: 1713337633292
+- kind: pypi
+  name: types-shapely
+  version: 2.0.0.20240820
+  url: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
+  sha256: 8b0fa12a0a0bfe342b9dfc146f2f2248e4760a4486d766787276abbc532d0641
+  requires_dist:
+  - numpy<2.1.0,>=1.20
+  requires_python: '>=3.8'
 - kind: conda
   name: typing-extensions
   version: 4.12.2
