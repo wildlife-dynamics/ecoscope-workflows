@@ -122,7 +122,7 @@ class Dashboard(BaseModel):
         return {k: v for k, v in self._iter_views_json()}
 
     @property
-    def rjsf_filters_json(self) -> ReactJSONSchemaFormFilters | None:
+    def rjsf_filters_json(self) -> dict | None:
         """The JSON-serializable representation of the React JSON Schema Form filters."""
         return (
             ReactJSONSchemaFormFilters(
@@ -294,6 +294,6 @@ def gather_dashboard(
     return Dashboard(
         widgets=grouped_widgets,
         grouper_choices=(grouper_choices if groupers else None),
-        keys=(keys_sample if groupers else None),
+        keys=(keys_sample if groupers else None),  # type: ignore[arg-type]
         metadata=Metadata(title=title, description=description),
     )
