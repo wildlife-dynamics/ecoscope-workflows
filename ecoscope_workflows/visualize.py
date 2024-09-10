@@ -1,5 +1,5 @@
 try:
-    from pydot import Dot, Node, Edge
+    from pydot import Dot, Node, Edge  # type: ignore[import-untyped]
 except ImportError:
     raise ImportError(
         "To use this module, you will need to install visualization dependencies "

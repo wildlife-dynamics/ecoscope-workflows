@@ -303,7 +303,7 @@ class TaskInstance(_ForbidExtra):
         )
 
     @model_validator(mode="after")  # type: ignore[misc]
-    def check_does_not_depend_on_self(self) -> "Spec":
+    def check_does_not_depend_on_self(self) -> "TaskInstance":
         for dep in self.all_dependencies:
             if isinstance(dep, TaskIdVariable) and dep.value == self.id:
                 raise ValueError(
@@ -313,7 +313,7 @@ class TaskInstance(_ForbidExtra):
         return self
 
     @model_validator(mode="after")  # type: ignore[misc]
-    def check_only_oneof_map_or_mapvalues(self) -> "Spec":
+    def check_only_oneof_map_or_mapvalues(self) -> "TaskInstance":
         if self.map and self.mapvalues:
             raise ValueError(
                 f"Task `{self.name}` cannot have both `map` and `mapvalues` set. "
