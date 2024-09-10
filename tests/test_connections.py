@@ -161,7 +161,3 @@ def test_resolve_client_from_toml(mock_toml_config: Path):
             client = f(client="mep_dev")
             assert hasattr(client, "get_subjectgroup_observations")
             assert callable(client.get_subjectgroup_observations)
-
-
-@pytest.mark.xfail
-def test_google_secrets_manager(): ...
