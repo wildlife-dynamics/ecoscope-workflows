@@ -1,7 +1,7 @@
 import geopandas as gpd
 
 from ecoscope_workflows.tasks.analysis import calculate_feature_density, create_meshgrid
-from random_geometry import random_3857_rectangle, random_points_in_bounds
+from ..utils.random_geometry import random_3857_rectangle, random_points_in_bounds
 
 
 def test_calculate_feature_density():
