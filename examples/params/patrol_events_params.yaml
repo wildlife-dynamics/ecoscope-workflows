@@ -43,6 +43,7 @@ pe_map_layer:
   layer_style:   # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
     layer_type: "point"
     fill_color_column: "event_type_colormap"
+    get_radius: 5
   legend:
     label_column: "event_type"
     color_column: "event_type_colormap"
@@ -97,7 +98,7 @@ fd_map_layer:
   layer_style:  # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
     layer_type: "polygon"
     fill_color_column: "density_colormap"
-    opacity: 0.7
+    opacity: 0.4
 
 # Parameters for 'Draw Ecomap from Feature Density' using task `draw_ecomap`.
 fd_ecomap:
@@ -173,7 +174,7 @@ grouped_fd_map_layer:
   layer_style:  # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
     layer_type: "polygon"
     fill_color_column: "density_colormap"
-    opacity: 0.7
+    opacity: 0.4
 
 # Parameters for 'Draw Ecomap from Feature Density' using task `draw_ecomap`.
 grouped_fd_ecomap:
