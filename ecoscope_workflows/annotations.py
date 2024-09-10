@@ -71,7 +71,7 @@ def is_client(obj):
 def connection_from_client(obj) -> DataConnection:
     assert is_client(obj)
     bv = [arg for arg in get_args(obj) if isinstance(arg, BeforeValidator)][0]
-    conn_type = bv.func.__self__
+    conn_type = bv.func.__self__  # type: ignore[union-attr]
     assert issubclass(conn_type, DataConnection)
     return conn_type
 

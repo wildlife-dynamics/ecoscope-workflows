@@ -4,7 +4,7 @@ import keyword
 import pathlib
 import subprocess
 import sys
-from typing import Annotated, Any, Callable, Literal, TypeAlias, TypeVar
+from typing import Annotated, Any, Callable, Literal, TypeAlias, TypeVar, TYPE_CHECKING
 
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
@@ -36,6 +36,22 @@ class _WorkflowVariable(BaseModel):
 
     value: str
 
+    if TYPE_CHECKING:
+        # Ensure type checkers see the correct return type
+        def model_dump(  # type: ignore[override]
+            self,
+            *,
+            mode: Literal["json", "python"] | str = "python",
+            include: Any = None,
+            exclude: Any = None,
+            by_alias: bool = False,
+            exclude_unset: bool = False,
+            exclude_defaults: bool = False,
+            exclude_none: bool = False,
+            round_trip: bool = False,
+            warnings: bool = True,
+        ) -> str: ...
+
 
 class TaskIdVariable(_WorkflowVariable):
     """A variable that references the return value of another task in the workflow."""
@@ -50,7 +66,7 @@ class TaskIdVariable(_WorkflowVariable):
 class EnvVariable(_WorkflowVariable):
     """A variable that references an environment variable."""
 
-    @model_serializer
+    @model_serializer()
     def serialize(self) -> str:
         return f'os.environ["{self.value}"]'
 

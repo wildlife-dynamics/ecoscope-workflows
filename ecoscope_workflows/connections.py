@@ -45,7 +45,7 @@ ClientProtocolType = TypeVar("ClientProtocolType")
 
 class _DataConnection(_Settings):
     @classmethod
-    def from_named_connection(
+    def from_named_connection(  # type: ignore[misc]
         cls: Type[DataConnectionType], name: str
     ) -> DataConnectionType:
         model_config = SettingsConfigDict(
