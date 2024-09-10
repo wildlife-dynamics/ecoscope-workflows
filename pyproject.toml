@@ -69,8 +69,11 @@ lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflow
 [tool.pixi.feature.test.dependencies]
 pytest = "*"
 
+[tool.pixi.feature.xdist.dependencies]
+pytest-xdist = "*"
+
 [tool.pixi.feature.ecoscope-core.dependencies]
-ecoscope = { version = "v1.8.2", channel = "https://prefix.dev/ecoscope-workflows" }
+ecoscope = { version = "v1.8.3", channel = "https://prefix.dev/ecoscope-workflows" }
 
 [tool.pixi.environments]
 default = { solve-group = "default" }

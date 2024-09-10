@@ -7,7 +7,7 @@ on:
     branches: ["*"]
 
 jobs:
-  test-:
+  test-all:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,6 +16,10 @@ jobs:
           curl -fsSL https://pixi.sh/install.sh | bash
           echo "$HOME/.pixi/bin" >> $GITHUB_PATH
       - name: Test ecoscope_workflows
+        env:
+          EARTHRANGER_SERVER: ${{ secrets.EARTHRANGER_SERVER }}
+          EARTHRANGER_USERNAME: ${{ secrets.EARTHRANGER_USERNAME }}
+          EARTHRANGER_PASSWORD: ${{ secrets.EARTHRANGER_PASSWORD }}
         run: |
           pixi run --locked --environment test-all \
           pytest -v tests
