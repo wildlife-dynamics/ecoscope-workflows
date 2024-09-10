@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: ["*"]
 
+strategy:
+  fail-fast: false
+  matrix:
+    python-version: ["py310", "py311", "py312"]
+
 jobs:
   doctest:
     runs-on: ubuntu-latest
@@ -15,7 +20,7 @@ jobs:
         run: curl -fsSL https://pixi.sh/install.sh | bash && echo "$HOME/.pixi/bin" >> $GITHUB_PATH
       - name: Test
         run: |
-          pixi run --locked --environment test-all \
+          pixi run --locked --environment test-all-${{ matrix.python-version }} \
           pytest -v ecoscope_workflows/ --doctest-modules --ignore=ecoscope_workflows/visualize.py
 
   test-core:
@@ -26,7 +31,7 @@ jobs:
         run: curl -fsSL https://pixi.sh/install.sh | bash && echo "$HOME/.pixi/bin" >> $GITHUB_PATH
       - name: Test
         run: |  # todo: move end-to-end tests to examples build dirs and remove `-k` flag
-          pixi run --locked --environment test-all \
+          pixi run --locked --environment test-all-${{ matrix.python-version }} \
           pytest -v tests --ignore tests/tasks -k "not test_end_to_end"
 
   test-tasks-not-io:
@@ -36,7 +41,7 @@ jobs:
       - name: Install pixi
         run: curl -fsSL https://pixi.sh/install.sh | bash && echo "$HOME/.pixi/bin" >> $GITHUB_PATH
       - name: Test
-        run: pixi run --locked --environment test-all pytest -v tests/tasks -m "not io"
+        run: pixi run --locked --environment test-all-${{ matrix.python-version }} pytest -v tests/tasks -m "not io"
 
   test-tasks-io:
     runs-on: ubuntu-latest
@@ -49,7 +54,7 @@ jobs:
           EARTHRANGER_SERVER: ${{ secrets.EARTHRANGER_SERVER }}
           EARTHRANGER_USERNAME: ${{ secrets.EARTHRANGER_USERNAME }}
           EARTHRANGER_PASSWORD: ${{ secrets.EARTHRANGER_PASSWORD }}
-        run: pixi run --locked --environment test-all pytest -v tests/tasks -m "io"
+        run: pixi run --locked --environment test-all-${{ matrix.python-version }} pytest -v tests/tasks -m "io"
 
   test-e2e:  # todo: move end-to-end tests to examples build dirs
     runs-on: ubuntu-latest
@@ -58,4 +63,6 @@ jobs:
       - name: Install pixi
         run: curl -fsSL https://pixi.sh/install.sh | bash && echo "$HOME/.pixi/bin" >> $GITHUB_PATH
       - name: Test
-        run: pixi run --locked --environment test-all pytest -v tests/test_examples.py -k "end_to_end"
+        run: |
+          pixi run --locked --environment test-all-${{ matrix.python-version }} \
+          pytest -v tests/test_examples.py -k "end_to_end"
