@@ -3,9 +3,6 @@ from pathlib import Path
 from urllib.parse import urlparse, quote
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from cloudpathlib.gs.gspath import GSPath
-
 
 def gpd_from_parquet_uri(uri: str):
     import geopandas as gpd  # type: ignore[import-untyped]
@@ -28,7 +25,10 @@ def _my_content_type(path: str) -> tuple[str | None, str | None]:
 
 def _persist_text(text: str, root_path: str, filename: str) -> str:
     if TYPE_CHECKING:
+        from cloudpathlib.gs.gspath import GSPath
+
         write_path: Path | "GSPath"
+
     match urlparse(root_path).scheme:
         case "file" | "":
             local_path = Path(root_path)

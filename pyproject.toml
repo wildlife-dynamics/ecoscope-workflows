@@ -41,6 +41,9 @@ namespaces = false
 [tool.setuptools.package-data]
 ecoscope_workflows = ["tasks/**/*.parquet", "templates/*.jinja", "templates/*.jinja2"]
 
+[tool.mypy]
+plugins = ["pandera.mypy", "pydantic.mypy"]
+
 [tool.pixi.project]
 channels = [
     "https://prefix.dev/ecoscope-workflows",  # our custom channel, recipes in ./vendor directory
@@ -70,7 +73,7 @@ cloudpathlib-gs = "*"
 lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
 
 [tool.pixi.feature.mypy]
-dependencies = { mypy = "*", pandas-stubs = "*" }
+dependencies = { mypy = "*", pandas-stubs = "*", pandera-mypy = "*" }
 pypi-dependencies = { types-shapely = "*" }
 tasks = { mypy = "mypy --package ecoscope_workflows" }
 

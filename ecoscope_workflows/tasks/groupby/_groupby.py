@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Annotated, TYPE_CHECKING, cast
+from typing import Any, Annotated
 
 from pydantic import Field
 from pydantic.json_schema import SkipJsonSchema
@@ -81,11 +81,6 @@ def split_groups(
     ),
 ]:
     # TODO: configurable cardinality constraint with a default?
-    if TYPE_CHECKING:
-        from pandas import DataFrame
-
-        cast(DataFrame, df)
-
     grouper_index_names = [g.index_name for g in groupers]
     grouped = df.groupby(grouper_index_names)
     return [

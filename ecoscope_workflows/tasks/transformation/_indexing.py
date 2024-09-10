@@ -1,4 +1,4 @@
-from typing import Annotated, Literal, TYPE_CHECKING, cast
+from typing import Annotated, Literal, cast
 
 from pydantic import Field
 
@@ -94,11 +94,8 @@ def add_temporal_index(
 ) -> AnyDataFrame:
     import pandas as pd
 
-    if TYPE_CHECKING:
-        cast(pd.DataFrame, df)
-
     if cast_to_datetime:
         df[time_col] = pd.to_datetime(df[time_col], format=format)
 
     df[index_name] = df[time_col].dt.strftime(directive)
-    return df.set_index(index_name, append=True)
+    return cast(AnyDataFrame, df.set_index(index_name, append=True))

@@ -2122,6 +2122,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandas-stubs-2.2.2.240909-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-0.20.4-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-base-0.20.4-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-mypy-0.20.4-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pango-1.54.0-h4c5309f_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/paramiko-3.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/parso-0.8.4-pyhd8ed1ab_0.conda
@@ -2501,6 +2502,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandas-stubs-2.2.2.240909-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-0.20.4-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-base-0.20.4-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-mypy-0.20.4-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pango-1.54.0-h7579590_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/paramiko-3.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/parso-0.8.4-pyhd8ed1ab_0.conda
@@ -2871,6 +2873,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandas-stubs-2.2.2.240909-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-0.20.4-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-base-0.20.4-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-mypy-0.20.4-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pango-1.54.0-h9ee27a3_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/paramiko-3.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/parso-0.8.4-pyhd8ed1ab_0.conda
@@ -3247,6 +3250,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandas-stubs-2.2.2.240909-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-0.20.4-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-base-0.20.4-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-mypy-0.20.4-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pango-1.54.0-h4c5309f_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/paramiko-3.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/parso-0.8.4-pyhd8ed1ab_0.conda
@@ -3624,6 +3628,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandas-stubs-2.2.2.240909-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-0.20.4-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-base-0.20.4-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-mypy-0.20.4-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pango-1.54.0-h7579590_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/paramiko-3.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/parso-0.8.4-pyhd8ed1ab_0.conda
@@ -3992,6 +3997,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandas-stubs-2.2.2.240909-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-0.20.4-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-base-0.20.4-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-mypy-0.20.4-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pango-1.54.0-h9ee27a3_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/paramiko-3.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/parso-0.8.4-pyhd8ed1ab_0.conda
@@ -4367,6 +4373,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandas-stubs-2.2.2.240909-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-0.20.4-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-base-0.20.4-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-mypy-0.20.4-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pango-1.54.0-h4c5309f_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/paramiko-3.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/parso-0.8.4-pyhd8ed1ab_0.conda
@@ -4744,6 +4751,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandas-stubs-2.2.2.240909-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-0.20.4-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-base-0.20.4-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-mypy-0.20.4-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pango-1.54.0-h7579590_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/paramiko-3.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/parso-0.8.4-pyhd8ed1ab_0.conda
@@ -5112,6 +5120,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandas-stubs-2.2.2.240909-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-0.20.4-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-base-0.20.4-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-mypy-0.20.4-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pango-1.54.0-h9ee27a3_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/paramiko-3.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/parso-0.8.4-pyhd8ed1ab_0.conda
@@ -13519,9 +13528,9 @@ packages:
   timestamp: 1725949860221
 - kind: pypi
   name: ecoscope-workflows
-  version: 0.0.2.dev70+ge1215e3.d20240910
+  version: 0.0.2.dev84+g9b05d8c.d20240910
   path: .
-  sha256: 4da38312131917c79925eefaa5ad35f522e68782fba0cf76f044989bb0188848
+  sha256: 813c9bd585185ed181ff396132ea3a33ed0aaf809afed6890cd28daf2bea4957
   requires_python: '>=3.10'
   editable: true
 - kind: conda
@@ -24705,6 +24714,24 @@ packages:
   - pkg:pypi/pandera?source=hash-mapping
   size: 150012
   timestamp: 1725408301583
+- kind: conda
+  name: pandera-mypy
+  version: 0.20.4
+  build: hd8ed1ab_0
+  subdir: noarch
+  noarch: python
+  url: https://conda.anaconda.org/conda-forge/noarch/pandera-mypy-0.20.4-hd8ed1ab_0.conda
+  sha256: da917cb819f1fc42693ede62283fd1f5f0f62fe935cd950163a983b14bf48e2b
+  md5: 0581178b2692d5ccfb3da9785f9405d0
+  depends:
+  - mypy
+  - pandas-stubs
+  - pandera-base >=0.20.4,<0.20.5.0a0
+  license: MIT
+  license_family: MIT
+  purls: []
+  size: 6833
+  timestamp: 1725408313105
 - kind: conda
   name: pango
   version: 1.54.0

@@ -1,9 +1,9 @@
 import logging
-from typing import Annotated, TYPE_CHECKING, cast
+from typing import Annotated, cast
 
 from pydantic import Field
 
-from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
+from ecoscope_workflows.annotations import AnyDataFrame
 from ecoscope_workflows.decorators import task
 
 logger = logging.getLogger(__name__)
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 @task
 def map_values(
-    df: DataFrame[JsonSerializableDataFrameModel],
+    df: AnyDataFrame,
     column_name: Annotated[str, Field(description="The column name to map.")],
     value_map: Annotated[
         dict[str, str], Field(default={}, description="A dictionary of values to map.")
@@ -20,17 +20,17 @@ def map_values(
         bool,
         Field(default=False, description="Whether to preserve values not in the map."),
     ],
-) -> DataFrame[JsonSerializableDataFrameModel]:
+) -> AnyDataFrame:
     if preserve_values:
         df[column_name] = df[column_name].map(value_map).fillna(df[column_name])
     else:
         df[column_name] = df[column_name].map(value_map)
-    return df
+    return cast(AnyDataFrame, df)
 
 
 @task
 def map_columns(
-    df: DataFrame[JsonSerializableDataFrameModel],
+    df: AnyDataFrame,
     drop_columns: Annotated[
         list[str], Field(default=[], description="List of columns to drop.")
     ],
@@ -46,7 +46,7 @@ def map_columns(
         dict[str, str],
         Field(default={}, description="Dictionary of columns to rename."),
     ],
-) -> DataFrame[JsonSerializableDataFrameModel]:
+) -> AnyDataFrame:
     """
     Maps and transforms the columns of a DataFrame based on the provided parameters. The order of the operations is as
     follows: drop columns, retain/reorder columns, and rename columns.
@@ -63,11 +63,6 @@ def map_columns(
     Raises:
         KeyError: If any of the columns specified are not found in the DataFrame.
     """
-    if TYPE_CHECKING:
-        import pandas as pd
-
-        cast(pd.DataFrame, df)
-
     if "geometry" in drop_columns:
         logger.warning(
             "'geometry' found in drop_columns, which may affect spatial operations."
@@ -82,10 +77,10 @@ def map_columns(
     if retain_columns:
         if any(col not in df.columns for col in retain_columns):
             raise KeyError(f"Columns {retain_columns} not all found in DataFrame.")
-        df = df.reindex(columns=retain_columns)
+        df = df.reindex(columns=retain_columns)  # type: ignore[assignment]
     if rename_columns:
         if any(col not in df.columns for col in rename_columns):
             raise KeyError(f"Columns {rename_columns} not all found in DataFrame.")
-        df = df.rename(columns=rename_columns)
+        df = df.rename(columns=rename_columns)  # type: ignore[assignment]
 
-    return df
+    return cast(AnyDataFrame, df)
