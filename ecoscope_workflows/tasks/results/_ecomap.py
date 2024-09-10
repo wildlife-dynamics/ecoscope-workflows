@@ -129,8 +129,8 @@ def draw_ecomap(
 
     m = EcoMap(static=static, default_widgets=False)
 
-    if title:
-        m.add_title(title)
+    # if title:
+    #     m.add_title(title)
 
     m.add_scale_bar()
     m.add_north_arrow(
