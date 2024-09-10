@@ -18,6 +18,7 @@ from pydantic_settings import (
 )
 
 import ecoscope_workflows.config as config
+from ecoscope_workflows.annotations import AnyGeoDataFrame
 
 
 class _Settings(BaseSettings):
@@ -91,7 +92,7 @@ class EarthRangerClientProtocol(Protocol):
         include_inactive: bool,
         since,
         until,
-    ) -> None: ...
+    ) -> AnyGeoDataFrame: ...
 
     def get_patrol_observations_with_patrol_filter(
         self,
@@ -100,7 +101,7 @@ class EarthRangerClientProtocol(Protocol):
         patrol_type,
         status,
         include_patrol_details,
-    ) -> None: ...
+    ) -> AnyGeoDataFrame: ...
 
     def get_patrol_events(
         self,
@@ -108,7 +109,7 @@ class EarthRangerClientProtocol(Protocol):
         until,
         patrol_type,
         status,
-    ) -> None: ...
+    ) -> AnyGeoDataFrame: ...
 
 
 class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):

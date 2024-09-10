@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, Any, Literal
+from typing import Annotated, Literal
 
 import pandas as pd
 import pandera as pa
@@ -9,15 +9,12 @@ from pydantic import Field
 from ecoscope_workflows.annotations import (
     DataFrame,
     EarthRangerClient,
-    JsonSerializableDataFrameModel,
+    GeoDataFrameBaseSchema,
 )
 from ecoscope_workflows.decorators import task
 
 
-class SubjectGroupObservationsGDFSchema(JsonSerializableDataFrameModel):
-    geometry: pa_typing.Series[Any] = (
-        pa.Field()
-    )  # see note in tasks/time_density re: geometry typing
+class SubjectGroupObservationsGDFSchema(GeoDataFrameBaseSchema):
     groupby_col: pa_typing.Series[object] = pa.Field()
     fixtime: pa_typing.Series[pd.DatetimeTZDtype] = pa.Field(
         dtype_kwargs={"unit": "ns", "tz": "UTC"}
@@ -26,8 +23,7 @@ class SubjectGroupObservationsGDFSchema(JsonSerializableDataFrameModel):
     # TODO: can we be any more specific about the `extra__` field expectations?
 
 
-class EventGDFSchema(JsonSerializableDataFrameModel):
-    geometry: pa_typing.Series[Any] = pa.Field()
+class EventGDFSchema(GeoDataFrameBaseSchema):
     id: pa_typing.Series[str] = pa.Field()
     event_type: pa_typing.Series[str] = pa.Field()
 
@@ -46,7 +42,7 @@ def get_subjectgroup_observations(
     ] = True,
 ) -> DataFrame[SubjectGroupObservationsGDFSchema]:
     """Get observations for a subject group from EarthRanger."""
-    return client.get_subjectgroup_observations(
+    return client.get_subjectgroup_observations(  # type: ignore[return-value]
         subject_group_name=subject_group_name,
         include_subject_details=True,
         include_inactive=include_inactive,
@@ -73,7 +69,7 @@ def get_patrol_observations(
     ] = False,
 ) -> DataFrame[SubjectGroupObservationsGDFSchema]:
     """Get observations for a patrol type from EarthRanger."""
-    return client.get_patrol_observations_with_patrol_filter(
+    return client.get_patrol_observations_with_patrol_filter(  # type: ignore[return-value]
         since=since,
         until=until,
         patrol_type=patrol_type,
@@ -99,7 +95,7 @@ def get_patrol_events(
     ],
 ) -> DataFrame[EventGDFSchema]:
     """Get events from patrols."""
-    return client.get_patrol_events(
+    return client.get_patrol_events(  # type: ignore[return-value]
         since=since,
         until=until,
         patrol_type=patrol_type,

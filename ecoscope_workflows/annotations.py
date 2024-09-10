@@ -43,13 +43,13 @@ DataFrame = Annotated[
 ]
 
 
-class AnyGeoDataFrameSchema(JsonSerializableDataFrameModel):
+class GeoDataFrameBaseSchema(JsonSerializableDataFrameModel):
     # see note in tasks/time_density re: geometry typing
-    geometry: pa.typing.Series[Any] = pa.Field()
+    geometry: pa_typing.Series[Any] = pa.Field()
 
 
 AnyDataFrame = DataFrame[JsonSerializableDataFrameModel]
-AnyGeoDataFrame = DataFrame[AnyGeoDataFrameSchema]
+AnyGeoDataFrame = DataFrame[GeoDataFrameBaseSchema]
 
 
 def is_subscripted_pandera_dataframe(obj):
