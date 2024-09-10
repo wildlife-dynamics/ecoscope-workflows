@@ -2,10 +2,10 @@
 requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
 
 [project]
-name = "ecoscope_workflows"
+name = "ecoscope-workflows"
 dynamic = ["version"]
-# requires-python = ">=3.9"
-description = ""
+requires-python = ">=3.10"
+description = "An extensible task specification and compiler for local and distributed workflows."
 readme = "README.md"
 authors = [
   { name = "Charles Stern", email = "charless@earthranger.com" }
@@ -18,42 +18,13 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Scientific/Engineering",
 ]
-# license = { text = "" }
-# keywords = []
-dependencies = [
-    "jinja2",
-    "pandera",
-    "pydantic<2.9.0",
-    "pydantic-settings",
-    "ruamel.yaml",
-    "ruff",  # for linting compiled workflows
-    "tomli-w",
-]
-
-[project.optional-dependencies]
-test = [
-    "pytest",
-]
-lithops = [
-    "lithops",
-]
-gcs = [
-    "cloudpathlib[gs]",
-]
-notebook = [
-    "jupytext",
-]
-visualize = [
-    "pydot"  # requires system install of `graphviz` for the `dot` executable
-]
-
+license = { file = "LICENSE" }
 
 [project.scripts]
 ecoscope-workflows = "ecoscope_workflows.__main__:main"
 
 [project.entry-points."ecoscope_workflows"]
 tasks = "ecoscope_workflows.tasks"  # for extensions, this could be "my_custom_tasks.tasks"
-# TODO: serde = "ecoscope_workflows.serde"  # for extensions, this could be "my_custom_serde.serde"
 
 [project.urls]
 Homepage = "https://github.com/wildlife-dynamics/ecoscope-workflows"
@@ -63,9 +34,47 @@ Tracker = "https://github.com/wildlife-dynamics/ecoscope-workflows/issues"
 write_to = "ecoscope_workflows/_version.py"
 write_to_template = "__version__ = '{version}'"
 
-[tool.setuptools.package-data]
-ecoscope_workflows = ["py.typed"]
+[tool.setuptools.packages.find]
+exclude = ["vendor"]
+namespaces = false
 
-[tool.isort]
-# Prevent isort & black from fighting each other
-profile = "black"
+[tool.setuptools.package-data]
+ecoscope_workflows = ["tasks/**/*.parquet", "templates/*.jinja", "templates/*.jinja2"]
+
+[tool.pixi.project]
+channels = [
+    "https://prefix.dev/ecoscope-workflows",  # our custom channel, recipes in ./vendor directory
+    "conda-forge",
+]
+platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
+
+[tool.pixi.pypi-dependencies]
+"ecoscope-workflows" = { path = ".", editable = true }
+
+[tool.pixi.dependencies]
+jinja2 = "*"
+pandera = "*"
+pydantic = "<2.9.0"
+pydantic-settings = "*"
+"ruamel.yaml" = "*"
+ruff = "*"
+tomli-w = "*"
+
+[tool.pixi.feature.gcs.dependencies]
+cloudpathlib-gs = "*"
+
+[tool.pixi.feature.lithops.dependencies]
+lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
+
+[tool.pixi.feature.test.dependencies]
+pytest = "*"
+
+[tool.pixi.feature.ecoscope-core.dependencies]
+ecoscope = { version = "v1.8.2", channel = "https://prefix.dev/ecoscope-workflows" }
+
+[tool.pixi.environments]
+default = { solve-group = "default" }
+gcs = { features = ["gcs"], solve-group = "default" }
+lithops = { features = ["lithops"], solve-group = "default" }
+lithops-gcs = { features = ["lithops", "gcs"], solve-group = "default" }
+test-all = { features = ["lithops", "gcs", "test", "ecoscope-core"], solve-group = "default" }
