@@ -1,14 +1,10 @@
 from dataclasses import dataclass
 from functools import lru_cache
 from typing import Sequence, TypeVar
-# from textwrap import dedent
 
-# import yaml
-
-# from ecoscope_workflows.compiler import Spec, TaskInstance
-from ecoscope_workflows.decorators import task
-from ecoscope_workflows.executors import Future, FutureSequence, LithopsExecutor
-from ecoscope_workflows.graph import DependsOn, DependsOnSequence, Graph, Node
+from ecoscope_workflows.core.decorators import task
+from ecoscope_workflows.core.executors import Future, FutureSequence, LithopsExecutor
+from ecoscope_workflows.core.graph import DependsOn, DependsOnSequence, Graph, Node
 
 T = TypeVar("T")
 
