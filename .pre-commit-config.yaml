@@ -1,5 +1,5 @@
 # https://pre-commit.com/
-# Adapted from https://github.com/TomNicholas/VirtualiZarr/blob/main/.pre-commit-config.yaml
+# xref https://github.com/zarr-developers/VirtualiZarr/blob/main/.pre-commit-config.yaml
 
 ci:
   autoupdate_schedule: monthly
@@ -13,20 +13,10 @@ repos:
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: "v0.4.3"
+    rev: "v0.6.3"
     hooks:
       # Run the linter.
       - id: ruff
         args: [--fix]
       # Run the formatter.
       - id: ruff-format
-
-  - repo: local
-    hooks:
-      - id: mypy
-        name: mypy
-        entry: "pixi run -e mypy-py312 mypy"
-        language: python
-        types: [python]
-        require_serial: true
-        verbose: true
