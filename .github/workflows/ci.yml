@@ -7,7 +7,7 @@ on:
     branches: ["*"]
 
 jobs:
-  test-core-default-env:
+  test-core-env-default:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,4 +20,4 @@ jobs:
           pixi run --locked \
           --environment test-default \
           --manifest-path src/ecoscope-workflows/core/pyproject.toml \
-          pytest -v src/ecoscope-workflows/core/tests
+          pytest -v src/ecoscope-workflows/core/tests/env-default

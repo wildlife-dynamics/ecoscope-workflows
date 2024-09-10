@@ -1274,7 +1274,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstandard-0.23.0-py312h15fbf35_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.6-hb46c0d2_0.conda
       - pypi: .
-  test-all:
+  test-default:
     channels:
     - url: https://prefix.dev/ecoscope-workflows/
     - url: https://conda.anaconda.org/conda-forge/
@@ -2437,9 +2437,9 @@ packages:
   timestamp: 1725443410772
 - kind: pypi
   name: ecoscope-workflows-core
-  version: 0.0.2.dev21+g52cf805.d20240910
+  version: 0.0.2.dev30+g81b219a.d20240910
   path: .
-  sha256: ef5f8ab65757fbf5db35fb98fd27b73eec9ae91686f91eee965ae0684bc3204c
+  sha256: cf8832d4235a14496b33806b288bb870040ee17f82874f2af7f6041140dbb5f4
   requires_dist:
   - pandera
   - pydantic<2.9.0

@@ -71,4 +71,4 @@ default = { solve-group = "default" }
 gcs = { features = ["gcs"], solve-group = "default" }
 lithops = { features = ["lithops"], solve-group = "default" }
 lithops-gcs = { features = ["lithops", "gcs"], solve-group = "default" }
-test-all = { features = ["lithops", "gcs", "test"], solve-group = "default" }
+test-default = { features = ["lithops", "gcs", "test"], solve-group = "default" }
