@@ -3,6 +3,7 @@ from typing import Annotated, Any, Literal
 
 import pandas as pd
 import pandera as pa
+import pandera.typing as pa_typing
 from pydantic import Field
 
 from ecoscope_workflows.annotations import (
@@ -14,21 +15,21 @@ from ecoscope_workflows.decorators import task
 
 
 class SubjectGroupObservationsGDFSchema(JsonSerializableDataFrameModel):
-    geometry: pa.typing.Series[Any] = (
+    geometry: pa_typing.Series[Any] = (
         pa.Field()
     )  # see note in tasks/time_density re: geometry typing
-    groupby_col: pa.typing.Series[object] = pa.Field()
-    fixtime: pa.typing.Series[pd.DatetimeTZDtype] = pa.Field(
+    groupby_col: pa_typing.Series[object] = pa.Field()
+    fixtime: pa_typing.Series[pd.DatetimeTZDtype] = pa.Field(
         dtype_kwargs={"unit": "ns", "tz": "UTC"}
     )
-    junk_status: pa.typing.Series[bool] = pa.Field()
+    junk_status: pa_typing.Series[bool] = pa.Field()
     # TODO: can we be any more specific about the `extra__` field expectations?
 
 
 class EventGDFSchema(JsonSerializableDataFrameModel):
-    geometry: pa.typing.Series[Any] = pa.Field()
-    id: pa.typing.Series[str] = pa.Field()
-    event_type: pa.typing.Series[str] = pa.Field()
+    geometry: pa_typing.Series[Any] = pa.Field()
+    id: pa_typing.Series[str] = pa.Field()
+    event_type: pa_typing.Series[str] = pa.Field()
 
 
 @task(tags=["io"])
