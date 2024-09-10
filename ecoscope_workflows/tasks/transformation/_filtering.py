@@ -1,5 +1,5 @@
 import logging
-from typing import Annotated
+from typing import Annotated, TYPE_CHECKING, cast
 
 from pydantic import BaseModel, Field
 
@@ -27,6 +27,11 @@ def apply_reloc_coord_filter(
 ) -> DataFrame[AnyGeoDataFrameSchema]:
     import geopandas  # type: ignore[import-untyped]
     import shapely
+
+    if TYPE_CHECKING:
+        import pandas as pd
+
+        cast(pd.DataFrame, df)
 
     # TODO: move it to ecoscope core
     filter_point_coords = geopandas.GeoSeries(
