@@ -73,7 +73,7 @@ def draw_ecoplot(
     Returns:
     The generated plot html as a string
     """
-    import ecoscope.plotting as plotting
+    import ecoscope.plotting as plotting  # type: ignore[import-untyped]
 
     grouped = dataframe.groupby(group_by)
 

@@ -1,5 +1,5 @@
 import logging
-from typing import Annotated
+from typing import Annotated, TYPE_CHECKING, cast
 
 from pydantic import Field
 
@@ -63,6 +63,11 @@ def map_columns(
     Raises:
         KeyError: If any of the columns specified are not found in the DataFrame.
     """
+    if TYPE_CHECKING:
+        import pandas as pd
+
+        cast(pd.DataFrame, df)
+
     if "geometry" in drop_columns:
         logger.warning(
             "'geometry' found in drop_columns, which may affect spatial operations."

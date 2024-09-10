@@ -1,5 +1,5 @@
 import logging
-from typing import Annotated, Literal
+from typing import Annotated, Literal, TYPE_CHECKING, cast
 
 from pydantic import Field
 
@@ -21,4 +21,9 @@ def sort_values(
         Field(description="Where to place NaN values in the sort"),
     ] = "last",
 ) -> AnyDataFrame:
+    if TYPE_CHECKING:
+        import pandas as pd
+
+        cast(pd.DataFrame, df)
+
     return df.sort_values(by=column_name, ascending=ascending, na_position=na_position)

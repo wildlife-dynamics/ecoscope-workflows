@@ -125,7 +125,7 @@ def draw_ecomap(
     str: A static HTML representation of the map.
     """
 
-    from ecoscope.mapping import EcoMap
+    from ecoscope.mapping import EcoMap  # type: ignore[import-untyped]
 
     m = EcoMap(static=static, default_widgets=False)
 

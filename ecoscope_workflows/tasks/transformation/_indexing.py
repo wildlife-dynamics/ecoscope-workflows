@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Annotated, Literal, TYPE_CHECKING, cast
 
 from pydantic import Field
 
@@ -93,6 +93,9 @@ def add_temporal_index(
     ] = "mixed",
 ) -> AnyDataFrame:
     import pandas as pd
+
+    if TYPE_CHECKING:
+        cast(pd.DataFrame, df)
 
     if cast_to_datetime:
         df[time_col] = pd.to_datetime(df[time_col], format=format)
