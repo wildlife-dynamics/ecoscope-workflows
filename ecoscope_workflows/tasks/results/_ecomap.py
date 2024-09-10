@@ -66,8 +66,8 @@ class LegendStyle(BaseModel):
 
 @dataclass
 class LegendDefinition:
-    label_column: AnyGeoDataFrame
-    color_column: LayerStyle
+    label_column: str
+    color_column: str
 
 
 @dataclass

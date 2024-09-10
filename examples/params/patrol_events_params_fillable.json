@@ -937,29 +937,11 @@
             "properties": {
                 "label_column": {
                     "title": "Label Column",
-                    "type": "ecoscope_workflows.annotations.DataFrame"
+                    "type": "string"
                 },
                 "color_column": {
-                    "discriminator": {
-                        "mapping": {
-                            "point": "#/$defs/PointLayerStyle",
-                            "polygon": "#/$defs/PolygonLayerStyle",
-                            "polyline": "#/$defs/PolylineLayerStyle"
-                        },
-                        "propertyName": "layer_type"
-                    },
-                    "oneOf": [
-                        {
-                            "$ref": "#/$defs/PolylineLayerStyle"
-                        },
-                        {
-                            "$ref": "#/$defs/PointLayerStyle"
-                        },
-                        {
-                            "$ref": "#/$defs/PolygonLayerStyle"
-                        }
-                    ],
-                    "title": "Color Column"
+                    "title": "Color Column",
+                    "type": "string"
                 }
             },
             "required": [
