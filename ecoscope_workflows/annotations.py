@@ -1,18 +1,10 @@
-from inspect import ismethod
-from typing import Annotated, Any, TypeVar, get_args, get_origin
+from typing import Annotated, Any, TypeVar, get_origin
 
 import pandera as pa
 import pandera.typing as pa_typing
 from pydantic import GetJsonSchemaHandler
-from pydantic.functional_validators import BeforeValidator
 from pydantic.json_schema import JsonSchemaValue, WithJsonSchema
 from pydantic_core import core_schema as cs
-
-from ecoscope_workflows.connections import (
-    DataConnection,
-    EarthRangerClientProtocol,
-    EarthRangerConnection,
-)
 
 
 class JsonSerializableDataFrameModel(pa.DataFrameModel):
@@ -54,32 +46,6 @@ AnyGeoDataFrame = DataFrame[GeoDataFrameBaseSchema]
 
 def is_subscripted_pandera_dataframe(obj):
     if hasattr(obj, "__origin__") and hasattr(obj, "__args__"):
-        if get_origin(obj) == pa.typing.DataFrame:
+        if get_origin(obj) == pa_typing.DataFrame:
             return True
     return False
-
-
-def is_client(obj):
-    if hasattr(obj, "__origin__") and hasattr(obj, "__args__"):
-        if any(isinstance(arg, BeforeValidator) for arg in get_args(obj)):
-            bv = [arg for arg in get_args(obj) if isinstance(arg, BeforeValidator)][0]
-            if ismethod(bv.func) and bv.func.__name__ == "client_from_named_connection":
-                return True
-    return False
-
-
-def connection_from_client(obj) -> DataConnection:
-    assert is_client(obj)
-    bv = [arg for arg in get_args(obj) if isinstance(arg, BeforeValidator)][0]
-    conn_type = bv.func.__self__  # type: ignore[union-attr]
-    assert issubclass(conn_type, DataConnection)
-    return conn_type
-
-
-EarthRangerClient = Annotated[
-    EarthRangerClientProtocol,
-    BeforeValidator(EarthRangerConnection.client_from_named_connection),
-    WithJsonSchema(
-        {"type": "string", "description": "A named EarthRanger connection."}
-    ),
-]

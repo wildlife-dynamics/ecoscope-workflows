@@ -12,8 +12,17 @@ if sys.version_info >= (3, 11):
 else:
     import tomli as tomllib
 
-from ecoscope_workflows.annotations import EarthRangerClient
-from ecoscope_workflows.connections import EarthRangerConnection
+from ecoscope_workflows.annotations import DataFrame
+from ecoscope_workflows.connections import (
+    EarthRangerClient,
+    EarthRangerConnection,
+    is_client,
+)
+
+
+def test_is_client():
+    assert is_client(EarthRangerClient)
+    assert not is_client(DataFrame)
 
 
 def test_connection_unnamed():

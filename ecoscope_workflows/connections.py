@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from inspect import ismethod
 from typing import (
     Annotated,
     ClassVar,
@@ -6,10 +7,13 @@ from typing import (
     Protocol,
     Type,
     TypeVar,
+    get_args,
     runtime_checkable,
 )
 
 from pydantic import Field, SecretStr
+from pydantic.functional_validators import BeforeValidator
+from pydantic.json_schema import WithJsonSchema
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
@@ -132,3 +136,29 @@ class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
             tcp_limit=self.tcp_limit,
             sub_page_size=self.sub_page_size,
         )
+
+
+def is_client(obj):
+    if hasattr(obj, "__origin__") and hasattr(obj, "__args__"):
+        if any(isinstance(arg, BeforeValidator) for arg in get_args(obj)):
+            bv = [arg for arg in get_args(obj) if isinstance(arg, BeforeValidator)][0]
+            if ismethod(bv.func) and bv.func.__name__ == "client_from_named_connection":
+                return True
+    return False
+
+
+def connection_from_client(obj) -> DataConnection:
+    assert is_client(obj)
+    bv = [arg for arg in get_args(obj) if isinstance(arg, BeforeValidator)][0]
+    conn_type = bv.func.__self__  # type: ignore[union-attr]
+    assert issubclass(conn_type, DataConnection)
+    return conn_type
+
+
+EarthRangerClient = Annotated[
+    EarthRangerClientProtocol,
+    BeforeValidator(EarthRangerConnection.client_from_named_connection),
+    WithJsonSchema(
+        {"type": "string", "description": "A named EarthRanger connection."}
+    ),
+]
