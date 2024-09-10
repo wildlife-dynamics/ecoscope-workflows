@@ -61,7 +61,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: rattler-artifacts
-          path: usr/local/etc/wildlife-dynamics/channel
+          path: /usr/local/etc/wildlife-dynamics/channel
       - name: Install pixi
         if: steps.restore-cache.outputs.cache-hit != 'true'
         run: |
