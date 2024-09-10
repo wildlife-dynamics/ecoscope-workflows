@@ -78,8 +78,8 @@ def _parse_variable(s: str) -> TaskIdVariable | EnvVariable:
         )
     inner = s.replace("${{", "").replace("}}", "").strip()
     match inner.split("."):
-        case ["workflow", task_id, suffix]:
-            return TaskIdVariable(value=task_id, suffix=suffix)
+        case ["workflow", task_id, "return"]:
+            return TaskIdVariable(value=task_id, suffix="return")
         case ["env", env_var_name]:
             return EnvVariable(value=env_var_name)
         case _:

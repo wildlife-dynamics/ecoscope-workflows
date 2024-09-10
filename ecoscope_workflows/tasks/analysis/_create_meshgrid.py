@@ -27,8 +27,8 @@ def create_meshgrid(
     """
     Create a grid from the provided area of interest.
     """
-    import geopandas as gpd
-    from ecoscope.base.utils import create_meshgrid
+    import geopandas as gpd  # type: ignore[import-untyped]
+    from ecoscope.base.utils import create_meshgrid  # type: ignore[import-untyped]
 
     result = create_meshgrid(
         aoi.unary_union,

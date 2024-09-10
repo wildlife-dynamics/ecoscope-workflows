@@ -40,9 +40,9 @@ def calculate_time_density(
 ) -> DataFrame[TimeDensityReturnGDFSchema]:
     import tempfile
 
-    from ecoscope.analysis.percentile import get_percentile_area
-    from ecoscope.analysis.UD import calculate_etd_range
-    from ecoscope.io.raster import RasterProfile
+    from ecoscope.analysis.percentile import get_percentile_area  # type: ignore[import-untyped]
+    from ecoscope.analysis.UD import calculate_etd_range  # type: ignore[import-untyped]
+    from ecoscope.io.raster import RasterProfile  # type: ignore[import-untyped]
 
     raster_profile = RasterProfile(
         pixel_size=pixel_size,

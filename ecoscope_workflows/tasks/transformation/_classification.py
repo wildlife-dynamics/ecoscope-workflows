@@ -104,7 +104,7 @@ def apply_classification(
     Returns:
         The input dataframe with a classification column appended.
     """
-    from ecoscope.analysis.classifier import apply_classification  # type: ignore[import-untyped
+    from ecoscope.analysis.classifier import apply_classification  # type: ignore[import-untyped]
 
     return apply_classification(
         df,

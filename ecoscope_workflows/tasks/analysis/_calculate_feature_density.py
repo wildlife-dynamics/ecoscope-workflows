@@ -26,7 +26,7 @@ def calculate_feature_density(
     """
     Create a density grid from the provided data.
     """
-    from ecoscope.analysis.feature_density import calculate_feature_density
+    from ecoscope.analysis.feature_density import calculate_feature_density  # type: ignore[import-untyped]
 
     result = calculate_feature_density(
         selection=geodataframe, grid=meshgrid, geometry_type=geometry_type
