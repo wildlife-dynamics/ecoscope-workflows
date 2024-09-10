@@ -44,7 +44,8 @@ class _Task(Generic[P, R, K, V]):
 
     def partial(
         self,
-        **kwargs: dict,
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Self:
         """Return a new Task with the same attributes, but with the function converted
         into a partial function with the given keyword arguments. This is useful for
@@ -67,6 +68,8 @@ class _Task(Generic[P, R, K, V]):
         ```
 
         """
+        if args:
+            raise ValueError("Positional arguments are not supported in `partial`.")
         return replace(self, func=functools.partial(self.func, **kwargs))
 
     def validate(self) -> Self:

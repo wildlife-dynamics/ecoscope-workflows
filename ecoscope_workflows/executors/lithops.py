@@ -4,9 +4,9 @@ from dataclasses import dataclass, field
 from typing import Callable, Iterable, Sequence
 
 try:
-    from lithops import FunctionExecutor
-    from lithops.future import ResponseFuture
-    from lithops.utils import FuturesList
+    from lithops import FunctionExecutor  # type: ignore[import-untyped]
+    from lithops.future import ResponseFuture  # type: ignore[import-untyped]
+    from lithops.utils import FuturesList  # type: ignore[import-untyped]
 except ImportError:
     raise ImportError(
         "Please install the `lithops` package to use the `LithopsExecutor`."

@@ -35,10 +35,3 @@ repos:
             numpy,
             typing-extensions>=4.1.0,
           ]
-  # run this occasionally, ref discussion https://github.com/pydata/xarray/pull/3194
-  # - repo: https://github.com/asottile/pyupgrade
-  #   rev: v3.15.2
-  #   hooks:
-  #     - id: pyupgrade
-  #       args:
-  #         - "--py310-plus"

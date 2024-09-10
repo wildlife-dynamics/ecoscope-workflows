@@ -4,7 +4,7 @@ from urllib.parse import urlparse, quote
 
 
 def gpd_from_parquet_uri(uri: str):
-    import geopandas as gpd
+    import geopandas as gpd  # type: ignore[import-untyped]
 
     return gpd.read_parquet(uri)
 

@@ -69,6 +69,10 @@ cloudpathlib-gs = "*"
 [tool.pixi.feature.lithops.dependencies]
 lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
 
+[tool.pixi.feature.mypy]
+dependencies = { mypy = "*" }
+tasks = { mypy = "mypy --package ecoscope_workflows" }
+
 [tool.pixi.feature.pdoc.dependencies]
 pdoc3 = "*"
 
@@ -93,6 +97,9 @@ docs = { features = ["lithops", "pdoc", "visualize"], solve-group = "docs" }
 gcs = { features = ["gcs"], solve-group = "default" }
 lithops = { features = ["lithops"], solve-group = "default" }
 lithops-gcs = { features = ["lithops", "gcs"], solve-group = "default" }
+mypy-py310 = { features = ["lithops", "gcs", "test", "ecoscope-core", "py310", "mypy"], solve-group = "py310" }
+mypy-py311 = { features = ["lithops", "gcs", "test", "ecoscope-core", "py311", "mypy"], solve-group = "py311" }
+mypy-py312 = { features = ["lithops", "gcs", "test", "ecoscope-core", "py312", "mypy"], solve-group = "py312" }
 test-all = { features = ["lithops", "gcs", "test", "ecoscope-core"], solve-group = "default" }
 test-all-py310 = { features = ["lithops", "gcs", "test", "ecoscope-core", "py310"], solve-group = "py310" }
 test-all-py311 = { features = ["lithops", "gcs", "test", "ecoscope-core", "py311"], solve-group = "py311" }
