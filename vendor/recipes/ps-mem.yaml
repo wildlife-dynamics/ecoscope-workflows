@@ -1,0 +1,40 @@
+context:
+  name: ps-mem
+  version: '3.14'
+
+package:
+  name: ps-mem
+  version: ${{ version }}
+
+source:
+  url: https://pypi.io/packages/source/p/ps_mem/ps_mem-${{ version }}.tar.gz
+  sha256: 14de44f747effbaec620e1cc783a6ab6bd78b2639c0dcfaa132561f9efef47ca
+
+build:
+  python:
+    entry_points:
+      - ps_mem = ps_mem:main
+  noarch: python
+  script: pip install . -v
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+
+tests:
+  - python:
+      imports:
+        - ps_mem
+
+about:
+  homepage: http://github.com/pixelb/ps_mem
+  summary: A utility to report core memory usage per program
+  license: LGPL-2.1
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - cisaacstern

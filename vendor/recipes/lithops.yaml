@@ -1,0 +1,64 @@
+context:
+  name: lithops
+  version: 3.4.1
+
+package:
+  name: lithops
+  version: ${{ version }}
+
+source:
+  url: https://pypi.io/packages/source/l/lithops/lithops-${{ version }}.tar.gz
+  sha256: 48c9f1672de05b019505bcd8bedcb350c2fb11cea583d4f0b06552f7bb036077
+
+build:
+  python:
+    entry_points:
+      - lithops = lithops.scripts.cli:lithops_cli
+  noarch: python
+  script: pip install . -v
+  number: 1
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - click
+    - tabulate
+    - six
+    - pyyaml
+    - pika
+    - tqdm
+    - tblib
+    - requests
+    - paramiko
+    - cloudpickle
+    - ps-mem  # we have a custom package for this
+    - psutil
+# Extra: gcp
+    - httplib2
+    - google-cloud-storage
+    # (cisaacstern) disabling for python > 3.9 compatibility; seems conda-forge
+    # doesn't offer a version of this package that is compatible with python 3.9?
+    # - google-cloud-pubsub
+    - google-api-python-client
+    - google-auth
+# For serving proxy
+    - flask
+    - gunicorn
+
+tests:
+  - python:
+      imports:
+        - lithops
+
+about:
+  homepage: https://github.com/lithops-cloud/lithops
+  summary: Lithops lets you transparently run your Python applications in the Cloud
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - cisaacstern
