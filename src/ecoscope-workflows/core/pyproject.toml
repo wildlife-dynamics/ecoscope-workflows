@@ -43,7 +43,7 @@ ecoscope_workflows = ["py.typed"]
 
 [tool.pixi.project]
 channels = [
-    "file:///usr/local/etc/wildlife-dynamics/channel",  # todo: prefix channel, or build channel as part of `lithops` feature setup task
+    "https://prefix.dev/ecoscope-workflows",
     "conda-forge",
 ]
 platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
@@ -61,7 +61,7 @@ tomli-w = "*"
 cloudpathlib-gs = "*"
 
 [tool.pixi.feature.lithops.dependencies]
-lithops = { version = ">=3.4.1", channel = "file:///usr/local/etc/wildlife-dynamics/channel" }
+lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
 
 [tool.pixi.feature.test.dependencies]
 pytest = "*"
