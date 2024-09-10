@@ -7,67 +7,15 @@ on:
     branches: ["*"]
 
 jobs:
-  set-deps-hash:
-    runs-on: ubuntu-latest
-    outputs:
-      deps-hash: ${{ steps.set-hash.outputs.deps-hash }}
-      short-deps-hash: ${{ steps.set-hash.outputs.short-deps-hash }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set dependency files hash
-        id: set-hash
-        run: |
-          export DEPS_HASH=${{ hashFiles('rattler-build/recipes/**.yaml', 'rattler-build/build.sh') }}
-          echo "deps-hash=$DEPS_HASH" >> $GITHUB_OUTPUT
-          echo "short-deps-hash=$(echo $DEPS_HASH | cut -c1-7)" >> $GITHUB_OUTPUT
-
-  build-conda-channel:
-    needs: set-deps-hash
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
-        id: restore-cache
-        with:
-          path: rattler-build/artifacts/  # this path is gitignored, so it won't be in the checkout, only the cache
-          key: ${{ runner.os }}-${{ needs.set-deps-hash.outputs.deps-hash }}
-      - name: Install pixi
-        if: steps.restore-cache.outputs.cache-hit != 'true'
-        run: |
-          curl -fsSL https://pixi.sh/install.sh | bash
-          echo "$HOME/.pixi/bin" >> $GITHUB_PATH
-      - name: Build artifacts
-        if: steps.restore-cache.outputs.cache-hit != 'true'
-        run: |
-          pixi global install rattler-build
-          bash rattler-build/build.sh
-      - name: Upload conda channel
-        uses: actions/upload-artifact@v4
-        with:
-          name: rattler-artifacts
-          path: |
-            rattler-build/artifacts/
-            !rattler-build/artifacts/bld
-            !rattler-build/artifacts/src_cache
-          if-no-files-found: error
-          compression-level: 0
-
   test-core:
-    needs: build-conda-channel
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Download conda channel
-        uses: actions/download-artifact@v4
-        with:
-          name: rattler-artifacts
-          path: /usr/local/etc/wildlife-dynamics/channel
       - name: Install pixi
-        if: steps.restore-cache.outputs.cache-hit != 'true'
         run: |
           curl -fsSL https://pixi.sh/install.sh | bash
           echo "$HOME/.pixi/bin" >> $GITHUB_PATH
-      - name: Install environment
+      - name: Install test environment
         run: |
           pixi install \
           --environment=test-all \

@@ -3,8 +3,8 @@
 # pixi
 src/**/.pixi/
 
-# rattler-build
-rattler-build/artifacts
+# vendor
+vendor/artifacts
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
