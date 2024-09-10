@@ -31,15 +31,14 @@ jobs:
         with:
           path: rattler-build/artifacts/  # this path is gitignored, so it won't be in the checkout, only the cache
           key: ${{ runner.os }}-${{ needs.set-deps-hash.outputs.deps-hash }}
-      - name: Install pixi
-        if: steps.restore-cache.outputs.cache-hit != 'true'
-        run: |
-          curl -fsSL https://pixi.sh/install.sh | bash
-          echo "pixi=/home/runner/.pixi/bin/pixi" >> $GITHUB_ENV
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: v0.29.0
+          cache: true
       - name: Build artifacts
         if: steps.restore-cache.outputs.cache-hit != 'true'
         run: |
-          $pixi global install rattler-build
+          pixi global install rattler-build
           bash rattler-build/build.sh
       - name: Upload conda channel
         uses: actions/upload-artifact@v4
@@ -62,8 +61,10 @@ jobs:
         with:
           name: rattler-artifacts
           path: usr/local/etc/wildlife-dynamics/channel
-      - name: Install pixi
-        run: curl -fsSL https://pixi.sh/install.sh | bash
+      - uses: prefix-dev/setup-pixi@v0.5.1
+        with:
+          pixi-version: v0.29.0
+          cache: true
       - name: Install environment
         run: |
           pixi install --environment=test-all --manifest-path src/ecoscope-workflows/core/pyproject.toml
