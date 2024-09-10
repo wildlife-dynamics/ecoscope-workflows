@@ -17,12 +17,12 @@ jobs:
           echo "$HOME/.pixi/bin" >> $GITHUB_PATH
       - name: Install test environment
         run: |
-          pixi install \
+          pixi install --locked \
           --environment=test-all \
           --manifest-path src/ecoscope-workflows/core/pyproject.toml
       - name: Test ecoscope_workflows.core
         run: |
-          pixi run \
+          pixi run --locked \
           --environment test-all \
           --manifest-path src/ecoscope-workflows/core/pyproject.toml \
           pytest -v src/ecoscope-workflows/core
