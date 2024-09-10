@@ -3,6 +3,9 @@
 # pixi
 src/**/.pixi/
 
+# rattler-build
+rattler-build/artifacts
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
