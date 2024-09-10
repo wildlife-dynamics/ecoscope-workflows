@@ -33,7 +33,7 @@ def apply_reloc_coord_filter(
         shapely.geometry.Point(coord.x, coord.y) for coord in filter_point_coords
     )
 
-    def envelope_reloc_filter(geometry) -> AnyGeoDataFrame:
+    def envelope_reloc_filter(geometry) -> bool:
         return (
             geometry.x > min_x
             and geometry.x < max_x
