@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, Literal
+from typing import Annotated, Literal, cast
 
 import pandas as pd
 import pandera as pa
@@ -39,12 +39,15 @@ def get_subjectgroup_observations(
     ] = True,
 ) -> DataFrame[SubjectGroupObservationsGDFSchema]:
     """Get observations for a subject group from EarthRanger."""
-    return client.get_subjectgroup_observations(  # type: ignore[return-value]
-        subject_group_name=subject_group_name,
-        include_subject_details=True,
-        include_inactive=include_inactive,
-        since=since,
-        until=until,
+    return cast(
+        DataFrame[SubjectGroupObservationsGDFSchema],
+        client.get_subjectgroup_observations(
+            subject_group_name=subject_group_name,
+            include_subject_details=True,
+            include_inactive=include_inactive,
+            since=since,
+            until=until,
+        ),
     )
 
 
@@ -66,12 +69,15 @@ def get_patrol_observations(
     ] = False,
 ) -> DataFrame[SubjectGroupObservationsGDFSchema]:
     """Get observations for a patrol type from EarthRanger."""
-    return client.get_patrol_observations_with_patrol_filter(  # type: ignore[return-value]
-        since=since,
-        until=until,
-        patrol_type=patrol_type,
-        status=status,
-        include_patrol_details=include_patrol_details,
+    return cast(
+        DataFrame[SubjectGroupObservationsGDFSchema],
+        client.get_patrol_observations_with_patrol_filter(
+            since=since,
+            until=until,
+            patrol_type=patrol_type,
+            status=status,
+            include_patrol_details=include_patrol_details,
+        ),
     )
 
 
@@ -92,9 +98,12 @@ def get_patrol_events(
     ],
 ) -> DataFrame[EventGDFSchema]:
     """Get events from patrols."""
-    return client.get_patrol_events(  # type: ignore[return-value]
-        since=since,
-        until=until,
-        patrol_type=patrol_type,
-        status=status,
+    return cast(
+        DataFrame[EventGDFSchema],
+        client.get_patrol_events(
+            since=since,
+            until=until,
+            patrol_type=patrol_type,
+            status=status,
+        ),
     )
