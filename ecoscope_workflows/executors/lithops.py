@@ -86,6 +86,6 @@ class LithopsExecutor(AsyncExecutor):
         if isinstance(func, mapvalues_wrapper):
             iterdata = [{"kv": e} for e in iterable]
         else:
-            iterdata = iterable
+            iterdata = iterable  # type: ignore[assignment]
         futures = self.fexec.map(wrap(func), iterdata)
         return LithopsFuturesSequence(futures=futures)
