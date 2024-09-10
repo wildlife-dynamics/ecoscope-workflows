@@ -162,7 +162,7 @@ class _Task(Generic[P, R, K, V]):
                     executor=PythonExecutor(),
                 )
             case "lithops":
-                from ecoscope_workflows.executors.lithops import LithopsExecutor
+                from ecoscope_workflows.core.executors.lithops import LithopsExecutor
 
                 return AsyncTask(
                     self.func,
