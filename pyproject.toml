@@ -92,6 +92,11 @@ python = "3.12.*"
 [tool.pixi.feature.test.dependencies]
 pytest = "*"
 
+[tool.pixi.feature.vendor]
+dependencies = { "ruamel.yaml" = "*"}
+pypi-dependencies = { "packaging" = "*" }
+tasks = { version-check = "python vendor/version-check.py" }  # todo: tasks for build & push to channel (manual process for now)
+
 [tool.pixi.feature.visualize.dependencies]
 pydot = "*"
 
@@ -108,3 +113,4 @@ test-all = { features = ["lithops", "gcs", "test", "ecoscope-core"], solve-group
 test-all-py310 = { features = ["lithops", "gcs", "test", "ecoscope-core", "py310"], solve-group = "py310" }
 test-all-py311 = { features = ["lithops", "gcs", "test", "ecoscope-core", "py311"], solve-group = "py311" }
 test-all-py312 = { features = ["lithops", "gcs", "test", "ecoscope-core", "py312"], solve-group = "py312" }
+vendor = { features = ["vendor"], solve-group = "vendor", no-default-feature = true }
