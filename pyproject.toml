@@ -76,7 +76,7 @@ pydot = "*"
 ecoscope = { version = "v1.8.3", channel = "https://prefix.dev/ecoscope-workflows" }
 
 [tool.pixi.feature.pdoc.dependencies]
-pdoc = "*"
+pdoc3 = "*"
 
 [tool.pixi.feature.py310.dependencies]
 python = ">=3.10.0, <3.11.0"
