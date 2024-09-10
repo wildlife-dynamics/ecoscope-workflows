@@ -124,11 +124,11 @@ def draw_ecomap(
     ] = False,
     title: Annotated[str, Field(description="The map title.")] = "",
     north_arrow_style: Annotated[
-        SkipJsonSchema[NorthArrowStyle],
+        NorthArrowStyle | SkipJsonSchema[None],
         Field(description="Additional arguments for configuring the North Arrow."),
     ] = NorthArrowStyle(),
     legend_style: Annotated[
-        SkipJsonSchema[LegendStyle],
+        LegendStyle | SkipJsonSchema[None],
         Field(description="Additional arguments for configuring the legend."),
     ] = LegendStyle(),
 ) -> Annotated[str, Field()]:

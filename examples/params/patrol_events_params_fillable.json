@@ -218,6 +218,16 @@
                     ],
                     "title": "Layer Style",
                     "description": "Style arguments for the layer."
+                },
+                "legend": {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/LegendDefinition"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Legend",
+                    "description": "If present, includes this layer in the map legend"
                 }
             },
             "required": [
@@ -252,9 +262,26 @@
                             "$ref": "#/$defs/NorthArrowStyle"
                         }
                     ],
-                    "default": null,
+                    "default": {
+                        "placement": "top-left",
+                        "style": {
+                            "transform": "scale(0.8)"
+                        }
+                    },
                     "title": "North Arrow Style",
                     "description": "Additional arguments for configuring the North Arrow."
+                },
+                "legend_style": {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/LegendStyle"
+                        }
+                    ],
+                    "default": {
+                        "placement": "bottom-right"
+                    },
+                    "title": "Legend Style",
+                    "description": "Additional arguments for configuring the legend."
                 }
             },
             "required": [],
@@ -497,6 +524,16 @@
                     ],
                     "title": "Layer Style",
                     "description": "Style arguments for the layer."
+                },
+                "legend": {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/LegendDefinition"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Legend",
+                    "description": "If present, includes this layer in the map legend"
                 }
             },
             "required": [
@@ -531,9 +568,26 @@
                             "$ref": "#/$defs/NorthArrowStyle"
                         }
                     ],
-                    "default": null,
+                    "default": {
+                        "placement": "top-left",
+                        "style": {
+                            "transform": "scale(0.8)"
+                        }
+                    },
                     "title": "North Arrow Style",
                     "description": "Additional arguments for configuring the North Arrow."
+                },
+                "legend_style": {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/LegendStyle"
+                        }
+                    ],
+                    "default": {
+                        "placement": "bottom-right"
+                    },
+                    "title": "Legend Style",
+                    "description": "Additional arguments for configuring the legend."
                 }
             },
             "required": [],
@@ -589,6 +643,16 @@
                     ],
                     "title": "Layer Style",
                     "description": "Style arguments for the layer."
+                },
+                "legend": {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/LegendDefinition"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Legend",
+                    "description": "If present, includes this layer in the map legend"
                 }
             },
             "required": [
@@ -623,9 +687,26 @@
                             "$ref": "#/$defs/NorthArrowStyle"
                         }
                     ],
-                    "default": null,
+                    "default": {
+                        "placement": "top-left",
+                        "style": {
+                            "transform": "scale(0.8)"
+                        }
+                    },
                     "title": "North Arrow Style",
                     "description": "Additional arguments for configuring the North Arrow."
+                },
+                "legend_style": {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/LegendStyle"
+                        }
+                    ],
+                    "default": {
+                        "placement": "bottom-right"
+                    },
+                    "title": "Legend Style",
+                    "description": "Additional arguments for configuring the legend."
                 }
             },
             "required": [],
@@ -850,6 +931,42 @@
                 "y"
             ],
             "title": "Coordinate",
+            "type": "object"
+        },
+        "LegendDefinition": {
+            "properties": {
+                "label_column": {
+                    "title": "Label Column",
+                    "type": "ecoscope_workflows.annotations.DataFrame"
+                },
+                "color_column": {
+                    "discriminator": {
+                        "mapping": {
+                            "point": "#/$defs/PointLayerStyle",
+                            "polygon": "#/$defs/PolygonLayerStyle",
+                            "polyline": "#/$defs/PolylineLayerStyle"
+                        },
+                        "propertyName": "layer_type"
+                    },
+                    "oneOf": [
+                        {
+                            "$ref": "#/$defs/PolylineLayerStyle"
+                        },
+                        {
+                            "$ref": "#/$defs/PointLayerStyle"
+                        },
+                        {
+                            "$ref": "#/$defs/PolygonLayerStyle"
+                        }
+                    ],
+                    "title": "Color Column"
+                }
+            },
+            "required": [
+                "label_column",
+                "color_column"
+            ],
+            "title": "LegendDefinition",
             "type": "object"
         },
         "PointLayerStyle": {
@@ -1221,13 +1338,35 @@
                         }
                     ],
                     "title": "Layer Style"
+                },
+                "legend": {
+                    "$ref": "#/$defs/LegendDefinition"
                 }
             },
             "required": [
                 "geodataframe",
-                "layer_style"
+                "layer_style",
+                "legend"
             ],
             "title": "LayerDefinition",
+            "type": "object"
+        },
+        "LegendStyle": {
+            "properties": {
+                "placement": {
+                    "default": "bottom-right",
+                    "enum": [
+                        "top-left",
+                        "top-right",
+                        "bottom-left",
+                        "bottom-right",
+                        "fill"
+                    ],
+                    "title": "Placement",
+                    "type": "string"
+                }
+            },
+            "title": "LegendStyle",
             "type": "object"
         },
         "NorthArrowStyle": {
@@ -1246,7 +1385,7 @@
                 },
                 "style": {
                     "default": {
-                        "transorm": "scale(0.8)"
+                        "transform": "scale(0.8)"
                     },
                     "title": "Style",
                     "type": "object"
