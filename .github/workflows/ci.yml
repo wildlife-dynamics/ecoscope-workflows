@@ -34,7 +34,6 @@ jobs:
       - uses: prefix-dev/setup-pixi@v0.8.1
         with:
           pixi-version: v0.29.0
-          cache: true
       - name: Build artifacts
         if: steps.restore-cache.outputs.cache-hit != 'true'
         run: |
