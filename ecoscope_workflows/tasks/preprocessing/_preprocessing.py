@@ -21,7 +21,7 @@ def process_relocations(
     filter_point_coords: Annotated[list[Coordinate], Field()],
     relocs_columns: Annotated[list[str], Field()],
 ) -> DataFrame[RelocationsGDFSchema]:
-    from ecoscope.base import Relocations, RelocsCoordinateFilter
+    from ecoscope.base import Relocations, RelocsCoordinateFilter  # type: ignore[import-untyped]
 
     relocs = Relocations(observations)
 

@@ -55,7 +55,7 @@ class EnvVariable(_WorkflowVariable):
         return f'os.environ["{self.value}"]'
 
 
-def _parse_variable(s: str) -> str:
+def _parse_variable(s: str) -> TaskIdVariable | EnvVariable:
     if not (s.startswith("${{") and s.endswith("}}")):
         raise ValueError(
             f"`{s}` is not a valid variable. " "Variables must be wrapped in `${{ }}`."
@@ -74,7 +74,9 @@ def _parse_variable(s: str) -> str:
             )
 
 
-def _parse_variables(s: str | list[str]) -> str | list[str]:
+def _parse_variables(
+    s: str | list[str],
+) -> TaskIdVariable | EnvVariable | list[TaskIdVariable | EnvVariable]:
     if isinstance(s, str):
         return _parse_variable(s)
     return [_parse_variable(v) for v in s]
@@ -300,7 +302,7 @@ class TaskInstance(_ForbidExtra):
             | self.mapvalues.all_dependencies_dict
         )
 
-    @model_validator(mode="after")
+    @model_validator(mode="after")  # type: ignore[misc]
     def check_does_not_depend_on_self(self) -> "Spec":
         for dep in self.all_dependencies:
             if isinstance(dep, TaskIdVariable) and dep.value == self.id:
@@ -310,7 +312,7 @@ class TaskInstance(_ForbidExtra):
                 )
         return self
 
-    @model_validator(mode="after")
+    @model_validator(mode="after")  # type: ignore[misc]
     def check_only_oneof_map_or_mapvalues(self) -> "Spec":
         if self.map and self.mapvalues:
             raise ValueError(

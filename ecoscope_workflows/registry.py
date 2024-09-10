@@ -84,7 +84,7 @@ def collect_task_entries() -> dict[str, "KnownTask"]:
                 # perhaps the fact that anchor and function names are properties
                 # of KnownTask is strange? Maybe we should just pass them directly.
                 importable_reference=f"{kta.anchor}.{kta.name}",
-                tags=kta.tags,
+                tags=[TaskTag(t) for t in kta.tags],
             )
             for kta in known_task_args
         }

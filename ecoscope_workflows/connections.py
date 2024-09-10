@@ -121,7 +121,7 @@ class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
     sub_page_size: Annotated[int, Field(description="Sub page size for API requests")]
 
     def get_client(self) -> EarthRangerClientProtocol:
-        from ecoscope.io import EarthRangerIO
+        from ecoscope.io import EarthRangerIO  # type: ignore[import-untyped]
 
         return EarthRangerIO(
             server=self.server,
