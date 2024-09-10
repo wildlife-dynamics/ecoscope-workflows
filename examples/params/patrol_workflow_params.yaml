@@ -86,6 +86,11 @@ pe_add_temporal_index:
   time_col: "time" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of existing column containing time data.'))
   directive: "%B" # (typing.Literal['%a', '%A', '%b', '%B', '%c', '%d', '%f', '%H', '%I', '%j', '%m', '%M', '%p', '%S', '%U', '%w', '%W', '%x', '%X', '%y', '%Y', '%z', '%%'], FieldInfo(annotation=NoneType, required=True, description='A directive for formatting the time data.'))
 
+pe_colormap:
+  input_column_name: "event_type" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
+  colormap: "tab20b" # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
+  output_column_name: "event_type_colormap"
+
 # Parameters for 'Split Patrol Events by Group' using task `split_groups`.
 split_pe_groups: {}
 
@@ -93,6 +98,7 @@ split_pe_groups: {}
 patrol_events_map_layers:
   layer_style:
     layer_type: "point"
+    fill_color_column: "event_type_colormap"
 
 # Parameters for 'Combine Trajectories and Patrol Events layers' using task `groupbykey`.
 combined_traj_and_pe_map_layers: {}
