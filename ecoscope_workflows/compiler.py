@@ -318,7 +318,7 @@ class TaskInstance(_ForbidExtra):
             | self.mapvalues.all_dependencies_dict
         )
 
-    @model_validator(mode="after")  # type: ignore[misc]
+    @model_validator(mode="after")
     def check_does_not_depend_on_self(self) -> "TaskInstance":
         for dep in self.all_dependencies:
             if isinstance(dep, TaskIdVariable) and dep.value == self.id:
@@ -328,7 +328,7 @@ class TaskInstance(_ForbidExtra):
                 )
         return self
 
-    @model_validator(mode="after")  # type: ignore[misc]
+    @model_validator(mode="after")
     def check_only_oneof_map_or_mapvalues(self) -> "TaskInstance":
         if self.map and self.mapvalues:
             raise ValueError(
@@ -337,14 +337,14 @@ class TaskInstance(_ForbidExtra):
             )
         return self
 
-    @computed_field  # type: ignore[misc]
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def known_task(self) -> KnownTask:
         kt = known_tasks[self.known_task_name]
         assert self.known_task_name == kt.function
         return kt
 
-    @computed_field  # type: ignore[misc]
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def method(self) -> str:
         return (
@@ -435,7 +435,7 @@ class Spec(_ForbidExtra):
                     )
         return self
 
-    @computed_field  # type: ignore[misc]
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def task_instance_dependencies(self) -> dict[str, list[str]]:
         return {
