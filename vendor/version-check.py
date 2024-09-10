@@ -1,7 +1,7 @@
 import tomllib
 from pathlib import Path
 
-import yaml
+import ruamel.yaml
 from packaging.requirements import SpecifierSet
 from packaging.version import Version
 
@@ -9,6 +9,8 @@ HERE = Path(__file__).parent
 PYPROJECT = HERE.parent / "pyproject.toml"
 RECIPES = HERE / "recipes"
 VENDOR_CHANNEL = "https://prefix.dev/ecoscope-workflows"
+
+yaml = ruamel.yaml.YAML(typ="safe")
 
 
 def parse_version_or_specifier(input_str) -> Version | SpecifierSet:
@@ -33,7 +35,7 @@ if __name__ == "__main__":
                 vendor_recipe_path = next(
                     r for r in RECIPES.iterdir() if r.name.startswith(name)
                 )
-                vendor_recipe = yaml.safe_load(vendor_recipe_path.read_text())
+                vendor_recipe = yaml.load(vendor_recipe_path.read_text())
                 vendored_context_version = Version(vendor_recipe["context"]["version"])
                 print(
                     f"vendored recipe at {vendor_recipe_path} has current version {vendored_context_version}"
