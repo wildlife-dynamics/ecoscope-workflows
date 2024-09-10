@@ -69,8 +69,14 @@ lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflow
 [tool.pixi.feature.test.dependencies]
 pytest = "*"
 
+[tool.pixi.feature.visualize.dependencies]
+pydot = "*"
+
 [tool.pixi.feature.ecoscope-core.dependencies]
 ecoscope = { version = "v1.8.3", channel = "https://prefix.dev/ecoscope-workflows" }
+
+[tool.pixi.feature.pdoc.dependencies]
+pdoc = "*"
 
 [tool.pixi.feature.py310.dependencies]
 python = ">=3.10.0, <3.11.0"
@@ -83,6 +89,7 @@ python = ">=3.12.0, <3.13.0"
 
 [tool.pixi.environments]
 default = { solve-group = "default" }
+docs = { features = ["lithops", "pdoc", "visualize"], solve-group = "docs" }
 gcs = { features = ["gcs"], solve-group = "default" }
 lithops = { features = ["lithops"], solve-group = "default" }
 lithops-gcs = { features = ["lithops", "gcs"], solve-group = "default" }
