@@ -7,13 +7,13 @@ package:
   version: ${{ version }}
 
 source:
-  git: https://github.com/wildlife-dynamics/ecoscope.git
-  tag: ${{ version }}
+  url: https://github.com/wildlife-dynamics/ecoscope/archive/${{ version }}.tar.gz
+  sha256: 747644036ca5100c1ed78b823d0f0c4f27c3fdd5a56140dd62c940efb07fd1ef
 
 build:
   noarch: python
-  script: pip install . -v
-  number: 2
+  script: SETUPTOOLS_SCM_PRETEND_VERSION=${{ version }} pip install . -v
+  number: 3
 
 requirements:
   host:
