@@ -19,7 +19,7 @@ class LayerStyleBase(BaseModel):
 class PolylineLayerStyle(LayerStyleBase):
     layer_type: Literal["polyline"] = Field("polyline", exclude=True)
     get_color: str | list[int] | list[list[int]] | None = None
-    get_width: float = 1
+    get_width: float = 3
     color_column: str | None = None
     width_units: UnitType = "pixels"
     cap_rounded: bool = True
@@ -36,7 +36,7 @@ class ShapeLayerStyle(LayerStyleBase):
 
 class PointLayerStyle(ShapeLayerStyle):
     layer_type: Literal["point"] = Field("point", exclude=True)
-    get_radius: float = 1
+    get_radius: float = 5
     radius_units: UnitType = "pixels"
 
 
@@ -137,8 +137,12 @@ def draw_ecomap(
         **(north_arrow_style.model_dump(exclude_none=True) if north_arrow_style else {})
     )
 
-    if tile_layer:
-        m.add_layer(EcoMap.get_named_tile_layer(tile_layer))
+    # if tile_layer:
+    #     m.add_layer(EcoMap.get_named_tile_layer(tile_layer))
+    m.add_layer(EcoMap.get_named_tile_layer("SATELLITE"))
+    terrain_layer = EcoMap.get_named_tile_layer("TERRAIN")
+    terrain_layer.opacity = 0.5
+    m.add_layer(terrain_layer)
 
     geo_layers = [geo_layers] if not isinstance(geo_layers, list) else geo_layers
     for layer_def in geo_layers:
