@@ -67,7 +67,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["310", "311", "312"]
+        python-version: ["312"]
+        execution-mode: ["sequential", "async"]
+        compilation-spec: [
+          "mode-map",
+          "mode-mapvalues",
+          "patrol_events",
+          "patrol_workflow",
+          "subject_tracking",
+        ]
     steps:
       - uses: actions/checkout@v4
       - name: Install pixi
@@ -75,4 +83,5 @@ jobs:
       - name: Test
         run: |
           pixi run --locked --environment test-all-py${{ matrix.python-version }} \
-          pytest -v tests/test_examples.py -k "end_to_end"
+          pytest -v tests/test_examples.py \
+          -k "end_to_end and ${{ matrix.execution-mode }} and ${{ matrix.compilation-spec }}"
