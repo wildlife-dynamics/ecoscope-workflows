@@ -112,7 +112,7 @@ def apply_classification(
         output_column_name=output_column_name,
         labels=labels,
         scheme=scheme,
-        **classification_options.model_dump(exclude_none=True),
+        **(classification_options.model_dump(exclude_none=True) or {}),  # type: ignore[union-attr]
     )
 
 

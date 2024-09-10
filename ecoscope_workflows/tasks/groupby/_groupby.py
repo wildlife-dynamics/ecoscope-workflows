@@ -89,7 +89,7 @@ def split_groups(
     grouper_index_names = [g.index_name for g in groupers]
     grouped = df.groupby(grouper_index_names)
     return [
-        (_groupkey_to_composite_filter(grouper_index_names, index_value), group)
+        (_groupkey_to_composite_filter(grouper_index_names, index_value), group)  # type: ignore[misc]
         for index_value, group in grouped
     ]
 

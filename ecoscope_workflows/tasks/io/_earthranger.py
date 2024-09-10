@@ -15,7 +15,7 @@ from ecoscope_workflows.decorators import task
 
 
 class SubjectGroupObservationsGDFSchema(GeoDataFrameBaseSchema):
-    groupby_col: pa_typing.Series[object] = pa.Field()
+    groupby_col: pa_typing.Series[str] = pa.Field()
     fixtime: pa_typing.Series[pd.DatetimeTZDtype] = pa.Field(
         dtype_kwargs={"unit": "ns", "tz": "UTC"}
     )

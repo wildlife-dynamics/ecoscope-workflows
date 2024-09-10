@@ -3,7 +3,7 @@ from typing import Annotated, TYPE_CHECKING, cast
 
 from pydantic import BaseModel, Field
 
-from ecoscope_workflows.annotations import AnyGeoDataFrameSchema, DataFrame
+from ecoscope_workflows.annotations import AnyGeoDataFrame
 from ecoscope_workflows.decorators import task
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ class Coordinate(BaseModel):
 
 @task
 def apply_reloc_coord_filter(
-    df: DataFrame[AnyGeoDataFrameSchema],
+    df: AnyGeoDataFrame,
     min_x: Annotated[float, Field(default=-180.0)] = -180.0,
     max_x: Annotated[float, Field(default=180.0)] = 180.0,
     min_y: Annotated[float, Field(default=-90.0)] = -90.0,
@@ -24,7 +24,7 @@ def apply_reloc_coord_filter(
     filter_point_coords: Annotated[
         list[Coordinate], Field(default=[Coordinate(x=0.0, y=0.0)])
     ] = [Coordinate(x=0.0, y=0.0)],
-) -> DataFrame[AnyGeoDataFrameSchema]:
+) -> AnyGeoDataFrame:
     import geopandas  # type: ignore[import-untyped]
     import shapely
 
@@ -38,7 +38,7 @@ def apply_reloc_coord_filter(
         shapely.geometry.Point(coord.x, coord.y) for coord in filter_point_coords
     )
 
-    def envelope_reloc_filter(geometry) -> DataFrame[AnyGeoDataFrameSchema]:
+    def envelope_reloc_filter(geometry) -> AnyGeoDataFrame:
         return (
             geometry.x > min_x
             and geometry.x < max_x
