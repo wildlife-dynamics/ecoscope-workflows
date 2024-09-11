@@ -1555,20 +1555,13 @@
                     "title": "Layer Style"
                 },
                 "legend": {
-                    "anyOf": [
-                        {
-                            "$ref": "#/$defs/LegendDefinition"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
-                    "default": null
+                    "$ref": "#/$defs/LegendDefinition"
                 }
             },
             "required": [
                 "geodataframe",
-                "layer_style"
+                "layer_style",
+                "legend"
             ],
             "title": "LayerDefinition",
             "type": "object"
