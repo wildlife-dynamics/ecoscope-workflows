@@ -127,6 +127,33 @@ def test_draw_ecomap_with_legend(trajectories_colored):
     assert isinstance(map_html, str)
 
 
+def test_draw_ecomap_with_legend_multiple_layers(relocations, trajectories_colored):
+    relocations["labels"] = relocations["fixtime"].apply(
+        lambda x: "new" if x > relocations["fixtime"].median() else "old"
+    )
+    relocations["colors"] = relocations["fixtime"].apply(
+        lambda x: (255, 0, 0, 255)
+        if x > relocations["fixtime"].median()
+        else (0, 0, 255, 255)
+    )
+    layer1 = create_map_layer(
+        geodataframe=relocations,
+        layer_style=PointLayerStyle(get_radius=15, fill_color_column="colors"),
+        legend=LegendDefinition(label_column="labels", color_column="colors"),
+    )
+    layer2 = create_map_layer(
+        geodataframe=trajectories_colored,
+        layer_style=PolylineLayerStyle(get_width=20, color_column="colors"),
+        legend=LegendDefinition(label_column="speed_bins", color_column="colors"),
+    )
+
+    map_html = draw_ecomap(
+        geo_layers=[layer1, layer2],
+        tile_layer="OpenStreetMap",
+    )
+    assert isinstance(map_html, str)
+
+
 def test_draw_ecomap_widget_styles(trajectories_colored):
     geo_layer = create_map_layer(
         geodataframe=trajectories_colored,
