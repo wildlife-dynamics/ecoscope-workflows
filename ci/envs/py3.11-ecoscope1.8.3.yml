@@ -8,4 +8,4 @@ dependencies:
   - numpy<2
   - pip
   - pip:
-    - ecoscope[analysis,mapping,plotting] @ git+https://github.com/wildlife-dynamics/ecoscope@e0f77e7
+    - ecoscope[analysis,mapping,plotting] @ git+https://github.com/wildlife-dynamics/ecoscope@510771e

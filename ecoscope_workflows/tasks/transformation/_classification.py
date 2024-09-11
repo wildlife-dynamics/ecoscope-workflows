@@ -27,6 +27,20 @@ class NaturalBreaksArgs(SharedArgs):
     initial: int = 10
 
 
+class LabelOptions(BaseModel):
+    label_prefix: str = ""
+    label_suffix: str = ""
+
+
+class CustomLabels(LabelOptions):
+    labels: list[str]
+
+
+class DefaultLabels(LabelOptions):
+    label_ranges: bool = False
+    label_decimals: int = 1
+
+
 @task
 def apply_classification(
     df: Annotated[
@@ -42,12 +56,12 @@ def apply_classification(
             description="The dataframe column that will contain the classification values."
         ),
     ] = None,
-    labels: Annotated[
-        list[str] | SkipJsonSchema[None],
+    label_options: Annotated[
+        DefaultLabels | CustomLabels | SkipJsonSchema[None],
         Field(
-            description="Labels of classification bins, uses bin edges if not provied."
+            description="Optional specification or formatting of classification values."
         ),
-    ] = None,
+    ] = DefaultLabels(),
     scheme: Annotated[
         Literal[
             "equal_interval",
@@ -76,7 +90,7 @@ def apply_classification(
         input_column_name (str): The dataframe column to classify.
         output_column_name (str): The dataframe column that will contain the classification.
             Defaults to "<input_column_name>_classified"
-        labels (list[str]): labels of bins, use bin edges if labels==None.
+        label_options (DefaultLabels | CustomLabels): Optional specification or formatting of classification values.
         scheme (str): Classification scheme to use [equal_interval, natural_breaks, quantile, std_mean, max_breaks,
         fisher_jenks]
 
@@ -110,8 +124,8 @@ def apply_classification(
         df,
         input_column_name=input_column_name,
         output_column_name=output_column_name,
-        labels=labels,
         scheme=scheme,
+        **label_options.model_dump(exclude_none=True),
         **classification_options.model_dump(exclude_none=True),
     )
 
