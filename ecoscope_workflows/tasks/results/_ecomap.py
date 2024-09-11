@@ -158,7 +158,7 @@ def draw_ecomap(
         m.add_title(title)
 
     m.add_scale_bar()
-    m.add_north_arrow(**north_arrow_style.model_dump(exclude_none=True))  # type: ignore[union-attr]
+    m.add_north_arrow(**(north_arrow_style.model_dump(exclude_none=True)))  # type: ignore[union-attr]
 
     if tile_layer:
         m.add_layer(EcoMap.get_named_tile_layer(tile_layer))
@@ -191,8 +191,8 @@ def draw_ecomap(
     if len(legend_labels) > 0:
         m.add_legend(
             labels=legend_labels,
-            colors=legend_colors,
-            **legend_style.model_dump(exclude_none=True),  # type: ignore[union-attr]
+            colors=[str(lc) for lc in legend_colors],
+            **(legend_style.model_dump(exclude_none=True)),  # type: ignore[union-attr]
         )
 
     m.zoom_to_bounds(m.layers)
