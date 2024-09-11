@@ -1,0 +1,41 @@
+[project]
+name = "mode-map"
+channels = ["https://prefix.dev/ecoscope-workflows", "conda-forge"]
+platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
+
+[pypi-dependencies]
+ecoscope-workflows = { path = "../../..", editable = true }
+
+[dependencies]
+python = "3.12.*"
+# ecoscope-workflows dependencies (editable brings in none)
+jinja2 = "*"
+pandera = "*"
+pydantic = "<2.9.0"
+pydantic-settings = "*"
+"ruamel.yaml" = "*"
+ruff = "*"
+tomli-w = "*"
+# task dependencies (todo: genderated from union set of @task feature metadata)
+ecoscope = { version = "v1.8.3", channel = "https://prefix.dev/ecoscope-workflows" }
+# executor dependencies (note: these could be optional environment dependencies)
+cloudpathlib-gs = "*"
+lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
+
+[feature.test.dependencies]
+pytest = "*"
+
+[feature.test.tasks]
+test-async-cloudrun = "pytest tests -k cloudrun"
+test-async-local = "pytest tests -k parallel"
+test-sequential = "pytest tests -k sequential"
+
+# todo: support build; push; deploy; run; test; etc. tasks
+# [feature.docker.tasks]
+# build-base = "docker build -t mode-map-base -f Dockerfile.base ."
+# build-runner = "docker build -t mode-map-runner -f Dockerfile.runner ."
+# build-deploy-worker = "docker build -t mode-map-worker -f Dockerfile.worker ."
+
+[environments]
+default = { solve-group = "default" }
+test = { features = ["test"], solve-group = "default" }
