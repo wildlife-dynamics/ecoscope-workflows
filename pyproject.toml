@@ -75,7 +75,7 @@ lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflow
 [tool.pixi.feature.mypy]
 dependencies = { mypy = "*", pandas-stubs = "*", pandera-mypy = "*" }
 pypi-dependencies = { types-shapely = "*" }
-tasks = { mypy = "mypy --package ecoscope_workflows" }
+tasks = { mypy = "mypy --package ecoscope_workflows --package tests" }
 
 [tool.pixi.feature.pdoc.dependencies]
 pdoc3 = "*"

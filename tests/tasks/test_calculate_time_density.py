@@ -1,6 +1,6 @@
 from importlib.resources import files
 
-import geopandas as gpd
+import geopandas as gpd  # type: ignore[import-untyped]
 
 from ecoscope_workflows.tasks.analysis import calculate_time_density
 

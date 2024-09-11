@@ -1,6 +1,6 @@
 from importlib.resources import files
 
-import geopandas as gpd
+import geopandas as gpd  # type: ignore[import-untyped]
 import pandas as pd
 
 from ecoscope_workflows.tasks.preprocessing import (

@@ -1,4 +1,5 @@
-import geopandas as gpd
+import geopandas as gpd  # type: ignore[import-untyped]
+
 from ecoscope_workflows.tasks.analysis import create_meshgrid
 from ..utils.random_geometry import random_3857_rectangle
 
