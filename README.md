@@ -4,11 +4,32 @@ An extensible task specification and compiler for local and distributed workflow
 
 ## Installation
 
-To install with test dependencies, in a virtual environment with Python >= 3.10, run:
+> **Important**: We use `pixi.sh` to manage all project dependencies and environments.
+While the creative developer may be able to find a way to use some subset of functionality through use of with other
+package/environment managers, we do not officially document or support any tools other than `pixi.sh` at this time.
+This opinionated choice was made to support the unique deployment needs of `ecoscope-workflows`, which include **(1)**
+heavy reliance on scientific conda packages; **(2)** flexible local and remote deployment across different target platforms
+with a requirement for stable, reproducible, and fast solves regardless of deployment context (for which lockfiles provide
+a huge benefit); and **(3)** the ability to fulfill these requirements with the inclusion of user-defined extension modules,
+which may bring in their own dependencies. In our awareness, `pixi.sh` is the best tool currently available to meet
+these requirements.
+
+To install `ecoscope-workflows`, first install `pixi.sh` as described in https://pixi.sh/latest/#installation.
+
+The `default` environment can then be installed by running, from the repo root:
 
 ```console
-$ pip install -e ".[test]"
+$ pixi install
 ```
+
+This environment gives provides the ability to work with the [`ecoscope-workflows` _**CLI**_](#compilation-specs)
+to compile workflows from compilation specs.
+
+Further environments, as defined in the `pyproject.toml` for this project, may be installed to access
+additional features, particularly workflow runtime dependencies for built-in tasks, multiprocessing/serverless execution,
+and cloud storage interfaces (for persisting workflow results).
+
+Please refer to `.github/workflows/ci.yml` for example usages of these additional environments.
 
 ## Key concepts
 
