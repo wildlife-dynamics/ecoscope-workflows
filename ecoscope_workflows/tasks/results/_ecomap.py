@@ -74,7 +74,7 @@ class LegendDefinition:
 class LayerDefinition:
     geodataframe: AnyGeoDataFrame
     layer_style: LayerStyle
-    legend: LegendDefinition
+    legend: LegendDefinition | None = None
 
 
 @task
@@ -149,8 +149,8 @@ def draw_ecomap(
 
     from ecoscope.mapping import EcoMap  # type: ignore[import-untyped]
 
-    legend_labels = []
-    legend_colors = []
+    legend_labels: list = []
+    legend_colors: list = []
 
     m = EcoMap(static=static, default_widgets=False)
 
@@ -158,7 +158,7 @@ def draw_ecomap(
         m.add_title(title)
 
     m.add_scale_bar()
-    m.add_north_arrow(**(north_arrow_style.model_dump(exclude_none=True)))
+    m.add_north_arrow(**(north_arrow_style.model_dump(exclude_none=True) or {}))  # type: ignore[union-attr]
 
     if tile_layer:
         m.add_layer(EcoMap.get_named_tile_layer(tile_layer))
@@ -192,7 +192,7 @@ def draw_ecomap(
         m.add_legend(
             labels=legend_labels,
             colors=legend_colors,
-            **(legend_style.model_dump(exclude_none=True)),
+            **(legend_style.model_dump(exclude_none=True) or {}),  # type: ignore[union-attr]
         )
 
     m.zoom_to_bounds(m.layers)
