@@ -1,6 +1,6 @@
 context:
   name: lonboard
-  version: 0.0.2
+  version: 0.0.3
 
 package:
   name: lonboard
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://github.com/wildlife-dynamics/lonboard/archive/v${{ version }}.tar.gz
-  sha256: ae708178f1616d63c3e724e323c013cc4ab86b07d859c2176801e7380f1181df
+  sha256: c7ba5ca0b2690242c307efed89f93a980ca07036c4c0bb6ad5f386b15be9ef3b
 
 build:
   python:
