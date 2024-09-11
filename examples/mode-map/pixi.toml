@@ -1,23 +1,28 @@
 [project]
 name = "mode-map"
-
-[tool.pixi.project]
 channels = ["https://prefix.dev/ecoscope-workflows", "conda-forge"]
 platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
 
-[tool.pixi.dependencies]
+[dependencies]
 python = "3.12.*"
 ecoscope = { version = "v1.8.3", channel = "https://prefix.dev/ecoscope-workflows" }
 ecoscope-workflows = { version = ".", channel = "https://prefix.dev/ecoscope-workflows" }
 cloudpathlib-gs = "*"
 lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
 
-[tool.pixi.feature.test.dependencies]
+[feature.test.dependencies]
 pytest = "*"
 
-[tool.pixi.feature.test.tasks]
+[feature.test.tasks]
+test-async-cloudrun = "pytest tests -k cloudrun"
+test-async-local = "pytest tests -k parallel"
+test-sequential = "pytest tests -k sequential"
 
+[feature.docker.tasks]
+build-base = "docker build -t mode-map-base -f Dockerfile.base ."
+build-runner = "docker build -t mode-map-runner -f Dockerfile.runner ."
+build-deploy-worker = "docker build -t mode-map-worker -f Dockerfile.worker ."
 
-[tool.pixi.environments]
+[environments]
 default = { solve-group = "default" }
 test = { features = ["test"], solve-group = "default" }
