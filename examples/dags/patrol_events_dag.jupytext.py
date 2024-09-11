@@ -139,6 +139,7 @@ pe_colormap = apply_color_map.partial(
 
 pe_map_layer_params = dict(
     layer_style=...,
+    legend=...,
 )
 
 # %%
@@ -161,6 +162,7 @@ pe_ecomap_params = dict(
     static=...,
     title=...,
     north_arrow_style=...,
+    legend_style=...,
 )
 
 # %%
@@ -350,6 +352,7 @@ fd_colormap = apply_color_map.partial(
 
 fd_map_layer_params = dict(
     layer_style=...,
+    legend=...,
 )
 
 # %%
@@ -372,6 +375,7 @@ fd_ecomap_params = dict(
     static=...,
     title=...,
     north_arrow_style=...,
+    legend_style=...,
 )
 
 # %%
@@ -447,6 +451,7 @@ split_patrol_event_groups = split_groups.partial(
 
 grouped_pe_map_layer_params = dict(
     layer_style=...,
+    legend=...,
 )
 
 # %%
@@ -469,6 +474,7 @@ grouped_pe_ecomap_params = dict(
     static=...,
     title=...,
     north_arrow_style=...,
+    legend_style=...,
 )
 
 # %%
@@ -663,6 +669,7 @@ grouped_fd_colormap = apply_color_map.partial(**grouped_fd_colormap_params).mapv
 
 grouped_fd_map_layer_params = dict(
     layer_style=...,
+    legend=...,
 )
 
 # %%
@@ -685,6 +692,7 @@ grouped_fd_ecomap_params = dict(
     static=...,
     title=...,
     north_arrow_style=...,
+    legend_style=...,
 )
 
 # %%
