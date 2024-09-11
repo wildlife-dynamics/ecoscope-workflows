@@ -124,3 +124,8 @@ test-all-py311 = { features = ["lithops", "gcs", "test", "ecoscope-core", "py311
 test-all-py312 = { features = ["lithops", "gcs", "test", "ecoscope-core", "py312"], solve-group = "py312" }
 vendor-build-push = { features = ["vendor-build-push"], solve-group = "vendor-build-push", no-default-feature = true }
 vendor-version-check = { features = ["vendor-version-check"], solve-group = "vendor-version-check", no-default-feature = true }
+
+[tool.pytest.ini_options]
+markers = [
+    "io: interfaces with 3rd party data services, which may likely require credentials (deselect with '-m \"not io\"')",
+]
