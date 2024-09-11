@@ -43,12 +43,15 @@ pe_map_layer:
   layer_style:   # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
     layer_type: "point"
     fill_color_column: "event_type_colormap"
+    get_radius: 5
+  legend:
+    label_column: "event_type"
+    color_column: "event_type_colormap"
 
 # Parameters for 'Draw Ecomap from Time Density' using task `draw_ecomap`.
 pe_ecomap:
   tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
   static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
-  title: "All Patrol Events" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist Ecomap as Text' using task `persist_text`.
 pe_ecomap_html_url: {}
@@ -95,13 +98,12 @@ fd_map_layer:
   layer_style:  # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
     layer_type: "polygon"
     fill_color_column: "density_colormap"
-    opacity: 0.7
+    opacity: 0.4
 
 # Parameters for 'Draw Ecomap from Feature Density' using task `draw_ecomap`.
 fd_ecomap:
   tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
   static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
-  title: "Event Density" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist Feature Density Ecomap as Text' using task `persist_text`.
 fd_ecomap_html_url: {}
@@ -130,7 +132,6 @@ grouped_pe_map_layer:
 grouped_pe_ecomap:
   tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
   static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
-  title: "Grouped Patrol Events" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist grouped Patrol Events Ecomap as Text' using task `persist_text`.
 grouped_pe_ecomap_html_url: {}
@@ -173,13 +174,12 @@ grouped_fd_map_layer:
   layer_style:  # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
     layer_type: "polygon"
     fill_color_column: "density_colormap"
-    opacity: 0.7
+    opacity: 0.4
 
 # Parameters for 'Draw Ecomap from Feature Density' using task `draw_ecomap`.
 grouped_fd_ecomap:
   tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
   static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
-  title: "Grouped Event Density" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist Feature Density Ecomap as Text' using task `persist_text`.
 grouped_fd_ecomap_html_url: {}

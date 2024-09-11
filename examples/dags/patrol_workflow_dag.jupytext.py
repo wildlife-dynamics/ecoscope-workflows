@@ -165,6 +165,7 @@ split_patrol_traj_groups = split_groups.partial(
 
 patrol_traj_map_layers_params = dict(
     layer_style=...,
+    legend=...,
 )
 
 # %%
@@ -268,6 +269,7 @@ split_pe_groups = split_groups.partial(
 
 patrol_events_map_layers_params = dict(
     layer_style=...,
+    legend=...,
 )
 
 # %%
@@ -308,6 +310,7 @@ traj_patrol_events_ecomap_params = dict(
     static=...,
     title=...,
     north_arrow_style=...,
+    legend_style=...,
 )
 
 # %%
@@ -867,6 +870,7 @@ td = calculate_time_density.partial(trajectory_gdf=patrol_traj, **td_params).cal
 
 td_map_layer_params = dict(
     layer_style=...,
+    legend=...,
 )
 
 # %%
@@ -887,6 +891,7 @@ td_ecomap_params = dict(
     static=...,
     title=...,
     north_arrow_style=...,
+    legend_style=...,
 )
 
 # %%

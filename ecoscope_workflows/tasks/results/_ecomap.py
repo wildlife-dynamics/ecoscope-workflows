@@ -8,6 +8,9 @@ from ecoscope_workflows.annotations import AnyGeoDataFrame
 from ecoscope_workflows.decorators import task
 
 UnitType = Literal["meters", "pixels"]
+WidgetPlacement = Literal[
+    "top-left", "top-right", "bottom-left", "bottom-right", "fill"
+]
 
 
 class LayerStyleBase(BaseModel):
@@ -53,16 +56,25 @@ LayerStyle = Annotated[
 
 
 class NorthArrowStyle(BaseModel):
-    placement: Literal[
-        "top-left", "top-right", "bottom-left", "bottom-right", "fill"
-    ] = "top-left"
-    style: dict = {"transorm": "scale(0.8)"}
+    placement: WidgetPlacement = "top-left"
+    style: dict = {"transform": "scale(0.8)"}
+
+
+class LegendStyle(BaseModel):
+    placement: WidgetPlacement = "bottom-right"
+
+
+@dataclass
+class LegendDefinition:
+    label_column: str
+    color_column: str
 
 
 @dataclass
 class LayerDefinition:
     geodataframe: AnyGeoDataFrame
     layer_style: LayerStyle
+    legend: LegendDefinition
 
 
 @task
@@ -75,6 +87,10 @@ def create_map_layer(
         PolylineLayerStyle | PolygonLayerStyle | PointLayerStyle,
         Field(description="Style arguments for the layer."),
     ],
+    legend: Annotated[
+        LegendDefinition | SkipJsonSchema[None],
+        Field(description="If present, includes this layer in the map legend"),
+    ] = None,
 ) -> Annotated[LayerDefinition, Field()]:
     """
     Creates a map layer definition based on the provided configuration.
@@ -90,6 +106,7 @@ def create_map_layer(
     return LayerDefinition(
         geodataframe=geodataframe,
         layer_style=layer_style,
+        legend=legend,
     )
 
 
@@ -109,7 +126,11 @@ def draw_ecomap(
     north_arrow_style: Annotated[
         NorthArrowStyle | SkipJsonSchema[None],
         Field(description="Additional arguments for configuring the North Arrow."),
-    ] = None,
+    ] = NorthArrowStyle(),
+    legend_style: Annotated[
+        LegendStyle | SkipJsonSchema[None],
+        Field(description="Additional arguments for configuring the legend."),
+    ] = LegendStyle(),
 ) -> Annotated[str, Field()]:
     """
     Creates a map based on the provided layer definitions and configuration.
@@ -120,6 +141,7 @@ def draw_ecomap(
     static (bool): Set to true to disable map pan/zoom.
     title (str): The map title.
     north_arrow_style (NorthArrowStyle): Additional arguments for configuring the North Arrow.
+    legend_style (WidgetStyleBase): Additional arguments for configuring the Legend.
 
     Returns:
     str: A static HTML representation of the map.
@@ -127,15 +149,16 @@ def draw_ecomap(
 
     from ecoscope.mapping import EcoMap
 
+    legend_labels = []
+    legend_colors = []
+
     m = EcoMap(static=static, default_widgets=False)
 
     if title:
         m.add_title(title)
 
     m.add_scale_bar()
-    m.add_north_arrow(
-        **(north_arrow_style.model_dump(exclude_none=True) if north_arrow_style else {})
-    )
+    m.add_north_arrow(**(north_arrow_style.model_dump(exclude_none=True)))
 
     if tile_layer:
         m.add_layer(EcoMap.get_named_tile_layer(tile_layer))
@@ -159,7 +182,18 @@ def draw_ecomap(
                     **layer_def.layer_style.model_dump(exclude_none=True),
                 )
 
+        if layer_def.legend:
+            legend_labels.extend(layer_def.geodataframe[layer_def.legend.label_column])
+            legend_colors.extend(layer_def.geodataframe[layer_def.legend.color_column])
+
         m.add_layer(layer)
+
+    if len(legend_labels) > 0:
+        m.add_legend(
+            labels=legend_labels,
+            colors=legend_colors,
+            **(legend_style.model_dump(exclude_none=True)),
+        )
 
     m.zoom_to_bounds(m.layers)
     return m.to_html(title=title if title is not None else "Map Export")

@@ -157,6 +157,7 @@ split_subject_traj_groups = split_groups.partial(
 
 traj_map_layers_params = dict(
     layer_style=...,
+    legend=...,
 )
 
 # %%
@@ -179,6 +180,7 @@ traj_ecomap_params = dict(
     static=...,
     title=...,
     north_arrow_style=...,
+    legend_style=...,
 )
 
 # %%
@@ -494,6 +496,7 @@ td = calculate_time_density.partial(**td_params).mapvalues(
 
 td_map_layer_params = dict(
     layer_style=...,
+    legend=...,
 )
 
 # %%
@@ -516,6 +519,7 @@ td_ecomap_params = dict(
     static=...,
     title=...,
     north_arrow_style=...,
+    legend_style=...,
 )
 
 # %%

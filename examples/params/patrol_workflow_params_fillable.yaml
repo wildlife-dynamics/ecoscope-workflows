@@ -39,6 +39,7 @@ split_patrol_traj_groups:
 # Parameters for 'Create map layer for each Patrol Trajectories group' using task `create_map_layer`.
 patrol_traj_map_layers:
   layer_style:   # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
+  legend:   # (typing.Union[ecoscope_workflows.tasks.results._ecomap.LegendDefinition, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='If present, includes this layer in the map legend'))
 
 # Parameters for 'Get Patrol Events from EarthRanger' using task `get_patrol_events`.
 patrol_events:
@@ -70,6 +71,7 @@ split_pe_groups:
 # Parameters for 'Create map layers for each Patrols Events group' using task `create_map_layer`.
 patrol_events_map_layers:
   layer_style:   # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
+  legend:   # (typing.Union[ecoscope_workflows.tasks.results._ecomap.LegendDefinition, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='If present, includes this layer in the map legend'))
 
 # Parameters for 'Combine Trajectories and Patrol Events layers' using task `groupbykey`.
 combined_traj_and_pe_map_layers:
@@ -80,6 +82,7 @@ traj_patrol_events_ecomap:
   static:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Set to true to disable map pan/zoom.'))
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The map title.'))
   north_arrow_style:   # (typing.Union[ecoscope_workflows.tasks.results._ecomap.NorthArrowStyle, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the North Arrow.'))
+  legend_style:   # (typing.Union[ecoscope_workflows.tasks.results._ecomap.LegendStyle, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the legend.'))
 
 # Parameters for 'Persist Patrols Ecomap as Text' using task `persist_text`.
 traj_pe_ecomap_html_urls:
@@ -210,6 +213,7 @@ td:
 # Parameters for 'Create map layer from Time Density' using task `create_map_layer`.
 td_map_layer:
   layer_style:   # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
+  legend:   # (typing.Union[ecoscope_workflows.tasks.results._ecomap.LegendDefinition, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='If present, includes this layer in the map legend'))
 
 # Parameters for 'Draw Ecomap from Time Density' using task `draw_ecomap`.
 td_ecomap:
@@ -217,6 +221,7 @@ td_ecomap:
   static:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Set to true to disable map pan/zoom.'))
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The map title.'))
   north_arrow_style:   # (typing.Union[ecoscope_workflows.tasks.results._ecomap.NorthArrowStyle, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the North Arrow.'))
+  legend_style:   # (typing.Union[ecoscope_workflows.tasks.results._ecomap.LegendStyle, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='Additional arguments for configuring the legend.'))
 
 # Parameters for 'Persist Ecomap as Text' using task `persist_text`.
 td_ecomap_html_url:
