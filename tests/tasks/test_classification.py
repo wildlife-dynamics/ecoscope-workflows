@@ -9,6 +9,8 @@ from ecoscope_workflows.tasks.transformation._classification import (
     MaxBreaksArgs,
     StdMeanArgs,
     NaturalBreaksArgs,
+    CustomLabels,
+    DefaultLabels,
 )
 
 
@@ -36,21 +38,34 @@ def test_color_map():
 
 
 @pytest.mark.parametrize(
-    "scheme, args",
+    "scheme, classification_args, label_args",
     [
-        ("equal_interval", SharedArgs(k=3)),
-        ("max_breaks", MaxBreaksArgs(k=4, min_diff=20)),
-        ("natural_breaks", NaturalBreaksArgs(k=4, initial=3)),
-        ("std_mean", StdMeanArgs(multiples=[-1, 1], anchor=False)),
+        (
+            "equal_interval",
+            SharedArgs(k=3),
+            DefaultLabels(label_ranges=True, label_decimals=0),
+        ),
+        (
+            "max_breaks",
+            MaxBreaksArgs(k=4, min_diff=20),
+            DefaultLabels(label_prefix="_", label_suffix="_"),
+        ),
+        (
+            "natural_breaks",
+            NaturalBreaksArgs(k=4, initial=3),
+            CustomLabels(labels=["One", "Two", "Three", "Four"]),
+        ),
+        ("std_mean", StdMeanArgs(multiples=[-1, 1], anchor=False), DefaultLabels()),
     ],
 )
-def test_apply_classification_equal_interval(test_df, scheme, args):
+def test_apply_classification(test_df, scheme, classification_args, label_args):
     result = apply_classification(
         df=test_df,
         input_column_name="column_name",
         scheme=scheme,
         output_column_name="classified",
-        classification_options=args,
+        label_options=label_args,
+        classification_options=classification_args,
     )
 
     assert "classified" in result.columns
