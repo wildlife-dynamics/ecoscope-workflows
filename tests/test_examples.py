@@ -188,27 +188,16 @@ def test_end_to_end(template: str, end_to_end: EndToEndFixture, tmp_path: Path):
     with open(script_outpath, mode="w") as f:
         f.write(script)
 
-    exe = (
-        # workaround for https://github.com/mamba-org/mamba/issues/2577
-        f"{os.environ['MAMBA_EXE']} run -n {os.environ['CONDA_ENV_NAME']} python"
-        if "mamba" in sys.executable
-        else sys.executable
-    )
-    cmd = " ".join(
-        [
-            os.environ.get("SHELL", "/bin/sh").replace('"', "").replace("'", ""),
-            "-c",
-            f"'{exe}",
-            "-W",
-            "ignore",  # in testing context warnings are added; exclude them from stdout
-            script_outpath.as_posix(),
-            "--config-file",
-            f"{end_to_end.param_path.as_posix()}'",
-        ],
+    cmd = (
+        f"{sys.executable} -W ignore {script_outpath.as_posix()} "
+        f"--config-file {end_to_end.param_path.as_posix()}"
     )
     env = os.environ.copy()
     env["ECOSCOPE_WORKFLOWS_RESULTS"] = tmp.as_posix()
-    if template == "script-async.jinja2":
+    if template == "script-async.jinja2" and not os.environ.get("LITHOPS_CONFIG_FILE"):
+        # a lithops test is requested but no lithops config is set in the environment
+        # users can set this in their environment to avoid this, to test particular
+        # lithops configurations. but if they don't, we'll set a default one here.
         lithops_config_outpath = tmp / "lithops.yaml"
         lithops_config = {
             "lithops": {
@@ -216,7 +205,8 @@ def test_end_to_end(template: str, end_to_end: EndToEndFixture, tmp_path: Path):
                 "storage": "localhost",
                 "log_level": "INFO",
                 "data_limit": 16,
-            }
+            },
+            "localhost": {"runtime": sys.executable},
         }
         yaml = ruamel.yaml.YAML(typ="safe")
         with open(lithops_config_outpath, mode="w") as f:
@@ -225,12 +215,11 @@ def test_end_to_end(template: str, end_to_end: EndToEndFixture, tmp_path: Path):
         env["LITHOPS_CONFIG_FILE"] = lithops_config_outpath.as_posix()
 
     proc = subprocess.Popen(
-        cmd,
+        cmd.split(),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
         env=env,
-        shell=True,
     )
     returncode = proc.wait()
     if returncode != 0:
