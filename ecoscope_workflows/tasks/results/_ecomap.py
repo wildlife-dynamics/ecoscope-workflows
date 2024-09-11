@@ -106,7 +106,7 @@ def create_map_layer(
     return LayerDefinition(
         geodataframe=geodataframe,
         layer_style=layer_style,
-        legend=legend,
+        legend=legend,  # type: ignore[arg-type]
     )
 
 

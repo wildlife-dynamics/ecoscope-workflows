@@ -71,5 +71,5 @@ def random_3857_rectangle(
 def random_points_in_bounds(bounds: BoundingBox | Polygon | None, num_points: int):
     points = []
     for i in range(num_points):
-        points.append(random_point_in_bounds(bounds))
+        points.append(random_point_in_bounds(bounds))  # type: ignore[arg-type]
     return points

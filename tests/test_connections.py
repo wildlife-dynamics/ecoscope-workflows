@@ -167,6 +167,6 @@ def test_resolve_client_from_toml(mock_toml_config: Path):
 
     with patch("ecoscope_workflows.config.PATH", mock_toml_config):
         with patch("ecoscope.io.EarthRangerIO", autospec=True):
-            client = f(client="mep_dev")
+            client = f(client="mep_dev")  # type: ignore[arg-type]
             assert hasattr(client, "get_subjectgroup_observations")
             assert callable(client.get_subjectgroup_observations)
