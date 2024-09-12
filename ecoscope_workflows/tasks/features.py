@@ -11,3 +11,13 @@ ecoscope_core = Feature(
         "ecoscope": LongFormCondaDependency(version="v1.8.3", channel=VENDOR_CHANNEL)
     }
 )
+geopandas_feature = Feature(
+    dependencies={
+        "geopandas": LongFormCondaDependency(version="*", channel="conda-forge")
+    }
+)
+shapely_feature = Feature(
+    dependencies={
+        "shapely": LongFormCondaDependency(version="*", channel="conda-forge")
+    }
+)

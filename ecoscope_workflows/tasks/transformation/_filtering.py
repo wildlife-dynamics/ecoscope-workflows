@@ -6,6 +6,8 @@ from pydantic import BaseModel, Field
 from ecoscope_workflows.annotations import AnyGeoDataFrame
 from ecoscope_workflows.decorators import task
 
+from ..features import geopandas_feature, shapely_feature
+
 logger = logging.getLogger(__name__)
 
 
@@ -14,7 +16,7 @@ class Coordinate(BaseModel):
     y: float
 
 
-@task
+@task(requires=[geopandas_feature, shapely_feature])
 def apply_reloc_coord_filter(
     df: AnyGeoDataFrame,
     min_x: Annotated[float, Field(default=-180.0)] = -180.0,
