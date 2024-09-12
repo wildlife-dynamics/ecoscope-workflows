@@ -13,6 +13,7 @@ import tomli_w
 from packaging.requirements import SpecifierSet
 from packaging.version import Version
 from pydantic import Field, BaseModel, Discriminator, Tag as PydanticTag
+from pydantic.functional_serializers import PlainSerializer
 from pydantic.functional_validators import BeforeValidator
 
 
@@ -54,10 +55,23 @@ def _parse_version_or_specifier(input_str):
         return Version(input_str)
 
 
+def _serialize_version_or_specset(value: Version | SpecifierSet) -> str:
+    match value:
+        case Version():
+            return str(value)
+        case SpecifierSet():
+            if not value:
+                return "*"
+            return str(value)
+        case _:
+            raise ValueError(f"Unexpected value {value}")
+
+
 VersionOrSpecSet = Annotated[
     Version | SpecifierSet,
     BeforeValidator(_parse_version_or_specifier),
     PydanticTag("short-form-conda-dep"),
+    PlainSerializer(_serialize_version_or_specset),
 ]
 
 
@@ -74,10 +88,23 @@ def _short_versus_long_form(value: Any) -> str:
     return "short-form-conda-dep"
 
 
+def _serialize_conda_dependency(
+    value: Version | SpecifierSet | LongFormCondaDependency,
+) -> str | dict:
+    match value:
+        case Version() | SpecifierSet():
+            return _serialize_version_or_specset(value)
+        case LongFormCondaDependency():
+            return value.model_dump()
+        case _:
+            raise ValueError(f"Unexpected value {value}")
+
+
 CondaDependency = Annotated[
     VersionOrSpecSet
     | Annotated[LongFormCondaDependency, PydanticTag("long-form-conda-dep")],
     Discriminator(_short_versus_long_form),
+    PlainSerializer(_serialize_conda_dependency),
 ]
 FeatureName = str
 PixiTaskName = str
@@ -108,13 +135,13 @@ class PixiToml(BaseModel):
     environments: dict[str, Environment]
 
     @classmethod
-    def from_file(cls, path: str) -> "PixiToml":
-        with open(path, "rb") as f:
+    def from_file(cls, src: str) -> "PixiToml":
+        with open(src, "rb") as f:
             content = tomllib.load(f)
         return cls(**content)
 
-    def dump(self, path: Path):
-        with path.open("w") as f:
+    def dump(self, dst: str):
+        with open(dst, "wb") as f:
             tomli_w.dump(self.model_dump(), f)
 
 
