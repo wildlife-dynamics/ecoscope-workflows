@@ -105,21 +105,20 @@ class KnownTask(BaseModel):
     @field_serializer("importable_reference")
     def serialize_importable_reference(self, v: Any, info: FieldSerializationInfo):
         context: dict = info.context if info.context else {}
-        testing = context.get("testing", False)
-        mocks = context.get("mocks", [])
+        mock_io = context.get("mock_io", False)
         omit_args = context.get("omit_args", [])
         return {
             "anchor": self.anchor,
             "function": self.function,
             "statement": (
                 (
-                    # if this is a testing context, and a mock was requested:
+                    # if this is tagged as io, and mock_io was requested:
                     f"{self.function} = create_task_magicmock(  # 🧪\n"
                     f"    anchor='{self.anchor}',  # 🧪\n"
                     f"    func_name='{self.function}',  # 🧪\n"
                     ")  # 🧪"
                 )
-                if testing and self.function in mocks
+                if mock_io and TaskTag("io") in self.tags
                 # but in most cases just import the function in a normal way
                 else f"from {self.anchor} import {self.function}"
             ),

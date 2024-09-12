@@ -466,30 +466,19 @@ class Spec(_ForbidExtra):
         return self
 
 
+DagTypes = Literal["jupytext", "script-async", "script-sequential"]
+
+
 class DagCompiler(BaseModel):
     spec: Spec
+    jinja_templates_dir: pathlib.Path = TEMPLATES
 
-    # jinja kwargs; TODO: nest in separate model
-    template: str = "script-sequential.jinja2"
-    template_dir: pathlib.Path = TEMPLATES
-
-    # compilation settings
-    testing: bool = False
-    mock_tasks: list[str] = Field(default_factory=list)
-
-    def get_dag_config(self) -> dict:
-        if self.mock_tasks and not self.testing:
-            raise ValueError(
-                "If you provide mocks, you must set `testing=True` to use them."
-            )
+    def get_dag_config(self, dag_type: DagTypes, mock_io: bool) -> dict:
         dag_config = self.model_dump(
-            exclude={"template", "template_dir"},
-            context={
-                "testing": self.testing,
-                "mocks": self.mock_tasks,
-            },
+            exclude={"jinja_templates_dir"},
+            context={"mock_io": mock_io},
         )
-        if self.template == "jupytext.jinja2":
+        if dag_type == "jupytext":
             dag_config |= {
                 "per_taskinstance_params_notebook": self.get_per_taskinstance_params_notebook(),
             }
@@ -549,8 +538,11 @@ class DagCompiler(BaseModel):
             for t in self.spec.workflow
         }
 
+    @property
+    def _jinja_env(self) -> Environment:
+        return Environment(loader=FileSystemLoader(self.jinja_templates_dir))
+
     @ruff_formatted
-    def generate_dag(self) -> str:
-        env = Environment(loader=FileSystemLoader(self.template_dir))
-        template = env.get_template(self.template)
-        return template.render(self.get_dag_config())
+    def generate_dag(self, dag_type: DagTypes, mock_io: bool = False) -> str:
+        template = self._jinja_env.get_template(f"{dag_type}.jinja2")
+        return template.render(self.get_dag_config(dag_type, mock_io=mock_io))

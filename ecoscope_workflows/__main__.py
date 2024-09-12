@@ -7,6 +7,7 @@ import ruamel.yaml
 from pydantic import SecretStr
 
 from ecoscope_workflows import config
+from ecoscope_workflows.artifacts import Dags, WorkflowArtifacts
 from ecoscope_workflows.compiler import DagCompiler, Spec
 from ecoscope_workflows.config import TomlConfigTable
 from ecoscope_workflows.registry import known_connections, known_tasks
@@ -22,18 +23,25 @@ class Colors(str, Enum):
 def compile_command(args):
     compilation_spec = Spec(**yaml.load(args.spec))
     dc = DagCompiler(spec=compilation_spec)
-    if args.template:
-        dc.template = args.template
-    if args.testing:
-        dc.testing = True
-    if args.mock_tasks:
-        dc.mock_tasks = args.mock_tasks
-    dag_str = dc.generate_dag()
+    dags = Dags(
+        jupytext=dc.generate_dag("jupytext"),
+        script_async_mock_io=dc.generate_dag("script-async", mock_io=True),
+        script_async=dc.generate_dag("script-async"),
+        script_sequential_mock_io=dc.generate_dag("script-sequential", mock_io=True),
+        script_sequential=dc.generate_dag("script-sequential"),
+    )
+    wa = WorkflowArtifacts(
+        dags=dags,
+        # src= ...,
+        # test= ...,
+        params_jsonschema=dc.get_params_jsonschema(),
+    )
     if args.outpath:
-        with open(args.outpath, "w") as f:
-            f.write(dag_str)
+        pass
+        # with open(args.outpath, "w") as f:
+        #     f.write(dag_str)
     else:
-        print(dag_str)
+        print(wa)
 
 
 def tasks_command(args):
@@ -136,22 +144,8 @@ def main():
         type=argparse.FileType(mode="r"),
     )
     compile_parser.add_argument(
-        "--template",
-        dest="template",
-        default="airflow-kubernetes.jinja2",
-    )
-    compile_parser.add_argument(
         "--outpath",
         dest="outpath",
-    )
-    compile_parser.add_argument(
-        "--testing",
-        action=argparse.BooleanOptionalAction,
-    )
-    compile_parser.add_argument(
-        "--mock-tasks",
-        dest="mock_tasks",
-        nargs="+",
     )
 
     # Subcommand 'tasks'
