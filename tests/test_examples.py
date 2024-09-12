@@ -4,25 +4,19 @@ import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Literal
+from typing import Callable
 
 import pytest
 import ruamel.yaml
 
-from ecoscope_workflows.compiler import DagCompiler, Spec
+from ecoscope_workflows.compiler import DagCompiler, DagTypes, Spec
 from ecoscope_workflows.registry import TaskTag, known_tasks
 
 EXAMPLES = Path(__file__).parent.parent / "examples"
 
-TemplateName = Literal[
-    "script-async.jinja2", "script-sequential.jinja2", "jupytext.jinja2"
-]
 
-
-def _spec_path_to_dag_fname(path: Path, template: TemplateName) -> str:
-    return (
-        f"{path.stem.replace('-', '_')}_dag.{Path(template).stem.replace('-', '_')}.py"
-    )
+def _spec_path_to_dag_fname(path: Path, dag_type: DagTypes) -> str:
+    return f"{path.stem.replace('-', '_')}_dag.{dag_type.replace('-', '_')}.py"
 
 
 def _spec_path_to_jsonschema_fname(path: Path) -> str:
@@ -58,19 +52,18 @@ def spec_fixture(request: pytest.FixtureRequest) -> SpecFixture:
 
 
 @pytest.mark.parametrize(
-    "template",
+    "dag_type",
     [
-        "jupytext.jinja2",
-        "script-async.jinja2",
-        "script-sequential.jinja2",
+        "jupytext",
+        "script-async",
+        "script-sequential",
     ],
 )
-def test_generate_dag(spec_fixture: SpecFixture, template: TemplateName):
+def test_generate_dag(spec_fixture: SpecFixture, dag_type: DagTypes):
     spec = Spec(**spec_fixture.spec)
     dag_compiler = DagCompiler(spec=spec)
-    dag_compiler.template = template
-    dag_str = dag_compiler.generate_dag()
-    script_fname = _spec_path_to_dag_fname(path=spec_fixture.path, template=template)
+    dag_str = dag_compiler.generate_dag(dag_type)
+    script_fname = _spec_path_to_dag_fname(path=spec_fixture.path, dag_type=dag_type)
     with open(EXAMPLES / "dags" / script_fname) as f:
         assert dag_str == f.read()
 
@@ -172,16 +165,11 @@ def end_to_end(spec_fixture: SpecFixture) -> EndToEndFixture:
     )
 
 
-@pytest.mark.parametrize(
-    "template", ["script-sequential.jinja2", "script-async.jinja2"]
-)
-def test_end_to_end(template: str, end_to_end: EndToEndFixture, tmp_path: Path):
+@pytest.mark.parametrize("dag_type", ["script-sequential", "script-async"])
+def test_end_to_end(dag_type: DagTypes, end_to_end: EndToEndFixture, tmp_path: Path):
     spec = Spec(**end_to_end.spec_fixture.spec)
     dc = DagCompiler(spec=spec)
-    dc.template = template
-    dc.testing = True
-    dc.mock_tasks = end_to_end.mock_tasks
-    script = dc.generate_dag()
+    script = dc.generate_dag(dag_type=dag_type, mock_io=True)
     tmp = tmp_path / "tmp"
     tmp.mkdir()
     script_outpath = tmp / "script.py"
@@ -194,7 +182,7 @@ def test_end_to_end(template: str, end_to_end: EndToEndFixture, tmp_path: Path):
     )
     env = os.environ.copy()
     env["ECOSCOPE_WORKFLOWS_RESULTS"] = tmp.as_posix()
-    if template == "script-async.jinja2" and not os.environ.get("LITHOPS_CONFIG_FILE"):
+    if dag_type == "script-async" and not os.environ.get("LITHOPS_CONFIG_FILE"):
         # a lithops test is requested but no lithops config is set in the environment
         # users can set this in their environment to avoid this, to test particular
         # lithops configurations. but if they don't, we'll set a default one here.
