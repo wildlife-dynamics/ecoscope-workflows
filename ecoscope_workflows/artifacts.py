@@ -1,3 +1,4 @@
+import shutil
 import sys
 from pathlib import Path
 
@@ -51,7 +52,7 @@ class WorkflowArtifacts(BaseModel):
         if root.exists() and clobber and not root.is_dir():
             raise FileExistsError(f"Cannot clobber existing '{root}'; not a directory.")
         if root.exists() and clobber:
-            root.rmdir()
+            shutil.rmtree(root)
         root.joinpath("dags").mkdir(parents=True)
         for fname, content in self.dags.model_dump(by_alias=True).items():
             root.joinpath("dags").joinpath(fname).write_text(content)
