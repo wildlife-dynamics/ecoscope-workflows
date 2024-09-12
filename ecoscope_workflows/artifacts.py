@@ -1,3 +1,4 @@
+import json
 import shutil
 import sys
 from pathlib import Path
@@ -56,8 +57,8 @@ class WorkflowArtifacts(BaseModel):
         root.joinpath("dags").mkdir(parents=True)
         for fname, content in self.dags.model_dump(by_alias=True).items():
             root.joinpath("dags").joinpath(fname).write_text(content)
-        # self.dags.dump(path / "dags")
-        # self.pixi_toml.dump(path / "pixi.toml")
 
-        # with path.joinpath("params.jsonschema").open("w") as f:
-        #     json.dump(self.params_jsonschema, f, indent=2)
+        with root.joinpath("params-jsonschema.json").open("w") as f:
+            json.dump(self.params_jsonschema, f, indent=2)
+
+        # self.pixi_toml.dump(path / "pixi.toml")
