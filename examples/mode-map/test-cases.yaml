@@ -31,7 +31,6 @@ test1:
       north_arrow_style:
         placement: "top-right"
     td_ecomap_html_url: {}  # Parameters for 'Persist Ecomaps as Text' using task `persist_text`.
-  # expected:
-  #   - 'lambda out: ".html" in out'
-  #   type: dashboard
-  #   TODO: parse output to JSON and make structured assertions against that (?)
+  assertions:
+    result_stdout_contains:
+      - ".html"
