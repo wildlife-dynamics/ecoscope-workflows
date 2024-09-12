@@ -162,6 +162,7 @@ class _Task(Generic[P, R, K, V]):
                 return SyncTask(
                     self.func,
                     tags=self.tags,
+                    requires=self.requires,
                     executor=PythonExecutor(),
                 )
             case "lithops":
@@ -170,6 +171,7 @@ class _Task(Generic[P, R, K, V]):
                 return AsyncTask(
                     self.func,
                     tags=self.tags,
+                    requires=self.requires,
                     executor=LithopsExecutor(),
                 )
             case AsyncExecutor():
@@ -182,6 +184,7 @@ class _Task(Generic[P, R, K, V]):
                 return SyncTask(
                     self.func,
                     tags=self.tags,
+                    requires=self.requires,
                     executor=name_or_executor,
                 )
             case _:

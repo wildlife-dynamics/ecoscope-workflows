@@ -28,7 +28,9 @@ def create_task_magicmock(anchor: str, func_name: str) -> MockSyncTask:
 
     mock_func.__signature__ = inspect.signature(task.func)  # type: ignore[attr-defined]
 
-    return MockSyncTask(func=mock_func, tags=task.tags, executor=task.executor)
+    return MockSyncTask(
+        func=mock_func, tags=task.tags, executor=task.executor, requires=task.requires
+    )
 
 
 class Assertions(BaseModel):
