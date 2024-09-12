@@ -178,6 +178,7 @@ class _Task(Generic[P, R, K, V]):
                 return AsyncTask(
                     self.func,
                     tags=self.tags,
+                    requires=self.requires,
                     executor=name_or_executor,
                 )
             case SyncExecutor():
