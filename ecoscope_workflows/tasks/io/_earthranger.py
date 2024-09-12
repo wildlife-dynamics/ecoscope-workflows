@@ -10,6 +10,8 @@ from ecoscope_workflows.annotations import DataFrame, GeoDataFrameBaseSchema
 from ecoscope_workflows.connections import EarthRangerClient
 from ecoscope_workflows.decorators import task
 
+from ..features import ecoscope_core
+
 
 class SubjectGroupObservationsGDFSchema(GeoDataFrameBaseSchema):
     groupby_col: pa_typing.Series[str] = pa.Field()
@@ -25,7 +27,7 @@ class EventGDFSchema(GeoDataFrameBaseSchema):
     event_type: pa_typing.Series[str] = pa.Field()
 
 
-@task(tags=["io"])
+@task(requires=[ecoscope_core], tags=["io"])
 def get_subjectgroup_observations(
     client: EarthRangerClient,
     subject_group_name: Annotated[
@@ -51,7 +53,7 @@ def get_subjectgroup_observations(
     )
 
 
-@task(tags=["io"])
+@task(requires=[ecoscope_core], tags=["io"])
 def get_patrol_observations(
     client: EarthRangerClient,
     since: Annotated[str, Field(description="Start date")],
@@ -81,7 +83,7 @@ def get_patrol_observations(
     )
 
 
-@task(tags=["io"])
+@task(requires=[ecoscope_core], tags=["io"])
 def get_patrol_events(
     client: EarthRangerClient,
     since: Annotated[str, Field(description="Start date")],

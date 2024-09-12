@@ -22,6 +22,7 @@ else:
 
 from pydantic import validate_call
 
+from ecoscope_workflows.artifacts import Feature
 from ecoscope_workflows.executors import (
     AsyncExecutor,
     Future,
@@ -41,6 +42,7 @@ V = TypeVar("V")
 class _Task(Generic[P, R, K, V]):
     func: Callable[P, R]
     tags: list[str]
+    requires: list[Feature] = field(default_factory=list)
 
     def partial(
         self,
@@ -455,6 +457,7 @@ def task(
     func: Callable[P, R] | None = None,
     *,
     tags: list[str] | None = None,
+    requires: list[Feature] | None = None,
 ) -> Callable[[Callable[P, R]], SyncTask[P, R, K, V]] | SyncTask[P, R, K, V]:
     def wrapper(
         func: Callable[P, R],
@@ -462,6 +465,7 @@ def task(
         return SyncTask(
             func,
             tags=tags or [],
+            requires=requires or [],
         )
 
     if func:

@@ -16,9 +16,13 @@ from pydantic import Field, BaseModel, Discriminator, Tag as PydanticTag
 from pydantic.functional_serializers import PlainSerializer
 from pydantic.functional_validators import BeforeValidator
 
-
-CHANNELS = ["https://prefix.dev/ecoscope-workflows", "conda-forge"]
+VENDOR_CHANNEL = "https://prefix.dev/ecoscope-workflows"
+CHANNELS = [VENDOR_CHANNEL, "conda-forge"]
 PLATFORMS = ["linux-64", "linux-aarch64", "osx-arm64"]
+
+
+class _AllowArbitraryTypes(BaseModel):
+    model_config = dict(arbitrary_types_allowed=True)
 
 
 class Dags(BaseModel):
@@ -75,9 +79,7 @@ VersionOrSpecSet = Annotated[
 ]
 
 
-class LongFormCondaDependency(BaseModel):
-    model_config = dict(arbitrary_types_allowed=True)
-
+class LongFormCondaDependency(_AllowArbitraryTypes):
     version: VersionOrSpecSet
     channel: str = "conda-forge"
 
@@ -111,11 +113,11 @@ PixiTaskName = str
 PixiTaskCommand = str
 
 
-class Feature(BaseModel):
-    model_config = dict(arbitrary_types_allowed=True)
+class Feature(_AllowArbitraryTypes):
+    """A `pixi.toml` feature definition."""
 
     dependencies: dict[str, CondaDependency]
-    tasks: dict[PixiTaskName, PixiTaskCommand]
+    tasks: dict[PixiTaskName, PixiTaskCommand] = Field(default_factory=dict)
 
 
 class Environment(BaseModel):

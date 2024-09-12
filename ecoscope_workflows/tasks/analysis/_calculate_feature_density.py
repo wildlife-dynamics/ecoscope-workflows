@@ -4,8 +4,10 @@ from pydantic import Field
 from ecoscope_workflows.annotations import AnyGeoDataFrame
 from ecoscope_workflows.decorators import task
 
+from ..features import ecoscope_core
 
-@task
+
+@task(requires=[ecoscope_core])
 def calculate_feature_density(
     geodataframe: Annotated[
         AnyGeoDataFrame,

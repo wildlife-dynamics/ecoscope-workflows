@@ -7,6 +7,9 @@ from pydantic.json_schema import SkipJsonSchema
 from ecoscope_workflows.annotations import AnyGeoDataFrame
 from ecoscope_workflows.decorators import task
 
+from ..features import ecoscope_core
+
+
 UnitType = Literal["meters", "pixels"]
 WidgetPlacement = Literal[
     "top-left", "top-right", "bottom-left", "bottom-right", "fill"
@@ -77,7 +80,7 @@ class LayerDefinition:
     legend: LegendDefinition
 
 
-@task
+@task(requires=[ecoscope_core])
 def create_map_layer(
     geodataframe: Annotated[
         AnyGeoDataFrame,
@@ -110,7 +113,7 @@ def create_map_layer(
     )
 
 
-@task
+@task(requires=[ecoscope_core])
 def draw_ecomap(
     geo_layers: Annotated[
         LayerDefinition | list[LayerDefinition],

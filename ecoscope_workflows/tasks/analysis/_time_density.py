@@ -1,6 +1,7 @@
 from typing import Annotated, Any
 
 import pandera as pa
+import pandera.typing as pa_typing
 from pydantic import Field
 
 from ecoscope_workflows.annotations import (
@@ -10,14 +11,16 @@ from ecoscope_workflows.annotations import (
 )
 from ecoscope_workflows.decorators import task
 
+from ..features import ecoscope_core
+
 
 class TimeDensityReturnGDFSchema(JsonSerializableDataFrameModel):
-    percentile: pa.typing.Series[float] = pa.Field()
-    geometry: pa.typing.Series[Any] = pa.Field()  # see note above re: geometry typing
-    area_sqkm: pa.typing.Series[float] = pa.Field()
+    percentile: pa_typing.Series[float] = pa.Field()
+    geometry: pa_typing.Series[Any] = pa.Field()  # see note above re: geometry typing
+    area_sqkm: pa_typing.Series[float] = pa.Field()
 
 
-@task
+@task(requires=[ecoscope_core])
 def calculate_time_density(
     trajectory_gdf: Annotated[
         AnyGeoDataFrame,

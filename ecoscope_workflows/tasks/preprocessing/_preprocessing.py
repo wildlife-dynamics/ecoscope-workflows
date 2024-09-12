@@ -1,13 +1,16 @@
-from typing import Annotated, Any
+from typing import Annotated
 
 import pandas as pd
 import pandera as pa
+import pandera.typing as pa_typing
 from pydantic import Field
 
-from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
+from ecoscope_workflows.annotations import DataFrame, GeoDataFrameBaseSchema
 from ecoscope_workflows.decorators import task
 from ecoscope_workflows.tasks.io import SubjectGroupObservationsGDFSchema
 from ecoscope_workflows.tasks.transformation._filtering import Coordinate
+
+from ..features import ecoscope_core
 
 
 class RelocationsGDFSchema(SubjectGroupObservationsGDFSchema):
@@ -15,7 +18,7 @@ class RelocationsGDFSchema(SubjectGroupObservationsGDFSchema):
     pass
 
 
-@task
+@task(requires=[ecoscope_core])
 def process_relocations(
     observations: DataFrame[SubjectGroupObservationsGDFSchema],
     filter_point_coords: Annotated[list[Coordinate], Field()],
@@ -43,27 +46,23 @@ def process_relocations(
     return relocs
 
 
-class TrajectoryGDFSchema(JsonSerializableDataFrameModel):
-    id: pa.typing.Index[str] = pa.Field()
-    groupby_col: pa.typing.Series[str] = pa.Field()
-    segment_start: pa.typing.Series[pd.DatetimeTZDtype] = pa.Field(
+class TrajectoryGDFSchema(GeoDataFrameBaseSchema):
+    id: pa_typing.Index[str] = pa.Field()
+    groupby_col: pa_typing.Series[str] = pa.Field()
+    segment_start: pa_typing.Series[pd.DatetimeTZDtype] = pa.Field(
         dtype_kwargs={"unit": "ns", "tz": "UTC"}
     )
-    segment_end: pa.typing.Series[pd.DatetimeTZDtype] = pa.Field(
+    segment_end: pa_typing.Series[pd.DatetimeTZDtype] = pa.Field(
         dtype_kwargs={"unit": "ns", "tz": "UTC"}
     )
-    timespan_seconds: pa.typing.Series[float] = pa.Field()
-    dist_meters: pa.typing.Series[float] = pa.Field()
-    speed_kmhr: pa.typing.Series[float] = pa.Field()
-    heading: pa.typing.Series[float] = pa.Field()
-    junk_status: pa.typing.Series[bool] = pa.Field()
-    # pandera does support geopandas types (https://pandera.readthedocs.io/en/stable/geopandas.html)
-    # but this would require this module depending on geopandas, which we are trying to avoid. so
-    # unless we come up with another solution, for now we are letting `geometry` contain anything.
-    geometry: pa.typing.Series[Any] = pa.Field()
+    timespan_seconds: pa_typing.Series[float] = pa.Field()
+    dist_meters: pa_typing.Series[float] = pa.Field()
+    speed_kmhr: pa_typing.Series[float] = pa.Field()
+    heading: pa_typing.Series[float] = pa.Field()
+    junk_status: pa_typing.Series[bool] = pa.Field()
 
 
-@task
+@task(requires=[ecoscope_core])
 def relocations_to_trajectory(
     relocations: DataFrame[RelocationsGDFSchema],
     min_length_meters: Annotated[float, Field()] = 0.1,
@@ -91,5 +90,4 @@ def relocations_to_trajectory(
     traj.apply_traj_filter(traj_seg_filter, inplace=True)
     traj.remove_filtered(inplace=True)
 
-    return traj
     return traj

@@ -7,6 +7,8 @@ from pydantic.json_schema import SkipJsonSchema
 from ecoscope_workflows.annotations import AnyDataFrame
 from ecoscope_workflows.decorators import task
 
+from ..features import ecoscope_core
+
 logger = logging.getLogger(__name__)
 
 
@@ -27,7 +29,7 @@ class NaturalBreaksArgs(SharedArgs):
     initial: int = 10
 
 
-@task
+@task(requires=[ecoscope_core])
 def apply_classification(
     df: Annotated[
         AnyDataFrame,
@@ -116,7 +118,7 @@ def apply_classification(
     )
 
 
-@task
+@task(requires=[ecoscope_core])
 def apply_color_map(
     df: Annotated[
         AnyDataFrame,
