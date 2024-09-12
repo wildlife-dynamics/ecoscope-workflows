@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         script: [
-          "sequential-mock-io",
+          "sequential",
           # "async-local",
           # "async-cloudrun",
         ]
