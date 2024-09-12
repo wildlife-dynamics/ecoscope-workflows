@@ -4,11 +4,17 @@ import sys
 from pathlib import Path
 
 if sys.version_info >= (3, 11):
-    pass
+    import tomllib
 else:
-    pass
+    import tomli as tomllib
 
+import tomli_w
+from packaging.requirements import SpecifierSet
+from packaging.version import Version
 from pydantic import Field, BaseModel
+
+CHANNELS = ["https://prefix.dev/ecoscope-workflows", "conda-forge"]
+PLATFORMS = ["linux-64", "linux-aarch64", "osx-arm64"]
 
 
 class Dags(BaseModel):
@@ -25,15 +31,53 @@ class SymlinkVendor:
     pass
 
 
+class PixiProject(BaseModel):
+    name: str
+    channels: list[str] = CHANNELS
+    platforms: list[str] = PLATFORMS
+
+
+class PypiDependency(BaseModel):
+    path: str
+    editable: bool = True
+
+
+class LongFormCondaDependency(BaseModel):
+    version: Version | SpecifierSet
+    channel: str = "conda-forge"
+
+
+FeatureName = str
+
+
+class Feature(BaseModel):
+    dependencies: list[dict[str, LongFormCondaDependency]]
+    tasks: list[dict[str, str]]
+
+
+class Environment(BaseModel):
+    features: list[FeatureName]
+    solve_group: str = Field(default="default", alias="solve-group")
+
+
 class PixiToml(BaseModel):
     """The pixi.toml file that specifies the workflow."""
 
-    name: str
-    version: (
-        str  # this can passthrough from the spec.yaml; like conda recipe build numbers
-    )
-    description: str
-    dependencies: list[str]
+    project: PixiProject
+    pypi_dependencies: list[dict[str, PypiDependency]]
+    dependencies: list[dict[str, LongFormCondaDependency]]
+    feature: dict[FeatureName, Feature]
+    environments: dict[str, Environment]
+
+    @classmethod
+    def from_file(cls, path: str) -> "PixiToml":
+        with open(path) as f:
+            content = tomllib.load(f)
+        return cls(**content)
+
+    def dump(self, path: Path):
+        with path.open("w") as f:
+            tomli_w.dump(self.model_dump(), f)
 
 
 class WorkflowArtifacts(BaseModel):
