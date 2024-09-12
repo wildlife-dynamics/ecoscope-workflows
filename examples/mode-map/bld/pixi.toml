@@ -28,7 +28,7 @@ pytest = "*"
 [feature.test.tasks]
 test-async-cloudrun = "pytest test -k cloudrun"
 test-async-local = "pytest test -k parallel"
-test-sequential = "pytest test -k sequential"
+test-sequential-mock-io = "pytest test -k 'sequential and mock-io'"
 
 # todo: support build; push; deploy; run; test; etc. tasks
 # [feature.docker.tasks]

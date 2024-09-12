@@ -8,14 +8,15 @@ import ruamel.yaml
 
 
 BLD = Path(__file__).parent.parent
+WORKFLOWS = [
+    p
+    for p in BLD.joinpath("workflows").iterdir()
+    if p.suffix == ".py" and not p.name.startswith("_")
+]
 TEST_CASES_YAML = BLD.parent / "test-cases.yaml"
 
 
-@pytest.mark.parametrize(
-    "script",
-    [BLD / "dag.script_async.py", BLD / "dag.script_sequential.py"],
-    ids=["script-async", "script-sequential"],
-)
+@pytest.mark.parametrize("script", WORKFLOWS, ids=[p.stem for p in WORKFLOWS])
 def test_end_to_end(script: Path, case: str, tmp_path: Path):
     print(f"Running end-to-end test for {script =} with {case =}:")
     yaml = ruamel.yaml.YAML(typ="safe")
