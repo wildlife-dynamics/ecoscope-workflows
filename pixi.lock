@@ -13632,9 +13632,9 @@ packages:
   timestamp: 1726086369672
 - kind: pypi
   name: ecoscope-workflows
-  version: 0.0.2.dev115+gab95acf.d20240911
+  version: 0.0.2.dev130+gc3401a9.d20240912
   path: .
-  sha256: d2d1bff22bcb09e207b546b5d98fcc40b39c74d690ac6a7a86146671d3cfbf29
+  sha256: 545220b59f85b9b01387182f9a698a0ec33f2ba6b94129bc50b5aafb5815d370
   requires_python: '>=3.10'
   editable: true
 - kind: conda

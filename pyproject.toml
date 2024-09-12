@@ -31,6 +31,7 @@ Homepage = "https://github.com/wildlife-dynamics/ecoscope-workflows"
 Tracker = "https://github.com/wildlife-dynamics/ecoscope-workflows/issues"
 
 [tool.setuptools_scm]
+fallback_version = "9999"
 write_to = "ecoscope_workflows/_version.py"
 write_to_template = "__version__ = '{version}'"
 
