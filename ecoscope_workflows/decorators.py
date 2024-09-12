@@ -42,7 +42,7 @@ V = TypeVar("V")
 class _Task(Generic[P, R, K, V]):
     func: Callable[P, R]
     tags: list[str]
-    requires: list[Feature] = field(default_factory=list)
+    requires: list[Feature]
 
     def partial(
         self,

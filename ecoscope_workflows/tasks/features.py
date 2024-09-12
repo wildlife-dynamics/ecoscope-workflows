@@ -1,23 +1,13 @@
 """Pixi features which are not included in the default environment for ecoscope-workflows."""
 
-from ecoscope_workflows.artifacts import (
-    Feature,
-    LongFormCondaDependency,
-    VENDOR_CHANNEL,
-)
+from ecoscope_workflows.artifacts import Feature, VENDOR_CHANNEL
 
 ecoscope_core = Feature(
-    dependencies={
-        "ecoscope": LongFormCondaDependency(version="v1.8.3", channel=VENDOR_CHANNEL)
-    }
+    dependencies={"ecoscope": dict(version="v1.8.3", channel=VENDOR_CHANNEL)}
 )
 geopandas_feature = Feature(
-    dependencies={
-        "geopandas": LongFormCondaDependency(version="*", channel="conda-forge")
-    }
+    dependencies={"geopandas": dict(version="*", channel="conda-forge")}
 )
 shapely_feature = Feature(
-    dependencies={
-        "shapely": LongFormCondaDependency(version="*", channel="conda-forge")
-    }
+    dependencies={"shapely": dict(version="*", channel="conda-forge")}
 )
