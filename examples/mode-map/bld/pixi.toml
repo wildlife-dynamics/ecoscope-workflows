@@ -4,7 +4,7 @@ channels = ["https://prefix.dev/ecoscope-workflows", "conda-forge"]
 platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
 
 [pypi-dependencies]
-ecoscope-workflows = { path = "../../..", editable = true }
+ecoscope-workflows = { path = "./src/ecoscope-workflows", editable = true }
 
 [dependencies]
 python = "3.12.*"
@@ -26,9 +26,9 @@ lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflow
 pytest = "*"
 
 [feature.test.tasks]
-test-async-cloudrun = "pytest tests -k cloudrun"
-test-async-local = "pytest tests -k parallel"
-test-sequential = "pytest tests -k sequential"
+test-async-cloudrun = "pytest test -k cloudrun"
+test-async-local = "pytest test -k parallel"
+test-sequential = "pytest test -k sequential"
 
 # todo: support build; push; deploy; run; test; etc. tasks
 # [feature.docker.tasks]
