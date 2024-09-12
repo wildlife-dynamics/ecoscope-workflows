@@ -2,6 +2,7 @@ import argparse
 import json
 from enum import Enum
 from getpass import getpass
+from pathlib import Path
 
 import ruamel.yaml
 from pydantic import SecretStr
@@ -24,11 +25,15 @@ def compile_command(args):
     compilation_spec = Spec(**yaml.load(args.spec))
     dc = DagCompiler(spec=compilation_spec)
     dags = Dags(
-        jupytext=dc.generate_dag("jupytext"),
-        script_async_mock_io=dc.generate_dag("script-async", mock_io=True),
-        script_async=dc.generate_dag("script-async"),
-        script_sequential_mock_io=dc.generate_dag("script-sequential", mock_io=True),
-        script_sequential=dc.generate_dag("script-sequential"),
+        **{
+            "jupytext.py": dc.generate_dag("jupytext"),
+            "script-async.mock-io.py": dc.generate_dag("script-async", mock_io=True),
+            "script-async.py": dc.generate_dag("script-async"),
+            "script-sequential.mock-io.py": dc.generate_dag(
+                "script-sequential", mock_io=True
+            ),
+            "script-sequential.py": dc.generate_dag("script-sequential"),
+        }
     )
     wa = WorkflowArtifacts(
         dags=dags,
@@ -37,9 +42,7 @@ def compile_command(args):
         params_jsonschema=dc.get_params_jsonschema(),
     )
     if args.outpath:
-        pass
-        # with open(args.outpath, "w") as f:
-        #     f.write(dag_str)
+        wa.dump(Path(args.outpath), clobber=args.clobber)
     else:
         print(wa)
 
@@ -146,6 +149,12 @@ def main():
     compile_parser.add_argument(
         "--outpath",
         dest="outpath",
+    )
+    compile_parser.add_argument(
+        "--clobber",
+        dest="clobber",
+        default=False,
+        action="store_true",
     )
 
     # Subcommand 'tasks'
