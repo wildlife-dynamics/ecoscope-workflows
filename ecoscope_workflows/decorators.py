@@ -447,6 +447,7 @@ def task(
     func: Callable[P, R],
     *,
     tags: list[str] | None = None,
+    requires: list[Feature] | None = None,
 ) -> SyncTask[P, R, K, V]: ...
 
 
@@ -454,6 +455,7 @@ def task(
 def task(
     *,
     tags: list[str] | None = None,
+    requires: list[Feature] | None = None,
 ) -> Callable[[Callable[P, R]], SyncTask[P, R, K, V]]: ...
 
 
