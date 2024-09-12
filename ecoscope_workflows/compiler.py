@@ -4,7 +4,13 @@ import keyword
 import pathlib
 import subprocess
 import sys
+from textwrap import dedent
 from typing import Annotated, Any, Callable, Literal, TypeAlias, TypeVar, TYPE_CHECKING
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
@@ -19,6 +25,7 @@ from pydantic import (
 )
 from pydantic.functional_validators import AfterValidator, BeforeValidator
 
+from ecoscope_workflows.artifacts import PixiToml
 from ecoscope_workflows.jsonschema import ReactJSONSchemaFormConfiguration
 from ecoscope_workflows.registry import KnownTask, known_tasks
 
@@ -537,6 +544,33 @@ class DagCompiler(BaseModel):
             )
             for t in self.spec.workflow
         }
+
+    def get_pixi_toml(self) -> PixiToml:
+        feature_table = dedent(
+            """\
+            [feature.test.dependencies]
+            pytest = "*"
+
+            [feature.test.tasks]
+            test-async-local = "pytest test -k async"
+            test-async-remote = "pytest test -k async"
+            test-sequential = "pytest test -k sequential"
+            """
+        )
+        environments_table = dedent(
+            """\
+            [environments]
+            default = { solve-group = "default" }
+            test = { features = ["test"], solve-group = "default" }
+            """
+        )
+        return PixiToml(
+            project={"name": self.spec.id},
+            pypi_dependencies={},
+            dependencies={},
+            feature=tomllib.loads(feature_table["feature"]),
+            environments=tomllib.loads(environments_table["environments"]),
+        )
 
     @property
     def _jinja_env(self) -> Environment:

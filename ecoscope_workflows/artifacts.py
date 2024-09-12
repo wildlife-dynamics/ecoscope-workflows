@@ -125,10 +125,8 @@ class Environment(BaseModel):
     solve_group: str = Field(default="default", alias="solve-group")
 
 
-class PixiToml(BaseModel):
+class PixiToml(_AllowArbitraryTypes):
     """The pixi.toml file that specifies the workflow."""
-
-    model_config = dict(arbitrary_types_allowed=True)
 
     project: PixiProject
     pypi_dependencies: dict[str, PypiDependency] = Field(..., alias="pypi-dependencies")
