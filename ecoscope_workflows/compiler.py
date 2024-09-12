@@ -566,10 +566,10 @@ class DagCompiler(BaseModel):
         )
         return PixiToml(
             project={"name": self.spec.id},
-            pypi_dependencies={},
+            pypi_dependencies={},  # type: ignore[call-arg]
             dependencies={},
-            feature=tomllib.loads(feature_table["feature"]),
-            environments=tomllib.loads(environments_table["environments"]),
+            feature=tomllib.loads(feature_table)["feature"],
+            environments=tomllib.loads(environments_table)["environments"],
         )
 
     @property
