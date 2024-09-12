@@ -2,6 +2,7 @@ import json
 import shutil
 import sys
 from pathlib import Path
+from typing import Annotated, Any
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -11,7 +12,9 @@ else:
 import tomli_w
 from packaging.requirements import SpecifierSet
 from packaging.version import Version
-from pydantic import Field, BaseModel
+from pydantic import Field, BaseModel, Discriminator, Tag as PydanticTag
+from pydantic.functional_validators import BeforeValidator
+
 
 CHANNELS = ["https://prefix.dev/ecoscope-workflows", "conda-forge"]
 PLATFORMS = ["linux-64", "linux-aarch64", "osx-arm64"]
@@ -42,36 +45,71 @@ class PypiDependency(BaseModel):
     editable: bool = True
 
 
+def _parse_version_or_specifier(input_str):
+    if any(op in input_str for op in ["<", ">", "=", "!", "~"]):
+        return SpecifierSet(input_str)
+    elif input_str == "*":
+        return SpecifierSet()
+    else:
+        return Version(input_str)
+
+
+VersionOrSpecSet = Annotated[
+    Version | SpecifierSet,
+    BeforeValidator(_parse_version_or_specifier),
+    PydanticTag("short-form-conda-dep"),
+]
+
+
 class LongFormCondaDependency(BaseModel):
-    version: Version | SpecifierSet
+    model_config = dict(arbitrary_types_allowed=True)
+
+    version: VersionOrSpecSet
     channel: str = "conda-forge"
 
 
+def _short_versus_long_form(value: Any) -> str:
+    if isinstance(value, dict):
+        return "long-form-conda-dep"
+    return "short-form-conda-dep"
+
+
+CondaDependency = Annotated[
+    VersionOrSpecSet
+    | Annotated[LongFormCondaDependency, PydanticTag("long-form-conda-dep")],
+    Discriminator(_short_versus_long_form),
+]
 FeatureName = str
+PixiTaskName = str
+PixiTaskCommand = str
 
 
 class Feature(BaseModel):
-    dependencies: list[dict[str, LongFormCondaDependency]]
-    tasks: list[dict[str, str]]
+    model_config = dict(arbitrary_types_allowed=True)
+
+    dependencies: dict[str, CondaDependency]
+    tasks: dict[PixiTaskName, PixiTaskCommand]
 
 
 class Environment(BaseModel):
-    features: list[FeatureName]
+    features: list[FeatureName] = Field(default_factory=list)
     solve_group: str = Field(default="default", alias="solve-group")
 
 
 class PixiToml(BaseModel):
     """The pixi.toml file that specifies the workflow."""
 
+    model_config = dict(arbitrary_types_allowed=True)
+
     project: PixiProject
-    pypi_dependencies: list[dict[str, PypiDependency]]
-    dependencies: list[dict[str, LongFormCondaDependency]]
+    pypi_dependencies: dict[str, PypiDependency] = Field(..., alias="pypi-dependencies")
+    dependencies: dict[str, CondaDependency]
     feature: dict[FeatureName, Feature]
     environments: dict[str, Environment]
 
     @classmethod
     def from_file(cls, path: str) -> "PixiToml":
-        with open(path) as f:
+        with open(path, "rb") as f:
             content = tomllib.load(f)
         return cls(**content)
 
