@@ -365,6 +365,7 @@ def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
 class TaskGroup(_ForbidExtra):
     title: str
     description: str
+    tasks: list[TaskInstance]
     type: Literal["task-group"] = "task-group"
 
 
@@ -401,15 +402,23 @@ class Spec(_ForbidExtra):
         description="A list of task groups and/or instances that define the workflow."
     )
 
+    @computed_field  # type: ignore[misc]
     @property
-    def _workflow(self):
-        # todo: flatten groups
-        return self.workflow
+    def flat_workflow(self) -> list[TaskInstance]:
+        return [
+            task_instance
+            for group_or_instance in self.workflow
+            for task_instance in (
+                group_or_instance.tasks
+                if isinstance(group_or_instance, TaskGroup)
+                else [group_or_instance]
+            )
+        ]
 
     @property
     def all_task_ids(self) -> dict[str, str]:
         return {
-            task_instance.name: task_instance.id for task_instance in self._workflow
+            task_instance.name: task_instance.id for task_instance in self.flat_workflow
         }
 
     @model_validator(mode="after")
@@ -443,7 +452,7 @@ class Spec(_ForbidExtra):
 
     @model_validator(mode="after")
     def check_all_task_id_deps_use_actual_ids_of_other_tasks(self) -> "Spec":
-        all_ids = [task_instance.id for task_instance in self._workflow]
+        all_ids = [task_instance.id for task_instance in self.flat_workflow]
         for ti_id, deps in self.task_instance_dependencies.items():
             for d in deps:
                 if d not in all_ids:
@@ -462,7 +471,7 @@ class Spec(_ForbidExtra):
                 for d in task_instance.all_dependencies
                 if isinstance(d, TaskIdVariable)
             ]
-            for task_instance in self._workflow
+            for task_instance in self.flat_workflow
         }
 
     @model_validator(mode="after")
@@ -472,9 +481,13 @@ class Spec(_ForbidExtra):
             seen_task_instance_ids.add(task_instance_id)
             for dep_id in deps:
                 if dep_id not in seen_task_instance_ids:
-                    dep_name = next(ti.name for ti in self._workflow if ti.id == dep_id)
+                    dep_name = next(
+                        ti.name for ti in self.flat_workflow if ti.id == dep_id
+                    )
                     task_instance_name = next(
-                        ti.name for ti in self._workflow if ti.id == task_instance_id
+                        ti.name
+                        for ti in self.flat_workflow
+                        if ti.id == task_instance_id
                     )
                     raise ValueError(
                         f"Task instances are not in topological order. "
@@ -528,7 +541,7 @@ class DagCompiler(BaseModel):
                 + [arg for arg in t.map.argnames]
                 + [arg for arg in t.mapvalues.argnames]
             )
-            for t in self.spec.workflow
+            for t in self.spec.flat_workflow
         }
 
     def get_params_jsonschema(self) -> dict[str, Any]:
@@ -536,7 +549,7 @@ class DagCompiler(BaseModel):
             t.name: t.known_task.parameters_jsonschema(
                 omit_args=self.per_taskinstance_omit_args.get(t.id, []),
             )
-            for t in self.spec.workflow
+            for t in self.spec.flat_workflow
         }
 
         definitions = {}
@@ -551,7 +564,7 @@ class DagCompiler(BaseModel):
 
     def get_params_fillable_yaml(self) -> str:
         yaml_str = ""
-        for t in self.spec.workflow:
+        for t in self.spec.flat_workflow:
             yaml_str += t.known_task.parameters_annotation_yaml_str(
                 title=t.id,
                 description=f"# Parameters for '{t.name}' using task `{t.known_task_name}`.",
@@ -564,7 +577,7 @@ class DagCompiler(BaseModel):
             t.id: t.known_task.parameters_notebook(
                 omit_args=self.per_taskinstance_omit_args.get(t.id, []),
             )
-            for t in self.spec.workflow
+            for t in self.spec.flat_workflow
         }
 
     @ruff_formatted

@@ -17,7 +17,7 @@ from ecoscope_workflows.testing import create_task_magicmock  # 🧪
 
 from ecoscope_workflows.graph import DependsOn, DependsOnSequence, Graph, Node
 
-{% for t in spec.workflow -%}
+{% for t in spec.flat_workflow -%}
 {{ t.known_task.importable_reference.statement }}
 {% if loop.last %}
 {% endif -%}
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     dependencies = {{ spec.task_instance_dependencies }}
 
     nodes = {
-        {% for t in spec.workflow %}
+        {% for t in spec.flat_workflow %}
         {% set validate = true %}
         {% set params = 'params["' ~ t.id ~ '"]' %}
         {% set set_executor = '"lithops"' %}

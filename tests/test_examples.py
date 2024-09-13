@@ -10,7 +10,7 @@ import pytest
 import ruamel.yaml
 
 from ecoscope_workflows.compiler import DagCompiler, Spec
-from ecoscope_workflows.registry import TaskTag, known_tasks
+from ecoscope_workflows.registry import TaskTag
 
 EXAMPLES = Path(__file__).parent.parent / "examples"
 
@@ -40,7 +40,7 @@ def _spec_path_to_param_fname(path: Path) -> str:
 @dataclass
 class SpecFixture:
     path: Path
-    spec: dict
+    spec: Spec
 
 
 @pytest.fixture(
@@ -54,7 +54,7 @@ def spec_fixture(request: pytest.FixtureRequest) -> SpecFixture:
     yaml = ruamel.yaml.YAML(typ="safe")
     with open(example_spec_path) as f:
         spec_dict = yaml.load(f)
-    return SpecFixture(example_spec_path, spec_dict)
+    return SpecFixture(example_spec_path, Spec(**spec_dict))
 
 
 @pytest.mark.parametrize(
@@ -66,8 +66,7 @@ def spec_fixture(request: pytest.FixtureRequest) -> SpecFixture:
     ],
 )
 def test_generate_dag(spec_fixture: SpecFixture, template: TemplateName):
-    spec = Spec(**spec_fixture.spec)
-    dag_compiler = DagCompiler(spec=spec)
+    dag_compiler = DagCompiler(spec=spec_fixture.spec)
     dag_compiler.template = template
     dag_str = dag_compiler.generate_dag()
     script_fname = _spec_path_to_dag_fname(path=spec_fixture.path, template=template)
@@ -76,8 +75,7 @@ def test_generate_dag(spec_fixture: SpecFixture, template: TemplateName):
 
 
 def test_dag_params_jsonschema(spec_fixture: SpecFixture):
-    spec = Spec(**spec_fixture.spec)
-    dag_compiler = DagCompiler(spec=spec)
+    dag_compiler = DagCompiler(spec=spec_fixture.spec)
     params = dag_compiler.get_params_jsonschema()
     jsonschema_fname = _spec_path_to_jsonschema_fname(spec_fixture.path)
     with open(EXAMPLES / "params" / jsonschema_fname) as f:
@@ -85,8 +83,7 @@ def test_dag_params_jsonschema(spec_fixture: SpecFixture):
 
 
 def test_dag_params_fillable_yaml(spec_fixture: SpecFixture):
-    spec = Spec(**spec_fixture.spec)
-    dag_compiler = DagCompiler(spec=spec)
+    dag_compiler = DagCompiler(spec=spec_fixture.spec)
     yaml_str = dag_compiler.get_params_fillable_yaml()
     yaml = ruamel.yaml.YAML(typ="rt")
     yaml_fname = _spec_path_to_yaml_fname(spec_fixture.path)
@@ -162,11 +159,11 @@ def end_to_end(spec_fixture: SpecFixture) -> EndToEndFixture:
             "params", _spec_path_to_param_fname(path=spec_fixture.path)
         ),
         mock_tasks=[
-            task
-            for task in [t["task"] for t in spec_fixture.spec["workflow"]]
+            task.known_task_name
+            for task in [t for t in spec_fixture.spec.flat_workflow]
             # mock tasks that require io
             # TODO: this could also be a default for the compiler in --testing mode!
-            if TaskTag.io in known_tasks[task].tags
+            if TaskTag.io in task.known_task.tags
         ],
         assert_that_stdout=assert_that_stdout[spec_fixture.path.name],
     )
@@ -176,8 +173,7 @@ def end_to_end(spec_fixture: SpecFixture) -> EndToEndFixture:
     "template", ["script-sequential.jinja2", "script-async.jinja2"]
 )
 def test_end_to_end(template: str, end_to_end: EndToEndFixture, tmp_path: Path):
-    spec = Spec(**end_to_end.spec_fixture.spec)
-    dc = DagCompiler(spec=spec)
+    dc = DagCompiler(spec=end_to_end.spec_fixture.spec)
     dc.template = template
     dc.testing = True
     dc.mock_tasks = end_to_end.mock_tasks
