@@ -4,14 +4,16 @@ import keyword
 import pathlib
 import subprocess
 import sys
-from typing import Annotated, Any, Callable, Literal, TypeAlias, TypeVar
+from typing import Annotated, Any, Callable, Literal, TypeAlias, TypeVar, Union
 
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
     BaseModel,
     ConfigDict,
+    Discriminator,
     Field,
     PlainSerializer,
+    Tag as PydanticTag,
     computed_field,
     field_validator,
     model_serializer,
@@ -360,6 +362,25 @@ def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
     return wrapper
 
 
+class TaskGroup(_ForbidExtra):
+    title: str
+    description: str
+    type: Literal["task-group"] = "task-group"
+
+
+def _group_or_instance(v: Any) -> str:
+    msg = "The `workflow` field must be a list of task instances or task groups."
+    if not isinstance(v, dict):
+        raise ValueError(msg)
+    match v:
+        case _ if v.get("type") == "task-group":
+            return "group"
+        case _ if all(k in v for k in ("name", "id", "task")):
+            return "instance"
+        case _:
+            raise ValueError(msg)
+
+
 class Spec(_ForbidExtra):
     id: SpecId = Field(
         description="""\
@@ -368,13 +389,28 @@ class Spec(_ForbidExtra):
         Python keywords, or Python builtins. The maximum length is 64 chars.
         """
     )
-    workflow: list[TaskInstance] = Field(
-        description="A list of task instances that define the workflow.",
+    workflow: list[
+        Annotated[
+            Union[
+                Annotated[TaskInstance, PydanticTag("instance")],
+                Annotated[TaskGroup, PydanticTag("group")],
+            ],
+            Discriminator(_group_or_instance),
+        ]
+    ] = Field(
+        description="A list of task groups and/or instances that define the workflow."
     )
 
     @property
+    def _workflow(self):
+        # todo: flatten groups
+        return self.workflow
+
+    @property
     def all_task_ids(self) -> dict[str, str]:
-        return {task_instance.name: task_instance.id for task_instance in self.workflow}
+        return {
+            task_instance.name: task_instance.id for task_instance in self._workflow
+        }
 
     @model_validator(mode="after")
     def check_task_ids_dont_collide_with_spec_id(self) -> "Spec":
@@ -407,7 +443,7 @@ class Spec(_ForbidExtra):
 
     @model_validator(mode="after")
     def check_all_task_id_deps_use_actual_ids_of_other_tasks(self) -> "Spec":
-        all_ids = [task_instance.id for task_instance in self.workflow]
+        all_ids = [task_instance.id for task_instance in self._workflow]
         for ti_id, deps in self.task_instance_dependencies.items():
             for d in deps:
                 if d not in all_ids:
@@ -426,7 +462,7 @@ class Spec(_ForbidExtra):
                 for d in task_instance.all_dependencies
                 if isinstance(d, TaskIdVariable)
             ]
-            for task_instance in self.workflow
+            for task_instance in self._workflow
         }
 
     @model_validator(mode="after")
@@ -436,9 +472,9 @@ class Spec(_ForbidExtra):
             seen_task_instance_ids.add(task_instance_id)
             for dep_id in deps:
                 if dep_id not in seen_task_instance_ids:
-                    dep_name = next(ti.name for ti in self.workflow if ti.id == dep_id)
+                    dep_name = next(ti.name for ti in self._workflow if ti.id == dep_id)
                     task_instance_name = next(
-                        ti.name for ti in self.workflow if ti.id == task_instance_id
+                        ti.name for ti in self._workflow if ti.id == task_instance_id
                     )
                     raise ValueError(
                         f"Task instances are not in topological order. "
