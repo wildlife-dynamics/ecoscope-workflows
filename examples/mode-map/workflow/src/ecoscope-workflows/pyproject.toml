@@ -1,19 +1,11 @@
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
 name = "ecoscope-workflows"
-dynamic = ["version"]
+version = "9999"
 requires-python = ">=3.10"
 license = "BSD-3-Clause"
-
-[project.scripts]
-ecoscope-workflows = "ecoscope_workflows.__main__:main"
-
-[project.entry-points."ecoscope_workflows"]
-tasks = "ecoscope_workflows.tasks"
-
-[tool.hatch]
-version = { source = "vcs", fallback-version = "9999" }
-build.hooks.vcs.version-file = "ecoscope_workflows/_version.py"
+scripts = { ecoscope-workflows = "ecoscope_workflows.__main__:main" }
+entry-points = { tasks = "ecoscope_workflows.tasks" }
