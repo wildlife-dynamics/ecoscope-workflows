@@ -1,5 +1,6 @@
 [build-system]
-requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
 [project]
 name = "ecoscope-workflows"
@@ -30,17 +31,10 @@ tasks = "ecoscope_workflows.tasks"  # for extensions, this could be "my_custom_t
 Homepage = "https://github.com/wildlife-dynamics/ecoscope-workflows"
 Tracker = "https://github.com/wildlife-dynamics/ecoscope-workflows/issues"
 
-[tool.setuptools_scm]
-fallback_version = "9999"
-write_to = "ecoscope_workflows/_version.py"
-write_to_template = "__version__ = '{version}'"
-
-[tool.setuptools.packages.find]
-exclude = ["vendor"]
-namespaces = false
-
-[tool.setuptools.package-data]
-ecoscope_workflows = ["tasks/**/*.parquet", "templates/*.jinja", "templates/*.jinja2"]
+[tool.hatch]
+version.source = "vcs"
+build.hooks.vcs.version-file = "ecoscope_workflows/_version.py"
+build.hooks.vcs.fallback-version = "9999"
 
 [tool.mypy]
 plugins = ["pandera.mypy", "pydantic.mypy"]
