@@ -5073,7 +5073,7 @@ packages:
   name: ecoscope-workflows
   version: '9999'
   path: ./src/ecoscope-workflows
-  sha256: 545220b59f85b9b01387182f9a698a0ec33f2ba6b94129bc50b5aafb5815d370
+  sha256: f432fb5ba26267fd1e12aa9c07329f5f482980b3ecbecf6c7426a6c597666851
   requires_python: '>=3.10'
   editable: true
 - kind: conda

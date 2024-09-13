@@ -32,9 +32,8 @@ Homepage = "https://github.com/wildlife-dynamics/ecoscope-workflows"
 Tracker = "https://github.com/wildlife-dynamics/ecoscope-workflows/issues"
 
 [tool.hatch]
-version.source = "vcs"
+version = { source = "vcs", fallback-version = "9999" }
 build.hooks.vcs.version-file = "ecoscope_workflows/_version.py"
-build.hooks.vcs.fallback-version = "9999"
 
 [tool.mypy]
 plugins = ["pandera.mypy", "pydantic.mypy"]
