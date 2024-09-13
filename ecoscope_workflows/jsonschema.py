@@ -104,6 +104,6 @@ class ReactJSONSchemaFormFilters(BaseModel):
 
 
 class ReactJSONSchemaFormConfiguration(BaseModel):
-    title: str = "Ecoscope Workflow Configurations Form"
+    title: str
     properties: dict[str, Any]
     definitions: dict[str, Any] | None = Field(alias="$defs", default=None)

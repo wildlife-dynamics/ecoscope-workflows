@@ -545,20 +545,46 @@ class DagCompiler(BaseModel):
         }
 
     def get_params_jsonschema(self) -> dict[str, Any]:
-        properties = {
-            t.name: t.known_task.parameters_jsonschema(
-                omit_args=self.per_taskinstance_omit_args.get(t.id, []),
-            )
-            for t in self.spec.flat_workflow
-        }
+        def _props_and_defs_from_task_instance(
+            t: TaskInstance,
+            omit_args: list[str],
+        ) -> tuple[dict, dict]:
+            props = {t.name: t.known_task.parameters_jsonschema(omit_args=omit_args)}
+            defs = {}
+            for _, schema in props.items():
+                if "$defs" in schema:
+                    defs.update(schema["$defs"])
+                    del schema["$defs"]
+            return props, defs
 
-        definitions = {}
-        for _, schema in properties.items():
-            if "$defs" in schema:
-                definitions.update(schema["$defs"])
-                del schema["$defs"]
+        properties: dict[str, Any] = {}
+        definitions: dict[str, Any] = {}
+        for group_or_instance in self.spec.workflow:
+            match group_or_instance:
+                case TaskGroup(
+                    title=title, description=description, tasks=task_instances
+                ):
+                    grouped_props: dict[str, str | dict] = {
+                        "type": "object",
+                        "description": description,
+                        "properties": {},
+                    }
+                    for t in task_instances:
+                        omit_args = self.per_taskinstance_omit_args.get(t.id, [])
+                        props, defs = _props_and_defs_from_task_instance(t, omit_args)
+                        grouped_props["properties"] |= props  # type: ignore[operator]
+                        definitions |= defs
+                    properties[title] = grouped_props
+                case TaskInstance() as t:
+                    omit_args = self.per_taskinstance_omit_args.get(t.id, [])
+                    props, defs = _props_and_defs_from_task_instance(t, omit_args)
+                    properties |= props
+                    definitions |= defs
 
-        react_json_schema_form = ReactJSONSchemaFormConfiguration(properties=properties)
+        react_json_schema_form = ReactJSONSchemaFormConfiguration(
+            title="Ecoscope Workflow Configurations Form",  # TODO: add title based on spec.id (or tbd spec.name)
+            properties=properties,
+        )
         react_json_schema_form.definitions = definitions
         return react_json_schema_form.model_dump(by_alias=True)
 
