@@ -1,7 +1,7 @@
 {
     "title": "Ecoscope Workflow Configurations Form",
     "properties": {
-        "Get Patrol Events from EarthRanger": {
+        "patrol_events": {
             "additionalProperties": false,
             "properties": {
                 "client": {
@@ -43,9 +43,10 @@
                 "patrol_type",
                 "status"
             ],
-            "type": "object"
+            "type": "object",
+            "title": "Get Patrol Events from EarthRanger"
         },
-        "Set Groupers": {
+        "groupers": {
             "additionalProperties": false,
             "properties": {
                 "groupers": {
@@ -60,15 +61,17 @@
             "required": [
                 "groupers"
             ],
-            "type": "object"
+            "type": "object",
+            "title": "Set Groupers"
         },
-        "Split Observations": {
+        "split_obs": {
             "additionalProperties": false,
             "properties": {},
             "required": [],
-            "type": "object"
+            "type": "object",
+            "title": "Split Observations"
         },
-        "Create Map Layer For Each Group": {
+        "map_layers": {
             "additionalProperties": false,
             "properties": {
                 "layer_style": {
@@ -100,9 +103,10 @@
             "required": [
                 "layer_style"
             ],
-            "type": "object"
+            "type": "object",
+            "title": "Create Map Layer For Each Group"
         },
-        "Create EcoMap For Each Group": {
+        "ecomaps": {
             "additionalProperties": false,
             "properties": {
                 "tile_layer": {
@@ -152,9 +156,10 @@
                 }
             },
             "required": [],
-            "type": "object"
+            "type": "object",
+            "title": "Create EcoMap For Each Group"
         },
-        "Persist EcoMaps": {
+        "ecomaps_persist": {
             "additionalProperties": false,
             "properties": {
                 "filename": {
@@ -165,9 +170,10 @@
                 }
             },
             "required": [],
-            "type": "object"
+            "type": "object",
+            "title": "Persist EcoMaps"
         },
-        "Create EcoMap Widgets": {
+        "ecomap_widgets": {
             "additionalProperties": false,
             "properties": {
                 "title": {
@@ -179,15 +185,17 @@
             "required": [
                 "title"
             ],
-            "type": "object"
+            "type": "object",
+            "title": "Create EcoMap Widgets"
         },
-        "Merge EcoMap Widget Views": {
+        "ecomap_widgets_merged": {
             "additionalProperties": false,
             "properties": {},
             "required": [],
-            "type": "object"
+            "type": "object",
+            "title": "Merge EcoMap Widget Views"
         },
-        "Create EcoMap Dashboard": {
+        "dashboard": {
             "additionalProperties": false,
             "properties": {
                 "title": {
@@ -205,7 +213,8 @@
                 "title",
                 "description"
             ],
-            "type": "object"
+            "type": "object",
+            "title": "Create EcoMap Dashboard"
         }
     },
     "$defs": {
@@ -809,15 +818,15 @@
     },
     "uiSchema": {
         "ui:order": [
-            "Get Patrol Events from EarthRanger",
-            "Set Groupers",
-            "Split Observations",
-            "Create Map Layer For Each Group",
-            "Create EcoMap For Each Group",
-            "Persist EcoMaps",
-            "Create EcoMap Widgets",
-            "Merge EcoMap Widget Views",
-            "Create EcoMap Dashboard"
+            "patrol_events",
+            "groupers",
+            "split_obs",
+            "map_layers",
+            "ecomaps",
+            "ecomaps_persist",
+            "ecomap_widgets",
+            "ecomap_widgets_merged",
+            "dashboard"
         ]
     }
 }
