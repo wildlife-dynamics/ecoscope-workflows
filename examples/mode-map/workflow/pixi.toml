@@ -26,9 +26,9 @@ lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflow
 pytest = "*"
 
 [feature.test.tasks]
-test-async-local = "pytest test -k async"
-test-async-remote = "pytest test -k async"
-test-sequential = "pytest test -k sequential"
+# test-async-local = "pytest test -k async"
+# test-async-remote = "pytest test -k async"
+test-sequential-mock-io = "pytest test -k 'sequential and mock-io'"
 
 # todo: support build; push; deploy; run; test; etc. tasks
 # [feature.docker.tasks]

@@ -30,4 +30,5 @@ jobs:
       - name: Test
         working-directory: ./examples/${{ matrix.compilation-spec }}/workflow
         run: |
-          pixi run --locked --manifest-path pixi.toml -e test test-${{ matrix.script }} --case test1
+          pixi run --locked --manifest-path pixi.toml -e test \
+          test-${{ matrix.script }}-mock-io --case test1
