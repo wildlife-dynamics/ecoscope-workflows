@@ -8,4 +8,4 @@ version = "9999"
 requires-python = ">=3.10"
 license = "BSD-3-Clause"
 scripts = { ecoscope-workflows = "ecoscope_workflows.__main__:main" }
-entry-points = { tasks = "ecoscope_workflows.tasks" }
+entry-points."ecoscope_workflows" = { tasks = "ecoscope_workflows.tasks" }
