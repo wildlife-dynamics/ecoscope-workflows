@@ -125,6 +125,13 @@
                     ],
                     "type": "object"
                 }
+            },
+            "uiSchema": {
+                "ui:order": [
+                    "Get Observations A",
+                    "Get Observations B",
+                    "Get Observations C"
+                ]
             }
         },
         "Create maps": {
@@ -230,6 +237,13 @@
                     "required": [],
                     "type": "object"
                 }
+            },
+            "uiSchema": {
+                "ui:order": [
+                    "Create Map Layer For Each Group",
+                    "Create EcoMap For Each Group",
+                    "Persist Ecomaps as Text"
+                ]
             }
         }
     },
@@ -677,5 +691,11 @@
             "title": "NorthArrowStyle",
             "type": "object"
         }
+    },
+    "uiSchema": {
+        "ui:order": [
+            "Data Sources",
+            "Create maps"
+        ]
     }
 }

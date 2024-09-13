@@ -574,6 +574,9 @@ class DagCompiler(BaseModel):
                         props, defs = _props_and_defs_from_task_instance(t, omit_args)
                         grouped_props["properties"] |= props  # type: ignore[operator]
                         definitions |= defs
+                    grouped_props["uiSchema"] = {
+                        "ui:order": [prop for prop in grouped_props["properties"]]
+                    }
                     properties[title] = grouped_props
                 case TaskInstance() as t:
                     omit_args = self.per_taskinstance_omit_args.get(t.id, [])

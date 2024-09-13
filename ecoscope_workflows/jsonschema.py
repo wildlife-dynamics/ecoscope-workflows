@@ -1,7 +1,7 @@
 from inspect import signature
 from typing import Any, Literal, get_args
 
-from pydantic import BaseModel, model_serializer, Field
+from pydantic import BaseModel, computed_field, model_serializer, Field
 from pydantic.fields import FieldInfo
 from pydantic.json_schema import GenerateJsonSchema
 
@@ -107,3 +107,7 @@ class ReactJSONSchemaFormConfiguration(BaseModel):
     title: str
     properties: dict[str, Any]
     definitions: dict[str, Any] | None = Field(alias="$defs", default=None)
+
+    @computed_field
+    def uiSchema(self) -> dict[str, list[str]]:
+        return {"ui:order": [prop for prop in self.properties]}
