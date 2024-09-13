@@ -1645,5 +1645,41 @@
             "title": "GroupedWidget",
             "type": "object"
         }
+    },
+    "uiSchema": {
+        "ui:order": [
+            "Set Groupers",
+            "Get Patrol Events from EarthRanger",
+            "Apply Relocation Coordinate Filter",
+            "Add temporal index to Patrol Events",
+            "Patrol Events Colormap",
+            "Create map layer from Patrol Events",
+            "Draw Ecomap from Time Density",
+            "Persist Ecomap as Text",
+            "Create Time Density Map Widget",
+            "Draw Time Series Bar Chart for Patrols Events",
+            "Persist Patrols Bar Chart as Text",
+            "Create Plot Widget for Patrol Events",
+            "Create Patrol Events Meshgrid",
+            "Patrol Events Feature Density",
+            "Feature Density Colormap",
+            "Create map layer from Feature Density",
+            "Draw Ecomap from Feature Density",
+            "Persist Feature Density Ecomap as Text",
+            "Create Feature Density Map Widget",
+            "Split Patrol Events by Group",
+            "Create map layer from grouped Patrol Events",
+            "Draw Ecomap from grouped Patrol Events",
+            "Persist grouped Patrol Events Ecomap as Text",
+            "Create grouped Patrol Events Map Widget",
+            "Merge Patrol Events Map Widget Views",
+            "Draw Pie Chart for Patrols Events",
+            "Persist Patrols Pie Chart as Text",
+            "Merge Pie Chart Widget Views",
+            "Grouped Patrol Events Feature Density",
+            "Grouped Feature Density Colormap",
+            "Merge Feature Density Widget Views",
+            "Create Dashboard with Patrol Map Widgets"
+        ]
     }
 }

@@ -806,5 +806,18 @@
             "title": "GroupedWidget",
             "type": "object"
         }
+    },
+    "uiSchema": {
+        "ui:order": [
+            "Get Patrol Events from EarthRanger",
+            "Set Groupers",
+            "Split Observations",
+            "Create Map Layer For Each Group",
+            "Create EcoMap For Each Group",
+            "Persist EcoMaps",
+            "Create EcoMap Widgets",
+            "Merge EcoMap Widget Views",
+            "Create EcoMap Dashboard"
+        ]
     }
 }

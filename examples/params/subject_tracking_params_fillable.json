@@ -1236,5 +1236,39 @@
             "title": "GroupedWidget",
             "type": "object"
         }
+    },
+    "uiSchema": {
+        "ui:order": [
+            "Set Groupers",
+            "Get Subject Group Observations from EarthRanger",
+            "Transform Observations to Relocations",
+            "Transform Relocations to Trajectories",
+            "Add temporal index to Subject Trajectories",
+            "Split Subject Trajectories by Group",
+            "Create map layer for each trajectory group",
+            "Draw Ecomaps for each trajectory group",
+            "Persist ecomap as Text",
+            "Create Map Widgets for Trajectories",
+            "Merge EcoMap Widget Views",
+            "Calculate Mean Speed Per Group",
+            "Create Single Value Widgets for Mean Speed Per Group",
+            "Merge per group Mean Speed SV widgets",
+            "Calculate Max Speed Per Group",
+            "Create Single Value Widgets for Max Speed Per Group",
+            "Merge per group Max Speed SV widgets",
+            "Calculate Number of Locations Per Group",
+            "Create Single Value Widgets for Number of Location Per Group",
+            "Merge per group Number of Locations SV widgets",
+            "Calculate Day/Night Ratio Per Group",
+            "Create Single Value Widgets for Day/Night Ratio Per Group",
+            "Merge per group Day/Night Ratio SV widgets",
+            "Calculate Time Density from Trajectory",
+            "Create map layer from Time Density",
+            "Draw Ecomap from Time Density",
+            "Persist Ecomap as Text",
+            "Create Time Density Map Widget",
+            "Merge Time Density Map Widget Views",
+            "Create Dashboard with Subject Tracking Widgets"
+        ]
     }
 }
