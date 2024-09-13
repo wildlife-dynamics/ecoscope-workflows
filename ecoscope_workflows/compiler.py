@@ -549,9 +549,10 @@ class DagCompiler(BaseModel):
             t: TaskInstance,
             omit_args: list[str],
         ) -> tuple[dict, dict]:
-            props = {t.name: t.known_task.parameters_jsonschema(omit_args=omit_args)}
+            props = {t.id: t.known_task.parameters_jsonschema(omit_args=omit_args)}
             defs = {}
             for _, schema in props.items():
+                schema["title"] = t.name
                 if "$defs" in schema:
                     defs.update(schema["$defs"])
                     del schema["$defs"]
