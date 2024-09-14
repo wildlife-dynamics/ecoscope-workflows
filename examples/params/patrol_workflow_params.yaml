@@ -258,6 +258,7 @@ td_map_layer:
     layer_type: "polygon"
     fill_color_column: "percentile_colormap"
     opacity: 0.7
+    get_line_width: 0
 
 # Parameters for 'Draw Ecomap from Time Density' using task `draw_ecomap`.
 td_ecomap:
