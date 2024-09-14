@@ -1,16 +1,16 @@
 # Parameters for 'Set Groupers' using task `set_groupers`.
 groupers:
   groupers: # (list[ecoscope_workflows.tasks.groupby._groupby.Grouper], FieldInfo(annotation=NoneType, required=True, description='            Index(es) and/or column(s) to group by, along with\n            optional display names and help text.\n            '))
-    - index_name: "month"
-      display_name: "Month"
-      help_text: "The month in which the patrol began or the event was updated."
+    - index_name: "year"
+      display_name: "Year"
+      help_text: "The year."
 
 # Parameters for 'Get Subject Group Observations from EarthRanger' using task `get_subjectgroup_observations`.
 subject_obs:
   client: "mep_dev" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
-  subject_group_name: "Elephants" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of EarthRanger Subject'))
-  since: "2011-01-01" # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
-  until: "2023-01-01" # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
+  subject_group_name: "Salif" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of EarthRanger Subject'))
+  since: "2008-01-01" # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
+  until: "2011-10-01" # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
   include_inactive: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether or not to include inactive subjects'))
 
 # Parameters for 'Transform Observations to Relocations' using task `process_relocations`.
@@ -26,16 +26,16 @@ subject_reloc:
 subject_traj:
   min_length_meters: 0.001 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
   max_length_meters: 10000 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
-  max_time_secs: 3600 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
+  max_time_secs: 21600 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
   min_time_secs: 1 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
-  max_speed_kmhr: 120 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
+  max_speed_kmhr: 10 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
   min_speed_kmhr: 0.0 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
 
 # Parameters for 'Add temporal index to Subject Trajectories' using task `add_temporal_index`.
 traj_add_temporal_index:
-  index_name: "month" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A name for the new index which will be added.'))
+  index_name: "year" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A name for the new index which will be added.'))
   time_col: "segment_start" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of existing column containing time data.'))
-  directive: "%B" # (typing.Literal['%a', '%A', '%b', '%B', '%c', '%d', '%f', '%H', '%I', '%j', '%m', '%M', '%p', '%S', '%U', '%w', '%W', '%x', '%X', '%y', '%Y', '%z', '%%'], FieldInfo(annotation=NoneType, required=True, description='A directive for formatting the time data.'))
+  directive: "%Y" # (typing.Literal['%a', '%A', '%b', '%B', '%c', '%d', '%f', '%H', '%I', '%j', '%m', '%M', '%p', '%S', '%U', '%w', '%W', '%x', '%X', '%y', '%Y', '%z', '%%'], FieldInfo(annotation=NoneType, required=True, description='A directive for formatting the time data.'))
 
 # Parameters for 'Split Subject Trajectories by Group' using task `split_groups`.
 split_subject_traj_groups: {}
@@ -49,7 +49,7 @@ traj_map_layers:
 traj_ecomap:
   tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
   static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
-  title: "Subject Group Trajectory Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
+  # title: "Subject Group Trajectory Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist ecomap as Text' using task `persist_text`.
 ecomap_html_urls: {}
@@ -122,7 +122,7 @@ td_map_layer:
 td_ecomap:
   tile_layer: OpenStreetMap # (str, FieldInfo(annotation=NoneType, required=False))
   static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
-  title: "Great Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
+  # title: "Great Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
 
 # Parameters for 'Persist Ecomap as Text' using task `persist_text`.
 td_ecomap_html_url: {}
