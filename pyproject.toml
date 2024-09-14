@@ -35,6 +35,11 @@ Tracker = "https://github.com/wildlife-dynamics/ecoscope-workflows/issues"
 version = { source = "vcs", fallback-version = "9999" }
 build.hooks.vcs.version-file = "ecoscope_workflows/_version.py"
 
+[tool.hatch.build.hooks.custom]  # presence of this table signals hatch to run our custom `hatch_build.py`
+
+[tool.ecoscope-workflows]
+register-pixi-features = ["ecoscope-core"]
+
 [tool.mypy]
 plugins = ["pandera.mypy", "pydantic.mypy"]
 

@@ -1,5 +1,8 @@
 .DS_Store
 
+# custom build hook / feature registry logic
+ecoscope_workflows/_registry.py
+
 # pixi
 .pixi
 
