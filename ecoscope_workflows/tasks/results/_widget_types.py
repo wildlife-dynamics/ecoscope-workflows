@@ -1,17 +1,16 @@
-from typing import TypeAlias, Literal
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal, TypeAlias
 
 from pydantic_core import Url
 
 from ecoscope_workflows.indexes import CompositeFilter
 
-
 WidgetTypes = Literal["plot", "map", "text", "single_value"]
 
 PrecomputedHTMLWidgetData: TypeAlias = Path | Url
 TextWidgetData: TypeAlias = str
-SingleValueWidgetData: TypeAlias = int | float
+SingleValueWidgetData: TypeAlias = int | float | str
 
 WidgetData: TypeAlias = (
     PrecomputedHTMLWidgetData | TextWidgetData | SingleValueWidgetData
