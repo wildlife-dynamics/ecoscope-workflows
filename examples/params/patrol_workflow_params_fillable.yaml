@@ -110,10 +110,11 @@ total_patrols_grouped_sv_widget:
 total_patrol_time:
   column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Column to aggregate'))
 
-# Parameters for 'Convert total patrol time units' using task `apply_arithmetic_operation`.
+# Parameters for 'Convert total patrol time units' using task `unit_convert`.
 total_patrol_time_converted:
-  b:   # (float | int, FieldInfo(annotation=NoneType, required=True, description='The second number'))
-  operation:   # (typing.Literal['add', 'subtract', 'multiply', 'divide', 'floor_divide', 'modulo', 'power'], FieldInfo(annotation=NoneType, required=True, description='The arithmetic operation to apply'))
+  original_unit:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The column name to explode.'))
+  new_unit:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The column name to explode.'))
+  decimal_places:   # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='The column name to explode.'))
 
 # Parameters for 'Create Single Value Widgets for Total Patrol Time Per Group' using task `create_single_value_widget_single_view`.
 total_patrol_time_sv_widgets:
@@ -126,10 +127,11 @@ patrol_time_grouped_widget:
 total_patrol_dist:
   column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Column to aggregate'))
 
-# Parameters for 'Convert total patrol distance units' using task `apply_arithmetic_operation`.
+# Parameters for 'Convert total patrol distance units' using task `unit_convert`.
 total_patrol_dist_converted:
-  b:   # (float | int, FieldInfo(annotation=NoneType, required=True, description='The second number'))
-  operation:   # (typing.Literal['add', 'subtract', 'multiply', 'divide', 'floor_divide', 'modulo', 'power'], FieldInfo(annotation=NoneType, required=True, description='The arithmetic operation to apply'))
+  original_unit:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The column name to explode.'))
+  new_unit:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The column name to explode.'))
+  decimal_places:   # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='The column name to explode.'))
 
 # Parameters for 'Create Single Value Widgets for Total Distance Per Group' using task `create_single_value_widget_single_view`.
 total_patrol_dist_sv_widgets:
@@ -142,6 +144,12 @@ patrol_dist_grouped_widget:
 avg_speed:
   column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Column to aggregate'))
 
+# Parameters for 'Convert Average Speed units' using task `unit_convert`.
+average_speed_converted:
+  original_unit:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The column name to explode.'))
+  new_unit:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The column name to explode.'))
+  decimal_places:   # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='The column name to explode.'))
+
 # Parameters for 'Create Single Value Widgets for Avg Speed Per Group' using task `create_single_value_widget_single_view`.
 avg_speed_sv_widgets:
   title:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
@@ -152,6 +160,12 @@ avg_speed_grouped_widget:
 # Parameters for 'Calculate Max Speed Per Group' using task `dataframe_column_max`.
 max_speed:
   column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Column to aggregate'))
+
+# Parameters for 'Convert Max Speed units' using task `unit_convert`.
+max_speed_converted:
+  original_unit:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The column name to explode.'))
+  new_unit:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The column name to explode.'))
+  decimal_places:   # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='The column name to explode.'))
 
 # Parameters for 'Create Single Value Widgets for Max Speed Per Group' using task `create_single_value_widget_single_view`.
 max_speed_sv_widgets:

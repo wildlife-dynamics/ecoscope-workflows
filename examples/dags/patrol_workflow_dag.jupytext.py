@@ -25,7 +25,7 @@ from ecoscope_workflows.tasks.results import merge_widget_views
 from ecoscope_workflows.tasks.analysis import dataframe_column_nunique
 from ecoscope_workflows.tasks.results import create_single_value_widget_single_view
 from ecoscope_workflows.tasks.analysis import dataframe_column_sum
-from ecoscope_workflows.tasks.analysis import apply_arithmetic_operation
+from ecoscope_workflows.tasks.transformation import unit_convert
 from ecoscope_workflows.tasks.analysis import dataframe_column_mean
 from ecoscope_workflows.tasks.analysis import dataframe_column_max
 from ecoscope_workflows.tasks.results import draw_time_series_bar_chart
@@ -459,17 +459,18 @@ total_patrol_time = dataframe_column_sum.partial(**total_patrol_time_params).map
 # parameters
 
 total_patrol_time_converted_params = dict(
-    b=...,
-    operation=...,
+    original_unit=...,
+    new_unit=...,
+    decimal_places=...,
 )
 
 # %%
 # call the task
 
 
-total_patrol_time_converted = apply_arithmetic_operation.partial(
+total_patrol_time_converted = unit_convert.partial(
     **total_patrol_time_converted_params
-).mapvalues(argnames=["a"], argvalues=total_patrol_time)
+).mapvalues(argnames=["number"], argvalues=total_patrol_time)
 
 
 # %% [markdown]
@@ -534,17 +535,18 @@ total_patrol_dist = dataframe_column_sum.partial(**total_patrol_dist_params).map
 # parameters
 
 total_patrol_dist_converted_params = dict(
-    b=...,
-    operation=...,
+    original_unit=...,
+    new_unit=...,
+    decimal_places=...,
 )
 
 # %%
 # call the task
 
 
-total_patrol_dist_converted = apply_arithmetic_operation.partial(
+total_patrol_dist_converted = unit_convert.partial(
     **total_patrol_dist_converted_params
-).mapvalues(argnames=["a"], argvalues=total_patrol_dist)
+).mapvalues(argnames=["number"], argvalues=total_patrol_dist)
 
 
 # %% [markdown]
@@ -603,6 +605,27 @@ avg_speed = dataframe_column_mean.partial(**avg_speed_params).mapvalues(
 
 
 # %% [markdown]
+# ## Convert Average Speed units
+
+# %%
+# parameters
+
+average_speed_converted_params = dict(
+    original_unit=...,
+    new_unit=...,
+    decimal_places=...,
+)
+
+# %%
+# call the task
+
+
+average_speed_converted = unit_convert.partial(
+    **average_speed_converted_params
+).mapvalues(argnames=["number"], argvalues=avg_speed)
+
+
+# %% [markdown]
 # ## Create Single Value Widgets for Avg Speed Per Group
 
 # %%
@@ -618,7 +641,7 @@ avg_speed_sv_widgets_params = dict(
 
 avg_speed_sv_widgets = create_single_value_widget_single_view.partial(
     **avg_speed_sv_widgets_params
-).map(argnames=["view", "data"], argvalues=avg_speed)
+).map(argnames=["view", "data"], argvalues=average_speed_converted)
 
 
 # %% [markdown]
@@ -658,6 +681,27 @@ max_speed = dataframe_column_max.partial(**max_speed_params).mapvalues(
 
 
 # %% [markdown]
+# ## Convert Max Speed units
+
+# %%
+# parameters
+
+max_speed_converted_params = dict(
+    original_unit=...,
+    new_unit=...,
+    decimal_places=...,
+)
+
+# %%
+# call the task
+
+
+max_speed_converted = unit_convert.partial(**max_speed_converted_params).mapvalues(
+    argnames=["number"], argvalues=max_speed
+)
+
+
+# %% [markdown]
 # ## Create Single Value Widgets for Max Speed Per Group
 
 # %%
@@ -673,7 +717,7 @@ max_speed_sv_widgets_params = dict(
 
 max_speed_sv_widgets = create_single_value_widget_single_view.partial(
     **max_speed_sv_widgets_params
-).map(argnames=["view", "data"], argvalues=max_speed)
+).map(argnames=["view", "data"], argvalues=max_speed_converted)
 
 
 # %% [markdown]

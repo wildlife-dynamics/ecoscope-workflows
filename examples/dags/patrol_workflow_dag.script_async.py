@@ -21,7 +21,7 @@ from ecoscope_workflows.tasks.results import merge_widget_views
 from ecoscope_workflows.tasks.analysis import dataframe_column_nunique
 from ecoscope_workflows.tasks.results import create_single_value_widget_single_view
 from ecoscope_workflows.tasks.analysis import dataframe_column_sum
-from ecoscope_workflows.tasks.analysis import apply_arithmetic_operation
+from ecoscope_workflows.tasks.transformation import unit_convert
 from ecoscope_workflows.tasks.analysis import dataframe_column_mean
 from ecoscope_workflows.tasks.analysis import dataframe_column_max
 from ecoscope_workflows.tasks.results import draw_time_series_bar_chart
@@ -75,10 +75,12 @@ if __name__ == "__main__":
         "total_patrol_dist_sv_widgets": ["total_patrol_dist_converted"],
         "patrol_dist_grouped_widget": ["total_patrol_dist_sv_widgets"],
         "avg_speed": ["split_patrol_traj_groups"],
-        "avg_speed_sv_widgets": ["avg_speed"],
+        "average_speed_converted": ["avg_speed"],
+        "avg_speed_sv_widgets": ["average_speed_converted"],
         "avg_speed_grouped_widget": ["avg_speed_sv_widgets"],
         "max_speed": ["split_patrol_traj_groups"],
-        "max_speed_sv_widgets": ["max_speed"],
+        "max_speed_converted": ["max_speed"],
+        "max_speed_sv_widgets": ["max_speed_converted"],
         "max_speed_grouped_widget": ["max_speed_sv_widgets"],
         "patrol_events_bar_chart": ["filter_patrol_events"],
         "patrol_events_bar_chart_html_url": ["patrol_events_bar_chart"],
@@ -287,11 +289,11 @@ if __name__ == "__main__":
             },
         ),
         "total_patrol_time_converted": Node(
-            async_task=apply_arithmetic_operation.validate().set_executor("lithops"),
+            async_task=unit_convert.validate().set_executor("lithops"),
             partial=params["total_patrol_time_converted"],
             method="mapvalues",
             kwargs={
-                "argnames": ["a"],
+                "argnames": ["number"],
                 "argvalues": DependsOn("total_patrol_time"),
             },
         ),
@@ -324,11 +326,11 @@ if __name__ == "__main__":
             },
         ),
         "total_patrol_dist_converted": Node(
-            async_task=apply_arithmetic_operation.validate().set_executor("lithops"),
+            async_task=unit_convert.validate().set_executor("lithops"),
             partial=params["total_patrol_dist_converted"],
             method="mapvalues",
             kwargs={
-                "argnames": ["a"],
+                "argnames": ["number"],
                 "argvalues": DependsOn("total_patrol_dist"),
             },
         ),
@@ -360,6 +362,15 @@ if __name__ == "__main__":
                 "argvalues": DependsOn("split_patrol_traj_groups"),
             },
         ),
+        "average_speed_converted": Node(
+            async_task=unit_convert.validate().set_executor("lithops"),
+            partial=params["average_speed_converted"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["number"],
+                "argvalues": DependsOn("avg_speed"),
+            },
+        ),
         "avg_speed_sv_widgets": Node(
             async_task=create_single_value_widget_single_view.validate().set_executor(
                 "lithops"
@@ -368,7 +379,7 @@ if __name__ == "__main__":
             method="map",
             kwargs={
                 "argnames": ["view", "data"],
-                "argvalues": DependsOn("avg_speed"),
+                "argvalues": DependsOn("average_speed_converted"),
             },
         ),
         "avg_speed_grouped_widget": Node(
@@ -388,6 +399,15 @@ if __name__ == "__main__":
                 "argvalues": DependsOn("split_patrol_traj_groups"),
             },
         ),
+        "max_speed_converted": Node(
+            async_task=unit_convert.validate().set_executor("lithops"),
+            partial=params["max_speed_converted"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["number"],
+                "argvalues": DependsOn("max_speed"),
+            },
+        ),
         "max_speed_sv_widgets": Node(
             async_task=create_single_value_widget_single_view.validate().set_executor(
                 "lithops"
@@ -396,7 +416,7 @@ if __name__ == "__main__":
             method="map",
             kwargs={
                 "argnames": ["view", "data"],
-                "argvalues": DependsOn("max_speed"),
+                "argvalues": DependsOn("max_speed_converted"),
             },
         ),
         "max_speed_grouped_widget": Node(

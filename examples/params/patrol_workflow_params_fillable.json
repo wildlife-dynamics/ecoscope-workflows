@@ -567,36 +567,26 @@
         "Convert total patrol time units": {
             "additionalProperties": false,
             "properties": {
-                "b": {
-                    "anyOf": [
-                        {
-                            "type": "number"
-                        },
-                        {
-                            "type": "integer"
-                        }
-                    ],
-                    "title": "B",
-                    "description": "The second number"
-                },
-                "operation": {
-                    "enum": [
-                        "add",
-                        "subtract",
-                        "multiply",
-                        "divide",
-                        "floor_divide",
-                        "modulo",
-                        "power"
-                    ],
-                    "title": "Operation",
+                "original_unit": {
+                    "title": "Original Unit",
                     "type": "string",
-                    "description": "The arithmetic operation to apply"
+                    "description": "The column name to explode."
+                },
+                "new_unit": {
+                    "title": "New Unit",
+                    "type": "string",
+                    "description": "The column name to explode."
+                },
+                "decimal_places": {
+                    "title": "Decimal Places",
+                    "type": "integer",
+                    "description": "The column name to explode."
                 }
             },
             "required": [
-                "b",
-                "operation"
+                "original_unit",
+                "new_unit",
+                "decimal_places"
             ],
             "type": "object"
         },
@@ -637,36 +627,26 @@
         "Convert total patrol distance units": {
             "additionalProperties": false,
             "properties": {
-                "b": {
-                    "anyOf": [
-                        {
-                            "type": "number"
-                        },
-                        {
-                            "type": "integer"
-                        }
-                    ],
-                    "title": "B",
-                    "description": "The second number"
-                },
-                "operation": {
-                    "enum": [
-                        "add",
-                        "subtract",
-                        "multiply",
-                        "divide",
-                        "floor_divide",
-                        "modulo",
-                        "power"
-                    ],
-                    "title": "Operation",
+                "original_unit": {
+                    "title": "Original Unit",
                     "type": "string",
-                    "description": "The arithmetic operation to apply"
+                    "description": "The column name to explode."
+                },
+                "new_unit": {
+                    "title": "New Unit",
+                    "type": "string",
+                    "description": "The column name to explode."
+                },
+                "decimal_places": {
+                    "title": "Decimal Places",
+                    "type": "integer",
+                    "description": "The column name to explode."
                 }
             },
             "required": [
-                "b",
-                "operation"
+                "original_unit",
+                "new_unit",
+                "decimal_places"
             ],
             "type": "object"
         },
@@ -704,6 +684,32 @@
             ],
             "type": "object"
         },
+        "Convert Average Speed units": {
+            "additionalProperties": false,
+            "properties": {
+                "original_unit": {
+                    "title": "Original Unit",
+                    "type": "string",
+                    "description": "The column name to explode."
+                },
+                "new_unit": {
+                    "title": "New Unit",
+                    "type": "string",
+                    "description": "The column name to explode."
+                },
+                "decimal_places": {
+                    "title": "Decimal Places",
+                    "type": "integer",
+                    "description": "The column name to explode."
+                }
+            },
+            "required": [
+                "original_unit",
+                "new_unit",
+                "decimal_places"
+            ],
+            "type": "object"
+        },
         "Create Single Value Widgets for Avg Speed Per Group": {
             "additionalProperties": false,
             "properties": {
@@ -735,6 +741,32 @@
             },
             "required": [
                 "column_name"
+            ],
+            "type": "object"
+        },
+        "Convert Max Speed units": {
+            "additionalProperties": false,
+            "properties": {
+                "original_unit": {
+                    "title": "Original Unit",
+                    "type": "string",
+                    "description": "The column name to explode."
+                },
+                "new_unit": {
+                    "title": "New Unit",
+                    "type": "string",
+                    "description": "The column name to explode."
+                },
+                "decimal_places": {
+                    "title": "Decimal Places",
+                    "type": "integer",
+                    "description": "The column name to explode."
+                }
+            },
+            "required": [
+                "original_unit",
+                "new_unit",
+                "decimal_places"
             ],
             "type": "object"
         },

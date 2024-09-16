@@ -19,7 +19,7 @@ from ecoscope_workflows.tasks.results import merge_widget_views
 from ecoscope_workflows.tasks.analysis import dataframe_column_nunique
 from ecoscope_workflows.tasks.results import create_single_value_widget_single_view
 from ecoscope_workflows.tasks.analysis import dataframe_column_sum
-from ecoscope_workflows.tasks.analysis import apply_arithmetic_operation
+from ecoscope_workflows.tasks.transformation import unit_convert
 from ecoscope_workflows.tasks.analysis import dataframe_column_mean
 from ecoscope_workflows.tasks.analysis import dataframe_column_max
 from ecoscope_workflows.tasks.results import draw_time_series_bar_chart
@@ -177,9 +177,9 @@ if __name__ == "__main__":
     )
 
     total_patrol_time_converted = (
-        apply_arithmetic_operation.validate()
+        unit_convert.validate()
         .partial(**params["total_patrol_time_converted"])
-        .mapvalues(argnames=["a"], argvalues=total_patrol_time)
+        .mapvalues(argnames=["number"], argvalues=total_patrol_time)
     )
 
     total_patrol_time_sv_widgets = (
@@ -203,9 +203,9 @@ if __name__ == "__main__":
     )
 
     total_patrol_dist_converted = (
-        apply_arithmetic_operation.validate()
+        unit_convert.validate()
         .partial(**params["total_patrol_dist_converted"])
-        .mapvalues(argnames=["a"], argvalues=total_patrol_dist)
+        .mapvalues(argnames=["number"], argvalues=total_patrol_dist)
     )
 
     total_patrol_dist_sv_widgets = (
@@ -228,10 +228,16 @@ if __name__ == "__main__":
         .mapvalues(argnames=["df"], argvalues=split_patrol_traj_groups)
     )
 
+    average_speed_converted = (
+        unit_convert.validate()
+        .partial(**params["average_speed_converted"])
+        .mapvalues(argnames=["number"], argvalues=avg_speed)
+    )
+
     avg_speed_sv_widgets = (
         create_single_value_widget_single_view.validate()
         .partial(**params["avg_speed_sv_widgets"])
-        .map(argnames=["view", "data"], argvalues=avg_speed)
+        .map(argnames=["view", "data"], argvalues=average_speed_converted)
     )
 
     avg_speed_grouped_widget = (
@@ -246,10 +252,16 @@ if __name__ == "__main__":
         .mapvalues(argnames=["df"], argvalues=split_patrol_traj_groups)
     )
 
+    max_speed_converted = (
+        unit_convert.validate()
+        .partial(**params["max_speed_converted"])
+        .mapvalues(argnames=["number"], argvalues=max_speed)
+    )
+
     max_speed_sv_widgets = (
         create_single_value_widget_single_view.validate()
         .partial(**params["max_speed_sv_widgets"])
-        .map(argnames=["view", "data"], argvalues=max_speed)
+        .map(argnames=["view", "data"], argvalues=max_speed_converted)
     )
 
     max_speed_grouped_widget = (
