@@ -5,8 +5,8 @@ import pytest
 from ecoscope_workflows.tasks.results import (
     create_map_widget_single_view,
     create_plot_widget_single_view,
-    create_text_widget_single_view,
     create_single_value_widget_single_view,
+    create_text_widget_single_view,
     merge_widget_views,
 )
 from ecoscope_workflows.tasks.results._widget_tasks import (
@@ -36,7 +36,7 @@ def test_create_plot_widget_single_view():
 
     widget = create_plot_widget_single_view(title, data, view)
     assert widget == WidgetSingleView(
-        widget_type="plot",
+        widget_type="graph",
         title=title,
         data=data,
         view=view,
@@ -64,7 +64,7 @@ def test_create_single_value_widget_single_view():
 
     widget = create_single_value_widget_single_view(title, data, view)
     assert widget == WidgetSingleView(
-        widget_type="single_value",
+        widget_type="stat",
         title=title,
         data=data,
         view=view,
@@ -185,13 +185,13 @@ def test_merge_grouped_widget_views_multiple_widgets():
         data="/path/to/precomputed/feb/map.html",
     )
     widget2_view1 = WidgetSingleView(
-        widget_type="plot",
+        widget_type="graph",
         title="Super Cool Plot",
         view=("month", "=", "january"),
         data="/path/to/precomputed/jan/plot.html",
     )
     widget2_view2 = WidgetSingleView(
-        widget_type="plot",
+        widget_type="graph",
         title="Super Cool Plot",
         view=("month", "=", "february"),
         data="/path/to/precomputed/feb/plot.html",
@@ -214,7 +214,7 @@ def test_merge_grouped_widget_views_multiple_widgets():
             },
         ),
         GroupedWidget(
-            widget_type="plot",
+            widget_type="graph",
             title="Super Cool Plot",
             views={
                 ("month", "=", "january"): "/path/to/precomputed/jan/plot.html",
@@ -279,7 +279,7 @@ def test_merge_grouped_widget_views_multiple_widgets_with_none_views():
         data="/path/to/precomputed/single/map.html",
     )
     widget3_only_view = WidgetSingleView(
-        widget_type="plot",
+        widget_type="graph",
         title="A plot with only one view and no groupers",
         view=None,
         data="/path/to/precomputed/single/plot.html",
@@ -309,7 +309,7 @@ def test_merge_grouped_widget_views_multiple_widgets_with_none_views():
             },
         ),
         GroupedWidget(
-            widget_type="plot",
+            widget_type="graph",
             title="A plot with only one view and no groupers",
             views={
                 None: "/path/to/precomputed/single/plot.html",

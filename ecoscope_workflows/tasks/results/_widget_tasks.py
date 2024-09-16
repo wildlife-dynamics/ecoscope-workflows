@@ -65,7 +65,7 @@ def create_plot_widget_single_view(
         The widget.
     """
     return WidgetSingleView(
-        widget_type="plot",
+        widget_type="graph",
         title=title,
         view=view,
         data=data,
@@ -119,7 +119,7 @@ def create_single_value_widget_single_view(
         The widget.
     """
     return WidgetSingleView(
-        widget_type="single_value",
+        widget_type="stat",
         title=title,
         view=view,
         data=data,
