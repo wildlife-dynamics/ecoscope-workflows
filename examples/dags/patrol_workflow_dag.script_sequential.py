@@ -11,6 +11,7 @@ from ecoscope_workflows.tasks.groupby import split_groups
 from ecoscope_workflows.tasks.results import create_map_layer
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
+from ecoscope_workflows.tasks.transformation import apply_color_map
 from ecoscope_workflows.tasks.groupby import groupbykey
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
@@ -96,11 +97,15 @@ if __name__ == "__main__":
         .call()
     )
 
+    pe_colormap = (
+        apply_color_map.validate()
+        .partial(df=pe_add_temporal_index, **params["pe_colormap"])
+        .call()
+    )
+
     split_pe_groups = (
         split_groups.validate()
-        .partial(
-            df=pe_add_temporal_index, groupers=groupers, **params["split_pe_groups"]
-        )
+        .partial(df=pe_colormap, groupers=groupers, **params["split_pe_groups"])
         .call()
     )
 
@@ -319,9 +324,13 @@ if __name__ == "__main__":
         .call()
     )
 
+    td_colormap = (
+        apply_color_map.validate().partial(df=td, **params["td_colormap"]).call()
+    )
+
     td_map_layer = (
         create_map_layer.validate()
-        .partial(geodataframe=td, **params["td_map_layer"])
+        .partial(geodataframe=td_colormap, **params["td_map_layer"])
         .call()
     )
 

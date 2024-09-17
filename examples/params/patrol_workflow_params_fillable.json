@@ -385,6 +385,42 @@
             ],
             "type": "object"
         },
+        "Patrol Events Colormap": {
+            "additionalProperties": false,
+            "properties": {
+                "input_column_name": {
+                    "title": "Input Column Name",
+                    "type": "string",
+                    "description": "The name of the column with categorical values."
+                },
+                "colormap": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    ],
+                    "default": "viridis",
+                    "title": "Colormap",
+                    "description": "Either a named mpl.colormap or a list of string hex values."
+                },
+                "output_column_name": {
+                    "default": null,
+                    "title": "Output Column Name",
+                    "type": "string",
+                    "description": "The dataframe column that will contain the color values."
+                }
+            },
+            "required": [
+                "input_column_name"
+            ],
+            "type": "object"
+        },
         "Split Patrol Events by Group": {
             "additionalProperties": false,
             "properties": {},
@@ -990,6 +1026,42 @@
             "required": [],
             "type": "object"
         },
+        "Time Density Colormap": {
+            "additionalProperties": false,
+            "properties": {
+                "input_column_name": {
+                    "title": "Input Column Name",
+                    "type": "string",
+                    "description": "The name of the column with categorical values."
+                },
+                "colormap": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    ],
+                    "default": "viridis",
+                    "title": "Colormap",
+                    "description": "Either a named mpl.colormap or a list of string hex values."
+                },
+                "output_column_name": {
+                    "default": null,
+                    "title": "Output Column Name",
+                    "type": "string",
+                    "description": "The dataframe column that will contain the color values."
+                }
+            },
+            "required": [
+                "input_column_name"
+            ],
+            "type": "object"
+        },
         "Create map layer from Time Density": {
             "additionalProperties": false,
             "properties": {
@@ -1296,7 +1368,7 @@
                     "type": "string"
                 },
                 "get_radius": {
-                    "default": 1,
+                    "default": 5,
                     "title": "Get Radius",
                     "type": "number"
                 },
@@ -1492,7 +1564,7 @@
                     "title": "Get Color"
                 },
                 "get_width": {
-                    "default": 1,
+                    "default": 3,
                     "title": "Get Width",
                     "type": "number"
                 },
@@ -1613,10 +1685,10 @@
             "properties": {
                 "widget_type": {
                     "enum": [
-                        "plot",
+                        "graph",
                         "map",
                         "text",
-                        "single_value"
+                        "stat"
                     ],
                     "title": "Widget Type",
                     "type": "string"
@@ -1831,10 +1903,10 @@
             "properties": {
                 "widget_type": {
                     "enum": [
-                        "plot",
+                        "graph",
                         "map",
                         "text",
-                        "single_value"
+                        "stat"
                     ],
                     "title": "Widget Type",
                     "type": "string"

@@ -17,6 +17,7 @@ from ecoscope_workflows.tasks.groupby import split_groups
 from ecoscope_workflows.tasks.results import create_map_layer
 from ecoscope_workflows.tasks.io import get_patrol_events
 from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
+from ecoscope_workflows.tasks.transformation import apply_color_map
 from ecoscope_workflows.tasks.groupby import groupbykey
 from ecoscope_workflows.tasks.results import draw_ecomap
 from ecoscope_workflows.tasks.io import persist_text
@@ -245,6 +246,27 @@ pe_add_temporal_index = add_temporal_index.partial(
 
 
 # %% [markdown]
+# ## Patrol Events Colormap
+
+# %%
+# parameters
+
+pe_colormap_params = dict(
+    input_column_name=...,
+    colormap=...,
+    output_column_name=...,
+)
+
+# %%
+# call the task
+
+
+pe_colormap = apply_color_map.partial(
+    df=pe_add_temporal_index, **pe_colormap_params
+).call()
+
+
+# %% [markdown]
 # ## Split Patrol Events by Group
 
 # %%
@@ -257,7 +279,7 @@ split_pe_groups_params = dict()
 
 
 split_pe_groups = split_groups.partial(
-    df=pe_add_temporal_index, groupers=groupers, **split_pe_groups_params
+    df=pe_colormap, groupers=groupers, **split_pe_groups_params
 ).call()
 
 
@@ -863,6 +885,25 @@ td = calculate_time_density.partial(trajectory_gdf=patrol_traj, **td_params).cal
 
 
 # %% [markdown]
+# ## Time Density Colormap
+
+# %%
+# parameters
+
+td_colormap_params = dict(
+    input_column_name=...,
+    colormap=...,
+    output_column_name=...,
+)
+
+# %%
+# call the task
+
+
+td_colormap = apply_color_map.partial(df=td, **td_colormap_params).call()
+
+
+# %% [markdown]
 # ## Create map layer from Time Density
 
 # %%
@@ -877,7 +918,9 @@ td_map_layer_params = dict(
 # call the task
 
 
-td_map_layer = create_map_layer.partial(geodataframe=td, **td_map_layer_params).call()
+td_map_layer = create_map_layer.partial(
+    geodataframe=td_colormap, **td_map_layer_params
+).call()
 
 
 # %% [markdown]

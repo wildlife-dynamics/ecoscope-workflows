@@ -237,4 +237,4 @@ if __name__ == "__main__":
         .call()
     )
 
-    print(subject_tracking_dashboard.model_dump_json())
+    print(subject_tracking_dashboard)

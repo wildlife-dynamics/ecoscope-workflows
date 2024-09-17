@@ -8,13 +8,9 @@ groupers:
 # Parameters for 'Get Patrol Events from EarthRanger' using task `get_patrol_events`.
 patrol_events:
   client: "mep_dev" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
-  since: "2011-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
-  until: "2023-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
-  patrol_type: [
-      "804c75f0-ed55-4bf5-b6fc-1aaf166bcf84",
-      "fde19413-cb55-443e-9be6-d10e4a48c668",
-      "0ef3bf48-b44c-4a4e-a145-7ab2e38c9a57",
-    ] # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default=None, description='Comma-separated list of type of patrol UUID'))
+  since: "2015-01-01T00:00:00+03:00" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
+  until: "2015-12-31T00:00:00+03:00" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
+  patrol_type: ["05ad114e-1aff-4602-bc83-efd333cdd8a2"] # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default=None, description='Comma-separated list of type of patrol UUID'))
   status: ["active", "done"]
 
 # Parameters for 'Apply Relocation Coordinate Filter' using task `apply_reloc_coord_filter`.
@@ -90,7 +86,7 @@ pe_feature_density:
 # Parameters for 'Feature Density Colormap' using task `apply_color_map`.
 fd_colormap:
   input_column_name: "density"   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
-  colormap: "YlOrRd"  # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
+  colormap: "Oranges"  # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
   output_column_name: "density_colormap"
 
 # Parameters for 'Create map layer from Feature Density' using task `create_map_layer`.
@@ -99,6 +95,7 @@ fd_map_layer:
     layer_type: "polygon"
     fill_color_column: "density_colormap"
     opacity: 0.4
+    get_line_width: 0
 
 # Parameters for 'Draw Ecomap from Feature Density' using task `draw_ecomap`.
 fd_ecomap:
@@ -166,7 +163,7 @@ grouped_pe_feature_density:
 # Parameters for 'Grouped Feature Density Colormap' using task `apply_color_map`.
 grouped_fd_colormap:
   input_column_name: "density"   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
-  colormap: "YlOrRd"  # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
+  colormap: "Oranges"  # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
   output_column_name: "density_colormap"
 
 # Parameters for 'Create map layer from Feature Density' using task `create_map_layer`.
@@ -175,6 +172,7 @@ grouped_fd_map_layer:
     layer_type: "polygon"
     fill_color_column: "density_colormap"
     opacity: 0.4
+    get_line_width: 0
 
 # Parameters for 'Draw Ecomap from Feature Density' using task `draw_ecomap`.
 grouped_fd_ecomap:

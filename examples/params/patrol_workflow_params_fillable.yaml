@@ -65,6 +65,12 @@ pe_add_temporal_index:
   cast_to_datetime:   # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether to attempt casting `time_col` to datetime.'))
   format:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='            If `cast_to_datetime=True`, the format to pass to `pd.to_datetime`\n            when attempting to cast `time_col` to datetime. Defaults to "mixed".\n            '))
 
+# Parameters for 'Patrol Events Colormap' using task `apply_color_map`.
+pe_colormap:
+  input_column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
+  colormap:   # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
+  output_column_name:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='The dataframe column that will contain the color values.'))
+
 # Parameters for 'Split Patrol Events by Group' using task `split_groups`.
 split_pe_groups:
 
@@ -209,6 +215,12 @@ td:
   max_speed_factor:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=1.05))
   expansion_factor:   # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=1.3))
   percentiles:   # (list[float], FieldInfo(annotation=NoneType, required=False, default=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0]))
+
+# Parameters for 'Time Density Colormap' using task `apply_color_map`.
+td_colormap:
+  input_column_name:   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
+  colormap:   # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
+  output_column_name:   # (typing.Union[str, typing.Annotated[NoneType, SkipJsonSchema()]], FieldInfo(annotation=NoneType, required=True, description='The dataframe column that will contain the color values.'))
 
 # Parameters for 'Create map layer from Time Density' using task `create_map_layer`.
 td_map_layer:

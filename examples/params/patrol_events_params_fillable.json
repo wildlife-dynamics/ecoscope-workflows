@@ -1063,7 +1063,7 @@
                     "type": "string"
                 },
                 "get_radius": {
-                    "default": 1,
+                    "default": 5,
                     "title": "Get Radius",
                     "type": "number"
                 },
@@ -1259,7 +1259,7 @@
                     "title": "Get Color"
                 },
                 "get_width": {
-                    "default": 1,
+                    "default": 3,
                     "title": "Get Width",
                     "type": "number"
                 },
@@ -1492,10 +1492,10 @@
             "properties": {
                 "widget_type": {
                     "enum": [
-                        "plot",
+                        "graph",
                         "map",
                         "text",
-                        "single_value"
+                        "stat"
                     ],
                     "title": "Widget Type",
                     "type": "string"
@@ -1598,10 +1598,10 @@
             "properties": {
                 "widget_type": {
                     "enum": [
-                        "plot",
+                        "graph",
                         "map",
                         "text",
-                        "single_value"
+                        "stat"
                     ],
                     "title": "Widget Type",
                     "type": "string"
