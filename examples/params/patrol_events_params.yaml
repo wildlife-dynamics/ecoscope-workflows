@@ -25,7 +25,7 @@ filter_patrol_events:
 # Parameters for 'Add temporal index to Patrol Events' using task `add_temporal_index`.
 pe_add_temporal_index:
   index_name: "month" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A name for the new index which will be added.'))
-  time_col: "updated_at" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of existing column containing time data.'))
+  time_col: "time" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of existing column containing time data.'))
   directive: "%B" # (typing.Literal['%a', '%A', '%b', '%B', '%c', '%d', '%f', '%H', '%I', '%j', '%m', '%M', '%p', '%S', '%U', '%w', '%W', '%x', '%X', '%y', '%Y', '%z', '%%'], FieldInfo(annotation=NoneType, required=True, description='A directive for formatting the time data.'))
 
 # Parameters for 'Patrol Events Colormap' using task `apply_color_map`.
