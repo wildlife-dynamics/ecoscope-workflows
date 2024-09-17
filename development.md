@@ -1,6 +1,6 @@
 | feature            | pip | poetry | conda | mamba | micromamba | pixi.sh |
 | ---------------    | --- | ------ | ----- | ----- | ---------- | ------- |
 | python deps        |  ✅ |   ✅   | ✅    | ✅    | ✅         |  ✅     |
-| system deps        |  ❌ |   🤷   | ✅    | ✅    | ✅         |  ✅     |
+| conda-compatible   |  ❌ |   ❌   | ✅    | ✅    | ✅         |  ✅     |
 | native lockfiles   |  ❌ |   ✅   | ❌    | ❌    | ❌         |  ✅     |
 | performance        |  ✅ |   ✅   | ❌    | 🤷    | 🤷         |  🔥     |
