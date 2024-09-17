@@ -159,9 +159,11 @@ def draw_ecomap(
 
     m.add_scale_bar()
     m.add_north_arrow(**(north_arrow_style.model_dump(exclude_none=True)))
+    m.add_save_image()
 
     # if tile_layer:
     #     m.add_layer(EcoMap.get_named_tile_layer(tile_layer))
+    m.layers = []
     m.add_layer(EcoMap.get_named_tile_layer("SATELLITE"))
     terrain_layer = EcoMap.get_named_tile_layer("TERRAIN")
     terrain_layer.opacity = 0.5
