@@ -21,7 +21,7 @@ def dataframe_column_mean(
     df: AnyDataFrame,
     column_name: ColumnName,
 ) -> Annotated[float, Field(description="The mean of the column")]:
-    return df[column_name].mean()
+    return round(df[column_name].mean(), 2)
 
 
 @task
@@ -29,7 +29,7 @@ def dataframe_column_sum(
     df: AnyDataFrame,
     column_name: ColumnName,
 ) -> Annotated[float, Field(description="The sum of the column")]:
-    return df[column_name].sum()
+    return round(df[column_name].sum(), 2)
 
 
 @task
@@ -37,7 +37,7 @@ def dataframe_column_max(
     df: AnyDataFrame,
     column_name: ColumnName,
 ) -> Annotated[float, Field(description="The max of the column")]:
-    return df[column_name].max()
+    return round(df[column_name].max(), 2)
 
 
 @task
@@ -45,7 +45,7 @@ def dataframe_column_min(
     df: AnyDataFrame,
     column_name: ColumnName,
 ) -> Annotated[float, Field(description="The min of the column")]:
-    return df[column_name].min()
+    return round(df[column_name].min(), 2)
 
 
 @task
@@ -81,7 +81,7 @@ def apply_arithmetic_operation(
 ) -> Annotated[
     float | int, Field(description="The result of the arithmetic operation")
 ]:
-    return operations[operation](a, b)
+    return round(operations[operation](a, b), 2)
 
 
 @task
@@ -90,4 +90,4 @@ def get_day_night_ratio(
 ) -> Annotated[float, Field(description="Daynight ratio")]:
     from ecoscope.analysis import astronomy
 
-    return astronomy.get_daynight_ratio(df)
+    return round(astronomy.get_daynight_ratio(df), 2)
