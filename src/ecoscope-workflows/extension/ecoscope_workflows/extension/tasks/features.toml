@@ -1,0 +1,2 @@
+[ecoscope-core.dependencies]
+ecoscope = { version = "v1.8.3", channel = "https://prefix.dev/ecoscope-workflows" }

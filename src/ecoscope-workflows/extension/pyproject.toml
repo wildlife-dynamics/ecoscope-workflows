@@ -1,0 +1,61 @@
+[project]
+name = "ecoscope-workflows.extension"
+dynamic = ["version"]
+requires-python = ">=3.10"
+description = "Official extension tasks and connections for ecoscope-workflows."
+readme = "README.md"
+authors = [
+  { name = "Charles Stern", email = "charless@earthranger.com" }
+]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+]
+license = { text = "BSD-3-Clause"}
+[project.entry-points."ecoscope_workflows"]  # TODO: this should be "ecoscope-workflows"?
+tasks = "ecoscope_workflows.extension.tasks"  # for user extensions, this could be "my_custom_tasks.tasks"
+[project.urls]
+Homepage = "https://github.com/wildlife-dynamics/ecoscope-workflows"
+Tracker = "https://github.com/wildlife-dynamics/ecoscope-workflows/issues"
+
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+[tool.hatch.build.hooks.vcs]
+version-file = "ecoscope_workflows/extension/_version.py"
+[tool.hatch.version]
+source = "vcs"
+fallback-version = "9999"
+[tool.hatch.version.raw-options]
+root = "../../.."
+
+
+[tool.pixi.project]
+channels = [
+    "https://prefix.dev/ecoscope-workflows",  # our custom channel, recipes in ./vendor directory
+    "conda-forge",
+]
+platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
+[tool.pixi.pypi-dependencies]
+"ecoscope-workflows.core" = { path = "../core", editable = true }
+"ecoscope-workflows.extension" = { path = ".", editable = true }
+[tool.pixi.dependencies]
+ecoscope = { version = "v1.8.3", channel = "https://prefix.dev/ecoscope-workflows" }
+[tool.pixi.feature.py310.dependencies]
+python = "3.10.*"
+[tool.pixi.feature.py311.dependencies]
+python = "3.11.*"
+[tool.pixi.feature.py312.dependencies]
+python = "3.12.*"
+[tool.pixi.feature.test.dependencies]
+pytest = "*"
+[tool.pixi.environments]
+default = { solve-group = "default" }
+test-py310 = { features = ["test", "py310"], solve-group = "py310" }
+test-py311 = { features = ["test", "py311"], solve-group = "py311" }
+test-py312 = { features = ["test", "py312"], solve-group = "py312" }

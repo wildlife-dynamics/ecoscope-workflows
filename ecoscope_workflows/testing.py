@@ -1,3 +1,4 @@
+import contextlib
 import inspect
 import os
 import subprocess
@@ -96,3 +97,10 @@ def test_case(script: Path, case_name: str, test_cases_yaml: Path, tmp_path: Pat
     stdout = proc.stdout.read().strip()
     for expected_substring in test_case.assertions.result_stdout_contains:
         assert expected_substring in stdout
+
+
+@contextlib.contextmanager
+def pixienv(path: Path):
+    sys.path.insert(0, path.as_posix())
+    yield
+    sys.path.remove(path.as_posix())
