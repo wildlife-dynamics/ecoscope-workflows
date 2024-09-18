@@ -61,3 +61,17 @@ tomli-w = "*"
 # this is just a lot simpler for now, and in most cases we will want these dependencies
 cloudpathlib-gs = "*"
 lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
+
+[tool.pixi.feature.py310.dependencies]
+python = "3.10.*"
+[tool.pixi.feature.py311.dependencies]
+python = "3.11.*"
+[tool.pixi.feature.py312.dependencies]
+python = "3.12.*"
+[tool.pixi.feature.test.dependencies]
+pytest = "*"
+[tool.pixi.environments]
+default = { solve-group = "default" }
+test-py310 = { features = ["test", "py310"], solve-group = "py310" }
+test-py311 = { features = ["test", "py311"], solve-group = "py311" }
+test-py312 = { features = ["test", "py312"], solve-group = "py312" }
