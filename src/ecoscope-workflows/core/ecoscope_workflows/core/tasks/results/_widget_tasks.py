@@ -4,7 +4,7 @@ from pydantic import Field
 
 from ecoscope_workflows.core.decorators import task
 from ecoscope_workflows.core.indexes import CompositeFilter
-from ecoscope_workflows.extension.tasks.results._widget_types import (
+from ecoscope_workflows.core.tasks.results._widget_types import (
     GroupedWidget,
     GroupedWidgetMergeKey,
     PrecomputedHTMLWidgetData,

@@ -1,12 +1,12 @@
 import pytest
 
 from ecoscope_workflows.core.tasks.groupby._groupby import Grouper
-from ecoscope_workflows.tasks.results import gather_dashboard
-from ecoscope_workflows.tasks.results._dashboard import (
+from ecoscope_workflows.core.tasks.results import gather_dashboard
+from ecoscope_workflows.core.tasks.results._dashboard import (
     Dashboard,
     EmumeratedWidgetSingleView,
 )
-from ecoscope_workflows.tasks.results._widget_types import GroupedWidget
+from ecoscope_workflows.core.tasks.results._widget_types import GroupedWidget
 
 DashboardFixture = tuple[list[GroupedWidget], Dashboard]
 

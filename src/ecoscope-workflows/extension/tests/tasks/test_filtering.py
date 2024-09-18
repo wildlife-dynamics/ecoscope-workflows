@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 from shapely.geometry import Point
 
-from ecoscope_workflows.tasks.transformation._filtering import (
+from ecoscope_workflows.extension.tasks.transformation._filtering import (
     Coordinate,
     apply_reloc_coord_filter,
 )
