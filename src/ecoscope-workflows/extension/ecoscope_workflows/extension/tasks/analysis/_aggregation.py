@@ -3,8 +3,8 @@ from typing import Annotated, Literal
 
 from pydantic import Field
 
-from ecoscope_workflows.annotations import AnyDataFrame, AnyGeoDataFrame
-from ecoscope_workflows.decorators import task
+from ecoscope_workflows.core.annotations import AnyDataFrame, AnyGeoDataFrame
+from ecoscope_workflows.core.decorators import task
 
 ColumnName = Annotated[str, Field(description="Column to aggregate")]
 

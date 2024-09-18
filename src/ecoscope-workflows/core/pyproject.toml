@@ -3,7 +3,7 @@ name = "ecoscope-workflows.core"
 dynamic = ["version"]
 requires-python = ">=3.10"
 description = "An extensible task specification and compiler for local and distributed workflows."
-readme = "README.md"
+# readme = "README.md"
 authors = [
   { name = "Charles Stern", email = "charless@earthranger.com" }
 ]
@@ -57,9 +57,7 @@ pydantic-settings = "*"
 "ruamel.yaml" = "*"
 ruff = "*"
 tomli-w = "*"
-
-[tool.pixi.feature.gcs.dependencies]
+# todo: split into optional package variants? (e.g. "ecoscope-workflows.core[gs,lithops]")
+# this is just a lot simpler for now, and in most cases we will want these dependencies
 cloudpathlib-gs = "*"
-
-[tool.pixi.feature.lithops.dependencies]
 lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }

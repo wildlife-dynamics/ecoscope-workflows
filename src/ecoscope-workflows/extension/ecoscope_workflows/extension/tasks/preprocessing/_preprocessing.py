@@ -5,12 +5,10 @@ import pandera as pa
 import pandera.typing as pa_typing
 from pydantic import Field
 
-from ecoscope_workflows.annotations import DataFrame, GeoDataFrameBaseSchema
-from ecoscope_workflows.decorators import task
-from ecoscope_workflows.tasks.io import SubjectGroupObservationsGDFSchema
-from ecoscope_workflows.tasks.transformation._filtering import Coordinate
-
-from ..features import ecoscope_core
+from ecoscope_workflows.core.annotations import DataFrame, GeoDataFrameBaseSchema
+from ecoscope_workflows.core.decorators import task
+from ecoscope_workflows.extension.tasks.io import SubjectGroupObservationsGDFSchema
+from ecoscope_workflows.extension.tasks.transformation._filtering import Coordinate
 
 
 class RelocationsGDFSchema(SubjectGroupObservationsGDFSchema):
@@ -18,7 +16,7 @@ class RelocationsGDFSchema(SubjectGroupObservationsGDFSchema):
     pass
 
 
-@task(requires=[ecoscope_core])
+@task
 def process_relocations(
     observations: DataFrame[SubjectGroupObservationsGDFSchema],
     filter_point_coords: Annotated[list[Coordinate], Field()],
@@ -62,7 +60,7 @@ class TrajectoryGDFSchema(GeoDataFrameBaseSchema):
     junk_status: pa_typing.Series[bool] = pa.Field()
 
 
-@task(requires=[ecoscope_core])
+@task
 def relocations_to_trajectory(
     relocations: DataFrame[RelocationsGDFSchema],
     min_length_meters: Annotated[float, Field()] = 0.1,

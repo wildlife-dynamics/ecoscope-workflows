@@ -3,11 +3,11 @@ from importlib.resources import files
 import geopandas as gpd  # type: ignore[import-untyped]
 import pandas as pd
 
-from ecoscope_workflows.tasks.preprocessing import (
+from ecoscope_workflows.extension.tasks.preprocessing import (
     process_relocations,
     relocations_to_trajectory,
 )
-from ecoscope_workflows.tasks.transformation._filtering import Coordinate
+from ecoscope_workflows.extension.tasks.transformation._filtering import Coordinate
 
 
 def test_process_relocations():

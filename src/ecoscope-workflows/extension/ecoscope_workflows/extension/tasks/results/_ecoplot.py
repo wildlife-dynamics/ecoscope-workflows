@@ -3,10 +3,11 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, Field
 from pydantic.json_schema import SkipJsonSchema
 
-from ecoscope_workflows.annotations import DataFrame, JsonSerializableDataFrameModel
-from ecoscope_workflows.decorators import task
-
-from ..features import ecoscope_core
+from ecoscope_workflows.core.annotations import (
+    DataFrame,
+    JsonSerializableDataFrameModel,
+)
+from ecoscope_workflows.core.decorators import task
 
 
 class LineStyle(BaseModel):
@@ -41,7 +42,7 @@ class BarLayoutStyle(LayoutStyle):
     bargroupgap: Annotated[float, Field(ge=0.0, le=1.0)] | SkipJsonSchema[None] = None
 
 
-@task(requires=[ecoscope_core])
+@task
 def draw_ecoplot(
     dataframe: DataFrame[JsonSerializableDataFrameModel],
     group_by: Annotated[str, Field(description="The dataframe column to group by.")],
@@ -103,7 +104,7 @@ def draw_ecoplot(
     )
 
 
-@task(requires=[ecoscope_core])
+@task
 def draw_time_series_bar_chart(
     dataframe: DataFrame[JsonSerializableDataFrameModel],
     x_axis: Annotated[
@@ -227,7 +228,7 @@ def draw_time_series_bar_chart(
     )
 
 
-@task(requires=[ecoscope_core])
+@task
 def draw_pie_chart(
     dataframe: DataFrame[JsonSerializableDataFrameModel],
     value_column: Annotated[

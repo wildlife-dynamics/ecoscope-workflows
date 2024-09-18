@@ -1,0 +1,32 @@
+{% import 'call-task-macros.jinja' as call_task_macros %}
+# ruff: noqa: E402
+
+# %% [markdown]
+# # {{ spec.id.title().replace("_", " ") }}
+# TODO: top level description
+
+# %% [markdown]
+# ## Imports
+
+import os
+{% for t in spec.workflow -%}
+{{ t.known_task.importable_reference.statement }}
+{% if loop.last %}
+{% endif -%}
+{% endfor -%}
+{%- for t in spec.workflow -%}
+# %% [markdown]
+# ## {{ t.name }}
+
+# %%
+# parameters
+
+{{ t.id }}_params = {{ per_taskinstance_params_notebook[t.id] }}
+
+# %%
+# call the task
+{% set validate = false %}
+{% set params = t.id ~ '_params' %}
+{% set indent = '' %}
+{{ call_task_macros.call_task(t, validate, params, indent) }}
+{% endfor -%}

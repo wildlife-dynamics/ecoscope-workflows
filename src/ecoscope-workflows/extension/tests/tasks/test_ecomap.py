@@ -2,8 +2,8 @@ from importlib.resources import files
 
 import pytest
 
-from ecoscope_workflows.serde import gpd_from_parquet_uri
-from ecoscope_workflows.tasks.results._ecomap import (
+from ecoscope_workflows.core.serde import gpd_from_parquet_uri
+from ecoscope_workflows.extension.tasks.results._ecomap import (
     LegendDefinition,
     LegendStyle,
     NorthArrowStyle,

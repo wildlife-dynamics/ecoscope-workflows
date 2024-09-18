@@ -2,12 +2,12 @@ from importlib.resources import files
 
 import geopandas as gpd  # type: ignore[import-untyped]
 
-from ecoscope_workflows.tasks.analysis import calculate_time_density
+from ecoscope_workflows.extension.tasks.analysis import calculate_time_density
 
 
 def test_calculate_time_density():
     example_input_df_path = (
-        files("ecoscope_workflows.tasks.preprocessing")
+        files("ecoscope_workflows.extension.tasks.preprocessing")
         / "relocations-to-trajectory.example-return.parquet"
     )
     input_df = gpd.read_parquet(example_input_df_path)

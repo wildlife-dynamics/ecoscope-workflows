@@ -1,13 +1,11 @@
 from typing import Annotated, Literal
 
 from pydantic import Field
-from ecoscope_workflows.annotations import AnyGeoDataFrame
-from ecoscope_workflows.decorators import task
-
-from ..features import ecoscope_core
+from ecoscope_workflows.core.annotations import AnyGeoDataFrame
+from ecoscope_workflows.core.decorators import task
 
 
-@task(requires=[ecoscope_core])
+@task
 def calculate_feature_density(
     geodataframe: Annotated[
         AnyGeoDataFrame,

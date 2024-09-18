@@ -4,9 +4,9 @@ from typing import Any, Annotated
 from pydantic import Field
 from pydantic.json_schema import SkipJsonSchema
 
-from ecoscope_workflows.annotations import AnyDataFrame
-from ecoscope_workflows.decorators import task
-from ecoscope_workflows.indexes import CompositeFilter, IndexName, IndexValue
+from ecoscope_workflows.core.annotations import AnyDataFrame
+from ecoscope_workflows.core.decorators import task
+from ecoscope_workflows.core.indexes import CompositeFilter, IndexName, IndexValue
 
 
 def _groupkey_to_composite_filter(

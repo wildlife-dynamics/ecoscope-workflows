@@ -4,10 +4,8 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, Field
 from pydantic.json_schema import SkipJsonSchema
 
-from ecoscope_workflows.annotations import AnyDataFrame
-from ecoscope_workflows.decorators import task
-
-from ..features import ecoscope_core
+from ecoscope_workflows.core.annotations import AnyDataFrame
+from ecoscope_workflows.core.decorators import task
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +27,7 @@ class NaturalBreaksArgs(SharedArgs):
     initial: int = 10
 
 
-@task(requires=[ecoscope_core])
+@task
 def apply_classification(
     df: Annotated[
         AnyDataFrame,
@@ -106,7 +104,7 @@ def apply_classification(
     Returns:
         The input dataframe with a classification column appended.
     """
-    from ecoscope.analysis.classifier import apply_classification  # type: ignore[import-untyped]
+    from ecoscope.analysis.classifier import apply_classification
 
     return apply_classification(
         df,
@@ -114,11 +112,11 @@ def apply_classification(
         output_column_name=output_column_name,
         labels=labels,
         scheme=scheme,
-        **(classification_options.model_dump(exclude_none=True) or {}),  # type: ignore[union-attr]
+        **classification_options.model_dump(exclude_none=True),
     )
 
 
-@task(requires=[ecoscope_core])
+@task
 def apply_color_map(
     df: Annotated[
         AnyDataFrame,

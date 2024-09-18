@@ -42,10 +42,28 @@ channels = [
 ]
 platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
 [tool.pixi.pypi-dependencies]
-"ecoscope-workflows.core" = { path = "../core", editable = true }
+# vendoring via symlink, so pixi is not confused by the pixi configuration in ecoscope-workflows.core
+"ecoscope-workflows.core" = { path = "./vendor/ecoscope-workflows/core", editable = true }
 "ecoscope-workflows.extension" = { path = ".", editable = true }
 [tool.pixi.dependencies]
+# restating dependencies from ecoscope-workflows.core to ensure they are included
+# todo: ensure exact 1:1 synchronization with ecoscope-workflows.core
+# note: if depending on a conda release of ecoscope-workflows, restatement should not be necessary
+# perhaps possible to demonstrate this here by making the restatement specific to a 'dev' environment
+jinja2 = "*"
+pandera = "*"
+pydantic = "<2.9.0"
+pydantic-settings = "*"
+"ruamel.yaml" = "*"
+ruff = "*"
+tomli-w = "*"
+# todo: split into optional package variants? (e.g. "ecoscope-workflows.core[gs,lithops]")
+# this is just a lot simpler for now, and in most cases we will want these dependencies
+cloudpathlib-gs = "*"
+lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
+# additional dependencies added by this extension
 ecoscope = { version = "v1.8.3", channel = "https://prefix.dev/ecoscope-workflows" }
+
 [tool.pixi.feature.py310.dependencies]
 python = "3.10.*"
 [tool.pixi.feature.py311.dependencies]
