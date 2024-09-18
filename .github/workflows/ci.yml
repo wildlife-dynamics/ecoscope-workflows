@@ -56,7 +56,7 @@ jobs:
         run: |
           pixi run \
           --manifest-path src/ecoscope-workflows/core/pyproject.toml \
-          --locked --environment test-py312 \
+          --locked --environment test-py${{ matrix.python-version }} \
           pytest src/ecoscope-workflows/core/tests/tasks -vx
 
   # test-tasks-not-io:
