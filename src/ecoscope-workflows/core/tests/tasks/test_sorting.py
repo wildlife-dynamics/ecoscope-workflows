@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from ecoscope_workflows.tasks.transformation import sort_values
+from ecoscope_workflows.core.tasks.transformation import sort_values
 
 
 @pytest.fixture

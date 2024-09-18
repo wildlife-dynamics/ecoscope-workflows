@@ -4,7 +4,8 @@ from typing import Annotated
 from pydantic import Field
 from pydantic.json_schema import SkipJsonSchema
 
-from ecoscope_workflows.decorators import task
+from ecoscope_workflows.core.decorators import task
+from ecoscope_workflows.core.serde import _persist_text
 
 
 # TODO: Unlike the tasks in `._earthranger`, this is not tagged with `tags=["io"]`,
@@ -27,7 +28,6 @@ def persist_text(
     ] = None,
 ) -> Annotated[str, Field(description="Path to persisted text")]:
     """Persist text to a file or cloud storage object."""
-    from ecoscope_workflows.serde import _persist_text
 
     if not filename:
         # generate a filename if none is explicitly provided

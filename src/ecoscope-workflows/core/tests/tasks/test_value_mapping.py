@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from ecoscope_workflows.tasks.transformation import map_values
+from ecoscope_workflows.core.tasks.transformation import map_values
 
 
 @pytest.fixture

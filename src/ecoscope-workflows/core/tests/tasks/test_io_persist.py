@@ -1,7 +1,7 @@
 import hashlib
 import os
 
-from ecoscope_workflows.tasks.io import persist_text
+from ecoscope_workflows.core.tasks.io import persist_text
 
 
 def test_persist_text(tmp_path):
