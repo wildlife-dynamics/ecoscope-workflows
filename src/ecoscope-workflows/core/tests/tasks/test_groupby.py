@@ -3,9 +3,9 @@ import pandas as pd
 
 import pytest
 
-from ecoscope_workflows.indexes import CompositeFilter, IndexName, IndexValue
-from ecoscope_workflows.tasks.groupby import groupbykey, set_groupers, split_groups
-from ecoscope_workflows.tasks.groupby._groupby import (
+from ecoscope_workflows.core.indexes import CompositeFilter, IndexName, IndexValue
+from ecoscope_workflows.core.tasks.groupby import groupbykey, set_groupers, split_groups
+from ecoscope_workflows.core.tasks.groupby._groupby import (
     Grouper,
     KeyedIterableOfAny,
     _groupkey_to_composite_filter,
