@@ -7,7 +7,7 @@ from ecoscope_workflows.ext.ecoscope.tasks.analysis import calculate_time_densit
 
 def test_calculate_time_density():
     example_input_df_path = (
-        files("ecoscope_workflows.extension.tasks.preprocessing")
+        files("ecoscope_workflows.ext.ecoscope.tasks.preprocessing")
         / "relocations-to-trajectory.example-return.parquet"
     )
     input_df = gpd.read_parquet(example_input_df_path)

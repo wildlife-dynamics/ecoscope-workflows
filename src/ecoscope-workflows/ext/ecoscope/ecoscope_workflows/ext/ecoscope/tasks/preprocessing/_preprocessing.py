@@ -7,8 +7,8 @@ from pydantic import Field
 
 from ecoscope_workflows.core.annotations import DataFrame, GeoDataFrameBaseSchema
 from ecoscope_workflows.core.decorators import task
-from ecoscope_workflows.extension.tasks.io import SubjectGroupObservationsGDFSchema
-from ecoscope_workflows.extension.tasks.transformation._filtering import Coordinate
+from ecoscope_workflows.ext.ecoscope.tasks.io import SubjectGroupObservationsGDFSchema
+from ecoscope_workflows.ext.ecoscope.tasks.transformation._filtering import Coordinate
 
 
 class RelocationsGDFSchema(SubjectGroupObservationsGDFSchema):

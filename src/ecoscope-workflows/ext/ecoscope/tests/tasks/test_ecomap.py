@@ -18,7 +18,7 @@ from ecoscope_workflows.ext.ecoscope.tasks.results._ecomap import (
 def relocations():
     return gpd_from_parquet_uri(
         str(
-            files("ecoscope_workflows.extension.tasks.preprocessing")
+            files("ecoscope_workflows.ext.ecoscope.tasks.preprocessing")
             / "process-relocations.example-return.parquet"
         )
     )
@@ -28,7 +28,7 @@ def relocations():
 def trajectories():
     return gpd_from_parquet_uri(
         str(
-            files("ecoscope_workflows.extension.tasks.preprocessing")
+            files("ecoscope_workflows.ext.ecoscope.tasks.preprocessing")
             / "relocations-to-trajectory.example-return.parquet"
         )
     )
@@ -47,7 +47,6 @@ def trajectories_colored(trajectories):
     return trajectories
 
 
-@pytest.mark.requires(feature="ecoscope_core")
 def test_draw_ecomap_points(relocations):
     geo_layer = create_map_layer(
         geodataframe=relocations,
