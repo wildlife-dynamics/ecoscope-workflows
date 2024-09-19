@@ -16,7 +16,7 @@ pytest = "*"
 [feature.test.tasks]
 # test-async-local = "pytest test -k async"
 # test-async-remote = "pytest test -k async"
-test-sequential-mock-io = "pytest tests -k 'sequential and mock-io'"
+test-sequential-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
 
 # todo: support build; push; deploy; run; test; etc. tasks
 # [feature.docker.tasks]

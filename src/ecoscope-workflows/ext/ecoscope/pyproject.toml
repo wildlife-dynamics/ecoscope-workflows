@@ -27,11 +27,10 @@ Tracker = "https://github.com/wildlife-dynamics/ecoscope-workflows/issues"
 [build-system]
 requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
-[tool.hatch.build]
-include = [
-  "ecoscope_workflows/ext/ecoscope/**/*.py",
-  "ecoscope_workflows/ext/ecoscope/py.typed",
-]
+[tool.hatch.build.targets.wheel]
+packages = ["ecoscope_workflows"]
+[tool.hatch.build.targets.sdist]
+include = ["ecoscope_workflows"]
 [tool.hatch.build.hooks.vcs]
 version-file = "ecoscope_workflows/ext/ecoscope/_version.py"
 [tool.hatch.version]
