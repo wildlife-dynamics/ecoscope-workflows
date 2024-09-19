@@ -62,6 +62,7 @@ tomli-w = "*"
 # this is just a lot simpler for now, and in most cases we will want these dependencies
 cloudpathlib-gs = "*"
 lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
+pydot = "*"
 # additional dependencies added by this extension
 ecoscope = { version = "v1.8.3", channel = "https://prefix.dev/ecoscope-workflows" }
 

@@ -7,11 +7,11 @@ from pathlib import Path
 import ruamel.yaml
 from pydantic import SecretStr
 
-from ecoscope_workflows import config
-from ecoscope_workflows.artifacts import Dags, WorkflowArtifacts
-from ecoscope_workflows.compiler import DagCompiler, Spec
-from ecoscope_workflows.config import TomlConfigTable
-from ecoscope_workflows.registry import known_connections, known_tasks
+from ecoscope_workflows.core import config
+from ecoscope_workflows.core.artifacts import Dags, WorkflowArtifacts
+from ecoscope_workflows.core.compiler import DagCompiler, Spec
+from ecoscope_workflows.core.config import TomlConfigTable
+from ecoscope_workflows.core.registry import known_tasks
 
 yaml = ruamel.yaml.YAML(typ="safe")
 
@@ -74,7 +74,7 @@ def get_params_command(args):
 
 
 def visualize(args):
-    from ecoscope_workflows.visualize import write_png
+    from ecoscope_workflows.core.visualize import write_png
 
     compilation_spec = Spec(**yaml.load(args.spec))
     outpath = args.outpath
@@ -82,6 +82,9 @@ def visualize(args):
 
 
 def connections_create_command(args):
+    known_connections = {}  # FIXME: fix this
+    if args.type not in known_connections:
+        raise ValueError(f"Unknown connection type '{args.type}'")  # FIXME: fix this
     conn_type = known_connections[args.type]
     cont = input(
         f"{Colors.WARNING}WARNING: All connection fields set here, including secrets, will be "

@@ -50,10 +50,11 @@ pydantic-settings = "*"
 "ruamel.yaml" = "*"
 ruff = "*"
 tomli-w = "*"
-# todo: split into optional package variants? (e.g. "ecoscope-workflows.core[gs,lithops]")
+# todo: split into optional package variants? (e.g. "ecoscope-workflows.core[gs,lithops,viz]")
 # this is just a lot simpler for now, and in most cases we will want these dependencies
 cloudpathlib-gs = "*"
 lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
+pydot = "*"
 
 [tool.mypy]
 plugins = ["pandera.mypy", "pydantic.mypy"]
@@ -72,6 +73,7 @@ pytest = "*"
 
 [tool.pixi.environments]
 default = { solve-group = "default" }
+
 mypy-py310 = { features = ["test", "py310", "mypy"], solve-group = "py310" }
 mypy-py311 = { features = ["test", "py311", "mypy"], solve-group = "py311" }
 mypy-py312 = { features = ["test", "py312", "mypy"], solve-group = "py312" }
