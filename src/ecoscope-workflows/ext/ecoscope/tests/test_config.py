@@ -43,7 +43,7 @@ def test_toml_config_table_dumps(tmp_path: Path):
         },
     )
     tmp_config_path = tmp_path / ".config.toml"
-    with patch("ecoscope_workflows.config.PATH", tmp_config_path):
+    with patch("ecoscope_workflows.core.config.PATH", tmp_config_path):
         assert tct.dumps() == dedent(
             """\
             [connections.earthranger.mep_dev]
@@ -70,7 +70,7 @@ def test_toml_config_table_dump(tmp_path: Path):
         },
     )
     tmp_config_path = tmp_path / ".config.toml"
-    with patch("ecoscope_workflows.config.PATH", tmp_config_path):
+    with patch("ecoscope_workflows.core.config.PATH", tmp_config_path):
         tct.dump()
         assert tmp_config_path.read_text() == dedent(
             """\
@@ -110,7 +110,7 @@ def test_toml_config_table_add_and_delete(tmp_path: Path):
         },
     )
     tmp_config_path = tmp_path / ".config.toml"
-    with patch("ecoscope_workflows.config.PATH", tmp_config_path):
+    with patch("ecoscope_workflows.core.config.PATH", tmp_config_path):
         tct0.dump()
         tct1.dump()
 
