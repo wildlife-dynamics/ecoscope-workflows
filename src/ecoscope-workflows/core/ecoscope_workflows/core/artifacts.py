@@ -35,19 +35,10 @@ class Dags(BaseModel):
     script_sequential: str = Field(..., alias="script-sequential.py")
 
 
-class SymlinkVendor:
-    pass
-
-
 class PixiProject(BaseModel):
     name: str
     channels: list[str] = CHANNELS
     platforms: list[str] = PLATFORMS
-
-
-class PypiDependency(BaseModel):
-    path: str
-    editable: bool = True
 
 
 def _parse_version_or_specifier(input_str):
@@ -129,7 +120,6 @@ class PixiToml(_AllowArbitraryTypes):
     """The pixi.toml file that specifies the workflow."""
 
     project: PixiProject
-    pypi_dependencies: dict[str, PypiDependency] = Field(..., alias="pypi-dependencies")
     dependencies: dict[str, CondaDependency]
     feature: dict[FeatureName, Feature]
     environments: dict[str, Environment]
@@ -145,14 +135,54 @@ class PixiToml(_AllowArbitraryTypes):
             tomli_w.dump(self.model_dump(), f)
 
 
+CONFTEST = """\
+import pytest
+
+
+def pytest_addoption(parser: pytest.Parser):
+    parser.addoption("--case", action="store")
+
+
+@pytest.fixture(scope="session")
+def case(pytestconfig: pytest.Config) -> str:
+    return pytestconfig.getoption("case")
+"""
+
+TEST_DAGS = """\
+from pathlib import Path
+
+import pytest
+
+from ecoscope_workflows.core.testing import test_case
+
+
+WORKFLOW = Path(__file__).parent.parent
+DAGS = [
+    p
+    for p in WORKFLOW.joinpath("dags").iterdir()
+    if p.suffix == ".py" and not p.name.startswith("_")
+]
+TEST_CASES_YAML = WORKFLOW.parent / "test-cases.yaml"
+
+
+@pytest.mark.parametrize("script", DAGS, ids=[p.stem for p in DAGS])
+def test_end_to_end(script: Path, case: str, tmp_path: Path):
+    test_case(script, case, TEST_CASES_YAML, tmp_path)
+"""
+
+
+class Tests(BaseModel):
+    conftest: str = Field(default=CONFTEST, alias="conftest.py")
+    test_dags: str = Field(default=TEST_DAGS, alias="test_dags.py")
+
+
 class WorkflowArtifacts(BaseModel):
     model_config = dict(arbitrary_types_allowed=True)
 
     dags: Dags
-    # src: SymlinkVendor | None = None
-    # test: ...
     params_jsonschema: dict
     # pixi_toml: dict  # if SymlinkVendor is None, we can simplify this and just install a release of workflows from prefix.dev
+    tests: Tests = Field(default_factory=Tests)
 
     def dump(self, root: Path, clobber: bool = False):
         if root.exists() and not clobber:
@@ -166,6 +196,10 @@ class WorkflowArtifacts(BaseModel):
         root.joinpath("dags").mkdir(parents=True)
         for fname, content in self.dags.model_dump(by_alias=True).items():
             root.joinpath("dags").joinpath(fname).write_text(content)
+
+        root.joinpath("tests").mkdir(parents=True)
+        for fname, content in self.tests.model_dump(by_alias=True).items():
+            root.joinpath("tests").joinpath(fname).write_text(content)
 
         with root.joinpath("params-jsonschema.json").open("w") as f:
             json.dump(self.params_jsonschema, f, indent=2)
