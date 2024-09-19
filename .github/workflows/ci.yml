@@ -16,10 +16,11 @@ jobs:
   #     - name: Check vendor versions
   #       run: pixi run --locked --environment vendor-version-check check
 
-  mypy-core:
+  mypy:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        namespace: ["core", "ext/ecoscope"]
         python-version: ["310", "311", "312"]
     steps:
       - uses: actions/checkout@v4
@@ -28,22 +29,9 @@ jobs:
       - name: Mypy
         run: |
           pixi run \
-          --manifest-path src/ecoscope-workflows/core/pyproject.toml \
+          --manifest-path src/ecoscope-workflows/${{ matrix.namespace }}/pyproject.toml \
           --locked --environment mypy-py${{ matrix.python-version }} \
           mypy
-
-  mypy-ext-ecoscope:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["310", "311", "312"]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install pixi
-        run: curl -fsSL https://pixi.sh/install.sh | bash && echo "$HOME/.pixi/bin" >> $GITHUB_PATH
-      - name: Mypy
-        run: |
-          pixi run --locked --environment mypy-py${{ matrix.python-version }} mypy
 
   # doctest:
   #   runs-on: ubuntu-latest

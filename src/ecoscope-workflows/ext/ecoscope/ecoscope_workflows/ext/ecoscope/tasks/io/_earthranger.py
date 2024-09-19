@@ -7,8 +7,8 @@ import pandera.typing as pa_typing
 from pydantic import Field
 
 from ecoscope_workflows.core.annotations import DataFrame, GeoDataFrameBaseSchema
-from ecoscope_workflows.core.connections import EarthRangerClient
 from ecoscope_workflows.core.decorators import task
+from ecoscope_workflows.ext.ecoscope.connections import EarthRangerClient
 
 
 class SubjectGroupObservationsGDFSchema(GeoDataFrameBaseSchema):

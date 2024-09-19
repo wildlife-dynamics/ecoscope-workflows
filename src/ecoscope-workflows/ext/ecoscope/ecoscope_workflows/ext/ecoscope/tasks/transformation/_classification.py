@@ -104,7 +104,7 @@ def apply_classification(
     Returns:
         The input dataframe with a classification column appended.
     """
-    from ecoscope.analysis.classifier import apply_classification
+    from ecoscope.analysis.classifier import apply_classification  # type: ignore[import-untyped]
 
     return apply_classification(
         df,
@@ -112,7 +112,7 @@ def apply_classification(
         output_column_name=output_column_name,
         labels=labels,
         scheme=scheme,
-        **classification_options.model_dump(exclude_none=True),
+        **classification_options.model_dump(exclude_none=True),  # type: ignore[union-attr]
     )
 
 
@@ -149,7 +149,7 @@ def apply_color_map(
     Returns:
     pd.DataFrame: The dataframe with an additional color column.
     """
-    from ecoscope.analysis.classifier import apply_color_map
+    from ecoscope.analysis.classifier import apply_color_map  # type: ignore[import-untyped]
 
     return apply_color_map(
         dataframe=df,
