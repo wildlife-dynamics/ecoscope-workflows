@@ -2,10 +2,10 @@ import argparse
 import os
 import yaml
 
-from ecoscope_workflows.tasks.io import get_subjectgroup_observations
-from ecoscope_workflows.tasks.results import create_map_layer
-from ecoscope_workflows.tasks.results import draw_ecomap
-from ecoscope_workflows.tasks.io import persist_text
+from ecoscope_workflows.ext.ecoscope.tasks.io import get_subjectgroup_observations
+from ecoscope_workflows.ext.ecoscope.tasks.results import create_map_layer
+from ecoscope_workflows.ext.ecoscope.tasks.results import draw_ecomap
+from ecoscope_workflows.core.tasks.io import persist_text
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

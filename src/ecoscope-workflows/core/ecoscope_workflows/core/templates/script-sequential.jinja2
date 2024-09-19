@@ -1,6 +1,8 @@
 {% import 'call-task-macros.jinja' as call_task_macros %}
 
 {%- if testing %}
+# ruff: noqa: E402
+
 """WARNING: This file is generated in a testing context and should not be used in production.
 Lines specific to the testing context are marked with a test tube emoji (🧪) to indicate
 that they would not be included (or would be different) in the production version of this file.
@@ -12,7 +14,7 @@ import os
 import yaml
 {%- if testing %}
 import warnings  # 🧪
-from ecoscope_workflows.testing import create_task_magicmock  # 🧪
+from ecoscope_workflows.core.testing import create_task_magicmock  # 🧪
 {% endif %}
 
 {% for t in spec.workflow -%}
