@@ -1,132 +1,20 @@
 [project]
-name = "ecoscope-workflows"
-dynamic = ["version"]
-requires-python = ">=3.10"
-description = "An extensible task specification and compiler for local and distributed workflows."
-readme = "README.md"
-authors = [
-  { name = "Charles Stern", email = "charless@earthranger.com" }
-]
-classifiers = [
-    "Development Status :: 1 - Planning",
-    "Operating System :: OS Independent",
-    "Intended Audience :: Science/Research",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Topic :: Scientific/Engineering",
-]
-license = { file = "LICENSE" }
-scripts = { ecoscope-workflows = "ecoscope_workflows.__main__:main" }
-dependencies = [
-    "jinja2",
-    "pandera",
-    "pydantic <2.9.0",
-    "pydantic-settings",
-    "ruamel.yaml",
-    "ruff",
-    "tomli-w",
-]
-
-[project.entry-points."ecoscope_workflows"]
-tasks = "ecoscope_workflows.tasks"  # for extensions, this could be "my_custom_tasks.tasks"
-
-[project.urls]
-Homepage = "https://github.com/wildlife-dynamics/ecoscope-workflows"
-Tracker = "https://github.com/wildlife-dynamics/ecoscope-workflows/issues"
-
-[build-system]
-requires = ["hatchling", "hatch-vcs"]
-build-backend = "hatchling.build"
-
-[tool.hatch]
-version = { source = "vcs", fallback-version = "9999" }
-build.hooks.vcs.version-file = "ecoscope_workflows/_version.py"
-
-[tool.mypy]
-plugins = ["pandera.mypy", "pydantic.mypy"]
-
-[tool.pixi.project]
+name = "ecoscope-workflows-manage"
 channels = [
-    "https://prefix.dev/ecoscope-workflows",  # our custom channel, recipes in ./vendor directory
+    "https://prefix.dev/ecoscope-workflows",
     "conda-forge",
 ]
 platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
 
-[tool.pixi.pypi-dependencies]
-ecoscope-workflows = { path = ".", editable = true }
-
-[tool.pixi.dependencies]
-jinja2 = "*"
-pandera = "*"
-pydantic = "<2.9.0"
-pydantic-settings = "*"
-"ruamel.yaml" = "*"
-ruff = "*"
-tomli-w = "*"
-
-[tool.pixi.feature.ecoscope-core.dependencies]
-ecoscope = { version = "v1.8.3", channel = "https://prefix.dev/ecoscope-workflows" }
-
-[tool.pixi.feature.gcs.dependencies]
-cloudpathlib-gs = "*"
-
-[tool.pixi.feature.lithops.dependencies]
-lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
-
-[tool.pixi.feature.mypy]
-dependencies = { mypy = "*", pandas-stubs = "*", pandera-mypy = "*" }
-pypi-dependencies = { types-shapely = "*" }
-tasks = { mypy = "mypy --package ecoscope_workflows --package tests" }
-
-[tool.pixi.feature.pdoc.dependencies]
-pdoc3 = "*"
-
-[tool.pixi.feature.py310.dependencies]
-python = "3.10.*"
-
-[tool.pixi.feature.py311.dependencies]
-python = "3.11.*"
-
-[tool.pixi.feature.py312.dependencies]
-python = "3.12.*"
-
-[tool.pixi.feature.test.dependencies]
-pytest = "*"
-
-[tool.pixi.feature.vendor-version-check]
-dependencies = { "ruamel.yaml" = "*"}
-pypi-dependencies = { "packaging" = "*" }
-tasks = { check = "python vendor/version-check.py" }  # run in ci to check if vendor packages are up to date
-
-[tool.pixi.feature.vendor-build-push]
+[feature.conda-dist]
 dependencies = { rattler-build = "*" }
 # tasks to:
 #  - manually build the vendor packages from the recipes; and then
 #  - manually push built packages to the channel (requires prefix api key env var)
 # these are not run in ci. if `vendor-version-check check` fails, use these to update the vendor packages.
 # note: in this case, the recipes themselves likely need to be manually updated before build/push.
-tasks = { build = "bash vendor/build.sh", push = "bash vendor/push.sh" }
+tasks = { build-release = "publish/build.sh release"}
 
-[tool.pixi.feature.visualize.dependencies]
-pydot = "*"
-
-[tool.pixi.environments]
+[environments]
 default = { solve-group = "default" }
-docs = { features = ["lithops", "pdoc", "visualize"], solve-group = "docs" }
-gcs = { features = ["gcs"], solve-group = "default" }
-lithops = { features = ["lithops"], solve-group = "default" }
-lithops-gcs = { features = ["lithops", "gcs"], solve-group = "default" }
-mypy-py310 = { features = ["lithops", "gcs", "test", "ecoscope-core", "visualize", "py310", "mypy"], solve-group = "py310" }
-mypy-py311 = { features = ["lithops", "gcs", "test", "ecoscope-core", "visualize", "py311", "mypy"], solve-group = "py311" }
-mypy-py312 = { features = ["lithops", "gcs", "test", "ecoscope-core", "visualize", "py312", "mypy"], solve-group = "py312" }
-test-all = { features = ["lithops", "gcs", "test", "ecoscope-core"], solve-group = "default" }
-test-all-py310 = { features = ["lithops", "gcs", "test", "ecoscope-core", "py310"], solve-group = "py310" }
-test-all-py311 = { features = ["lithops", "gcs", "test", "ecoscope-core", "py311"], solve-group = "py311" }
-test-all-py312 = { features = ["lithops", "gcs", "test", "ecoscope-core", "py312"], solve-group = "py312" }
-vendor-build-push = { features = ["vendor-build-push"], solve-group = "vendor-build-push", no-default-feature = true }
-vendor-version-check = { features = ["vendor-version-check"], solve-group = "vendor-version-check", no-default-feature = true }
-
-[tool.pytest.ini_options]
-markers = [
-    "io: interfaces with 3rd party data services, which may likely require credentials (deselect with '-m \"not io\"')",
-]
+conda-dist = { features = ["conda-dist"], solve-group = "conda-dist", no-default-feature = true }

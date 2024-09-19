@@ -1,29 +1,18 @@
 [project]
 name = "mode-map"
+channels = ["https://prefix.dev/ecoscope-workflows", "conda-forge"]
+platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
+
+[feature.test]
 channels = [
-    "file:///tmp/ecoscope-workflows/release",
+    "file:///tmp/ecoscope-workflows/release/artifacts/",
     "https://prefix.dev/ecoscope-workflows",
     "conda-forge",
 ]
-platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
-
-[dependencies]
-ecoscope-workflows-core = { version = "*", channel = "file:///tmp/ecoscope-workflows/release" }
-ecoscope-workflows-ext-ecoscope = {version = "*", channel = "file:///tmp/ecoscope-workflows/release" }
-
-[tool.pixi.feature.build-deps]
-dependencies = { rattler-build = "*" }
-# tasks to:
-#  - manually build the vendor packages from the recipes; and then
-#  - manually push built packages to the channel (requires prefix api key env var)
-# these are not run in ci. if `vendor-version-check check` fails, use these to update the vendor packages.
-# note: in this case, the recipes themselves likely need to be manually updated before build/push.
-tasks = { build = "(cd ../.. && bash publish/build.sh)"}
-
-
 [feature.test.dependencies]
+ecoscope-workflows-core = { version = "*", channel = "file:///tmp/ecoscope-workflows/release/artifacts/" }
+ecoscope-workflows-ext-ecoscope = {version = "*", channel = "file:///tmp/ecoscope-workflows/release/artifacts/" }
 pytest = "*"
-
 [feature.test.tasks]
 # test-async-local = "pytest test -k async"
 # test-async-remote = "pytest test -k async"
@@ -38,4 +27,3 @@ test-sequential-mock-io = "pytest test -k 'sequential and mock-io'"
 [environments]
 default = { solve-group = "default" }
 test = { features = ["test"], solve-group = "default" }
-build-deps = { features = ["build-deps"], solve-group = "build-deps", no-default-feature = true }

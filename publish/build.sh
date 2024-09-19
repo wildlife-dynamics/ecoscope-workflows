@@ -16,7 +16,7 @@ if [ "$1" == "vendor" ]; then
 elif [ "$1" == "release" ]; then
     RECIPES=(
         "release/ecoscope-workflows-core"
-        "release/ecoscope-workflows-ext-ecoscope"
+        # "release/ecoscope-workflows-ext-ecoscope"
     )
 else
   echo "Invalid argument. Please use 'vendor' or 'release'."
@@ -25,6 +25,8 @@ fi
 
 echo "You selected: $1"
 echo "Building recipes: ${RECIPES[@]}"
+
+mkdir -p /tmp/ecoscope-workflows/release/artifacts
 
 for rec in "${RECIPES[@]}"; do
     echo "Building $rec"
