@@ -3,8 +3,8 @@ from dataclasses import dataclass, field
 from graphlib import TopologicalSorter
 from typing import Any, Literal
 
-from ecoscope_workflows.decorators import AsyncTask
-from ecoscope_workflows.executors import Future, FutureSequence
+from ecoscope_workflows.core.decorators import AsyncTask
+from ecoscope_workflows.core.executors import Future, FutureSequence
 
 logger = logging.getLogger(__name__)
 
