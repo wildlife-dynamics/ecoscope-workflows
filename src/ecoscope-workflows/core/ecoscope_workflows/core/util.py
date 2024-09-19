@@ -3,8 +3,8 @@ from importlib.resources import files
 from pathlib import Path
 from typing import cast
 
-from ecoscope_workflows.decorators import SyncTask
-from ecoscope_workflows.serde import gpd_from_parquet_uri
+from ecoscope_workflows.core.decorators import SyncTask
+from ecoscope_workflows.core.serde import gpd_from_parquet_uri
 
 
 def rsplit_importable_reference(reference: str) -> list[str]:
