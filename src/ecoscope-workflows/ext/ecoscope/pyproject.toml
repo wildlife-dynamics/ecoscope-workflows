@@ -65,6 +65,13 @@ lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflow
 # additional dependencies added by this extension
 ecoscope = { version = "v1.8.3", channel = "https://prefix.dev/ecoscope-workflows" }
 
+[tool.mypy]
+plugins = ["pandera.mypy", "pydantic.mypy"]
+[tool.pixi.feature.mypy]
+dependencies = { mypy = "*", pandas-stubs = "*", pandera-mypy = "*" }
+pypi-dependencies = { types-shapely = "*" }
+tasks = { mypy = "mypy --package ecoscope_workflows.ext.ecoscope --package tests" }
+
 [tool.pixi.feature.py310.dependencies]
 python = "3.10.*"
 [tool.pixi.feature.py311.dependencies]
@@ -73,8 +80,14 @@ python = "3.11.*"
 python = "3.12.*"
 [tool.pixi.feature.test.dependencies]
 pytest = "*"
+
 [tool.pixi.environments]
 default = { solve-group = "default" }
+
+mypy-py310 = { features = ["test", "py310", "mypy"], solve-group = "py310" }
+mypy-py311 = { features = ["test", "py311", "mypy"], solve-group = "py311" }
+mypy-py312 = { features = ["test", "py312", "mypy"], solve-group = "py312" }
+
 test-py310 = { features = ["test", "py310"], solve-group = "py310" }
 test-py311 = { features = ["test", "py311"], solve-group = "py311" }
 test-py312 = { features = ["test", "py312"], solve-group = "py312" }
