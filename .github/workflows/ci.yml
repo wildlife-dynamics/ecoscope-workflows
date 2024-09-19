@@ -57,9 +57,9 @@ jobs:
           pixi run \
           --manifest-path src/ecoscope-workflows/core/pyproject.toml \
           --locked --environment test-py${{ matrix.python-version }} \
-          pytest src/ecoscope-workflows/core/tests/tasks -vx
+          pytest src/ecoscope-workflows/core/tests -vx
 
-  test-ext-ecoscope-tasks-not-io:
+  test-ext-ecoscope-not-io:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -73,10 +73,10 @@ jobs:
           pixi run \
           --manifest-path src/ecoscope-workflows/ext/ecoscope/pyproject.toml \
           --locked --environment test-py${{ matrix.python-version }} \
-          pytest src/ecoscope-workflows/ext/ecoscope/tests/tasks -vx \
+          pytest src/ecoscope-workflows/ext/ecoscope/tests -vx \
           -m "not io"
 
-  test-ext-ecoscope-tasks-io:
+  test-ext-ecoscope-io:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -94,5 +94,5 @@ jobs:
           pixi run \
           --manifest-path src/ecoscope-workflows/ext/ecoscope/pyproject.toml \
           --locked --environment test-py${{ matrix.python-version }} \
-          pytest src/ecoscope-workflows/ext/ecoscope/tests/tasks -vx \
+          pytest src/ecoscope-workflows/ext/ecoscope/tests -vx \
           -m "io"
