@@ -1,0 +1,51 @@
+context:
+  name: ecoscope-workflows-core
+  version: 0.0.0
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  path: ../../../src/ecoscope-workflows/core  # relative to recipe directory
+
+build:
+  python:
+    entry_points:
+      - ecoscope-workflows = ecoscope_workflows.core.__main__:main
+  noarch: python
+  script: pip install . -v
+  number: 0
+
+requirements:
+  host:
+    - python
+    - hatchling
+    - hatch-vcs
+    - pip
+  run:
+    - python
+    - jinja2
+    - pandera
+    - pydantic <2.9.0
+    - pydantic-settings
+    - ruamel.yaml
+    - ruff
+    - tomli-w
+    # optionals that we want for deployment
+    - lithops >=3.4.1
+    - cloudpathlib-gs
+    - pydot
+
+tests:
+  - python:
+      imports:
+        - ecoscope_workflows.core
+
+about:
+  license: BSD-3-Clause
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - cisaacstern
