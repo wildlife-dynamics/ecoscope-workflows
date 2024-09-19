@@ -8232,9 +8232,9 @@ packages:
   editable: true
 - kind: pypi
   name: ecoscope-workflows-ext-ecoscope
-  version: 0.0.2.dev180+ga1d9551.d20240919
+  version: 0.0.2.dev198+g954ab57.d20240919
   path: .
-  sha256: 44e22907b64b203b3a66f231bbcb539bc39d4d13913ed5eb6fb40f16c15d6a52
+  sha256: 24c97a01c7a461cab6b6522c8b450800332dcf1ffa26b42d88eeae21082c54f6
   requires_python: '>=3.10'
   editable: true
 - kind: conda

@@ -71,12 +71,8 @@ def collect_task_entries() -> dict[str, "KnownTask"]:
     known_tasks: dict[str, "KnownTask"] = {}
     for ep in ecoscope_workflows_eps:
         # a bit redundant with `util.import_task_from_reference`
-        root_pkg_name, tasks_pkg_name = ep.value.rsplit(".", 1)
-        assert "." not in root_pkg_name, (
-            "Tasks must be top-level in root (e.g. `pkg.tasks`, not `pkg.foo.tasks`). "
-            f"Got: `{root_pkg_name}.{tasks_pkg_name}`"
-        )
-        root = import_module(root_pkg_name)
+        anchor, tasks_pkg_name = ep.value.rsplit(".", 1)
+        root = import_module(anchor)
         tasks_module = getattr(root, tasks_pkg_name)
         known_task_args = [t for t in recurse_into_tasks(tasks_module)]
         # FIXME: handle name collisions, which would currently result in overwriting

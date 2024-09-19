@@ -18,7 +18,7 @@ classifiers = [
 ]
 license = { text = "BSD-3-Clause"}
 [project.entry-points."ecoscope_workflows"]  # TODO: this should be "ecoscope-workflows"?
-tasks = "ecoscope_workflows.extension.tasks"  # for user extensions, this could be "my_custom_tasks.tasks"
+tasks = "ecoscope_workflows.ext.ecoscope.tasks"  # for user extensions, this could be "my_custom_tasks.tasks"
 [project.urls]
 Homepage = "https://github.com/wildlife-dynamics/ecoscope-workflows"
 Tracker = "https://github.com/wildlife-dynamics/ecoscope-workflows/issues"
