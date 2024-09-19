@@ -18,7 +18,7 @@ from ecoscope_workflows.extension.tasks.results._ecomap import (
 def relocations():
     return gpd_from_parquet_uri(
         str(
-            files("ecoscope_workflows.tasks.preprocessing")
+            files("ecoscope_workflows.extension.tasks.preprocessing")
             / "process-relocations.example-return.parquet"
         )
     )
@@ -28,7 +28,7 @@ def relocations():
 def trajectories():
     return gpd_from_parquet_uri(
         str(
-            files("ecoscope_workflows.tasks.preprocessing")
+            files("ecoscope_workflows.extension.tasks.preprocessing")
             / "relocations-to-trajectory.example-return.parquet"
         )
     )

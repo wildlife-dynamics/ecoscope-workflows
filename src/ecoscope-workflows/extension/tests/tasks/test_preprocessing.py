@@ -12,7 +12,7 @@ from ecoscope_workflows.extension.tasks.transformation._filtering import Coordin
 
 def test_process_relocations():
     example_input_df_path = (
-        files("ecoscope_workflows.tasks.io")
+        files("ecoscope_workflows.extension.tasks.io")
         / "get-subjectgroup-observations.example-return.parquet"
     )
     input_df = gpd.read_parquet(example_input_df_path)
@@ -26,7 +26,7 @@ def test_process_relocations():
 
     # we've cached this result for reuse by other tests, so check that cache is not stale
     cached_result_path = (
-        files("ecoscope_workflows.tasks.preprocessing")
+        files("ecoscope_workflows.extension.tasks.preprocessing")
         / "process-relocations.example-return.parquet"
     )
     cached = gpd.read_parquet(cached_result_path)
@@ -35,7 +35,7 @@ def test_process_relocations():
 
 def test_relocations_to_trajectory():
     example_input_df_path = (
-        files("ecoscope_workflows.tasks.preprocessing")
+        files("ecoscope_workflows.extension.tasks.preprocessing")
         / "process-relocations.example-return.parquet"
     )
     input_df = gpd.read_parquet(example_input_df_path)
@@ -53,7 +53,7 @@ def test_relocations_to_trajectory():
 
     # we've cached this result for reuse by other tests, so check that cache is not stale
     cached_result_path = (
-        files("ecoscope_workflows.tasks.preprocessing")
+        files("ecoscope_workflows.extension.tasks.preprocessing")
         / "relocations-to-trajectory.example-return.parquet"
     )
     cached = gpd.read_parquet(cached_result_path)
