@@ -41,6 +41,8 @@ tests:
   - python:
       imports:
         - ecoscope_workflows.core
+        - ecoscope_workflows.core.tasks
+        - ecoscope_workflows.core.testing
 
 about:
   license: BSD-3-Clause
