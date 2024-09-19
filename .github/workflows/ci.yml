@@ -48,7 +48,7 @@ jobs:
           pixi run \
           --manifest-path src/ecoscope-workflows/${{ matrix.namespace }}/pyproject.toml \
           --locked --environment test-py${{ matrix.python-version }} \
-          pytest -v src/ecoscope-workflows/${{ matrix.namespeace }}/ecoscope_workflows/${{ matrix.namespace }} \
+          pytest -v src/ecoscope-workflows/${{ matrix.namespace }}/ecoscope_workflows/${{ matrix.namespace }} \
           --doctest-modules
 
   test-core:
