@@ -21,13 +21,12 @@ from pydantic import (
 )
 from pydantic.functional_validators import AfterValidator
 
-from ecoscope_workflows.annotations import (
+from ecoscope_workflows.core.annotations import (
     JsonSerializableDataFrameModel,
 )
-from ecoscope_workflows.connections import EarthRangerConnection
-from ecoscope_workflows.decorators import SyncTask
-from ecoscope_workflows.jsonschema import SurfacesDescriptionSchema
-from ecoscope_workflows.util import (
+from ecoscope_workflows.core.decorators import SyncTask
+from ecoscope_workflows.core.jsonschema import SurfacesDescriptionSchema
+from ecoscope_workflows.core.util import (
     import_task_from_reference,
     rsplit_importable_reference,
     validate_importable_reference,
@@ -213,7 +212,3 @@ class KnownTask(BaseModel):
 
 _known_tasks = collect_task_entries()  # internal, mutable
 known_tasks = types.MappingProxyType(_known_tasks)  # external, immutable
-
-known_connections = {
-    conn.__ecoscope_connection_type__: conn for conn in (EarthRangerConnection,)
-}

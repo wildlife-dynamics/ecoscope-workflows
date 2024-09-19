@@ -25,9 +25,9 @@ from pydantic import (
 )
 from pydantic.functional_validators import AfterValidator, BeforeValidator
 
-from ecoscope_workflows.artifacts import PixiToml
-from ecoscope_workflows.jsonschema import ReactJSONSchemaFormConfiguration
-from ecoscope_workflows.registry import KnownTask, known_tasks
+from ecoscope_workflows.core.artifacts import PixiToml
+from ecoscope_workflows.core.jsonschema import ReactJSONSchemaFormConfiguration
+from ecoscope_workflows.core.registry import KnownTask, known_tasks
 
 T = TypeVar("T")
 

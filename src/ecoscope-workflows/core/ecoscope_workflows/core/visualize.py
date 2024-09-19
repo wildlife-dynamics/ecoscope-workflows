@@ -6,7 +6,7 @@ except ImportError:
         "with 'pip install \".[visualize]\"'."
     )
 
-from ecoscope_workflows.compiler import Spec
+from ecoscope_workflows.core.compiler import Spec
 
 
 def _build_graph(spec: Spec) -> Dot:

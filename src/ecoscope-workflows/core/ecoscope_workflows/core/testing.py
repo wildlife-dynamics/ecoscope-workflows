@@ -8,8 +8,8 @@ from pathlib import Path
 import ruamel.yaml
 from pydantic import BaseModel
 
-from ecoscope_workflows.decorators import SyncTask
-from ecoscope_workflows.util import (
+from ecoscope_workflows.core.decorators import SyncTask
+from ecoscope_workflows.core.util import (
     load_example_return_from_task_reference,
     import_task_from_reference,
 )
