@@ -5,7 +5,9 @@ from typing import TYPE_CHECKING
 
 
 def gpd_from_parquet_uri(uri: str):
-    import geopandas as gpd  # type: ignore[import-untyped]
+    # FIXME(cisaacstern): move to ext.ecoscope; not entirely trivial becauase this implicates
+    # `load_example_return_from_task_reference` which is used in testing, so leaving as-is for now.
+    import geopandas as gpd  # type: ignore[import-not-found]
 
     return gpd.read_parquet(uri)
 
