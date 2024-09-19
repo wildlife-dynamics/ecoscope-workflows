@@ -71,9 +71,9 @@ jobs:
       - name: Test
         run: |
           pixi run \
-          --manifest-path src/ecoscope-workflows/extension/pyproject.toml \
+          --manifest-path src/ecoscope-workflows/ext/ecoscope/pyproject.toml \
           --locked --environment test-py${{ matrix.python-version }} \
-          pytest src/ecoscope-workflows/extension/tests/tasks -vx \
+          pytest src/ecoscope-workflows/ext/ecoscope/tests/tasks -vx \
           -m "not io"
 
   # test-tasks-io:

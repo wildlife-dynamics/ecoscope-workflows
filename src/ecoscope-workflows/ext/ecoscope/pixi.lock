@@ -8227,14 +8227,14 @@ packages:
   name: ecoscope-workflows-core
   version: '9999'
   path: ./vendor/ecoscope-workflows/core
-  sha256: 1fb12e31c553ea6c627f6b0d8bf8bdc3e2b27faf3f125205f2d56bc4cba44f2c
+  sha256: f84cea383693b3931456c9b1e64cdc899162290f25c21323cf54fd9e4d4e64c2
   requires_python: '>=3.10'
   editable: true
 - kind: pypi
-  name: ecoscope-workflows-extension
-  version: 0.0.2.dev167+ga642130.d20240918
+  name: ecoscope-workflows-ext-ecoscope
+  version: 0.0.2.dev180+ga1d9551.d20240919
   path: .
-  sha256: 99601a7f5bd3bb8d44c6e6a643e544de0586d09cfe58b3e7e3e69d07767d4dc6
+  sha256: 44e22907b64b203b3a66f231bbcb539bc39d4d13913ed5eb6fb40f16c15d6a52
   requires_python: '>=3.10'
   editable: true
 - kind: conda

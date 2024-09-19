@@ -1,8 +1,9 @@
 [project]
-name = "ecoscope-workflows.extension"
+name = "ecoscope-workflows.ext.ecoscope"
 dynamic = ["version"]
 requires-python = ">=3.10"
-description = "Official extension tasks and connections for ecoscope-workflows."
+# note: sentences like this become less confusing if/when ecoscope-workflows is named more generically
+description = "Ecoscope extension tasks and connections for ecoscope-workflows."
 readme = "README.md"
 authors = [
   { name = "Charles Stern", email = "charless@earthranger.com" }
@@ -27,12 +28,12 @@ Tracker = "https://github.com/wildlife-dynamics/ecoscope-workflows/issues"
 requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 [tool.hatch.build.hooks.vcs]
-version-file = "ecoscope_workflows/extension/_version.py"
+version-file = "ecoscope_workflows/ext/ecoscope/_version.py"
 [tool.hatch.version]
 source = "vcs"
 fallback-version = "9999"
 [tool.hatch.version.raw-options]
-root = "../../.."
+root = "../../../.."
 
 
 [tool.pixi.project]
@@ -44,7 +45,7 @@ platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
 [tool.pixi.pypi-dependencies]
 # vendoring via symlink, so pixi is not confused by the pixi configuration in ecoscope-workflows.core
 "ecoscope-workflows.core" = { path = "./vendor/ecoscope-workflows/core", editable = true }
-"ecoscope-workflows.extension" = { path = ".", editable = true }
+"ecoscope-workflows.ext.ecoscope" = { path = ".", editable = true }
 [tool.pixi.dependencies]
 # restating dependencies from ecoscope-workflows.core to ensure they are included
 # todo: ensure exact 1:1 synchronization with ecoscope-workflows.core
