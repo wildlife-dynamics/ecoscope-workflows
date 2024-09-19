@@ -12,7 +12,7 @@ source:
 build:
   noarch: python
   script: pip install . -v
-  number: 0
+  number: 1
 
 requirements:
   host:

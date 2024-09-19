@@ -1,17 +1,17 @@
 [project]
 name = "mode-map"
-channels = ["https://prefix.dev/ecoscope-workflows", "conda-forge"]
-platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
-
-[feature.test]
 channels = [
     "file:///tmp/ecoscope-workflows/release/artifacts/",
     "https://prefix.dev/ecoscope-workflows",
     "conda-forge",
 ]
-[feature.test.dependencies]
+platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
+
+[dependencies]
 ecoscope-workflows-core = { version = "*", channel = "file:///tmp/ecoscope-workflows/release/artifacts/" }
 ecoscope-workflows-ext-ecoscope = {version = "*", channel = "file:///tmp/ecoscope-workflows/release/artifacts/" }
+
+[feature.test.dependencies]
 pytest = "*"
 [feature.test.tasks]
 # test-async-local = "pytest test -k async"
