@@ -2,7 +2,7 @@ from importlib.resources import files
 
 import geopandas as gpd  # type: ignore[import-untyped]
 
-from ecoscope_workflows.extension.tasks.analysis import calculate_time_density
+from ecoscope_workflows.ext.ecoscope.tasks.analysis import calculate_time_density
 
 
 def test_calculate_time_density():

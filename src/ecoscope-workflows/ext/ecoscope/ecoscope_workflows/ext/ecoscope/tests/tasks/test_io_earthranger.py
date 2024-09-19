@@ -3,8 +3,8 @@ from datetime import datetime
 
 import pytest
 
-from ecoscope_workflows.extension.connections import EarthRangerConnection
-from ecoscope_workflows.extension.tasks.io import (
+from ecoscope_workflows.ext.ecoscope.connections import EarthRangerConnection
+from ecoscope_workflows.ext.ecoscope.tasks.io import (
     get_patrol_events,
     get_patrol_observations,
     get_subjectgroup_observations,

@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from ecoscope_workflows.extension.tasks.transformation._classification import (
+from ecoscope_workflows.ext.ecoscope.tasks.transformation._classification import (
     apply_classification,
     apply_color_map,
     SharedArgs,

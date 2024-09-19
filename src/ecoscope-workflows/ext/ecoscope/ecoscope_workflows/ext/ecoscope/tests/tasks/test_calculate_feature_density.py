@@ -1,6 +1,6 @@
 import geopandas as gpd  # type: ignore[import-untyped]
 
-from ecoscope_workflows.extension.tasks.analysis import (
+from ecoscope_workflows.ext.ecoscope.tasks.analysis import (
     calculate_feature_density,
     create_meshgrid,
 )
