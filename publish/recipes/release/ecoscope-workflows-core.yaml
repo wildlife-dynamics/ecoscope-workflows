@@ -14,7 +14,7 @@ build:
     entry_points:
       - ecoscope-workflows = ecoscope_workflows.core.__main__:main
   noarch: python
-  script: pip install . -v
+  script: python -m pip install . -vv --no-deps
   number: 0
 
 requirements:

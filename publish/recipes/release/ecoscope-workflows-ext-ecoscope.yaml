@@ -11,8 +11,8 @@ source:
 
 build:
   noarch: python
-  script: pip install . -v
-  number: 1
+  script: python -m pip install . -vv --no-deps
+  number: 0
 
 requirements:
   host:
@@ -29,6 +29,7 @@ tests:
   - python:
       imports:
         - ecoscope_workflows.ext.ecoscope
+        - ecoscope_workflows.ext.ecoscope.tasks
 
 about:
   license: BSD-3-Clause
