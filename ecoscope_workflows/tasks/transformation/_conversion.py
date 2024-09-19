@@ -11,9 +11,13 @@ logger = logging.getLogger(__name__)
 @task
 def unit_convert(
     number: Annotated[float, Field(description="The original value.")],
-    original_unit: Annotated[str, Field(description="The original unit of measurement.")],
+    original_unit: Annotated[
+        str, Field(description="The original unit of measurement.")
+    ],
     new_unit: Annotated[str, Field(description="The unit to convert to.")],
-    decimal_places: Annotated[int, Field(description="The number of decimal places to display.")],
+    decimal_places: Annotated[
+        int, Field(description="The number of decimal places to display.")
+    ],
 ) -> Annotated[str, Field(description="The converted value.")]:
     import astropy.units as u
 
