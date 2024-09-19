@@ -5516,9 +5516,9 @@ packages:
   timestamp: 1725443410772
 - kind: pypi
   name: ecoscope-workflows-core
-  version: 0.0.2.dev202+g50bb7ef.d20240919
+  version: 0.0.2.dev221+g6b9e762.d20240919
   path: .
-  sha256: d7b4f4972e9d899d792e00f56398322eb74e69d928b78c1265af3afc2d8f5091
+  sha256: c2c6f26517c273f958476472acb1541d46d02931915dc62f179bc10c3cb89509
   requires_python: '>=3.10'
   editable: true
 - kind: conda

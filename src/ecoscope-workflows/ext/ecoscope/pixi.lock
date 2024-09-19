@@ -11816,14 +11816,14 @@ packages:
   name: ecoscope-workflows-core
   version: '9999'
   path: ./vendor/ecoscope-workflows/core
-  sha256: d7b4f4972e9d899d792e00f56398322eb74e69d928b78c1265af3afc2d8f5091
+  sha256: c2c6f26517c273f958476472acb1541d46d02931915dc62f179bc10c3cb89509
   requires_python: '>=3.10'
   editable: true
 - kind: pypi
   name: ecoscope-workflows-ext-ecoscope
-  version: 0.0.2.dev202+g50bb7ef.d20240919
+  version: 0.0.2.dev220+gb5a1aee.d20240919
   path: .
-  sha256: 3c2e07b9251c727242684cfa60063783928a517ff70e46be3958c1b081590cc0
+  sha256: c7ac6dc66c0566d747fae94903979294f0e7de8609f93b614933beb48ee9a01a
   requires_python: '>=3.10'
   editable: true
 - kind: conda
