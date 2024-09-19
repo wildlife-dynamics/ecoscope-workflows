@@ -33,5 +33,8 @@ for rec in "${RECIPES[@]}"; do
     rattler-build build \
     --recipe $(pwd)/publish/recipes/${rec}.yaml \
     --output-dir /tmp/ecoscope-workflows/release/artifacts \
-    --skip-existing=all
+    --skip-existing=all \
+    --channel file:///tmp/ecoscope-workflows/release/artifacts \
+    --channel https://prefix.dev/ecoscope-workflows \
+    --channel conda-forge
 done

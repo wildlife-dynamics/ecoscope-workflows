@@ -44,7 +44,6 @@ tests:
 
 about:
   license: BSD-3-Clause
-  license_file: LICENSE
 
 extra:
   recipe-maintainers:
