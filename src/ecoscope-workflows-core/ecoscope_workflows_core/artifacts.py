@@ -131,8 +131,8 @@ class PixiToml(_AllowArbitraryTypes):
             content = tomllib.load(f)
         return cls(**content)
 
-    def dump(self, dst: str):
-        with open(dst, "wb") as f:
+    def dump(self, dst: Path):
+        with dst.open("wb") as f:
             tomli_w.dump(self.model_dump(), f)
 
 
