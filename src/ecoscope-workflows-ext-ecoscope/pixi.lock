@@ -377,7 +377,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstandard-0.23.0-py312hef9b889_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.6-ha6fb4c9_0.conda
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
       linux-aarch64:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_0.conda
@@ -747,7 +747,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zstandard-0.23.0-py312hb698573_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zstd-1.5.6-h02f22dd_0.conda
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/aiohappyeyeballs-2.4.0-pyhd8ed1ab_0.conda
@@ -1098,7 +1098,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstandard-0.23.0-py312h15fbf35_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.6-hb46c0d2_0.conda
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
   mypy-py310:
     channels:
     - url: https://prefix.dev/ecoscope-workflows/
@@ -1487,7 +1487,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.6-ha6fb4c9_0.conda
       - pypi: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
       linux-aarch64:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_0.conda
@@ -1868,7 +1868,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zstd-1.5.6-h02f22dd_0.conda
       - pypi: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/aiohappyeyeballs-2.4.0-pyhd8ed1ab_0.conda
@@ -2230,7 +2230,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.6-hb46c0d2_0.conda
       - pypi: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
   mypy-py311:
     channels:
     - url: https://prefix.dev/ecoscope-workflows/
@@ -2617,7 +2617,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.6-ha6fb4c9_0.conda
       - pypi: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
       linux-aarch64:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_0.conda
@@ -2996,7 +2996,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zstd-1.5.6-h02f22dd_0.conda
       - pypi: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/aiohappyeyeballs-2.4.0-pyhd8ed1ab_0.conda
@@ -3356,7 +3356,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.6-hb46c0d2_0.conda
       - pypi: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
   mypy-py312:
     channels:
     - url: https://prefix.dev/ecoscope-workflows/
@@ -3743,7 +3743,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.6-ha6fb4c9_0.conda
       - pypi: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
       linux-aarch64:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_0.conda
@@ -4122,7 +4122,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zstd-1.5.6-h02f22dd_0.conda
       - pypi: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/aiohappyeyeballs-2.4.0-pyhd8ed1ab_0.conda
@@ -4482,7 +4482,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.6-hb46c0d2_0.conda
       - pypi: https://files.pythonhosted.org/packages/b5/e4/b6d9aa81b8339f5b302ca2b8a098e1783bacb3390293181fc26ba7e8ae10/types_shapely-2.0.0.20240820-py3-none-any.whl
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
   test-py310:
     channels:
     - url: https://prefix.dev/ecoscope-workflows/
@@ -4866,7 +4866,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstandard-0.23.0-py310ha39cb0e_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.6-ha6fb4c9_0.conda
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
       linux-aarch64:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_0.conda
@@ -5242,7 +5242,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zstandard-0.23.0-py310h6a57b22_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zstd-1.5.6-h02f22dd_0.conda
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/aiohappyeyeballs-2.4.0-pyhd8ed1ab_0.conda
@@ -5599,7 +5599,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstandard-0.23.0-py310h2665a74_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.6-hb46c0d2_0.conda
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
   test-py311:
     channels:
     - url: https://prefix.dev/ecoscope-workflows/
@@ -5981,7 +5981,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstandard-0.23.0-py311hbc35293_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.6-ha6fb4c9_0.conda
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
       linux-aarch64:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_0.conda
@@ -6355,7 +6355,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zstandard-0.23.0-py311hd5293d8_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zstd-1.5.6-h02f22dd_0.conda
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/aiohappyeyeballs-2.4.0-pyhd8ed1ab_0.conda
@@ -6710,7 +6710,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstandard-0.23.0-py311ha60cc69_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.6-hb46c0d2_0.conda
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
   test-py312:
     channels:
     - url: https://prefix.dev/ecoscope-workflows/
@@ -7092,7 +7092,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstandard-0.23.0-py312hef9b889_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.6-ha6fb4c9_0.conda
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
       linux-aarch64:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_0.conda
@@ -7466,7 +7466,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zstandard-0.23.0-py312hb698573_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/zstd-1.5.6-h02f22dd_0.conda
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/affine-2.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/aiohappyeyeballs-2.4.0-pyhd8ed1ab_0.conda
@@ -7821,7 +7821,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstandard-0.23.0-py312h15fbf35_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.6-hb46c0d2_0.conda
       - pypi: .
-      - pypi: ./vendor/ecoscope-workflows/core
+      - pypi: ./vendor/ecoscope-workflows-core
 packages:
 - kind: conda
   name: _libgcc_mutex
@@ -11815,15 +11815,15 @@ packages:
 - kind: pypi
   name: ecoscope-workflows-core
   version: '9999'
-  path: ./vendor/ecoscope-workflows/core
-  sha256: c2c6f26517c273f958476472acb1541d46d02931915dc62f179bc10c3cb89509
+  path: ./vendor/ecoscope-workflows-core
+  sha256: 50056aac47ba3b2bc067b61a94daea7cc145b0e440306c69ec6ed899ac39c35b
   requires_python: '>=3.10'
   editable: true
 - kind: pypi
   name: ecoscope-workflows-ext-ecoscope
-  version: 0.0.2.dev220+gb5a1aee.d20240919
+  version: '9999'
   path: .
-  sha256: c7ac6dc66c0566d747fae94903979294f0e7de8609f93b614933beb48ee9a01a
+  sha256: d2a8511347c0f3d775ea5f20f30ea9e3fb400616dcb5adca10d0900cb68a5017
   requires_python: '>=3.10'
   editable: true
 - kind: conda

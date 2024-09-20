@@ -1,5 +1,5 @@
 [project]
-name = "ecoscope-workflows.core"
+name = "ecoscope-workflows-core"
 dynamic = ["version"]
 requires-python = ">=3.10"
 description = "An extensible task specification and compiler for local and distributed workflows."
@@ -16,9 +16,9 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 license = { text = "BSD-3-Clause"}
-scripts = { ecoscope-workflows = "ecoscope_workflows.core.__main__:main" }
+scripts = { ecoscope-workflows = "ecoscope_workflows_core.__main__:main" }
 [project.entry-points."ecoscope_workflows"]
-tasks = "ecoscope_workflows.core.tasks"  # for user extensions, this could be "my_custom_tasks.tasks"
+tasks = "ecoscope_workflows_core.tasks"  # for user extensions, this could be "my_custom_tasks.tasks"
 [project.urls]
 Homepage = "https://github.com/wildlife-dynamics/ecoscope-workflows"
 Tracker = "https://github.com/wildlife-dynamics/ecoscope-workflows/issues"
@@ -27,11 +27,11 @@ Tracker = "https://github.com/wildlife-dynamics/ecoscope-workflows/issues"
 requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
-packages = ["ecoscope_workflows"]
+packages = ["ecoscope_workflows_core"]
 [tool.hatch.build.targets.sdist]
-include = ["ecoscope_workflows"]
+include = ["ecoscope_workflows_core"]
 [tool.hatch.build.hooks.vcs]
-version-file = "ecoscope_workflows/core/_version.py"
+version-file = "ecoscope_workflows_core/_version.py"
 [tool.hatch.version]
 source = "vcs"
 fallback-version = "9999"
@@ -45,7 +45,7 @@ channels = [
 ]
 platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
 [tool.pixi.pypi-dependencies]
-"ecoscope-workflows.core" = { path = ".", editable = true }
+"ecoscope-workflows-core" = { path = ".", editable = true }
 [tool.pixi.dependencies]
 jinja2 = "*"
 pandera = "*"
@@ -54,7 +54,7 @@ pydantic-settings = "*"
 "ruamel.yaml" = "*"
 ruff = "*"
 tomli-w = "*"
-# todo: split into optional package variants? (e.g. "ecoscope-workflows.core[gs,lithops,viz]")
+# todo: split into optional package variants? (e.g. "ecoscope-workflows-core[gs,lithops,viz]")
 # this is just a lot simpler for now, and in most cases we will want these dependencies
 cloudpathlib-gs = "*"
 lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
@@ -64,7 +64,7 @@ pydot = "*"
 plugins = ["pandera.mypy", "pydantic.mypy"]
 [tool.pixi.feature.mypy]
 dependencies = { mypy = "*", pandas-stubs = "*", pandera-mypy = "*" }
-tasks = { mypy = "mypy --package ecoscope_workflows.core --package tests" }
+tasks = { mypy = "mypy --package ecoscope_workflows_core --package tests" }
 
 [tool.pixi.feature.py310.dependencies]
 python = "3.10.*"

@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        namespace: ["core", "ext/ecoscope"]
+        namespace: ["core", "ext-ecoscope"]
         python-version: ["310", "311", "312"]
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +29,7 @@ jobs:
       - name: Mypy
         run: |
           pixi run \
-          --manifest-path src/ecoscope-workflows/${{ matrix.namespace }}/pyproject.toml \
+          --manifest-path src/ecoscope-workflows-${{ matrix.namespace }}/pyproject.toml \
           --locked --environment mypy-py${{ matrix.python-version }} \
           mypy
 
@@ -46,9 +46,9 @@ jobs:
       - name: Test
         run: |
           pixi run \
-          --manifest-path src/ecoscope-workflows/${{ matrix.namespace }}/pyproject.toml \
+          --manifest-path src/ecoscope-workflows-${{ matrix.namespace }}/pyproject.toml \
           --locked --environment test-py${{ matrix.python-version }} \
-          pytest -v src/ecoscope-workflows/${{ matrix.namespace }}/ecoscope_workflows/${{ matrix.namespace }} \
+          pytest -v src/ecoscope-workflows-${{ matrix.namespace }} \
           --doctest-modules
 
   test-core:
@@ -63,9 +63,9 @@ jobs:
       - name: Test
         run: |
           pixi run \
-          --manifest-path src/ecoscope-workflows/core/pyproject.toml \
+          --manifest-path src/ecoscope-workflows-core/pyproject.toml \
           --locked --environment test-py${{ matrix.python-version }} \
-          pytest src/ecoscope-workflows/core/tests -vx
+          pytest src/ecoscope-workflows-core/tests -vx
 
   test-ext-ecoscope-not-io:
     runs-on: ubuntu-latest
@@ -79,9 +79,9 @@ jobs:
       - name: Test
         run: |
           pixi run \
-          --manifest-path src/ecoscope-workflows/ext/ecoscope/pyproject.toml \
+          --manifest-path src/ecoscope-workflows-ext-ecoscope/pyproject.toml \
           --locked --environment test-py${{ matrix.python-version }} \
-          pytest src/ecoscope-workflows/ext/ecoscope/tests -vx \
+          pytest src/ecoscope-workflows-ext-ecoscope/tests -vx \
           -m "not io"
 
   test-ext-ecoscope-io:
@@ -100,7 +100,7 @@ jobs:
           EARTHRANGER_PASSWORD: ${{ secrets.EARTHRANGER_PASSWORD }}
         run: |
           pixi run \
-          --manifest-path src/ecoscope-workflows/ext/ecoscope/pyproject.toml \
+          --manifest-path src/ecoscope-workflows-ext-ecoscope/pyproject.toml \
           --locked --environment test-py${{ matrix.python-version }} \
-          pytest src/ecoscope-workflows/ext/ecoscope/tests -vx \
+          pytest src/ecoscope-workflows-ext-ecoscope/tests -vx \
           -m "io"

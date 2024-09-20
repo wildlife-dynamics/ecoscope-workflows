@@ -50,7 +50,7 @@ channels = [
 ]
 platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
 [tool.pixi.pypi-dependencies]
-# vendoring via symlink, so pixi is not confused by the pixi configuration in ecoscope-workflows.core
+# vendoring via symlink, so pixi is not confused by the pixi configuration in actual ecoscope-workflows-core
 "ecoscope-workflows-core" = { path = "./vendor/ecoscope-workflows-core", editable = true }
 "ecoscope-workflows-ext-ecoscope" = { path = ".", editable = true }
 [tool.pixi.dependencies]

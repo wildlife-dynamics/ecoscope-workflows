@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from ecoscope_workflows.core.tasks.analysis import (
+from ecoscope_workflows_core.tasks.analysis import (
     apply_arithmetic_operation,
     dataframe_column_mean,
     dataframe_column_max,
