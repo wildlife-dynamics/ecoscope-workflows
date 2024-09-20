@@ -14,7 +14,7 @@ else:
 
 from ecoscope_workflows_core.annotations import DataFrame
 from ecoscope_workflows_core.connections import is_client
-from ecoscope_workflows.ext.ecoscope.connections import (
+from ecoscope_workflows_ext_ecoscope.connections import (
     EarthRangerClient,
     EarthRangerConnection,
 )
