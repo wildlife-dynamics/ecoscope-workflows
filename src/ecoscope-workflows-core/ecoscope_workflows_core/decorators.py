@@ -147,10 +147,10 @@ class _Task(Generic[P, R, K, V]):
         ... def f(a: int, b: int) -> int:
         ...     return a + b
         >>> type(f.executor)
-        <class 'ecoscope_workflows.core.executors.python.PythonExecutor'>
+        <class 'ecoscope_workflows_core.executors.python.PythonExecutor'>
         >>> f_new = f.set_executor("lithops")
         >>> type(f_new.executor)
-        <class 'ecoscope_workflows.core.executors.lithops.LithopsExecutor'>
+        <class 'ecoscope_workflows_core.executors.lithops.LithopsExecutor'>
 
         ```
 
