@@ -28,7 +28,6 @@ from pydantic.functional_validators import AfterValidator, BeforeValidator
 from ecoscope_workflows_core.artifacts import PixiToml
 from ecoscope_workflows_core.jsonschema import ReactJSONSchemaFormConfiguration
 from ecoscope_workflows_core.registry import KnownTask, known_tasks
-from ecoscope_workflows_core.requirements import CondaDependency
 
 T = TypeVar("T")
 
@@ -386,11 +385,11 @@ def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
     return wrapper
 
 
-class Requirements(_ForbidExtra):
-    """Requirements for a workflow."""
+# class Requirements(_ForbidExtra):
+#     """Requirements for a workflow."""
 
-    compile: list[CondaDependency]
-    run: list[CondaDependency]
+#     compile: list[CondaDependency]
+#     run: list[CondaDependency]
 
 
 class Spec(_ForbidExtra):

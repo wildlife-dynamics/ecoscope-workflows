@@ -31,7 +31,9 @@ PLATFORMS: list[Platform] = [
 ]
 
 
-def _channel_from_str(value: str) -> Channel:
+def _channel_from_str(value: str | Channel) -> Channel:
+    if isinstance(value, Channel):
+        return value
     for channel in CHANNELS:
         if channel.name == value:
             return channel
@@ -43,10 +45,21 @@ ChannelType = Annotated[
     BeforeValidator(_channel_from_str),
     PlainSerializer(lambda value: value.name),
 ]
+
+
+def _platform_from_str(value: str | Platform) -> Platform:
+    if isinstance(value, Platform):
+        return value
+    for platform in PLATFORMS:
+        if str(platform) == value:
+            return platform
+    raise ValueError(f"Unknown platform {value}")
+
+
 PlatformType = Annotated[
     Platform,
-    BeforeValidator(lambda value: Platform(value)),
-    PlainSerializer(lambda value: value.name),
+    BeforeValidator(_platform_from_str),
+    PlainSerializer(lambda value: str(value)),
 ]
 
 

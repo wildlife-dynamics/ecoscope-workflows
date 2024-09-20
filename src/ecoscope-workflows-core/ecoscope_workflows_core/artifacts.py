@@ -34,8 +34,8 @@ class Dags(BaseModel):
 
 class PixiProject(_AllowArbitraryTypes):
     name: str
-    channels: list[ChannelType] = [c.name for c in CHANNELS]
-    platforms: list[PlatformType] = [str(p) for p in PLATFORMS]
+    channels: list[ChannelType] = CHANNELS
+    platforms: list[PlatformType] = PLATFORMS
 
 
 FeatureName = str
@@ -64,8 +64,10 @@ class PixiToml(_AllowArbitraryTypes):
     environments: dict[str, Environment] = Field(default_factory=dict)
 
     @classmethod
-    def from_file(cls, src: str) -> "PixiToml":
-        with open(src, "rb") as f:
+    def from_file(cls, src: str | Path) -> "PixiToml":
+        if isinstance(src, str):
+            src = Path(src)
+        with src.open("rb") as f:
             content = tomllib.load(f)
         return cls(**content)
 

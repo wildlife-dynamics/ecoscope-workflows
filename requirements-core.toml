@@ -1,0 +1,11 @@
+jinja2 = "*"
+pandera = "*"
+pydantic = "<2.9.0"
+pydantic-settings = "*"
+py-rattler = "*"
+"ruamel.yaml" = "*"
+ruff = "*"
+tomli-w = "*"
+cloudpathlib-gs = "*"
+lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
+pydot = "*"
