@@ -12,10 +12,10 @@ source:
 build:
   python:
     entry_points:
-      - ecoscope-workflows = ecoscope_workflows.core.__main__:main
+      - ecoscope-workflows = ecoscope_workflows_core.__main__:main
   noarch: python
-  script: python -m pip install src/ecoscope-workflows/core -vv --no-deps
-  number: 8
+  script: python -m pip install src/ecoscope-workflows-core -vv --no-deps
+  number: 11
 
 requirements:
   host:
@@ -40,9 +40,9 @@ requirements:
 tests:
   - python:
       imports:
-        - ecoscope_workflows.core
-        - ecoscope_workflows.core.tasks
-        - ecoscope_workflows.core.testing
+        - ecoscope_workflows_core
+        - ecoscope_workflows_core.tasks
+        - ecoscope_workflows_core.testing
 
 about:
   license: BSD-3-Clause

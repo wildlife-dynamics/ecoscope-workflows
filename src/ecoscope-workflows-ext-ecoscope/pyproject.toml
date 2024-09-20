@@ -1,0 +1,101 @@
+[project]
+name = "ecoscope-workflows-ext-ecoscope"
+dynamic = ["version"]
+requires-python = ">=3.10"
+# note: sentences like this become less confusing if/when ecoscope-workflows is named more generically
+description = "Ecoscope extension tasks and connections for ecoscope-workflows."
+readme = "README.md"
+authors = [
+  { name = "Charles Stern", email = "charless@earthranger.com" }
+]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+]
+license = { text = "BSD-3-Clause"}
+[project.entry-points."ecoscope_workflows"]  # TODO: this should be "ecoscope-workflows"?
+tasks = "ecoscope_workflows_ext_ecoscope.tasks"  # for user extensions, this could be "my_custom_tasks.tasks"
+[project.urls]
+Homepage = "https://github.com/wildlife-dynamics/ecoscope-workflows"
+Tracker = "https://github.com/wildlife-dynamics/ecoscope-workflows/issues"
+
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+[tool.hatch.build.targets.wheel]
+packages = ["ecoscope_workflows_ext_ecoscope"]
+exclude = ["vendor"]
+only-packages = true
+[tool.hatch.build.targets.sdist]
+include = ["ecoscope_workflows_ext_ecoscope"]
+exclude = ["vendor"]
+[tool.hatch.build.hooks.vcs]
+version-file = "ecoscope_workflows_ext_ecoscope/_version.py"
+[tool.hatch.version]
+source = "vcs"
+fallback-version = "9999"
+[tool.hatch.version.raw-options]
+root = "../../../.."
+
+
+[tool.pixi.project]
+channels = [
+    "https://prefix.dev/ecoscope-workflows",  # our custom channel, recipes in ./vendor directory
+    "conda-forge",
+]
+platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
+[tool.pixi.pypi-dependencies]
+# vendoring via symlink, so pixi is not confused by the pixi configuration in ecoscope-workflows.core
+"ecoscope-workflows-core" = { path = "./vendor/ecoscope-workflows-core", editable = true }
+"ecoscope-workflows-ext-ecoscope" = { path = ".", editable = true }
+[tool.pixi.dependencies]
+# restating dependencies from ecoscope-workflows.core to ensure they are included
+# todo: ensure exact 1:1 synchronization with ecoscope-workflows.core
+# note: if depending on a conda release of ecoscope-workflows, restatement should not be necessary
+# perhaps possible to demonstrate this here by making the restatement specific to a 'dev' environment
+jinja2 = "*"
+pandera = "*"
+pydantic = "<2.9.0"
+pydantic-settings = "*"
+"ruamel.yaml" = "*"
+ruff = "*"
+tomli-w = "*"
+# todo: split into optional package variants? (e.g. "ecoscope-workflows.core[gs,lithops]")
+# this is just a lot simpler for now, and in most cases we will want these dependencies
+cloudpathlib-gs = "*"
+lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
+pydot = "*"
+# additional dependencies added by this extension
+ecoscope = { version = "v1.8.3", channel = "https://prefix.dev/ecoscope-workflows" }
+
+[tool.mypy]
+plugins = ["pandera.mypy", "pydantic.mypy"]
+[tool.pixi.feature.mypy]
+dependencies = { mypy = "*", pandas-stubs = "*", pandera-mypy = "*" }
+pypi-dependencies = { types-shapely = "*" }
+tasks = { mypy = "mypy --package ecoscope_workflows_ext_ecoscope --package tests" }
+
+[tool.pixi.feature.py310.dependencies]
+python = "3.10.*"
+[tool.pixi.feature.py311.dependencies]
+python = "3.11.*"
+[tool.pixi.feature.py312.dependencies]
+python = "3.12.*"
+[tool.pixi.feature.test.dependencies]
+pytest = "*"
+
+[tool.pixi.environments]
+default = { solve-group = "default" }
+
+mypy-py310 = { features = ["test", "py310", "mypy"], solve-group = "py310" }
+mypy-py311 = { features = ["test", "py311", "mypy"], solve-group = "py311" }
+mypy-py312 = { features = ["test", "py312", "mypy"], solve-group = "py312" }
+
+test-py310 = { features = ["test", "py310"], solve-group = "py310" }
+test-py311 = { features = ["test", "py311"], solve-group = "py311" }
+test-py312 = { features = ["test", "py312"], solve-group = "py312" }
