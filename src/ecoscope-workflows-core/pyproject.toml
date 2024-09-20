@@ -60,6 +60,9 @@ cloudpathlib-gs = "*"
 lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
 pydot = "*"
 
+[tool.pixi.feature.docs.dependencies]
+pdoc3 = "*"
+
 [tool.mypy]
 plugins = ["pandera.mypy", "pydantic.mypy"]
 [tool.pixi.feature.mypy]
@@ -77,6 +80,8 @@ pytest = "*"
 
 [tool.pixi.environments]
 default = { solve-group = "default" }
+
+docs = { features = ["docs"], solve-group = "default" }
 
 mypy-py310 = { features = ["test", "py310", "mypy"], solve-group = "py310" }
 mypy-py311 = { features = ["test", "py311", "mypy"], solve-group = "py311" }
