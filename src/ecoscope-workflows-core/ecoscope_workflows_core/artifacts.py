@@ -120,8 +120,7 @@ class Tests(BaseModel):
     test_dags: str = Field(default=TEST_DAGS, alias="test_dags.py")
 
 
-DEFAULT_PIXI_TOML = PixiToml.from_text(
-    """\
+DEFAULT_PIXI_TOML = """\
 [project]
 name = "default"
 channels = [
@@ -146,20 +145,21 @@ default = { solve-group = "default" }
 test = { features = ["test"], solve-group = "default" }
 
 """
-    # todo: support build; push; deploy; run; test; etc. tasks
-    # [feature.docker.tasks]
-    # build-base = "docker build -t mode-map-base -f Dockerfile.base ."
-    # build-runner = "docker build -t mode-map-runner -f Dockerfile.runner ."
-    # build-deploy-worker = "docker build -t mode-map-worker -f Dockerfile.worker ."
-)
+# todo: support build; push; deploy; run; test; etc. tasks
+# [feature.docker.tasks]
+# build-base = "docker build -t mode-map-base -f Dockerfile.base ."
+# build-runner = "docker build -t mode-map-runner -f Dockerfile.runner ."
+# build-deploy-worker = "docker build -t mode-map-worker -f Dockerfile.worker ."
 
 
-class WorkflowArtifacts(BaseModel):
-    model_config = dict(arbitrary_types_allowed=True)
+def _default_pixi_toml():
+    return PixiToml.from_text(DEFAULT_PIXI_TOML)
 
+
+class WorkflowArtifacts(_AllowArbitraryTypes):
     dags: Dags
     params_jsonschema: dict
-    pixi_toml: PixiToml = DEFAULT_PIXI_TOML
+    pixi_toml: PixiToml = Field(default_factory=_default_pixi_toml)
     tests: Tests = Field(default_factory=Tests)
 
     def dump(self, root: Path, clobber: bool = False):
