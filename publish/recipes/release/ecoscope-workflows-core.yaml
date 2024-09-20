@@ -7,15 +7,15 @@ package:
   version: ${{ version }}
 
 source:
-  path: ../../../src/ecoscope-workflows/core  # relative to recipe directory
+  path: ../../..  # get back to root of repo
 
 build:
   python:
     entry_points:
       - ecoscope-workflows = ecoscope_workflows.core.__main__:main
   noarch: python
-  script: python -m pip install . -vv --no-deps
-  number: 4
+  script: python -m pip install src/ecoscope-workflows/core -vv --no-deps
+  number: 8
 
 requirements:
   host:

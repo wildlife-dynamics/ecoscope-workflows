@@ -7,12 +7,12 @@ package:
   version: ${{ version }}
 
 source:
-  path: ../../../src/ecoscope-workflows/ext/ecoscope  # relative to recipe directory
+  path: ../../..  # get back to root of repo
 
 build:
   noarch: python
-  script: python -m pip install . -vv --no-deps
-  number: 4
+  script: python -m pip install src/ecoscope-workflows/ext/ecoscope -vv --no-deps
+  number: 8
 
 requirements:
   host:
@@ -30,6 +30,7 @@ tests:
       imports:
         - ecoscope_workflows.ext.ecoscope
         - ecoscope_workflows.ext.ecoscope.tasks
+        - ecoscope_workflows.ext.ecoscope.tasks.results
 
 about:
   license: BSD-3-Clause
