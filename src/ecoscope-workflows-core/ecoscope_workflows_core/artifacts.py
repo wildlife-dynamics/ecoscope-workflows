@@ -153,7 +153,7 @@ from pathlib import Path
 
 import pytest
 
-from ecoscope_workflows.core.testing import test_case
+from ecoscope_workflows_core.testing import test_case
 
 
 WORKFLOW = Path(__file__).parent.parent

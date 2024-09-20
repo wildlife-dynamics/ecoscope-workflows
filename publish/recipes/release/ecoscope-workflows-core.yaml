@@ -15,7 +15,7 @@ build:
       - ecoscope-workflows = ecoscope_workflows_core.__main__:main
   noarch: python
   script: python -m pip install src/ecoscope-workflows-core -vv --no-deps
-  number: 11
+  number: 0
 
 requirements:
   host:
