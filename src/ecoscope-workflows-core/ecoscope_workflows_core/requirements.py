@@ -1,69 +1,99 @@
 from typing import Annotated, Any
 
-from packaging.requirements import SpecifierSet
-from packaging.version import Version
 from pydantic import Discriminator, Tag as PydanticTag
 from pydantic.functional_serializers import PlainSerializer
 from pydantic.functional_validators import BeforeValidator
+from rattler import (
+    MatchSpec,
+    Channel,
+    ChannelConfig,
+    NamelessMatchSpec,
+    Platform,
+    Version,
+)
 
 from ecoscope_workflows_core._models import _AllowArbitraryTypes
 
 
-def _parse_version_or_specifier(input_str):
-    if any(op in input_str for op in ["<", ">", "=", "!", "~"]):
-        return SpecifierSet(input_str)
-    elif input_str == "*":
-        return SpecifierSet()
-    else:
-        return Version(input_str)
-
-
-def _serialize_version_or_specset(value: Version | SpecifierSet) -> str:
-    match value:
-        case Version():
-            return str(value)
-        case SpecifierSet():
-            if not value:
-                return "*"
-            return str(value)
-        case _:
-            raise ValueError(f"Unexpected value {value}")
-
-
-VersionOrSpecSet = Annotated[
-    Version | SpecifierSet,
-    BeforeValidator(_parse_version_or_specifier),
-    PydanticTag("short-form-conda-dep"),
-    PlainSerializer(_serialize_version_or_specset),
+LOCAL_CHANNEL = Channel(
+    "ecoscope-workflows-local",
+    ChannelConfig(channel_alias="file:///tmp/ecoscope-workflows/release/artifacts/"),
+)
+RELEASE_CHANNEL = Channel(
+    "ecoscope-workflows-release",
+    ChannelConfig(channel_alias="https://repo.prefix.dev/ecoscope-workflows"),
+)
+CHANNELS: list[Channel] = [LOCAL_CHANNEL, RELEASE_CHANNEL, Channel("conda-forge")]
+PLATFORMS: list[Platform] = [
+    Platform("linux-64"),
+    Platform("linux-aarch64"),
+    Platform("osx-arm64"),
 ]
 
 
-class LongFormCondaDependency(_AllowArbitraryTypes):
-    version: VersionOrSpecSet
+def _channel_from_str(value: str) -> Channel:
+    for channel in CHANNELS:
+        if channel.name == value:
+            return channel
+    raise ValueError(f"Unknown channel {value}")
+
+
+ChannelType = Annotated[
+    Channel,
+    BeforeValidator(_channel_from_str),
+    PlainSerializer(lambda value: value.name),
+]
+PlatformType = Annotated[
+    Platform,
+    BeforeValidator(lambda value: Platform(value)),
+    PlainSerializer(lambda value: value.name),
+]
+
+
+def _namelessmatchspec_from_dict(value: dict) -> NamelessMatchSpec:
+    assert "version" in value, f"Expected 'version' key in {value}"
+    assert "channel" in value, f"Expected 'channel' key in {value}"
+    foo_pkg = "foo"  # placeholder to use from_match_spec constructor
+    m = MatchSpec(f"{value['channel']}::{foo_pkg} {value['version']}")
+    return NamelessMatchSpec.from_match_spec(m)
+
+
+def _namelessmatchspec_to_dict(value: NamelessMatchSpec) -> dict:
+    return {"version": str(value.version), "channel": value.channel}
+
+
+NamelessMatchSpecType = Annotated[
+    NamelessMatchSpec,
+    BeforeValidator(_namelessmatchspec_from_dict),
+    PlainSerializer(_namelessmatchspec_to_dict),
+]
+
+
+class LongFormMatchSpec(_AllowArbitraryTypes):
+    version: Version
     channel: str = "conda-forge"
 
 
 def _short_versus_long_form(value: Any) -> str:
     if isinstance(value, dict):
-        return "long-form-conda-dep"
-    return "short-form-conda-dep"
+        return "long-form-match-spec"
+    return "short-form-match-spec"
 
 
-def _serialize_conda_dependency(
-    value: Version | SpecifierSet | LongFormCondaDependency,
+def _serialize_matchspec(
+    value: Version | LongFormMatchSpec,
 ) -> str | dict:
     match value:
-        case Version() | SpecifierSet():
-            return _serialize_version_or_specset(value)
-        case LongFormCondaDependency():
+        case Version():
+            return str(value)
+        case LongFormMatchSpec():
             return value.model_dump()
         case _:
             raise ValueError(f"Unexpected value {value}")
 
 
-CondaDependency = Annotated[
-    VersionOrSpecSet
-    | Annotated[LongFormCondaDependency, PydanticTag("long-form-conda-dep")],
+CondaMatchSpec = Annotated[
+    Version | Annotated[LongFormMatchSpec, PydanticTag("long-form-match-spec")],
     Discriminator(_short_versus_long_form),
-    PlainSerializer(_serialize_conda_dependency),
+    PlainSerializer(_serialize_matchspec),
 ]

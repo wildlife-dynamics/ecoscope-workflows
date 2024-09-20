@@ -12,13 +12,14 @@ import tomli_w
 from pydantic import BaseModel, Field
 
 from ecoscope_workflows_core._models import _AllowArbitraryTypes
-from ecoscope_workflows_core.requirements import CondaDependency
-
-
-LOCAL_CHANNEL = "file:///tmp/ecoscope-workflows/release/artifacts/"
-RELEASE_CHANNEL = "https://prefix.dev/ecoscope-workflows"
-CHANNELS = [LOCAL_CHANNEL, RELEASE_CHANNEL, "conda-forge"]
-PLATFORMS = ["linux-64", "linux-aarch64", "osx-arm64"]
+from ecoscope_workflows_core.requirements import (
+    ChannelType,
+    NamelessMatchSpecType,
+    PlatformType,
+    CHANNELS,
+    PLATFORMS,
+    LOCAL_CHANNEL,
+)
 
 
 class Dags(BaseModel):
@@ -31,10 +32,10 @@ class Dags(BaseModel):
     script_sequential: str = Field(..., alias="script-sequential.py")
 
 
-class PixiProject(BaseModel):
+class PixiProject(_AllowArbitraryTypes):
     name: str
-    channels: list[str] = CHANNELS
-    platforms: list[str] = PLATFORMS
+    channels: list[ChannelType] = [c.name for c in CHANNELS]
+    platforms: list[PlatformType] = [str(p) for p in PLATFORMS]
 
 
 FeatureName = str
@@ -45,7 +46,7 @@ PixiTaskCommand = str
 class Feature(_AllowArbitraryTypes):
     """A `pixi.toml` feature definition."""
 
-    dependencies: dict[str, CondaDependency]
+    dependencies: dict[str, NamelessMatchSpecType]
     tasks: dict[PixiTaskName, PixiTaskCommand] = Field(default_factory=dict)
 
 
@@ -58,9 +59,9 @@ class PixiToml(_AllowArbitraryTypes):
     """The pixi.toml file that specifies the workflow."""
 
     project: PixiProject
-    dependencies: dict[str, CondaDependency]
-    feature: dict[FeatureName, Feature]
-    environments: dict[str, Environment]
+    dependencies: dict[str, NamelessMatchSpecType]
+    feature: dict[FeatureName, Feature] = Field(default_factory=dict)
+    environments: dict[str, Environment] = Field(default_factory=dict)
 
     @classmethod
     def from_file(cls, src: str) -> "PixiToml":
@@ -117,10 +118,13 @@ class Tests(BaseModel):
 DEFAULT_PIXI_TOML = PixiToml(
     project=PixiProject(name=""),
     dependencies={
-        "ecoscope-workflows-core": {"version": "*", "channel": LOCAL_CHANNEL},
+        "ecoscope-workflows-core": {"version": "*", "channel": LOCAL_CHANNEL.name},
         # FIXME(cisaacstern): This should be added by the user in their spec, since technically
         # the core package should not depend on the extension package. But for now, this is fine.
-        "ecoscope-workflows-ext-ecoscope": {"version": "*", "channel": LOCAL_CHANNEL},
+        "ecoscope-workflows-ext-ecoscope": {
+            "version": "*",
+            "channel": LOCAL_CHANNEL.name,
+        },
     },
     feature={
         "test": Feature(
