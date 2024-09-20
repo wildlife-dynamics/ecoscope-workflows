@@ -2,8 +2,8 @@ from typing import Annotated
 
 from pydantic import Field
 
-from ecoscope_workflows.core.annotations import AnyGeoDataFrame
-from ecoscope_workflows.core.decorators import task
+from ecoscope_workflows_core.annotations import AnyGeoDataFrame
+from ecoscope_workflows_core.decorators import task
 
 
 @task

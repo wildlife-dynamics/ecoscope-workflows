@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from ecoscope_workflows.ext.ecoscope.tasks.results._ecoplot import (
+from ecoscope_workflows_ext_ecoscope.tasks.results._ecoplot import (
     LayoutStyle,
     LineStyle,
     PlotStyle,
