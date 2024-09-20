@@ -16,8 +16,9 @@ from pydantic import Field, BaseModel, Discriminator, Tag as PydanticTag
 from pydantic.functional_serializers import PlainSerializer
 from pydantic.functional_validators import BeforeValidator
 
-VENDOR_CHANNEL = "https://prefix.dev/ecoscope-workflows"
-CHANNELS = [VENDOR_CHANNEL, "conda-forge"]
+LOCAL_CHANNEL = "file:///tmp/ecoscope-workflows/release/artifacts/"
+RELEASE_CHANNEL = "https://prefix.dev/ecoscope-workflows"
+CHANNELS = [LOCAL_CHANNEL, RELEASE_CHANNEL, "conda-forge"]
 PLATFORMS = ["linux-64", "linux-aarch64", "osx-arm64"]
 
 
@@ -176,12 +177,41 @@ class Tests(BaseModel):
     test_dags: str = Field(default=TEST_DAGS, alias="test_dags.py")
 
 
+DEFAULT_PIXI_TOML = PixiToml(
+    project=PixiProject(name=""),
+    dependencies={
+        "ecoscope-workflows-core": {"version": "*", "channel": LOCAL_CHANNEL},
+        # FIXME(cisaacstern): This should be added by the user in their spec, since technically
+        # the core package should not depend on the extension package. But for now, this is fine.
+        "ecoscope-workflows-ext-ecoscope": {"version": "*", "channel": LOCAL_CHANNEL},
+    },
+    feature={
+        "test": Feature(
+            dependencies={"pytest": "*"},
+            tasks={
+                "test-async-local-mock-io": "python -m pytest tests -k 'async and mock-io'",
+                "test-sequential-local-mock-io": "python -m pytest tests -k 'sequential and mock-io'",
+            },
+        )
+    },
+    # todo: support docker build; push; deploy; run; test; etc. tasks
+    # [feature.docker.tasks]
+    # build-base = "docker build -t mode-map-base -f Dockerfile.base ."
+    # build-runner = "docker build -t mode-map-runner -f Dockerfile.runner ."
+    # build-deploy-worker = "docker build -t mode-map-worker -f Dockerfile.worker ."
+    environments={
+        "default": Environment(features=["default"]),
+        "test": Environment(features=["default"], solve_group="default"),
+    },
+)
+
+
 class WorkflowArtifacts(BaseModel):
     model_config = dict(arbitrary_types_allowed=True)
 
     dags: Dags
     params_jsonschema: dict
-    # pixi_toml: dict  # if SymlinkVendor is None, we can simplify this and just install a release of workflows from prefix.dev
+    pixi_toml: PixiToml = DEFAULT_PIXI_TOML
     tests: Tests = Field(default_factory=Tests)
 
     def dump(self, root: Path, clobber: bool = False):
@@ -204,4 +234,4 @@ class WorkflowArtifacts(BaseModel):
         with root.joinpath("params-jsonschema.json").open("w") as f:
             json.dump(self.params_jsonschema, f, indent=2)
 
-        # self.pixi_toml.dump(path / "pixi.toml")
+        self.pixi_toml.dump(root.joinpath("pixi.toml"))
