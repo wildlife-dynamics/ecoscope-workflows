@@ -3,7 +3,7 @@ from ecoscope_workflows_core.registry import KnownTask
 
 def test_known_task_parameters_jsonschema():
     importable_reference = (
-        "ecoscope_workflows.ext.ecoscope.tasks.io.get_subjectgroup_observations"
+        "ecoscope_workflows_ext_ecoscope.tasks.io.get_subjectgroup_observations"
     )
     kt = KnownTask(importable_reference=importable_reference)
     assert kt.parameters_jsonschema() == {
