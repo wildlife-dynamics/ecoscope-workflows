@@ -36,9 +36,8 @@ jobs:
     strategy:
       matrix:
         script: [
-          "sequential",
-          # "async-local",
-          # "async-cloudrun",
+          "async-local",
+          "sequential-local",
         ]
         compilation-spec: [
           "mode-map",

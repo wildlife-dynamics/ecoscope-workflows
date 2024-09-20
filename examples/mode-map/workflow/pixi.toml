@@ -14,9 +14,8 @@ ecoscope-workflows-ext-ecoscope = {version = "*", channel = "file:///tmp/ecoscop
 [feature.test.dependencies]
 pytest = "*"
 [feature.test.tasks]
-# test-async-local = "pytest test -k async"
-# test-async-remote = "pytest test -k async"
-test-sequential-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
+test-async-local-mock-io = "python -m pytest tests -k 'async and mock-io'"
+test-sequential-local-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
 
 # todo: support build; push; deploy; run; test; etc. tasks
 # [feature.docker.tasks]
