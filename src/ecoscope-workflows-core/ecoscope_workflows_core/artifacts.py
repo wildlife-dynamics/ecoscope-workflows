@@ -34,8 +34,8 @@ class Dags(BaseModel):
 
 class PixiProject(_AllowArbitraryTypes):
     name: str
-    channels: list[ChannelType] = CHANNELS
-    platforms: list[PlatformType] = PLATFORMS
+    channels: list[ChannelType] = [c.name for c in CHANNELS]
+    platforms: list[PlatformType] = [str(p) for p in PLATFORMS]
 
 
 FeatureName = str

@@ -31,9 +31,7 @@ PLATFORMS: list[Platform] = [
 ]
 
 
-def _channel_from_str(value: str | Channel) -> Channel:
-    if isinstance(value, Channel):
-        return value
+def _channel_from_str(value: str) -> Channel:
     for channel in CHANNELS:
         if channel.name == value:
             return channel
@@ -47,9 +45,7 @@ ChannelType = Annotated[
 ]
 
 
-def _platform_from_str(value: str | Platform) -> Platform:
-    if isinstance(value, Platform):
-        return value
+def _platform_from_str(value: str) -> Platform:
     for platform in PLATFORMS:
         if str(platform) == value:
             return platform
