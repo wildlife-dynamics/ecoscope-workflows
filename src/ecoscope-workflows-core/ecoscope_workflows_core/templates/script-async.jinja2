@@ -14,10 +14,10 @@ import os
 import yaml
 {%- if testing %}
 import warnings  # 🧪
-from ecoscope_workflows.core.testing import create_task_magicmock  # 🧪
+from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
 {% endif %}
 
-from ecoscope_workflows.core.graph import DependsOn, DependsOnSequence, Graph, Node
+from ecoscope_workflows_core.graph import DependsOn, DependsOnSequence, Graph, Node
 
 {% for t in spec.workflow -%}
 {{ t.known_task.importable_reference.statement }}

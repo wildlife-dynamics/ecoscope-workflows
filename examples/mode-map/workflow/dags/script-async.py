@@ -2,12 +2,12 @@ import argparse
 import os
 import yaml
 
-from ecoscope_workflows.core.graph import DependsOn, DependsOnSequence, Graph, Node
+from ecoscope_workflows_core.graph import DependsOn, DependsOnSequence, Graph, Node
 
-from ecoscope_workflows.ext.ecoscope.tasks.io import get_subjectgroup_observations
-from ecoscope_workflows.ext.ecoscope.tasks.results import create_map_layer
-from ecoscope_workflows.ext.ecoscope.tasks.results import draw_ecomap
-from ecoscope_workflows.core.tasks.io import persist_text
+from ecoscope_workflows_ext_ecoscope.tasks.io import get_subjectgroup_observations
+from ecoscope_workflows_ext_ecoscope.tasks.results import create_map_layer
+from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecomap
+from ecoscope_workflows_core.tasks.io import persist_text
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
