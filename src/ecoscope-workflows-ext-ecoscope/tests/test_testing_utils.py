@@ -5,7 +5,7 @@ from ecoscope_workflows_core.util import load_example_return_from_task_reference
 
 
 def test_create_task_magicmock():
-    anchor = "ecoscope_workflows.ext.ecoscope.tasks.io"
+    anchor = "ecoscope_workflows_ext_ecoscope.tasks.io"
     func_name = "get_subjectgroup_observations"
     get_subjectgroup_observations = create_task_magicmock(anchor, func_name)
     assert isinstance(get_subjectgroup_observations, MockSyncTask)
@@ -15,7 +15,7 @@ def test_create_task_magicmock():
 
 
 def test_create_task_magicmock_lithops_executor():
-    anchor = "ecoscope_workflows.ext.ecoscope.tasks.io"
+    anchor = "ecoscope_workflows_ext_ecoscope.tasks.io"
     func_name = "get_subjectgroup_observations"
     get_subjectgroup_observations = create_task_magicmock(anchor, func_name)
     assert isinstance(get_subjectgroup_observations, MockSyncTask)
