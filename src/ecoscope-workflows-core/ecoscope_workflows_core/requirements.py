@@ -1,6 +1,5 @@
-from typing import Annotated, Any
+from typing import Annotated
 
-from pydantic import Discriminator, Tag as PydanticTag
 from pydantic.functional_serializers import PlainSerializer
 from pydantic.functional_validators import BeforeValidator
 from rattler import (
@@ -9,10 +8,7 @@ from rattler import (
     ChannelConfig,
     NamelessMatchSpec,
     Platform,
-    Version,
 )
-
-from ecoscope_workflows_core._models import _AllowArbitraryTypes
 
 
 LOCAL_CHANNEL = Channel(
@@ -87,34 +83,4 @@ NamelessMatchSpecType = Annotated[
     NamelessMatchSpec,
     BeforeValidator(_parse_namelessmatchspec),
     PlainSerializer(_serialize_namelessmatchspec),
-]
-
-
-class LongFormMatchSpec(_AllowArbitraryTypes):
-    version: Version
-    channel: str = "conda-forge"
-
-
-def _short_versus_long_form(value: Any) -> str:
-    if isinstance(value, dict):
-        return "long-form-match-spec"
-    return "short-form-match-spec"
-
-
-def _serialize_matchspec(
-    value: Version | LongFormMatchSpec,
-) -> str | dict:
-    match value:
-        case Version():
-            return str(value)
-        case LongFormMatchSpec():
-            return value.model_dump()
-        case _:
-            raise ValueError(f"Unexpected value {value}")
-
-
-CondaMatchSpec = Annotated[
-    Version | Annotated[LongFormMatchSpec, PydanticTag("long-form-match-spec")],
-    Discriminator(_short_versus_long_form),
-    PlainSerializer(_serialize_matchspec),
 ]
