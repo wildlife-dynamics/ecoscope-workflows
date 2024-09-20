@@ -33,8 +33,12 @@ class Dags(BaseModel):
 
 class PixiProject(_AllowArbitraryTypes):
     name: str
-    channels: list[ChannelType] = [c.name for c in CHANNELS]
-    platforms: list[PlatformType] = [str(p) for p in PLATFORMS]
+    # mypy throws:
+    # `error: List comprehension has incompatible type List[str | None]; expected List[Channel]  [misc]`
+    # `error: List comprehension has incompatible type List[str]; expected List[Platform]  [misc]`
+    # but pydantic parsing handles these correctly (and stumbles without the list comprehension)
+    channels: list[ChannelType] = [c.name for c in CHANNELS]  # type: ignore[misc]
+    platforms: list[PlatformType] = [str(p) for p in PLATFORMS]  # type: ignore[misc]
 
 
 FeatureName = str
