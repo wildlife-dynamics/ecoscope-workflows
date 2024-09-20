@@ -18,7 +18,6 @@ from ecoscope_workflows_core.requirements import (
     PlatformType,
     CHANNELS,
     PLATFORMS,
-    LOCAL_CHANNEL,
 )
 
 
@@ -71,6 +70,10 @@ class PixiToml(_AllowArbitraryTypes):
             content = tomllib.load(f)
         return cls(**content)
 
+    @classmethod
+    def from_text(cls, text: str) -> "PixiToml":
+        return cls(**tomllib.loads(text))
+
     def dump(self, dst: Path):
         with dst.open("wb") as f:
             tomli_w.dump(self.model_dump(), f)
@@ -117,35 +120,37 @@ class Tests(BaseModel):
     test_dags: str = Field(default=TEST_DAGS, alias="test_dags.py")
 
 
-DEFAULT_PIXI_TOML = PixiToml(
-    project=PixiProject(name=""),
-    dependencies={
-        "ecoscope-workflows-core": {"version": "*", "channel": LOCAL_CHANNEL.name},
-        # FIXME(cisaacstern): This should be added by the user in their spec, since technically
-        # the core package should not depend on the extension package. But for now, this is fine.
-        "ecoscope-workflows-ext-ecoscope": {
-            "version": "*",
-            "channel": LOCAL_CHANNEL.name,
-        },
-    },
-    feature={
-        "test": Feature(
-            dependencies={"pytest": "*"},
-            tasks={
-                "test-async-local-mock-io": "python -m pytest tests -k 'async and mock-io'",
-                "test-sequential-local-mock-io": "python -m pytest tests -k 'sequential and mock-io'",
-            },
-        )
-    },
-    # todo: support docker build; push; deploy; run; test; etc. tasks
+DEFAULT_PIXI_TOML = PixiToml.from_text(
+    """\
+[project]
+name = "default"
+channels = [
+    "ecoscope-workflows-local",
+    "ecoscope-workflows-release",
+    "conda-forge",
+]
+platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
+
+[dependencies]
+ecoscope-workflows-core = { version = "*", channel = "file:///tmp/ecoscope-workflows/release/artifacts/" }
+ecoscope-workflows-ext-ecoscope = {version = "*", channel = "file:///tmp/ecoscope-workflows/release/artifacts/" }
+
+[feature.test.dependencies]
+pytest = "*"
+[feature.test.tasks]
+test-async-local-mock-io = "python -m pytest tests -k 'async and mock-io'"
+test-sequential-local-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
+
+[environments]
+default = { solve-group = "default" }
+test = { features = ["test"], solve-group = "default" }
+
+"""
+    # todo: support build; push; deploy; run; test; etc. tasks
     # [feature.docker.tasks]
     # build-base = "docker build -t mode-map-base -f Dockerfile.base ."
     # build-runner = "docker build -t mode-map-runner -f Dockerfile.runner ."
     # build-deploy-worker = "docker build -t mode-map-worker -f Dockerfile.worker ."
-    environments={
-        "default": Environment(features=["default"]),
-        "test": Environment(features=["default"], solve_group="default"),
-    },
 )
 
 

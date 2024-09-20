@@ -1,10 +1,9 @@
-from pathlib import Path
 from textwrap import dedent
 
 from ecoscope_workflows_core.artifacts import PixiToml
 
 
-def test_PixiToml(tmp_path: Path):
+def test_PixiToml():
     # TODO: how do we use/register the canonical names for custom channels with py-rattler?
     content = dedent(
         """\
@@ -22,6 +21,5 @@ def test_PixiToml(tmp_path: Path):
         ecoscope-workflows-ext-ecoscope = {version = "*", channel = "file:///tmp/ecoscope-workflows/release/artifacts/" }
         """
     )
-    tmp_path.joinpath("pixi.toml").write_text(content)
-    pixitoml = PixiToml.from_file(tmp_path.joinpath("pixi.toml"))
+    pixitoml = PixiToml.from_text(content)
     assert pixitoml.project.name == "example"

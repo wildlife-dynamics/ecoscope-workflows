@@ -67,14 +67,24 @@ def _namelessmatchspec_from_dict(value: dict) -> NamelessMatchSpec:
     return NamelessMatchSpec.from_match_spec(m)
 
 
-def _namelessmatchspec_to_dict(value: NamelessMatchSpec) -> dict:
+def _namelessmatchspec_from_str(value: str) -> NamelessMatchSpec:
+    return NamelessMatchSpec(value)
+
+
+def _parse_namelessmatchspec(value: str | dict) -> NamelessMatchSpec:
+    if isinstance(value, str):
+        return _namelessmatchspec_from_str(value)
+    return _namelessmatchspec_from_dict(value)
+
+
+def _serialize_namelessmatchspec(value: NamelessMatchSpec) -> dict:
     return {"version": str(value.version), "channel": value.channel}
 
 
 NamelessMatchSpecType = Annotated[
     NamelessMatchSpec,
-    BeforeValidator(_namelessmatchspec_from_dict),
-    PlainSerializer(_namelessmatchspec_to_dict),
+    BeforeValidator(_parse_namelessmatchspec),
+    PlainSerializer(_serialize_namelessmatchspec),
 ]
 
 
