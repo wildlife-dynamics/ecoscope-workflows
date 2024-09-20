@@ -2,7 +2,6 @@ import json
 import shutil
 import sys
 from pathlib import Path
-from typing import Annotated, Any
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -10,20 +9,16 @@ else:
     import tomli as tomllib
 
 import tomli_w
-from packaging.requirements import SpecifierSet
-from packaging.version import Version
-from pydantic import Field, BaseModel, Discriminator, Tag as PydanticTag
-from pydantic.functional_serializers import PlainSerializer
-from pydantic.functional_validators import BeforeValidator
+from pydantic import BaseModel, Field
+
+from ecoscope_workflows_core._models import _AllowArbitraryTypes
+from ecoscope_workflows_core.requirements import CondaDependency
+
 
 LOCAL_CHANNEL = "file:///tmp/ecoscope-workflows/release/artifacts/"
 RELEASE_CHANNEL = "https://prefix.dev/ecoscope-workflows"
 CHANNELS = [LOCAL_CHANNEL, RELEASE_CHANNEL, "conda-forge"]
 PLATFORMS = ["linux-64", "linux-aarch64", "osx-arm64"]
-
-
-class _AllowArbitraryTypes(BaseModel):
-    model_config = dict(arbitrary_types_allowed=True)
 
 
 class Dags(BaseModel):
@@ -42,64 +37,6 @@ class PixiProject(BaseModel):
     platforms: list[str] = PLATFORMS
 
 
-def _parse_version_or_specifier(input_str):
-    if any(op in input_str for op in ["<", ">", "=", "!", "~"]):
-        return SpecifierSet(input_str)
-    elif input_str == "*":
-        return SpecifierSet()
-    else:
-        return Version(input_str)
-
-
-def _serialize_version_or_specset(value: Version | SpecifierSet) -> str:
-    match value:
-        case Version():
-            return str(value)
-        case SpecifierSet():
-            if not value:
-                return "*"
-            return str(value)
-        case _:
-            raise ValueError(f"Unexpected value {value}")
-
-
-VersionOrSpecSet = Annotated[
-    Version | SpecifierSet,
-    BeforeValidator(_parse_version_or_specifier),
-    PydanticTag("short-form-conda-dep"),
-    PlainSerializer(_serialize_version_or_specset),
-]
-
-
-class LongFormCondaDependency(_AllowArbitraryTypes):
-    version: VersionOrSpecSet
-    channel: str = "conda-forge"
-
-
-def _short_versus_long_form(value: Any) -> str:
-    if isinstance(value, dict):
-        return "long-form-conda-dep"
-    return "short-form-conda-dep"
-
-
-def _serialize_conda_dependency(
-    value: Version | SpecifierSet | LongFormCondaDependency,
-) -> str | dict:
-    match value:
-        case Version() | SpecifierSet():
-            return _serialize_version_or_specset(value)
-        case LongFormCondaDependency():
-            return value.model_dump()
-        case _:
-            raise ValueError(f"Unexpected value {value}")
-
-
-CondaDependency = Annotated[
-    VersionOrSpecSet
-    | Annotated[LongFormCondaDependency, PydanticTag("long-form-conda-dep")],
-    Discriminator(_short_versus_long_form),
-    PlainSerializer(_serialize_conda_dependency),
-]
 FeatureName = str
 PixiTaskName = str
 PixiTaskCommand = str
