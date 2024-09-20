@@ -277,6 +277,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pthread-stubs-0.4-h36c2ea0_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/py-rattler-0.6.3-py312hda17c39_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyarrow-17.0.0-py312h9cebb41_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyarrow-core-17.0.0-py312h9cafe31_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -647,6 +648,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pthread-stubs-0.4-hb9de7d4_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/py-rattler-0.6.3-py312he723553_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyarrow-17.0.0-py312h55cb1a1_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyarrow-core-17.0.0-py312h66f7834_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -1008,6 +1010,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pthread-stubs-0.4-h27ca646_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/py-rattler-0.6.3-py312h3ddc590_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyarrow-17.0.0-py312ha814d7c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyarrow-core-17.0.0-py312he20ac61_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -1382,6 +1385,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pthread-stubs-0.4-h36c2ea0_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/py-rattler-0.6.3-py310h6c63255_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyarrow-17.0.0-py310hb7f781d_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyarrow-core-17.0.0-py310h85d79f8_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -1763,6 +1767,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pthread-stubs-0.4-hb9de7d4_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/py-rattler-0.6.3-py310h42c23b7_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyarrow-17.0.0-py310h36e1b2c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyarrow-core-17.0.0-py310h636e2c8_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -2135,6 +2140,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pthread-stubs-0.4-h27ca646_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/py-rattler-0.6.3-py310hcc0cffb_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyarrow-17.0.0-py310h24597f5_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyarrow-core-17.0.0-py310hf3d4daf_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -2513,6 +2519,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pthread-stubs-0.4-h36c2ea0_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/py-rattler-0.6.3-py311hafd3f86_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyarrow-17.0.0-py311hbd00459_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyarrow-core-17.0.0-py311h4510849_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -2892,6 +2899,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pthread-stubs-0.4-hb9de7d4_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/py-rattler-0.6.3-py311h4047cc9_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyarrow-17.0.0-py311h58b41f2_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyarrow-core-17.0.0-py311ha6d2531_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -3262,6 +3270,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pthread-stubs-0.4-h27ca646_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/py-rattler-0.6.3-py311h47c44cf_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyarrow-17.0.0-py311h35c05fe_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyarrow-core-17.0.0-py311he42f270_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -3639,6 +3648,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pthread-stubs-0.4-h36c2ea0_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/py-rattler-0.6.3-py312hda17c39_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyarrow-17.0.0-py312h9cebb41_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyarrow-core-17.0.0-py312h9cafe31_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -4018,6 +4028,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pthread-stubs-0.4-hb9de7d4_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/py-rattler-0.6.3-py312he723553_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyarrow-17.0.0-py312h55cb1a1_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyarrow-core-17.0.0-py312h66f7834_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -4388,6 +4399,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pthread-stubs-0.4-h27ca646_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/py-rattler-0.6.3-py312h3ddc590_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyarrow-17.0.0-py312ha814d7c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyarrow-core-17.0.0-py312he20ac61_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -4763,6 +4775,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pthread-stubs-0.4-h36c2ea0_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/py-rattler-0.6.3-py310h6c63255_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyarrow-17.0.0-py310hb7f781d_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyarrow-core-17.0.0-py310h85d79f8_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -5139,6 +5152,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pthread-stubs-0.4-hb9de7d4_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/py-rattler-0.6.3-py310h42c23b7_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyarrow-17.0.0-py310h36e1b2c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyarrow-core-17.0.0-py310h636e2c8_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -5506,6 +5520,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pthread-stubs-0.4-h27ca646_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/py-rattler-0.6.3-py310hcc0cffb_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyarrow-17.0.0-py310h24597f5_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyarrow-core-17.0.0-py310hf3d4daf_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -5879,6 +5894,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pthread-stubs-0.4-h36c2ea0_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/py-rattler-0.6.3-py311hafd3f86_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyarrow-17.0.0-py311hbd00459_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyarrow-core-17.0.0-py311h4510849_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -6253,6 +6269,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pthread-stubs-0.4-hb9de7d4_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/py-rattler-0.6.3-py311h4047cc9_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyarrow-17.0.0-py311h58b41f2_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyarrow-core-17.0.0-py311ha6d2531_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -6618,6 +6635,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pthread-stubs-0.4-h27ca646_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/py-rattler-0.6.3-py311h47c44cf_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyarrow-17.0.0-py311h35c05fe_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyarrow-core-17.0.0-py311he42f270_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -6990,6 +7008,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pthread-stubs-0.4-h36c2ea0_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/py-rattler-0.6.3-py312hda17c39_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyarrow-17.0.0-py312h9cebb41_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyarrow-core-17.0.0-py312h9cafe31_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -7364,6 +7383,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pthread-stubs-0.4-hb9de7d4_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/py-rattler-0.6.3-py312he723553_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyarrow-17.0.0-py312h55cb1a1_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyarrow-core-17.0.0-py312h66f7834_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -7729,6 +7749,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pthread-stubs-0.4-h27ca646_1001.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/ptyprocess-0.7.0-pyhd3deb0d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pure_eval-0.2.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/py-rattler-0.6.3-py312h3ddc590_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyarrow-17.0.0-py312ha814d7c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyarrow-core-17.0.0-py312he20ac61_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyasn1-0.6.1-pyhd8ed1ab_0.conda
@@ -11816,14 +11837,14 @@ packages:
   name: ecoscope-workflows-core
   version: '9999'
   path: ./vendor/ecoscope-workflows-core
-  sha256: 50056aac47ba3b2bc067b61a94daea7cc145b0e440306c69ec6ed899ac39c35b
+  sha256: 156376656c9853255c9878d6d594921afc439a5406de4d7f49304fa306f826b6
   requires_python: '>=3.10'
   editable: true
 - kind: pypi
   name: ecoscope-workflows-ext-ecoscope
   version: '9999'
   path: .
-  sha256: d2a8511347c0f3d775ea5f20f30ea9e3fb400616dcb5adca10d0900cb68a5017
+  sha256: 7a22be73252c573414dfea1a9f65f15f987ebca700390df71c862b023f911d9b
   requires_python: '>=3.10'
   editable: true
 - kind: conda
@@ -24172,6 +24193,213 @@ packages:
   - pkg:pypi/pure-eval?source=hash-mapping
   size: 16551
   timestamp: 1721585805256
+- kind: conda
+  name: py-rattler
+  version: 0.6.3
+  build: py310h42c23b7_1
+  build_number: 1
+  subdir: linux-aarch64
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/py-rattler-0.6.3-py310h42c23b7_1.conda
+  sha256: 4b76131aeb8b5bd65858e06f1e98625d39ecad5cae4bf6330dc96acd5706d931
+  md5: d6a31ce9eb1571761bd4d498136a785d
+  depends:
+  - libgcc >=13
+  - openssl >=3.3.2,<4.0a0
+  - python >=3.10,<3.11.0a0
+  - python >=3.10,<3.11.0a0 *_cpython
+  - python_abi 3.10.* *_cp310
+  constrains:
+  - __glibc >=2.17
+  license: BSD-3-Clause
+  license_family: BSD
+  purls:
+  - pkg:pypi/py-rattler?source=hash-mapping
+  size: 5423435
+  timestamp: 1725454892707
+- kind: conda
+  name: py-rattler
+  version: 0.6.3
+  build: py310h6c63255_1
+  build_number: 1
+  subdir: linux-64
+  url: https://conda.anaconda.org/conda-forge/linux-64/py-rattler-0.6.3-py310h6c63255_1.conda
+  sha256: 103f8535fd59d0d369c3685eec37cf297f1a1032176832f42bc1b8f9a8de0460
+  md5: f0ad372bf532dbba244887843a757a14
+  depends:
+  - __glibc >=2.17,<3.0.a0
+  - libgcc >=13
+  - openssl >=3.3.2,<4.0a0
+  - python >=3.10,<3.11.0a0
+  - python_abi 3.10.* *_cp310
+  constrains:
+  - __glibc >=2.17
+  license: BSD-3-Clause
+  license_family: BSD
+  purls:
+  - pkg:pypi/py-rattler?source=hash-mapping
+  size: 5400561
+  timestamp: 1725454731749
+- kind: conda
+  name: py-rattler
+  version: 0.6.3
+  build: py310hcc0cffb_1
+  build_number: 1
+  subdir: osx-arm64
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/py-rattler-0.6.3-py310hcc0cffb_1.conda
+  sha256: b8fa53668c7b351030071b39954be22b1107107c55788db5a32483dcfa99ffe5
+  md5: 453a13a326daa1b9c498f96dca3adf53
+  depends:
+  - __osx >=11.0
+  - openssl >=3.3.2,<4.0a0
+  - python >=3.10,<3.11.0a0
+  - python >=3.10,<3.11.0a0 *_cpython
+  - python_abi 3.10.* *_cp310
+  constrains:
+  - __osx >=11.0
+  license: BSD-3-Clause
+  license_family: BSD
+  purls:
+  - pkg:pypi/py-rattler?source=hash-mapping
+  size: 4041733
+  timestamp: 1725454754129
+- kind: conda
+  name: py-rattler
+  version: 0.6.3
+  build: py311h4047cc9_1
+  build_number: 1
+  subdir: linux-aarch64
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/py-rattler-0.6.3-py311h4047cc9_1.conda
+  sha256: 71fc093a093fed276c1771a15a4f969c0c93337cd531100794dc4e3cd83d4944
+  md5: f6959ae62a79bc7b5aa76291800e8c17
+  depends:
+  - libgcc >=13
+  - openssl >=3.3.2,<4.0a0
+  - python >=3.11,<3.12.0a0
+  - python >=3.11,<3.12.0a0 *_cpython
+  - python_abi 3.11.* *_cp311
+  constrains:
+  - __glibc >=2.17
+  license: BSD-3-Clause
+  license_family: BSD
+  purls:
+  - pkg:pypi/py-rattler?source=hash-mapping
+  size: 5443758
+  timestamp: 1725454683013
+- kind: conda
+  name: py-rattler
+  version: 0.6.3
+  build: py311h47c44cf_1
+  build_number: 1
+  subdir: osx-arm64
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/py-rattler-0.6.3-py311h47c44cf_1.conda
+  sha256: 547bba153dba2e820d65bc86183e82df839fc29be25d060186e5f29b89c8cdc2
+  md5: 294d4b3b51591e1f45a4b459e7238fe8
+  depends:
+  - __osx >=11.0
+  - openssl >=3.3.2,<4.0a0
+  - python >=3.11,<3.12.0a0
+  - python >=3.11,<3.12.0a0 *_cpython
+  - python_abi 3.11.* *_cp311
+  constrains:
+  - __osx >=11.0
+  license: BSD-3-Clause
+  license_family: BSD
+  purls:
+  - pkg:pypi/py-rattler?source=hash-mapping
+  size: 4056059
+  timestamp: 1725454790300
+- kind: conda
+  name: py-rattler
+  version: 0.6.3
+  build: py311hafd3f86_1
+  build_number: 1
+  subdir: linux-64
+  url: https://conda.anaconda.org/conda-forge/linux-64/py-rattler-0.6.3-py311hafd3f86_1.conda
+  sha256: af2e9d709d5aa61d564d598d713c1e9ce9922291e755e3cf12b864bb7d36c6db
+  md5: 970b8c99c211dd3793fe81a54f7572a3
+  depends:
+  - __glibc >=2.17,<3.0.a0
+  - libgcc >=13
+  - openssl >=3.3.2,<4.0a0
+  - python >=3.11,<3.12.0a0
+  - python_abi 3.11.* *_cp311
+  constrains:
+  - __glibc >=2.17
+  license: BSD-3-Clause
+  license_family: BSD
+  purls:
+  - pkg:pypi/py-rattler?source=hash-mapping
+  size: 5417316
+  timestamp: 1725454590289
+- kind: conda
+  name: py-rattler
+  version: 0.6.3
+  build: py312h3ddc590_1
+  build_number: 1
+  subdir: osx-arm64
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/py-rattler-0.6.3-py312h3ddc590_1.conda
+  sha256: d0769ca71277576e7bb5fd05238b28b993ac83646f067caa703b3ec87fd8a44f
+  md5: 0ef07854bdeea1d38ea6dfd82ff04656
+  depends:
+  - __osx >=11.0
+  - openssl >=3.3.2,<4.0a0
+  - python >=3.12,<3.13.0a0
+  - python >=3.12,<3.13.0a0 *_cpython
+  - python_abi 3.12.* *_cp312
+  constrains:
+  - __osx >=11.0
+  license: BSD-3-Clause
+  license_family: BSD
+  purls:
+  - pkg:pypi/py-rattler?source=hash-mapping
+  size: 4049280
+  timestamp: 1725454707592
+- kind: conda
+  name: py-rattler
+  version: 0.6.3
+  build: py312hda17c39_1
+  build_number: 1
+  subdir: linux-64
+  url: https://conda.anaconda.org/conda-forge/linux-64/py-rattler-0.6.3-py312hda17c39_1.conda
+  sha256: 7f7a3eba53d3060959b9e866fc2dd48fcf6e70d026956c08ba7da650992d87ac
+  md5: 09295095aa32e574c9bd4ea28664822b
+  depends:
+  - __glibc >=2.17,<3.0.a0
+  - libgcc >=13
+  - openssl >=3.3.2,<4.0a0
+  - python >=3.12,<3.13.0a0
+  - python_abi 3.12.* *_cp312
+  constrains:
+  - __glibc >=2.17
+  license: BSD-3-Clause
+  license_family: BSD
+  purls:
+  - pkg:pypi/py-rattler?source=hash-mapping
+  size: 5411486
+  timestamp: 1725454703225
+- kind: conda
+  name: py-rattler
+  version: 0.6.3
+  build: py312he723553_1
+  build_number: 1
+  subdir: linux-aarch64
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/py-rattler-0.6.3-py312he723553_1.conda
+  sha256: 3e0eec0cf8607bc415f10375a25619fc8e3ab8463ddfc0156c8b2eb57bb0bb8d
+  md5: 20bed5546853bb354ff9c55c8265a27c
+  depends:
+  - libgcc >=13
+  - openssl >=3.3.2,<4.0a0
+  - python >=3.12,<3.13.0a0
+  - python >=3.12,<3.13.0a0 *_cpython
+  - python_abi 3.12.* *_cp312
+  constrains:
+  - __glibc >=2.17
+  license: BSD-3-Clause
+  license_family: BSD
+  purls:
+  - pkg:pypi/py-rattler?source=hash-mapping
+  size: 5441561
+  timestamp: 1725454692386
 - kind: conda
   name: pyarrow
   version: 17.0.0
