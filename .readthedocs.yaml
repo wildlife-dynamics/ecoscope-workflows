@@ -5,6 +5,5 @@ build:
     python: "3.12"
   commands:
     - curl -fsSL https://pixi.sh/install.sh | bash
-    - cd src/ecoscope-workflows-core
-    - $HOME/.pixi/bin/pixi run --locked -e docs pdoc --html --output-dir $READTHEDOCS_OUTPUT/html/ ecoscope_workflows_core
+    - $HOME/.pixi/bin/pixi run --manifest-path src/ecoscope-workflows-core/pyproject.toml --locked -e docs pdoc --html --output-dir $READTHEDOCS_OUTPUT/html/ ecoscope_workflows_core
     - echo "<!DOCTYPE html><html><head><meta http-equiv=\"refresh\" content=\"0; url=ecoscope_workflows/index.html\"></head><body><p>If you are not redirected, <a href=\"ecoscope_workflows/index.html\">click here</a>.</p></body></html>" > $READTHEDOCS_OUTPUT/html/index.html
