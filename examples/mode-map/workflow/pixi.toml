@@ -17,12 +17,6 @@ pytest = "*"
 test-async-local-mock-io = "python -m pytest tests -k 'async and mock-io'"
 test-sequential-local-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
 
-# todo: support build; push; deploy; run; test; etc. tasks
-# [feature.docker.tasks]
-# build-base = "docker build -t mode-map-base -f Dockerfile.base ."
-# build-runner = "docker build -t mode-map-runner -f Dockerfile.runner ."
-# build-deploy-worker = "docker build -t mode-map-worker -f Dockerfile.worker ."
-
 [environments]
 default = { solve-group = "default" }
 test = { features = ["test"], solve-group = "default" }

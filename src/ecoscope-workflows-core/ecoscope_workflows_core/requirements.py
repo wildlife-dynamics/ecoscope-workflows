@@ -16,12 +16,12 @@ from ecoscope_workflows_core._models import _AllowArbitraryTypes
 
 
 LOCAL_CHANNEL = Channel(
-    "ecoscope-workflows-local",
-    ChannelConfig(channel_alias="file:///tmp/ecoscope-workflows/release/artifacts/"),
+    "artifacts",
+    ChannelConfig(channel_alias="file:///tmp/ecoscope-workflows/release/"),
 )
 RELEASE_CHANNEL = Channel(
-    "ecoscope-workflows-release",
-    ChannelConfig(channel_alias="https://repo.prefix.dev/ecoscope-workflows"),
+    "ecoscope-workflows",
+    ChannelConfig(channel_alias="https://repo.prefix.dev/"),
 )
 CHANNELS: list[Channel] = [LOCAL_CHANNEL, RELEASE_CHANNEL, Channel("conda-forge")]
 PLATFORMS: list[Platform] = [
@@ -33,7 +33,9 @@ PLATFORMS: list[Platform] = [
 
 def _channel_from_str(value: str) -> Channel:
     for channel in CHANNELS:
-        if channel.name == value:
+        # TODO(cisaacstern): base_url equality check can be stymied by presence or absense
+        # of trailing slash on the base_url. Sanitize the base_url to prevent this issue.
+        if channel.name == value or channel.base_url == value:
             return channel
     raise ValueError(f"Unknown channel {value}")
 

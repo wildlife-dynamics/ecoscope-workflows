@@ -17,7 +17,9 @@ from ecoscope_workflows_core.requirements import (
     NamelessMatchSpecType,
     PlatformType,
     CHANNELS,
+    LOCAL_CHANNEL,
     PLATFORMS,
+    RELEASE_CHANNEL,
 )
 
 
@@ -124,19 +126,19 @@ class Tests(BaseModel):
     test_dags: str = Field(default=TEST_DAGS, alias="test_dags.py")
 
 
-DEFAULT_PIXI_TOML = """\
+DEFAULT_PIXI_TOML = f"""\
 [project]
 name = "default"
 channels = [
-    "ecoscope-workflows-local",
-    "ecoscope-workflows-release",
+    "{LOCAL_CHANNEL.base_url}",
+    "{RELEASE_CHANNEL.base_url}",
     "conda-forge",
 ]
 platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
 
 [dependencies]
-ecoscope-workflows-core = { version = "*", channel = "file:///tmp/ecoscope-workflows/release/artifacts/" }
-ecoscope-workflows-ext-ecoscope = {version = "*", channel = "file:///tmp/ecoscope-workflows/release/artifacts/" }
+ecoscope-workflows-core = {{ version = "*", channel = "{LOCAL_CHANNEL.base_url}" }}
+ecoscope-workflows-ext-ecoscope = {{version = "*", channel = "{LOCAL_CHANNEL.base_url}" }}
 
 [feature.test.dependencies]
 pytest = "*"
@@ -145,8 +147,8 @@ test-async-local-mock-io = "python -m pytest tests -k 'async and mock-io'"
 test-sequential-local-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
 
 [environments]
-default = { solve-group = "default" }
-test = { features = ["test"], solve-group = "default" }
+default = {{ solve-group = "default" }}
+test = {{ features = ["test"], solve-group = "default" }}
 
 """
 # todo: support build; push; deploy; run; test; etc. tasks
