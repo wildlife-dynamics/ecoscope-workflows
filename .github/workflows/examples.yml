@@ -42,7 +42,7 @@ jobs:
         compilation-spec: [
           "mode-map",
           "mode-mapvalues",
-          # "patrol_events",
+          "patrol-events",
           # "patrol_workflow",
           # "subject_tracking",
         ]
