@@ -15,7 +15,6 @@ else:
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
     BaseModel,
-    ConfigDict,
     Field,
     PlainSerializer,
     computed_field,
@@ -25,17 +24,16 @@ from pydantic import (
 )
 from pydantic.functional_validators import AfterValidator, BeforeValidator
 
+from ecoscope_workflows_core._models import _AllowArbitraryAndForbidExtra, _ForbidExtra
 from ecoscope_workflows_core.artifacts import PixiToml
 from ecoscope_workflows_core.jsonschema import ReactJSONSchemaFormConfiguration
 from ecoscope_workflows_core.registry import KnownTask, known_tasks
+from ecoscope_workflows_core.requirements import NamelessMatchSpecType, ChannelType
+
 
 T = TypeVar("T")
 
 TEMPLATES = pathlib.Path(__file__).parent / "templates"
-
-
-class _ForbidExtra(BaseModel):
-    model_config = ConfigDict(extra="forbid")
 
 
 class _WorkflowVariable(BaseModel):
@@ -385,11 +383,17 @@ def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
     return wrapper
 
 
-# class Requirements(_ForbidExtra):
-#     """Requirements for a workflow."""
+class SpecRequirement(_AllowArbitraryAndForbidExtra):
+    name: str
+    version: NamelessMatchSpecType
+    channel: ChannelType
 
-#     compile: list[CondaDependency]
-#     run: list[CondaDependency]
+
+class Requirements(_ForbidExtra):
+    """Requirements for a workflow."""
+
+    compile: list[SpecRequirement]
+    run: list[SpecRequirement]
 
 
 class Spec(_ForbidExtra):
@@ -400,6 +404,7 @@ class Spec(_ForbidExtra):
         Python keywords, or Python builtins. The maximum length is 64 chars.
         """
     )
+    requirements: Requirements
     workflow: list[TaskInstance] = Field(
         description="A list of task instances that define the workflow.",
     )
