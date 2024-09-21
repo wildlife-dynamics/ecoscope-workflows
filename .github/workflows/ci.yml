@@ -5,6 +5,9 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["*"]
+    types: [ opened, reopened, synchronize, labeled ]
+  schedule:
+    - cron: '0 4 * * *' # run once a day at 4 AM
 
 jobs:
   # vendor-version-check:
@@ -85,6 +88,16 @@ jobs:
           -m "not io"
 
   test-ext-ecoscope-io:
+    # run if:
+    #  - all pushes to main
+    #  - schedule defined above
+    #  - a PR was just labeled 'test-io'
+    #  - a PR with labeled 'test-io' label was opened, reopened, or synchronized
+    if: |
+      github.event_name == 'push' ||
+      github.event_name == 'schedule' ||
+      github.event.label.name == 'test-io' ||
+      contains( github.event.pull_request.labels.*.name, 'test-io')
     runs-on: ubuntu-latest
     strategy:
       matrix:
