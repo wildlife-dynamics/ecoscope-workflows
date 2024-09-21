@@ -44,7 +44,7 @@ jobs:
           "mode-mapvalues",
           "patrol-events",
           # "patrol_workflow",
-          # "subject_tracking",
+          "subject-tracking",
         ]
     steps:
       - uses: actions/checkout@v4
