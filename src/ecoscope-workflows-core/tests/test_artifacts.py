@@ -4,7 +4,6 @@ from ecoscope_workflows_core.artifacts import PixiToml, _default_pixi_toml
 
 
 def test_pixitoml_from_text():
-    # TODO: how do we use/register the canonical names for custom channels with py-rattler?
     content = dedent(
         """\
         [project]
@@ -17,7 +16,6 @@ def test_pixitoml_from_text():
 
         [dependencies]
         ecoscope-workflows-core = { version = "*", channel = "https://repo.prefix.dev/ecoscope-workflows/" }
-        ecoscope-workflows-ext-ecoscope = {version = "*", channel = "https://repo.prefix.dev/ecoscope-workflows/" }
         """
     )
     pixitoml = PixiToml.from_text(content)
@@ -39,7 +37,6 @@ def test_pixitoml_default_factory():
 
             [dependencies]
             ecoscope-workflows-core = { version = "*", channel = "file:///tmp/ecoscope-workflows/release/artifacts/" }
-            ecoscope-workflows-ext-ecoscope = {version = "*", channel = "file:///tmp/ecoscope-workflows/release/artifacts/" }
 
             [feature.test.dependencies]
             pytest = "*"
@@ -56,3 +53,27 @@ def test_pixitoml_default_factory():
     actual = _default_pixi_toml().model_dump()
     for key, value in actual.items():
         assert expected[key] == value
+
+
+def test_pixitoml_add_dependencies():
+    default: PixiToml = _default_pixi_toml()
+    assert default.model_dump()["dependencies"] == {
+        "ecoscope-workflows-core": {
+            "version": "*",
+            "channel": "file:///tmp/ecoscope-workflows/release/artifacts/",
+        }
+    }
+    default.dependencies["ecoscope-workflows-ext-ecoscope"] = {
+        "version": "*",
+        "channel": "file:///tmp/ecoscope-workflows/release/artifacts/",
+    }
+    assert default.model_dump()["dependencies"] == {
+        "ecoscope-workflows-core": {
+            "version": "*",
+            "channel": "file:///tmp/ecoscope-workflows/release/artifacts/",
+        },
+        "ecoscope-workflows-ext-ecoscope": {
+            "version": "*",
+            "channel": "file:///tmp/ecoscope-workflows/release/artifacts/",
+        },
+    }

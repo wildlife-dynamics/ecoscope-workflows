@@ -6,10 +6,9 @@ from rattler import (
     MatchSpec,
     Channel,
     ChannelConfig,
-    NamelessMatchSpec,
+    NamelessMatchSpec as _NamelessMatchSpec,
     Platform,
 )
-
 
 LOCAL_CHANNEL = Channel(
     "artifacts",
@@ -25,6 +24,16 @@ PLATFORMS: list[Platform] = [
     Platform("linux-aarch64"),
     Platform("osx-arm64"),
 ]
+
+
+# FIXME: workaround for https://github.com/conda/rattler/issues/869
+# this override can be removed once the issue is resolved.
+class NamelessMatchSpec(_NamelessMatchSpec):
+    @property
+    def channel(self):
+        return next(
+            c for c in CHANNELS if c.name == self._nameless_match_spec.channel.name
+        )
 
 
 def _channel_from_str(value: str) -> Channel:
@@ -57,11 +66,22 @@ PlatformType = Annotated[
 ]
 
 
-def _namelessmatchspec_from_dict(value: dict) -> NamelessMatchSpec:
+def _namelessmatchspec_from_dict(value: dict[str, str]) -> NamelessMatchSpec:
     assert "version" in value, f"Expected 'version' key in {value}"
     assert "channel" in value, f"Expected 'channel' key in {value}"
+    # FIXME: workaround for https://github.com/conda/rattler/issues/869
+    # this conditional block can be removed once the issue is resolved.
+    match value["channel"]:
+        case _ if value["channel"] in [
+            c.base_url for c in (LOCAL_CHANNEL, RELEASE_CHANNEL)
+        ]:
+            channel = next(c.name for c in CHANNELS if c.base_url == value["channel"])
+        case str("conda-forge"):
+            channel = value["channel"]
+        case _:
+            raise ValueError(f"Unknown channel {value['channel']}")
     foo_pkg = "foo"  # placeholder to use from_match_spec constructor
-    m = MatchSpec(f"{value['channel']}::{foo_pkg} {value['version']}")
+    m = MatchSpec(f"{channel}::{foo_pkg} {value['version']}")
     return NamelessMatchSpec.from_match_spec(m)
 
 
@@ -76,7 +96,20 @@ def _parse_namelessmatchspec(value: str | dict) -> NamelessMatchSpec:
 
 
 def _serialize_namelessmatchspec(value: NamelessMatchSpec) -> dict:
-    return {"version": str(value.version), "channel": value.channel}
+    # FIXME: workaround for https://github.com/conda/rattler/issues/869
+    # this conditional block can be removed once the issue is resolved.
+    match value.channel:
+        case c if c.base_url in [
+            channel.base_url for channel in (LOCAL_CHANNEL, RELEASE_CHANNEL)
+        ]:
+            channel = next(
+                c.base_url for c in CHANNELS if c.base_url == value.channel.base_url
+            )
+        case str("conda-forge"):
+            channel = c
+        case _:
+            raise ValueError(f"Unknown channel {value.channel}")
+    return {"version": str(value.version), "channel": channel}
 
 
 NamelessMatchSpecType = Annotated[

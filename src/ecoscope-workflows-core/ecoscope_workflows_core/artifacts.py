@@ -11,7 +11,10 @@ else:
 import tomli_w
 from pydantic import BaseModel, Field
 
-from ecoscope_workflows_core._models import _AllowArbitraryTypes
+from ecoscope_workflows_core._models import (
+    _AllowArbitraryTypes,
+    _AllowArbitraryAndValidateAssignment,
+)
 from ecoscope_workflows_core.requirements import (
     ChannelType,
     NamelessMatchSpecType,
@@ -60,7 +63,7 @@ class Environment(BaseModel):
     solve_group: str = Field(default="default", alias="solve-group")
 
 
-class PixiToml(_AllowArbitraryTypes):
+class PixiToml(_AllowArbitraryAndValidateAssignment):
     """The pixi.toml file that specifies the workflow."""
 
     project: PixiProject
@@ -138,7 +141,6 @@ platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
 
 [dependencies]
 ecoscope-workflows-core = {{ version = "*", channel = "{LOCAL_CHANNEL.base_url}" }}
-ecoscope-workflows-ext-ecoscope = {{version = "*", channel = "{LOCAL_CHANNEL.base_url}" }}
 
 [feature.test.dependencies]
 pytest = "*"
