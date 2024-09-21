@@ -1,4 +1,3 @@
-import copy
 from textwrap import dedent
 
 from ecoscope_workflows_core.artifacts import PixiToml, _default_pixi_toml
@@ -64,14 +63,11 @@ def test_pixitoml_add_dependencies():
             "channel": "file:///tmp/ecoscope-workflows/release/artifacts/",
         }
     }
-    # NOTE: we do not get assignment validation unless we re-assign .dependencies
-    # A method may make this more ergonomic.
-    deps_copy = copy.deepcopy(default.model_dump()["dependencies"])
-    deps_copy["ecoscope-workflows-ext-ecoscope"] = {
-        "version": "*",
-        "channel": "file:///tmp/ecoscope-workflows/release/artifacts/",
-    }
-    default.dependencies = deps_copy
+    default.add_dependency(
+        name="ecoscope-workflows-ext-ecoscope",
+        version="*",
+        channel="file:///tmp/ecoscope-workflows/release/artifacts/",
+    )
     assert default.model_dump()["dependencies"] == {
         "ecoscope-workflows-core": {
             "version": "*",

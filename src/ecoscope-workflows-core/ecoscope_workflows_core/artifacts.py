@@ -1,3 +1,4 @@
+import copy
 import json
 import shutil
 import sys
@@ -82,6 +83,18 @@ class PixiToml(_AllowArbitraryAndValidateAssignment):
     @classmethod
     def from_text(cls, text: str) -> "PixiToml":
         return cls(**tomllib.loads(text))
+
+    def add_dependency(
+        self, name: str, version: str, channel: str | None = None
+    ) -> None:
+        """Add a dependency to the `dependencies` section."""
+        deps_copy = copy.deepcopy(self.model_dump()["dependencies"])
+        deps_copy[name] = {"version": version} | (
+            {"channel": channel} if channel else {}
+        )
+        # we do not get assignment validation/parsing
+        # unless we re-assign .dependencies, so do that
+        self.dependencies = deps_copy
 
     def dump(self, dst: Path):
         with dst.open("wb") as f:
