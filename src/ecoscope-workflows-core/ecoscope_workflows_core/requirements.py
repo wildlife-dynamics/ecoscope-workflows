@@ -45,10 +45,14 @@ def _channel_from_str(value: str) -> Channel:
     raise ValueError(f"Unknown channel {value}")
 
 
+def _serialize_channel(value: Channel) -> str:
+    return value.base_url if value in [LOCAL_CHANNEL, RELEASE_CHANNEL] else value.name
+
+
 ChannelType = Annotated[
     Channel,
     BeforeValidator(_channel_from_str),
-    PlainSerializer(lambda value: value.name),
+    PlainSerializer(_serialize_channel),
 ]
 
 
