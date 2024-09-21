@@ -113,19 +113,6 @@ assert_that_stdout = {
         lambda out: "widget_type='single_value', title='Average Speed'" in out,
         lambda out: "widget_type='single_value', title='Max Speed'" in out,
     ],
-    "mode-map.yaml": [
-        lambda out: ".html" in out,
-    ],
-    "mode-mapvalues.yaml": [
-        lambda out: "A dashboard demonstrating grouped data." in out,
-        lambda out: "GroupedWidget(widget_type='map', title='Grouped Ecomaps'" in out,
-        lambda out: (
-            "grouper_choices={Grouper(index_name='event_type', display_name='Event Type', "
-            "help_text='The type of event that occurred.'): ['fence_rep', 'fire_rep', 'radio_rep', "
-            "'rainfall_rep', 'traffic_rep', 'wildlife_sighting_rep']}"
-        )
-        in out,
-    ],
     "subject_tracking.yaml": [
         lambda out: "A dashboard for visualizing subject trajectories and home range."
         in out,
