@@ -37,7 +37,6 @@ test1:
     result_stdout_contains:
       - "A dashboard demonstrating grouped data."
       - "GroupedWidget(widget_type='map', title='Grouped Ecomaps'"
-      - >-
-        "grouper_choices={Grouper(index_name='event_type', display_name='Event Type', "
-        "help_text='The type of event that occurred.'): ['fence_rep', 'fire_rep', 'radio_rep', "
-        "'rainfall_rep', 'traffic_rep', 'wildlife_sighting_rep']}"
+      - "grouper_choices={Grouper(index_name='event_type', display_name='Event Type', "
+      - "help_text='The type of event that occurred.'): ['fence_rep', 'fire_rep', 'radio_rep', "
+      - "'rainfall_rep', 'traffic_rep', 'wildlife_sighting_rep']}"
