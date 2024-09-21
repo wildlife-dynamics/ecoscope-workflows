@@ -1,0 +1,74 @@
+id: mapvalues_example
+requirements:
+  compile:
+    - name: ecoscope-workflows-core
+      version: "*"
+      channel: file:///tmp/ecoscope-workflows/release/artifacts/
+  run:
+    - name: ecoscope-workflows-core
+      version: "*"
+      channel: file:///tmp/ecoscope-workflows/release/artifacts/
+    - name: ecoscope-workflows-ext-ecoscope
+      version: "*"
+      channel: file:///tmp/ecoscope-workflows/release/artifacts/
+workflow:
+  # ----------------------------------------------------------------------
+  # Mapping over a groups split from a single data source, which are keyed
+  # ----------------------------------------------------------------------
+  # Step 1 - Fetching a single data source
+  - name: Get Patrol Events from EarthRanger
+    id: patrol_events
+    task: get_patrol_events
+  # Step 2 - Setting the groupers
+  - name: Set Groupers
+    id: groupers
+    task: set_groupers
+  # Step 3 - Splitting the data source into groups
+  - name: Split Observations
+    id: split_obs
+    task: split_groups
+    partial:
+      df: ${{ workflow.patrol_events.return }}
+      groupers: ${{ workflow.groupers.return }}
+  # Step 4 - Create a map for each groups
+  - name: Create Map Layer For Each Group
+    id: map_layers
+    task: create_map_layer
+    mapvalues:
+      argnames: geodataframe
+      argvalues: ${{ workflow.split_obs.return }}
+  - name: Create EcoMap For Each Group
+    id: ecomaps
+    task: draw_ecomap
+    mapvalues:
+      argnames: "geo_layers"
+      argvalues: ${{ workflow.map_layers.return }}
+  # Step 5 - Persisting the EcoMaps
+  - name: Persist EcoMaps
+    id: ecomaps_persist
+    task: persist_text
+    partial:
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+    mapvalues:
+      argnames: "text"
+      argvalues: ${{ workflow.ecomaps.return }}
+  # Step 6 - Creating Widgets for Each EcoMap
+  - name: Create EcoMap Widgets
+    id: ecomap_widgets
+    task: create_map_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.ecomaps_persist.return }}
+  # Step 7 - Merging widget views in a grouped widget
+  - name: Merge EcoMap Widget Views
+    id: ecomap_widgets_merged
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.ecomap_widgets.return }}
+  # Step 8 - A dashboard to display the widgets
+  - name: Create EcoMap Dashboard
+    id: dashboard
+    task: gather_dashboard
+    partial:
+      widgets: ${{ workflow.ecomap_widgets_merged.return }}
+      groupers: ${{ workflow.groupers.return }}
