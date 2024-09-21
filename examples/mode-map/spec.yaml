@@ -1,4 +1,16 @@
 id: map_example
+requirements:
+  compile:
+    - name: ecoscope-workflows-core
+      version: "*"
+      channel: file:///tmp/ecoscope-workflows/release/artifacts/
+  run:
+    - name: ecoscope-workflows-core
+      version: "*"
+      channel: file:///tmp/ecoscope-workflows/release/artifacts/
+    - name: ecoscope-workflows-ext-ecoscope
+      version: "*"
+      channel: file:///tmp/ecoscope-workflows/release/artifacts/
 workflow:
   # ------------------------------------------------------
   # Mapping over a manually defined list, which is unkeyed

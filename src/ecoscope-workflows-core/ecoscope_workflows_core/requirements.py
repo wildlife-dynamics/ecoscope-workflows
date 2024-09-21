@@ -113,7 +113,7 @@ def _serialize_namelessmatchspec(value: NamelessMatchSpec) -> dict:
             channel = c
         case _:
             raise ValueError(f"Unknown channel {value.channel}")
-    return {"version": str(value.version), "channel": channel}
+    return {"version": str(value.version)} | ({"channel": channel} if channel else {})
 
 
 NamelessMatchSpecType = Annotated[

@@ -573,10 +573,8 @@ class DagCompiler(BaseModel):
             """
         )
         dependencies = "[dependencies]\n"
-        for req in self.spec.requirements.run:
-            dependencies += (
-                f"{req.name} = {{ version = {req.version}, channel = {req.channel} }}\n"
-            )
+        for r in self.spec.requirements.run:
+            dependencies += f'{r.name} = {{ version = "{r.version}", channel = "{r.channel.base_url}" }}\n'
         feature = dedent(
             """\
             [feature.test.dependencies]
