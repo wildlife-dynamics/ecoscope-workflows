@@ -96,7 +96,7 @@ class PixiToml(_AllowArbitraryAndValidateAssignment):
 
     def dump(self, dst: Path):
         with dst.open("wb") as f:
-            tomli_w.dump(self.model_dump(), f)
+            tomli_w.dump(self.model_dump(by_alias=True), f)
 
 
 CONFTEST = """\
