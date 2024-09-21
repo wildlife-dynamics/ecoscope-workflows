@@ -1,6 +1,8 @@
 import argparse
 import json
+import subprocess
 from enum import Enum
+from contextlib import chdir
 from getpass import getpass
 from pathlib import Path
 
@@ -41,7 +43,11 @@ def compile_command(args):
         pixi_toml=dc.get_pixi_toml(),
     )
     if args.outpath:
-        wa.dump(Path(args.outpath), clobber=args.clobber)
+        dst = Path(args.outpath)
+        wa.dump(dst, clobber=args.clobber)
+        if args.lock:
+            with chdir(dst):
+                subprocess.run("pixi install -a --manifest-path pixi.toml".split())
     else:
         print(wa)
 
@@ -156,6 +162,12 @@ def main():
         "--clobber",
         dest="clobber",
         default=False,
+        action="store_true",
+    )
+    compile_parser.add_argument(
+        "--lock",
+        dest="lock",
+        default=True,
         action="store_true",
     )
 
