@@ -46,7 +46,10 @@ def _channel_from_str(value: str) -> Channel:
 
 
 def _serialize_channel(value: Channel) -> str:
-    return value.base_url if value in [LOCAL_CHANNEL, RELEASE_CHANNEL] else value.name
+    if value in [LOCAL_CHANNEL, RELEASE_CHANNEL]:
+        return value.base_url
+    assert value.name is not None, f"Expected name to be set for {value}"
+    return value.name
 
 
 ChannelType = Annotated[
