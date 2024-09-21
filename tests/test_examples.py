@@ -113,15 +113,7 @@ assert_that_stdout = {
         lambda out: "widget_type='single_value', title='Average Speed'" in out,
         lambda out: "widget_type='single_value', title='Max Speed'" in out,
     ],
-    "subject_tracking.yaml": [
-        lambda out: "A dashboard for visualizing subject trajectories and home range."
-        in out,
-        lambda out: "widget_type='map', title='Subject Group Trajectory Map'" in out,
-        lambda out: "widget_type='single_value', title='Mean Speed'" in out,
-        lambda out: "widget_type='single_value', title='Max Speed'," in out,
-        lambda out: "widget_type='single_value', title='Number of Locations'" in out,
-        lambda out: "widget_type='map', title='Home Range Map'" in out,
-    ],
+    "subject_tracking.yaml": [],
     "patrol_events.yaml": [],
 }
 

@@ -8,24 +8,26 @@
 # ## Imports
 
 import os
-from ecoscope_workflows.tasks.groupby import set_groupers
-from ecoscope_workflows.tasks.io import get_subjectgroup_observations
-from ecoscope_workflows.tasks.preprocessing import process_relocations
-from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
-from ecoscope_workflows.tasks.transformation import add_temporal_index
-from ecoscope_workflows.tasks.groupby import split_groups
-from ecoscope_workflows.tasks.results import create_map_layer
-from ecoscope_workflows.tasks.results import draw_ecomap
-from ecoscope_workflows.tasks.io import persist_text
-from ecoscope_workflows.tasks.results import create_map_widget_single_view
-from ecoscope_workflows.tasks.results import merge_widget_views
-from ecoscope_workflows.tasks.analysis import dataframe_column_mean
-from ecoscope_workflows.tasks.results import create_single_value_widget_single_view
-from ecoscope_workflows.tasks.analysis import dataframe_column_max
-from ecoscope_workflows.tasks.analysis import dataframe_count
-from ecoscope_workflows.tasks.analysis import get_day_night_ratio
-from ecoscope_workflows.tasks.analysis import calculate_time_density
-from ecoscope_workflows.tasks.results import gather_dashboard
+from ecoscope_workflows_core.tasks.groupby import set_groupers
+from ecoscope_workflows_ext_ecoscope.tasks.io import get_subjectgroup_observations
+from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import process_relocations
+from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import (
+    relocations_to_trajectory,
+)
+from ecoscope_workflows_core.tasks.transformation import add_temporal_index
+from ecoscope_workflows_core.tasks.groupby import split_groups
+from ecoscope_workflows_ext_ecoscope.tasks.results import create_map_layer
+from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecomap
+from ecoscope_workflows_core.tasks.io import persist_text
+from ecoscope_workflows_core.tasks.results import create_map_widget_single_view
+from ecoscope_workflows_core.tasks.results import merge_widget_views
+from ecoscope_workflows_core.tasks.analysis import dataframe_column_mean
+from ecoscope_workflows_core.tasks.results import create_single_value_widget_single_view
+from ecoscope_workflows_core.tasks.analysis import dataframe_column_max
+from ecoscope_workflows_core.tasks.analysis import dataframe_count
+from ecoscope_workflows_ext_ecoscope.tasks.analysis import get_day_night_ratio
+from ecoscope_workflows_ext_ecoscope.tasks.analysis import calculate_time_density
+from ecoscope_workflows_core.tasks.results import gather_dashboard
 
 # %% [markdown]
 # ## Set Groupers
