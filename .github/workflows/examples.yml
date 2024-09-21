@@ -43,7 +43,7 @@ jobs:
           "mode-map",
           "mode-mapvalues",
           "patrol-events",
-          # "patrol_workflow",
+          "patrol_workflow",
           "subject-tracking",
         ]
     steps:
