@@ -82,7 +82,9 @@ def _namelessmatchspec_from_dict(value: dict[str, str]) -> NamelessMatchSpec:
             raise ValueError(f"Unknown channel {value['channel']}")
     foo_pkg = "foo"  # placeholder to use from_match_spec constructor
     m = MatchSpec(f"{channel}::{foo_pkg} {value['version']}")
-    return NamelessMatchSpec.from_match_spec(m)
+    # FIXME: this type error is a side effect of the override for NamelessMatchSpec
+    # and can be removed once the issue linked there is resolved.
+    return NamelessMatchSpec.from_match_spec(m)  # type: ignore[return-value]
 
 
 def _namelessmatchspec_from_str(value: str) -> NamelessMatchSpec:
