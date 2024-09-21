@@ -1,14 +1,7 @@
 .DS_Store
 
-# custom build hook / feature registry logic
-ecoscope_workflows/_registry.py
-
 # pixi
 .pixi
-
-# vendor
-vendor/artifacts
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
