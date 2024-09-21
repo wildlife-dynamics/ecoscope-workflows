@@ -31,9 +31,9 @@ PLATFORMS: list[Platform] = [
 class NamelessMatchSpec(_NamelessMatchSpec):
     @property
     def channel(self):
-        return next(
-            c for c in CHANNELS if c.name == self._nameless_match_spec.channel.name
-        )
+        if (channel := self._nameless_match_spec.channel) is not None:
+            return next(c for c in CHANNELS if c.name == channel.name)
+        return None
 
 
 def _channel_from_str(value: str) -> Channel:
@@ -99,6 +99,8 @@ def _serialize_namelessmatchspec(value: NamelessMatchSpec) -> dict:
     # FIXME: workaround for https://github.com/conda/rattler/issues/869
     # this conditional block can be removed once the issue is resolved.
     match value.channel:
+        case None:
+            channel = None
         case c if c.base_url in [
             channel.base_url for channel in (LOCAL_CHANNEL, RELEASE_CHANNEL)
         ]:
