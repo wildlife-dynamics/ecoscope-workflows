@@ -53,9 +53,6 @@ def recurse_into_tasks(
                 anchor=module.__name__,
                 tags=obj.tags or [],
             )
-        elif module.__name__.endswith(".features"):
-            # reserved module name, skip
-            continue
         elif ismodule(obj):
             yield from recurse_into_tasks(obj)
         elif issubclass(obj, JsonSerializableDataFrameModel):
