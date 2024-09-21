@@ -34,6 +34,7 @@ jobs:
     needs: build-release
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         script: [
           "async-local",
@@ -43,7 +44,7 @@ jobs:
           "mode-map",
           "mode-mapvalues",
           "patrol-events",
-          "patrol_workflow",
+          "patrol-workflow",
           "subject-tracking",
         ]
     steps:
