@@ -1,10 +1,27 @@
 import argparse
 import json
 import subprocess
+import sys
 from enum import Enum
-from contextlib import chdir
 from getpass import getpass
 from pathlib import Path
+
+if sys.version_info >= (3, 11):
+    from contextlib import chdir
+else:
+    import os
+    from contextlib import contextmanager
+
+    # xref https://stackoverflow.com/a/24176022/14658879
+    @contextmanager
+    def chdir(newdir):
+        prevdir = os.getcwd()
+        os.chdir(os.path.expanduser(newdir))
+        try:
+            yield
+        finally:
+            os.chdir(prevdir)
+
 
 import ruamel.yaml
 from pydantic import SecretStr
