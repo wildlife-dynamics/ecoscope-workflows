@@ -37,9 +37,8 @@ def compile_command(args):
     )
     wa = WorkflowArtifacts(
         dags=dags,
-        # src= ...,
-        # test= ...,
         params_jsonschema=dc.get_params_jsonschema(),
+        pixi_toml=dc.get_pixi_toml(),
     )
     if args.outpath:
         wa.dump(Path(args.outpath), clobber=args.clobber)

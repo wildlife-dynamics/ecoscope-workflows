@@ -28,7 +28,12 @@ from ecoscope_workflows_core._models import _AllowArbitraryAndForbidExtra, _Forb
 from ecoscope_workflows_core.artifacts import PixiToml
 from ecoscope_workflows_core.jsonschema import ReactJSONSchemaFormConfiguration
 from ecoscope_workflows_core.registry import KnownTask, known_tasks
-from ecoscope_workflows_core.requirements import NamelessMatchSpecType, ChannelType
+from ecoscope_workflows_core.requirements import (
+    LOCAL_CHANNEL,
+    RELEASE_CHANNEL,
+    NamelessMatchSpecType,
+    ChannelType,
+)
 
 
 T = TypeVar("T")
@@ -558,18 +563,35 @@ class DagCompiler(BaseModel):
         }
 
     def get_pixi_toml(self) -> PixiToml:
-        feature_table = dedent(
+        project = dedent(
+            # TODO: allow removing the LOCAL_CHANNEL for production releases
+            f"""\
+            [project]
+            name = "{self.spec.id}"
+            channels = ["{LOCAL_CHANNEL.base_url}", "{RELEASE_CHANNEL.base_url}", "conda-forge"]
+            platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
+            """
+        )
+        dependencies = "[dependencies]\n"
+        for req in self.spec.requirements.run:
+            dependencies += (
+                f"{req.name} = {{ version = {req.version}, channel = {req.channel} }}\n"
+            )
+        feature = dedent(
             """\
             [feature.test.dependencies]
             pytest = "*"
-
             [feature.test.tasks]
-            test-async-local = "pytest test -k async"
-            test-async-remote = "pytest test -k async"
-            test-sequential = "pytest test -k sequential"
+            test-async-local-mock-io = "python -m pytest tests -k 'async and mock-io'"
+            test-sequential-local-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
             """
+            # todo: support build; push; deploy; run; test; etc. tasks
+            # [feature.docker.tasks]
+            # build-base = "docker build -t mode-map-base -f Dockerfile.base ."
+            # build-runner = "docker build -t mode-map-runner -f Dockerfile.runner ."
+            # build-deploy-worker = "docker build -t mode-map-worker -f Dockerfile.worker ."
         )
-        environments_table = dedent(
+        environments = dedent(
             """\
             [environments]
             default = { solve-group = "default" }
@@ -577,11 +599,11 @@ class DagCompiler(BaseModel):
             """
         )
         return PixiToml(
-            project={"name": self.spec.id},
+            project=tomllib.loads(project)["project"],
             pypi_dependencies={},  # type: ignore[call-arg]
-            dependencies={},
-            feature=tomllib.loads(feature_table)["feature"],
-            environments=tomllib.loads(environments_table)["environments"],
+            dependencies=tomllib.loads(dependencies)["dependencies"],
+            feature=tomllib.loads(feature)["feature"],
+            environments=tomllib.loads(environments)["environments"],
         )
 
     @property

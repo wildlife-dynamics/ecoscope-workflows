@@ -21,9 +21,7 @@ from ecoscope_workflows_core.requirements import (
     NamelessMatchSpecType,
     PlatformType,
     CHANNELS,
-    LOCAL_CHANNEL,
     PLATFORMS,
-    RELEASE_CHANNEL,
 )
 
 
@@ -142,45 +140,10 @@ class Tests(BaseModel):
     test_dags: str = Field(default=TEST_DAGS, alias="test_dags.py")
 
 
-DEFAULT_PIXI_TOML = f"""\
-[project]
-name = "default"
-channels = [
-    "{LOCAL_CHANNEL.base_url}",
-    "{RELEASE_CHANNEL.base_url}",
-    "conda-forge",
-]
-platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
-
-[dependencies]
-ecoscope-workflows-core = {{ version = "*", channel = "{LOCAL_CHANNEL.base_url}" }}
-
-[feature.test.dependencies]
-pytest = "*"
-[feature.test.tasks]
-test-async-local-mock-io = "python -m pytest tests -k 'async and mock-io'"
-test-sequential-local-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
-
-[environments]
-default = {{ solve-group = "default" }}
-test = {{ features = ["test"], solve-group = "default" }}
-
-"""
-# todo: support build; push; deploy; run; test; etc. tasks
-# [feature.docker.tasks]
-# build-base = "docker build -t mode-map-base -f Dockerfile.base ."
-# build-runner = "docker build -t mode-map-runner -f Dockerfile.runner ."
-# build-deploy-worker = "docker build -t mode-map-worker -f Dockerfile.worker ."
-
-
-def _default_pixi_toml():
-    return PixiToml.from_text(DEFAULT_PIXI_TOML)
-
-
 class WorkflowArtifacts(_AllowArbitraryTypes):
     dags: Dags
     params_jsonschema: dict
-    pixi_toml: PixiToml = Field(default_factory=_default_pixi_toml)
+    pixi_toml: PixiToml
     tests: Tests = Field(default_factory=Tests)
 
     def dump(self, root: Path, clobber: bool = False):
