@@ -8,31 +8,35 @@
 # ## Imports
 
 import os
-from ecoscope_workflows.tasks.groupby import set_groupers
-from ecoscope_workflows.tasks.io import get_patrol_observations
-from ecoscope_workflows.tasks.preprocessing import process_relocations
-from ecoscope_workflows.tasks.preprocessing import relocations_to_trajectory
-from ecoscope_workflows.tasks.transformation import add_temporal_index
-from ecoscope_workflows.tasks.groupby import split_groups
-from ecoscope_workflows.tasks.results import create_map_layer
-from ecoscope_workflows.tasks.io import get_patrol_events
-from ecoscope_workflows.tasks.transformation import apply_reloc_coord_filter
-from ecoscope_workflows.tasks.groupby import groupbykey
-from ecoscope_workflows.tasks.results import draw_ecomap
-from ecoscope_workflows.tasks.io import persist_text
-from ecoscope_workflows.tasks.results import create_map_widget_single_view
-from ecoscope_workflows.tasks.results import merge_widget_views
-from ecoscope_workflows.tasks.analysis import dataframe_column_nunique
-from ecoscope_workflows.tasks.results import create_single_value_widget_single_view
-from ecoscope_workflows.tasks.analysis import dataframe_column_sum
-from ecoscope_workflows.tasks.analysis import apply_arithmetic_operation
-from ecoscope_workflows.tasks.analysis import dataframe_column_mean
-from ecoscope_workflows.tasks.analysis import dataframe_column_max
-from ecoscope_workflows.tasks.results import draw_time_series_bar_chart
-from ecoscope_workflows.tasks.results import create_plot_widget_single_view
-from ecoscope_workflows.tasks.results import draw_pie_chart
-from ecoscope_workflows.tasks.analysis import calculate_time_density
-from ecoscope_workflows.tasks.results import gather_dashboard
+from ecoscope_workflows_core.tasks.groupby import set_groupers
+from ecoscope_workflows_ext_ecoscope.tasks.io import get_patrol_observations
+from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import process_relocations
+from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import (
+    relocations_to_trajectory,
+)
+from ecoscope_workflows_core.tasks.transformation import add_temporal_index
+from ecoscope_workflows_core.tasks.groupby import split_groups
+from ecoscope_workflows_ext_ecoscope.tasks.results import create_map_layer
+from ecoscope_workflows_ext_ecoscope.tasks.io import get_patrol_events
+from ecoscope_workflows_ext_ecoscope.tasks.transformation import (
+    apply_reloc_coord_filter,
+)
+from ecoscope_workflows_core.tasks.groupby import groupbykey
+from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecomap
+from ecoscope_workflows_core.tasks.io import persist_text
+from ecoscope_workflows_core.tasks.results import create_map_widget_single_view
+from ecoscope_workflows_core.tasks.results import merge_widget_views
+from ecoscope_workflows_core.tasks.analysis import dataframe_column_nunique
+from ecoscope_workflows_core.tasks.results import create_single_value_widget_single_view
+from ecoscope_workflows_core.tasks.analysis import dataframe_column_sum
+from ecoscope_workflows_core.tasks.analysis import apply_arithmetic_operation
+from ecoscope_workflows_core.tasks.analysis import dataframe_column_mean
+from ecoscope_workflows_core.tasks.analysis import dataframe_column_max
+from ecoscope_workflows_ext_ecoscope.tasks.results import draw_time_series_bar_chart
+from ecoscope_workflows_core.tasks.results import create_plot_widget_single_view
+from ecoscope_workflows_ext_ecoscope.tasks.results import draw_pie_chart
+from ecoscope_workflows_ext_ecoscope.tasks.analysis import calculate_time_density
+from ecoscope_workflows_core.tasks.results import gather_dashboard
 
 # %% [markdown]
 # ## Set Groupers
