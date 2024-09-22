@@ -1,1 +1,1 @@
-# `ecoscope-workflows.extension`
+# `ecoscope-workflows-ext-ecoscope`
