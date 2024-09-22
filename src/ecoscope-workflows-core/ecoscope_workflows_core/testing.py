@@ -94,4 +94,3 @@ def test_case(script: Path, case_name: str, test_cases_yaml: Path, tmp_path: Pat
     stdout = proc.stdout.read().strip()
     for expected_substring in test_case.assertions.result_stdout_contains:
         assert expected_substring in stdout
-
