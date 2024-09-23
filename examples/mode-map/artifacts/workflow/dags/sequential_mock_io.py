@@ -5,9 +5,7 @@ Lines specific to the testing context are marked with a test tube emoji (🧪) t
 that they would not be included (or would be different) in the production version of this file.
 """
 
-import argparse
 import os
-import yaml
 import warnings  # 🧪
 from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
 
@@ -28,17 +26,8 @@ from ecoscope_workflows_ext_ecoscope.tasks.results import create_map_layer
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecomap
 from ecoscope_workflows_core.tasks.io import persist_text
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    g = parser.add_argument_group("map_example")
-    g.add_argument(
-        "--config-file",
-        dest="config_file",
-        required=True,
-        type=argparse.FileType(mode="r"),
-    )
-    args = parser.parse_args()
-    params = yaml.safe_load(args.config_file)
+
+def main(params: dict):
     warnings.warn("This test script should not be used in production!")  # 🧪
 
     obs_a = get_subjectgroup_observations.validate().partial(**params["obs_a"]).call()
