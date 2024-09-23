@@ -32,7 +32,7 @@ class Dags(BaseModel):
     jupytext: str = Field(..., alias="jupytext.py")
     script_async_mock_io: str = Field(..., alias="script-async.mock-io.py")
     script_async: str = Field(..., alias="script-async.py")
-    script_sequential_mock_io: str = Field(..., alias="script-sequential.mock-io.py")
+    script_sequential_mock_io: str = Field(..., alias="sequential_mock_io.py")
     script_sequential: str = Field(..., alias="script-sequential.py")
 
 
