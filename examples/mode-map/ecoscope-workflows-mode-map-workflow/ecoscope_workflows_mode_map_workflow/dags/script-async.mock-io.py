@@ -32,7 +32,7 @@ from ecoscope_workflows_core.tasks.io import persist_text
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    g = parser.add_argument_group("map_example")
+    g = parser.add_argument_group("mode_map")
     g.add_argument(
         "--config-file",
         dest="config_file",

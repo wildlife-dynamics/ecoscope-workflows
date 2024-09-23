@@ -1,24 +1,12 @@
-import argparse
 import os
-import yaml
 
 from ecoscope_workflows_ext_ecoscope.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows_ext_ecoscope.tasks.results import create_map_layer
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecomap
 from ecoscope_workflows_core.tasks.io import persist_text
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    g = parser.add_argument_group("map_example")
-    g.add_argument(
-        "--config-file",
-        dest="config_file",
-        required=True,
-        type=argparse.FileType(mode="r"),
-    )
-    args = parser.parse_args()
-    params = yaml.safe_load(args.config_file)
 
+def main(params: dict):
     obs_a = get_subjectgroup_observations.validate().partial(**params["obs_a"]).call()
 
     obs_b = get_subjectgroup_observations.validate().partial(**params["obs_b"]).call()
@@ -46,4 +34,4 @@ if __name__ == "__main__":
         .map(argnames=["text"], argvalues=ecomaps)
     )
 
-    print(td_ecomap_html_url)
+    return td_ecomap_html_url

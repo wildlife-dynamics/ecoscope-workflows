@@ -1,7 +1,7 @@
 # ruff: noqa: E402
 
 # %% [markdown]
-# # Map Example
+# # Mode Map
 # TODO: top level description
 
 # %% [markdown]

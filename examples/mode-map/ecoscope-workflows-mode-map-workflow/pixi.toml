@@ -1,5 +1,5 @@
 [project]
-name = "map_example"
+name = "ecoscope-workflows-mode-map-workflow"
 channels = [
     "file:///tmp/ecoscope-workflows/release/artifacts/",
     "https://repo.prefix.dev/ecoscope-workflows/",
@@ -11,8 +11,9 @@ platforms = [
     "osx-arm64",
 ]
 
-[pypi-dependencies]
-"ecoscope-workflows-mode-map-workflow" = { path = ".", editable = true }
+[pypi-dependencies.ecoscope-workflows-mode-map-workflow]
+path = "."
+editable = true
 
 [dependencies.ecoscope-workflows-core]
 version = "*"
