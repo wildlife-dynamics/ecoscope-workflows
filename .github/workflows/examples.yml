@@ -3,9 +3,9 @@ name: Examples
 on:
   push:
     branches: ["*"]
-    # types: [ opened, reopened, synchronize, labeled ]
-  # pull_request:
-  #   branches: ["*"]
+    types: [ opened, reopened, synchronize, labeled ]
+  pull_request:
+    branches: ["*"]
 
 jobs:
   build-release:
