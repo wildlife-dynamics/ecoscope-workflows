@@ -567,7 +567,7 @@ class DagCompiler(BaseModel):
             # TODO: allow removing the LOCAL_CHANNEL for production releases
             f"""\
             [project]
-            name = "{self.spec.id}"
+            name = "{self.release_name}"
             channels = ["{LOCAL_CHANNEL.base_url}", "{RELEASE_CHANNEL.base_url}", "conda-forge"]
             platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
             """
@@ -598,7 +598,11 @@ class DagCompiler(BaseModel):
         )
         return PixiToml(
             project=tomllib.loads(project)["project"],
-            pypi_dependencies={},  # type: ignore[call-arg]
+            **{
+                "pypi-dependencies": {
+                    self.release_name: {"path": ".", "editable": True}
+                }
+            },
             dependencies=tomllib.loads(dependencies)["dependencies"],
             feature=tomllib.loads(feature)["feature"],
             environments=tomllib.loads(environments)["environments"],
