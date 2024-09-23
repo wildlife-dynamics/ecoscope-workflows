@@ -1,4 +1,4 @@
-id: map_example
+id: mode-map
 requirements:
   compile:
     - name: ecoscope-workflows-core
