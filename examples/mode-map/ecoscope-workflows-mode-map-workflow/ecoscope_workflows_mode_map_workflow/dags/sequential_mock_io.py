@@ -57,4 +57,4 @@ def main(params: dict):
         .map(argnames=["text"], argvalues=ecomaps)
     )
 
-    print(td_ecomap_html_url)
+    return td_ecomap_html_url

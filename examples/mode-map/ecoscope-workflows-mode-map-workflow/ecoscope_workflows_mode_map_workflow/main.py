@@ -37,11 +37,13 @@ def main(
         case ("async", False):
             raise NotImplementedError
         case ("sequential", True):
-            sequential_mock_io(params=params)
+            result = sequential_mock_io(params=params)
         case ("sequential", False):
             raise NotImplementedError
         case _:
             raise ValueError(f"Invalid execution mode: {execution_mode}")
+
+    print(result)
 
 
 if __name__ == "__main__":
