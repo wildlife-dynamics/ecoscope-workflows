@@ -7,7 +7,12 @@ import ruamel.yaml
 from pydantic import SecretStr
 
 from ecoscope_workflows_core import config
-from ecoscope_workflows_core.artifacts import Dags, PackageDirectory, WorkflowArtifacts
+from ecoscope_workflows_core.artifacts import (
+    Dags,
+    PackageDirectory,
+    Tests,
+    WorkflowArtifacts,
+)
 from ecoscope_workflows_core.compiler import DagCompiler, Spec
 from ecoscope_workflows_core.config import TomlConfigTable
 from ecoscope_workflows_core.registry import known_tasks
@@ -41,6 +46,9 @@ def compile_command(args):
         package=PackageDirectory(
             dags=dags,
             params_jsonschema=dc.get_params_jsonschema(),
+        ),
+        tests=Tests(
+            **{"test_dags.py": dc.get_test_dags()},
         ),
     )
     wa.dump(clobber=args.clobber)

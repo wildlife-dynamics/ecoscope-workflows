@@ -125,29 +125,10 @@ def case(pytestconfig: pytest.Config) -> str:
     return pytestconfig.getoption("case")
 """
 
-TEST_DAGS = """\
-from pathlib import Path
-
-import pytest
-
-from ecoscope_workflows_core.testing import test_case
-
-
-ARTIFACTS = Path(__file__).parent.parent
-TEST_CASES_YAML = ARTIFACTS.parent / "test-cases.yaml"
-ENTRYPOINT = "ecoscope-workflows-mode-map-workflow"
-
-
-@pytest.mark.parametrize("execution_mode", ["sequential"])
-@pytest.mark.parametrize("mock_io", [True], ids=["mock-io"])
-def test_end_to_end(execution_mode: str, mock_io: bool, case: str, tmp_path: Path):
-    test_case(ENTRYPOINT, execution_mode, mock_io, case, TEST_CASES_YAML, tmp_path)
-"""
-
 
 class Tests(BaseModel):
+    test_dags: str = Field(..., alias="test_dags.py")
     conftest: str = Field(default=CONFTEST, alias="conftest.py")
-    test_dags: str = Field(default=TEST_DAGS, alias="test_dags.py")
 
 
 MAIN_DOT_PY = """\
@@ -217,7 +198,7 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
     pixi_toml: PixiToml
     pyproject_toml: str
     package: PackageDirectory
-    tests: Tests = Field(default_factory=Tests)
+    tests: Tests
 
     def lock(self):
         subprocess.run(
