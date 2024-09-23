@@ -73,7 +73,7 @@ def test_case(
         yaml.dump(test_case.params, f)
 
     cmd = (
-        f"{sys.executable} -W ignore -m {entrypoint} "
+        f"{entrypoint} "
         f"--config-file {tmp_path.joinpath('params.yaml').as_posix()} "
         f"--execution-mode {execution_mode} "
         f'{("--mock-io" if mock_io else "--no-mock-io")}'
@@ -105,7 +105,7 @@ def test_case(
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
-        env=env,
+        env=env | {"PYTHONWARNINGS": "ignore"},
     )
     returncode = proc.wait()
     if returncode != 0:
