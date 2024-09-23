@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from textwrap import dedent
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -29,6 +30,17 @@ from ecoscope_workflows_core.requirements import (
 class Dags(BaseModel):
     """Target directory for the generated DAGs."""
 
+    init_dot_py: str = Field(
+        default=dedent(
+            # FIXME: add import other scripts as well
+            """\
+            from .sequential_mock_io import main as sequential_mock_io
+
+            __all__ = ["sequential_mock_io"]
+            """
+        ),
+        alias="__init__.py",
+    )
     jupytext: str = Field(..., alias="jupytext.py")
     script_async_mock_io: str = Field(..., alias="script-async.mock-io.py")
     script_async: str = Field(..., alias="script-async.py")
@@ -225,17 +237,22 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
 
         root.mkdir(parents=True)
 
-        # dump root artifacts
+        # root artifacts
         self.pixi_toml.dump(root.joinpath("pixi.toml"))
         root.joinpath("pyproject.toml").write_text(self.pyproject_toml)
         root.joinpath("tests").mkdir(parents=True)
         for fname, content in self.tests.model_dump(by_alias=True).items():
             root.joinpath("tests").joinpath(fname).write_text(content)
 
-        # dump package artifacts
+        # package artifacts
         pkg = root.joinpath(self.package_name)
+        pkg.mkdir(parents=True)
         pkg.joinpath("dags").mkdir(parents=True)
-        for fname, content in self.package.dags.model_dump(by_alias=True).items():
-            pkg.joinpath("dags").joinpath(fname).write_text(content)
+        # top level
+        pkg.joinpath("__init__.py").write_text("")
+        pkg.joinpath("main.py").write_text(self.package.main)
         with pkg.joinpath("params-jsonschema.json").open("w") as f:
             json.dump(self.package.params_jsonschema, f, indent=2)
+        # dags
+        for fname, content in self.package.dags.model_dump(by_alias=True).items():
+            pkg.joinpath("dags").joinpath(fname).write_text(content)
