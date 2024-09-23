@@ -490,7 +490,7 @@ class Spec(_ForbidExtra):
         return self
 
 
-DagTypes = Literal["jupytext", "script-async", "script-sequential"]
+DagTypes = Literal["jupytext", "async", "sequential"]
 
 
 class DagCompiler(BaseModel):

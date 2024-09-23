@@ -31,11 +31,10 @@ def compile_command(args):
     dags = Dags(
         **{
             "jupytext.py": dc.generate_dag("jupytext"),
-            # TODO: migrate remaining scripts for click
-            "script-async.mock-io.py": dc.generate_dag("script-async", mock_io=True),
-            "script-async.py": dc.generate_dag("script-async"),
-            "sequential_mock_io.py": dc.generate_dag("script-sequential", mock_io=True),
-            "script-sequential.py": dc.generate_dag("script-sequential"),
+            "run_async_mock_io.py": dc.generate_dag("async", mock_io=True),
+            "run_async.py": dc.generate_dag("async"),
+            "run_sequential_mock_io.py": dc.generate_dag("sequential", mock_io=True),
+            "run_sequential.py": dc.generate_dag("sequential"),
         }
     )
     wa = WorkflowArtifacts(
