@@ -32,20 +32,27 @@ class Dags(BaseModel):
 
     init_dot_py: str = Field(
         default=dedent(
-            # FIXME: add import other scripts as well
             """\
-            from .sequential_mock_io import main as sequential_mock_io
+            from .run_async import main as run_async
+            from .run_async_mock_io import main as run_async_mock_io
+            from .run_sequential import main as run_sequential
+            from .run_sequential_mock_io import main as run_sequential_mock_io
 
-            __all__ = ["sequential_mock_io"]
+            __all__ = [
+                "run_async",
+                "run_async_mock_io",
+                "run_sequential",
+                "run_sequential_mock_io",
+            ]
             """
         ),
         alias="__init__.py",
     )
     jupytext: str = Field(..., alias="jupytext.py")
-    script_async_mock_io: str = Field(..., alias="script-async.mock-io.py")
-    script_async: str = Field(..., alias="script-async.py")
-    script_sequential_mock_io: str = Field(..., alias="sequential_mock_io.py")
-    script_sequential: str = Field(..., alias="script-sequential.py")
+    run_async_mock_io: str = Field(..., alias="run_async_mock_io.py")
+    run_async: str = Field(..., alias="run_async.py")
+    run_sequential_mock_io: str = Field(..., alias="run_sequential_mock_io.py")
+    run_sequential: str = Field(..., alias="run_sequential.py")
 
 
 class PixiProject(_AllowArbitraryTypes):
@@ -138,7 +145,12 @@ from io import TextIOWrapper
 import click
 import ruamel.yaml
 
-from .dags import sequential_mock_io
+from .dags import (
+    run_async,
+    run_async_mock_io,
+    run_sequential,
+    run_sequential_mock_io,
+)
 
 
 @click.command()
@@ -168,13 +180,13 @@ def main(
     params = yaml.load(config_file)
     match execution_mode, mock_io:
         case ("async", True):
-            raise NotImplementedError
+            result = run_async_mock_io(params=params)
         case ("async", False):
-            raise NotImplementedError
+            result = run_async(params=params)
         case ("sequential", True):
-            result = sequential_mock_io(params=params)
+            result = run_sequential_mock_io(params=params)
         case ("sequential", False):
-            raise NotImplementedError
+            result = run_sequential(params=params)
         case _:
             raise ValueError(f"Invalid execution mode: {execution_mode}")
 
