@@ -4,7 +4,6 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from textwrap import dedent
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -201,36 +200,11 @@ class PackageDirectory(BaseModel):
 
 
 class WorkflowArtifacts(_AllowArbitraryTypes):
-    spec_id: str  # todo: add validation (in Spec.id)
+    release_name: str
+    package_name: str
     pixi_toml: PixiToml
     package: PackageDirectory
     tests: Tests = Field(default_factory=Tests)
-    version: str = "0.0.0"  # todo: versioning
-
-    @property
-    def pkg_name_prefix(self) -> str:
-        return "ecoscope-workflows"
-
-    @property
-    def release_name(self) -> str:
-        return f"{self.pkg_name_prefix}-{self.spec_id}-workflow"
-
-    @property
-    def package_name(self) -> str:
-        return self.release_name.replace("-", "_")
-
-    def get_pyproject_toml(self) -> str:
-        return dedent(
-            f"""\
-            [project]
-            name = "{self.release_name}"
-            version = "{self.version}"
-            requires-python = ">=3.10"  # TODO: sync with ecoscope-workflows-core
-            description = ""  # TODO: description from spec
-            license = {{ text = "BSD-3-Clause" }}
-            scripts = {{ {self.release_name} = "{self.package_name}.main:main" }}
-            """
-        )
 
     def lock(self):
         subprocess.run(

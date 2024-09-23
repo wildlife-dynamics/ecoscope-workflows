@@ -35,8 +35,10 @@ def compile_command(args):
         }
     )
     wa = WorkflowArtifacts(
+        package_name=dc.package_name,
+        release_name=dc.release_name,
         pixi_toml=dc.get_pixi_toml(),
-        pyproject_toml=...,
+        pyproject_toml=dc.get_pyproject_toml(),
         package=PackageDirectory(
             dags=dags,
             params_jsonschema=dc.get_params_jsonschema(),

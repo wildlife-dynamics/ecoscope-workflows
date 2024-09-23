@@ -605,6 +605,31 @@ class DagCompiler(BaseModel):
         )
 
     @property
+    def pkg_name_prefix(self) -> str:
+        return "ecoscope-workflows"
+
+    @property
+    def release_name(self) -> str:
+        return f"{self.pkg_name_prefix}-{self.spec.id.replace('_', '-')}-workflow"
+
+    @property
+    def package_name(self) -> str:
+        return self.release_name.replace("-", "_")
+
+    def get_pyproject_toml(self) -> str:
+        return dedent(
+            f"""\
+            [project]
+            name = "{self.release_name}"
+            version = "0.0.0"  # todo: versioning
+            requires-python = ">=3.10"  # TODO: sync with ecoscope-workflows-core
+            description = ""  # TODO: description from spec
+            license = {{ text = "BSD-3-Clause" }}
+            scripts = {{ {self.release_name} = "{self.package_name}.main:main" }}
+            """
+        )
+
+    @property
     def _jinja_env(self) -> Environment:
         return Environment(loader=FileSystemLoader(self.jinja_templates_dir))
 
