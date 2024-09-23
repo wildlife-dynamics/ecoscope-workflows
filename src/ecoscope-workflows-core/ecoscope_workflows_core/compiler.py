@@ -661,7 +661,9 @@ class DagCompiler(BaseModel):
 
     @ruff_formatted
     def generate_dag(self, dag_type: DagTypes, mock_io: bool = False) -> str:
-        template = self._jinja_env.get_template(f"run-{dag_type}.jinja2")
+        template = self._jinja_env.get_template(
+            f"run-{dag_type}.jinja2" if dag_type != "jupytext" else "jupytext.jinja2"
+        )
         testing = True if mock_io else False
         return template.render(
             self.get_dag_config(dag_type, mock_io=mock_io) | {"testing": testing}
