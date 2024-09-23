@@ -4,4 +4,4 @@ version = "0.0.0"  # TODO: versioning
 requires-python = ">=3.10"
 description = ""  # TODO: description from spec
 license = { text = "BSD-3-Clause"}
-scripts = { ecoscope-workflows-mode-map-workflow = "workflow.main:main" }
+scripts = { ecoscope-workflows-mode-map-workflow = "ecoscope_workflows_mode_map_workflow.main:main" }
