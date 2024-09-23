@@ -1,48 +1,14 @@
-# ruff: noqa: E402
-
-"""WARNING: This file is generated in a testing context and should not be used in production.
-Lines specific to the testing context are marked with a test tube emoji (🧪) to indicate
-that they would not be included (or would be different) in the production version of this file.
-"""
-
-import argparse
 import os
-import yaml
-import warnings  # 🧪
-from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
-
 
 from ecoscope_workflows_core.graph import DependsOn, DependsOnSequence, Graph, Node
 
-get_subjectgroup_observations = create_task_magicmock(  # 🧪
-    anchor="ecoscope_workflows_ext_ecoscope.tasks.io",  # 🧪
-    func_name="get_subjectgroup_observations",  # 🧪
-)  # 🧪
-get_subjectgroup_observations = create_task_magicmock(  # 🧪
-    anchor="ecoscope_workflows_ext_ecoscope.tasks.io",  # 🧪
-    func_name="get_subjectgroup_observations",  # 🧪
-)  # 🧪
-get_subjectgroup_observations = create_task_magicmock(  # 🧪
-    anchor="ecoscope_workflows_ext_ecoscope.tasks.io",  # 🧪
-    func_name="get_subjectgroup_observations",  # 🧪
-)  # 🧪
+from ecoscope_workflows_ext_ecoscope.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows_ext_ecoscope.tasks.results import create_map_layer
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecomap
 from ecoscope_workflows_core.tasks.io import persist_text
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    g = parser.add_argument_group("mode_map")
-    g.add_argument(
-        "--config-file",
-        dest="config_file",
-        required=True,
-        type=argparse.FileType(mode="r"),
-    )
-    args = parser.parse_args()
-    params = yaml.safe_load(args.config_file)
-    warnings.warn("This test script should not be used in production!")  # 🧪
 
+def main(params: dict):
     dependencies = {
         "obs_a": [],
         "obs_b": [],
@@ -107,4 +73,4 @@ if __name__ == "__main__":
     }
     graph = Graph(dependencies=dependencies, nodes=nodes)
     results = graph.execute()
-    print(results)
+    return results

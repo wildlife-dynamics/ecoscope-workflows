@@ -3,7 +3,12 @@ from io import TextIOWrapper
 import click
 import ruamel.yaml
 
-from .dags import sequential_mock_io
+from .dags import (
+    run_async,
+    run_async_mock_io,
+    run_sequential,
+    run_sequential_mock_io,
+)
 
 
 @click.command()
@@ -33,13 +38,13 @@ def main(
     params = yaml.load(config_file)
     match execution_mode, mock_io:
         case ("async", True):
-            raise NotImplementedError
+            result = run_async_mock_io(params=params)
         case ("async", False):
-            raise NotImplementedError
+            result = run_async(params=params)
         case ("sequential", True):
-            result = sequential_mock_io(params=params)
+            result = run_sequential_mock_io(params=params)
         case ("sequential", False):
-            raise NotImplementedError
+            result = run_sequential(params=params)
         case _:
             raise ValueError(f"Invalid execution mode: {execution_mode}")
 
