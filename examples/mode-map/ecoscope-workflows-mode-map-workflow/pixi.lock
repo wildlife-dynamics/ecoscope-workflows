@@ -5251,7 +5251,7 @@ packages:
   name: ecoscope-workflows-mode-map-workflow
   version: 0.0.0
   path: .
-  sha256: 53c646bdd7ac692c7d58e103ad782428a15a922b52e72763e4af503a1c01c021
+  sha256: 3ead09bc7adb3a4643c9059833e61028ae3fb591a158570756ebde86ae46f2de
   requires_python: '>=3.10'
   editable: true
 - kind: conda

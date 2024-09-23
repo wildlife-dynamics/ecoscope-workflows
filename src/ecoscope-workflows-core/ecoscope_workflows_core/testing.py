@@ -3,6 +3,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from typing import Literal
 
 import ruamel.yaml
 from pydantic import BaseModel
@@ -42,8 +43,27 @@ class TestCase(BaseModel):
     assertions: Assertions
 
 
-def test_case(script: Path, case_name: str, test_cases_yaml: Path, tmp_path: Path):
-    """Run a single test case for a workflow script."""
+ExecutionMode = Literal["async", "sequential"]  # TODO: move to executors module
+
+
+def test_case(
+    entrypoint: str,
+    execution_mode: ExecutionMode,
+    mock_io: bool,
+    case_name: str,
+    test_cases_yaml: Path,
+    tmp_path: Path,
+):
+    """Run a single test case for a workflow.
+
+    Args:
+        entrypoint (str): The entrypoint of the workflow.
+        execution_mode (ExecutionMode): The execution mode to test. One of "async" or "sequential".
+        mock_io (bool): Whether or not to mock IO with 3rd party services; for testing only.
+        case_name (str): The name of the test case to run. Test cases are defined by the `test-cases.yaml` file.
+        test_cases_yaml (Path): The path to the `test-cases.yaml` file.
+        tmp_path (Path): The temporary directory to use for the test.
+    """
 
     yaml = ruamel.yaml.YAML(typ="safe")
     all_cases = yaml.load(test_cases_yaml.read_text())
@@ -53,12 +73,14 @@ def test_case(script: Path, case_name: str, test_cases_yaml: Path, tmp_path: Pat
         yaml.dump(test_case.params, f)
 
     cmd = (
-        f"{sys.executable} -W ignore {script.absolute().as_posix()} "
-        f"--config-file {tmp_path.joinpath('params.yaml').as_posix()}"
+        f"{sys.executable} -W ignore -m {entrypoint} "
+        f"--config-file {tmp_path.joinpath('params.yaml').as_posix()} "
+        f"--execution-mode {execution_mode} "
+        f'{("--mock-io" if mock_io else "--no-mock-io")}'
     )
     env = os.environ.copy()
     env["ECOSCOPE_WORKFLOWS_RESULTS"] = tmp_path.as_posix()
-    if "async" in script.as_posix() and not os.environ.get("LITHOPS_CONFIG_FILE"):
+    if execution_mode == "async" and not os.environ.get("LITHOPS_CONFIG_FILE"):
         # a lithops test is requested but no lithops config is set in the environment
         # users can set this in their environment to avoid this, to test particular
         # lithops configurations. but if they don't, we'll set a default one here.
