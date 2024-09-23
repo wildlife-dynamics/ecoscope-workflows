@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: ["*"]
+    branches: ["main", "cs/vipingo"]
   pull_request:
     branches: ["*"]
     types: [ opened, reopened, synchronize, labeled ]
