@@ -26,11 +26,10 @@ def compile_command(args):
     dags = Dags(
         **{
             "jupytext.py": dc.generate_dag("jupytext"),
+            # TODO: migrate remaining scripts for click
             "script-async.mock-io.py": dc.generate_dag("script-async", mock_io=True),
             "script-async.py": dc.generate_dag("script-async"),
-            "script-sequential.mock-io.py": dc.generate_dag(
-                "script-sequential", mock_io=True
-            ),
+            "sequential_mock_io.py": dc.generate_dag("script-sequential", mock_io=True),
             "script-sequential.py": dc.generate_dag("script-sequential"),
         }
     )
