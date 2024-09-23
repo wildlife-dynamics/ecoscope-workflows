@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from textwrap import dedent
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -202,9 +203,9 @@ class PackageDirectory(BaseModel):
 class WorkflowArtifacts(_AllowArbitraryTypes):
     spec_id: str  # todo: add validation (in Spec.id)
     pixi_toml: PixiToml
-    pyproject_toml: str
     package: PackageDirectory
     tests: Tests = Field(default_factory=Tests)
+    version: str = "0.0.0"  # todo: versioning
 
     @property
     def pkg_name_prefix(self) -> str:
@@ -217,6 +218,19 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
     @property
     def package_name(self) -> str:
         return self.release_name.replace("-", "_")
+
+    def get_pyproject_toml(self) -> str:
+        return dedent(
+            f"""\
+            [project]
+            name = "{self.release_name}"
+            version = "{self.version}"
+            requires-python = ">=3.10"  # TODO: sync with ecoscope-workflows-core
+            description = ""  # TODO: description from spec
+            license = {{ text = "BSD-3-Clause" }}
+            scripts = {{ {self.release_name} = "{self.package_name}.main:main" }}
+            """
+        )
 
     def lock(self):
         subprocess.run(
@@ -236,7 +250,7 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
 
         # dump root artifacts
         self.pixi_toml.dump(root.joinpath("pixi.toml"))
-        root.joinpath("pyproject.toml").write_text(self.pyproject_toml)
+        root.joinpath("pyproject.toml").write_text(self.get_pyproject_toml())
         root.joinpath("tests").mkdir(parents=True)
         for fname, content in self.tests.model_dump(by_alias=True).items():
             root.joinpath("tests").joinpath(fname).write_text(content)
