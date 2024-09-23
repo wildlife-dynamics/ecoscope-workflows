@@ -3,7 +3,7 @@ name: Examples
 on:
   push:
     branches: ["main"]
-    types: [ opened, reopened, synchronize, labeled ]
+    # types: [ opened, reopened, synchronize, labeled ]
   pull_request:
     branches: ["*"]
 
