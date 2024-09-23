@@ -2,12 +2,12 @@ name: CI
 
 on:
   push:
-    branches: ["main", "cs/vipingo"]
-  pull_request:
-    branches: ["*"]
-    types: [ opened, reopened, synchronize, labeled ]
-  schedule:
-    - cron: '0 4 * * *' # run once a day at 4 AM
+    branches: ["main", "cs/vipingo", "click-entrypoint"]
+  # pull_request:
+  #   branches: ["*"]
+  #   types: [ opened, reopened, synchronize, labeled ]
+  # schedule:
+  #   - cron: '0 4 * * *' # run once a day at 4 AM
 
 jobs:
   mypy:

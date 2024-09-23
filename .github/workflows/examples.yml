@@ -2,10 +2,10 @@ name: Examples
 
 on:
   push:
-    branches: ["main", "cs/vipingo"]
-  pull_request:
-    branches: ["*"]
-    types: [ opened, reopened, synchronize, labeled ]
+    branches: ["main", "cs/vipingo", "click-entrypoint"]
+  # pull_request:
+  #   branches: ["*"]
+  #   types: [ opened, reopened, synchronize, labeled ]
 
 jobs:
   build-release:
