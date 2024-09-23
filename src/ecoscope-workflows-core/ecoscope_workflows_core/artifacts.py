@@ -203,6 +203,7 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
     release_name: str
     package_name: str
     pixi_toml: PixiToml
+    pyproject_toml: str
     package: PackageDirectory
     tests: Tests = Field(default_factory=Tests)
 
@@ -212,7 +213,7 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
         )
 
     def dump(self, clobber: bool = False):
-        root = Path(self.release_name)
+        root = Path().cwd().joinpath(self.release_name)
         if root.exists() and not clobber:
             raise FileExistsError(
                 f"Path '{root}' already exists. Set clobber=True to overwrite."
@@ -222,9 +223,11 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
         if root.exists() and clobber:
             shutil.rmtree(root)
 
+        root.mkdir(parents=True)
+
         # dump root artifacts
         self.pixi_toml.dump(root.joinpath("pixi.toml"))
-        root.joinpath("pyproject.toml").write_text(self.get_pyproject_toml())
+        root.joinpath("pyproject.toml").write_text(self.pyproject_toml)
         root.joinpath("tests").mkdir(parents=True)
         for fname, content in self.tests.model_dump(by_alias=True).items():
             root.joinpath("tests").joinpath(fname).write_text(content)
@@ -233,6 +236,6 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
         pkg = root.joinpath(self.package_name)
         pkg.joinpath("dags").mkdir(parents=True)
         for fname, content in self.package.dags.model_dump(by_alias=True).items():
-            root.joinpath("dags").joinpath(fname).write_text(content)
+            pkg.joinpath("dags").joinpath(fname).write_text(content)
         with pkg.joinpath("params-jsonschema.json").open("w") as f:
             json.dump(self.package.params_jsonschema, f, indent=2)
