@@ -1,0 +1,20 @@
+[project]
+name = "ecoscope-workflows-manage"
+channels = [
+    "https://prefix.dev/ecoscope-workflows",
+    "conda-forge",
+]
+platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
+
+[feature.conda-dist]
+dependencies = { rattler-build = "*" }
+# tasks to:
+#  - manually build the vendor packages from the recipes; and then
+#  - manually push built packages to the channel (requires prefix api key env var)
+# these are not run in ci. if `vendor-version-check check` fails, use these to update the vendor packages.
+# note: in this case, the recipes themselves likely need to be manually updated before build/push.
+tasks = { build-release = "publish/build.sh release"}
+
+[environments]
+default = { solve-group = "default" }
+conda-dist = { features = ["conda-dist"], solve-group = "conda-dist", no-default-feature = true }

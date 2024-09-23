@@ -1,0 +1,68 @@
+context:
+  name: ecoscope
+  version: v1.8.3
+
+package:
+  name: ecoscope
+  version: ${{ version }}
+
+source:
+  url: https://github.com/wildlife-dynamics/ecoscope/archive/${{ version }}.tar.gz
+  sha256: 747644036ca5100c1ed78b823d0f0c4f27c3fdd5a56140dd62c940efb07fd1ef
+
+build:
+  noarch: python
+  script: SETUPTOOLS_SCM_PRETEND_VERSION=${{ version }} pip install . -v
+  number: 5
+
+requirements:
+  host:
+    - python
+    - setuptools >=45
+    - setuptools-scm >=6.2
+    - pip
+  run:
+    - python
+    - backoff
+    - earthengine-api
+    - earthranger-client
+    - fiona <1.10.0
+    - geopandas <=0.14.2
+    - numpy <2  # added by me, but should be ensured by geopandas anyway
+    - pyproj
+    - rasterio
+    - tqdm
+    # ~ analysis ~
+    - astroplan
+    # - datashader  # (cisaacstern) per atmorling, not required for current workflows
+    - igraph
+    - mapclassify
+    # - matplotlib  # disabling in favor of matplotlib-base which is smaller
+    - matplotlib-base
+    - networkx
+    - numba
+    - scipy
+    - scikit-image
+    - scikit-learn
+    # ~ plotting ~
+    # - kaleido  # not available on conda and do we actually use this?
+    - plotly
+    # - scikit-learn  # duplicate with analysis
+    # ~ mapping ~
+    - lonboard==0.0.2
+    # - matplotlib  # duplicate with analysis
+    # - mapclassify  # duplicate with analysis
+
+tests:
+  - python:
+      imports:
+        - ecoscope
+
+about:
+  summary: Standard Analytical Reporting Framework for Conservation
+  license: BSD-3-Clause
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - cisaacstern

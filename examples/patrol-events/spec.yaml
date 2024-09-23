@@ -1,0 +1,251 @@
+id: patrol_events_workflow
+requirements:
+  compile:
+    - name: ecoscope-workflows-core
+      version: "*"
+      channel: file:///tmp/ecoscope-workflows/release/artifacts/
+  run:
+    - name: ecoscope-workflows-core
+      version: "*"
+      channel: file:///tmp/ecoscope-workflows/release/artifacts/
+    - name: ecoscope-workflows-ext-ecoscope
+      version: "*"
+      channel: file:///tmp/ecoscope-workflows/release/artifacts/
+workflow:
+  # set 'global' groupers
+  - name: Set Groupers
+    id: groupers
+    task: set_groupers
+
+  # patrol events
+  - name: Get Patrol Events from EarthRanger
+    id: patrol_events
+    task: get_patrol_events
+  - name: Apply Relocation Coordinate Filter
+    id: filter_patrol_events
+    task: apply_reloc_coord_filter
+    partial:
+      df: ${{ workflow.patrol_events.return }}
+  - name: Add temporal index to Patrol Events
+    id: pe_add_temporal_index
+    task: add_temporal_index
+    partial:
+      df: ${{ workflow.filter_patrol_events.return }}
+
+  # Colormap patrol events
+  - name: Patrol Events Colormap
+    id: pe_colormap
+    task: apply_color_map
+    partial:
+      df: ${{ workflow.pe_add_temporal_index.return }}
+
+  # Combined Events map layer
+  - name: Create map layer from Patrol Events
+    id: pe_map_layer
+    task: create_map_layer
+    partial:
+      geodataframe: ${{ workflow.pe_colormap.return }}
+  - name: Draw Ecomap from Time Density
+    id: pe_ecomap
+    task: draw_ecomap
+    partial:
+      geo_layers:
+        - ${{ workflow.pe_map_layer.return }}
+  - name: Persist Ecomap as Text
+    id: pe_ecomap_html_url
+    task: persist_text
+    partial:
+      text: ${{ workflow.pe_ecomap.return }}
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+  - name: Create Time Density Map Widget
+    id: pe_map_widget
+    task: create_map_widget_single_view
+    partial:
+      data: ${{ workflow.pe_ecomap_html_url.return }}
+
+  # Patrol Events time series bar chart
+  - name: Draw Time Series Bar Chart for Patrols Events
+    id: pe_bar_chart
+    task: draw_time_series_bar_chart
+    partial:
+      dataframe: ${{ workflow.pe_colormap.return }}
+  - name: Persist Patrols Bar Chart as Text
+    id: pe_bar_chart_html_url
+    task: persist_text
+    partial:
+      text: ${{ workflow.pe_bar_chart.return }}
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+  - name: Create Plot Widget for Patrol Events
+    id: pe_bar_chart_widget
+    task: create_plot_widget_single_view
+    partial:
+      data: ${{ workflow.pe_bar_chart_html_url.return }}
+
+  # Events Density map
+  - name: Create Patrol Events Meshgrid
+    id: pe_meshgrid
+    task: create_meshgrid
+    partial:
+      aoi: ${{ workflow.pe_add_temporal_index.return }}
+  - name: Patrol Events Feature Density
+    id: pe_feature_density
+    task: calculate_feature_density
+    partial:
+      geodataframe: ${{ workflow.pe_add_temporal_index.return }}
+      meshgrid: ${{ workflow.pe_meshgrid.return }}
+  - name: Feature Density Colormap
+    id: fd_colormap
+    task: apply_color_map
+    partial:
+      df: ${{ workflow.pe_feature_density.return }}
+  - name: Create map layer from Feature Density
+    id: fd_map_layer
+    task: create_map_layer
+    partial:
+      geodataframe: ${{ workflow.fd_colormap.return }}
+  - name: Draw Ecomap from Feature Density
+    id: fd_ecomap
+    task: draw_ecomap
+    partial:
+      geo_layers:
+        - ${{ workflow.fd_map_layer.return }}
+  - name: Persist Feature Density Ecomap as Text
+    id: fd_ecomap_html_url
+    task: persist_text
+    partial:
+      text: ${{ workflow.fd_ecomap.return }}
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+  - name: Create Feature Density Map Widget
+    id: fd_map_widget
+    task: create_map_widget_single_view
+    partial:
+      data: ${{ workflow.fd_ecomap_html_url.return }}
+
+  # Grouped outputs
+  - name: Split Patrol Events by Group
+    id: split_patrol_event_groups
+    task: split_groups
+    partial:
+      df: ${{ workflow.pe_colormap.return }}
+      groupers: ${{ workflow.groupers.return }}
+
+  # Grouped Patrol Events Map
+  - name: Create map layer from grouped Patrol Events
+    id: grouped_pe_map_layer
+    task: create_map_layer
+    mapvalues:
+      argnames: geodataframe
+      argvalues: ${{ workflow.split_patrol_event_groups.return }}
+  - name: Draw Ecomap from grouped Patrol Events
+    id: grouped_pe_ecomap
+    task: draw_ecomap
+    mapvalues:
+      argnames: geo_layers
+      argvalues: ${{ workflow.grouped_pe_map_layer.return }}
+  - name: Persist grouped Patrol Events Ecomap as Text
+    id: grouped_pe_ecomap_html_url
+    task: persist_text
+    partial:
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+    mapvalues:
+      argnames: text
+      argvalues: ${{ workflow.grouped_pe_ecomap.return }}
+  - name: Create grouped Patrol Events Map Widget
+    id: grouped_pe_map_widget
+    task: create_map_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.grouped_pe_ecomap_html_url.return }}
+  - name: Merge Patrol Events Map Widget Views
+    id: grouped_pe_map_widget_merge
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.grouped_pe_map_widget.return }}
+
+  # Grouped Patrol Events Pie Chart
+  - name: Draw Pie Chart for Patrols Events
+    id: grouped_pe_pie_chart
+    task: draw_pie_chart
+    mapvalues:
+      argnames: dataframe
+      argvalues: ${{ workflow.split_patrol_event_groups.return }}
+  - name: Persist Patrols Pie Chart as Text
+    id: grouped_pe_pie_chart_html_urls
+    task: persist_text
+    partial:
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+    mapvalues:
+      argnames: text
+      argvalues: ${{ workflow.grouped_pe_pie_chart.return }}
+  - name: Create Plot Widget for Patrol Events
+    id: grouped_pe_pie_chart_widgets
+    task: create_plot_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.grouped_pe_pie_chart_html_urls.return }}
+  - name: Merge Pie Chart Widget Views
+    id: grouped_pe_pie_widget_merge
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.grouped_pe_pie_chart_widgets.return }}
+
+  # Grouped Events Density map
+  - name: Grouped Patrol Events Feature Density
+    id: grouped_pe_feature_density
+    task: calculate_feature_density
+    partial:
+      meshgrid: ${{ workflow.pe_meshgrid.return }}
+    mapvalues:
+      argnames: geodataframe
+      argvalues: ${{ workflow.split_patrol_event_groups.return }}
+  - name: Grouped Feature Density Colormap
+    id: grouped_fd_colormap
+    task: apply_color_map
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.grouped_pe_feature_density.return }}
+  - name: Create map layer from Feature Density
+    id: grouped_fd_map_layer
+    task: create_map_layer
+    mapvalues:
+      argnames: geodataframe
+      argvalues: ${{ workflow.grouped_fd_colormap.return}}
+  - name: Draw Ecomap from Feature Density
+    id: grouped_fd_ecomap
+    task: draw_ecomap
+    mapvalues:
+      argnames: geo_layers
+      argvalues: ${{ workflow.grouped_fd_map_layer.return }}
+  - name: Persist Feature Density Ecomap as Text
+    id: grouped_fd_ecomap_html_url
+    task: persist_text
+    partial:
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+    mapvalues:
+      argnames: text
+      argvalues: ${{ workflow.grouped_fd_ecomap.return }}
+  - name: Create Feature Density Map Widget
+    id: grouped_fd_map_widget
+    task: create_map_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.grouped_fd_ecomap_html_url.return }}
+  - name: Merge Feature Density Widget Views
+    id: grouped_fd_map_widget_merge
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.grouped_fd_map_widget.return }}
+
+  # dashboard
+  - name: Create Dashboard with Patrol Map Widgets
+    id: patrol_dashboard
+    task: gather_dashboard
+    partial:
+      widgets:
+        - ${{ workflow.pe_map_widget.return }}
+        - ${{ workflow.pe_bar_chart_widget.return }}
+        - ${{ workflow.fd_map_widget.return }}
+        - ${{ workflow.grouped_pe_map_widget_merge.return }}
+        - ${{ workflow.grouped_pe_pie_widget_merge.return }}
+        - ${{ workflow.grouped_fd_map_widget_merge.return }}
+      groupers: ${{ workflow.groupers.return }}

@@ -1,0 +1,47 @@
+{% import 'call-task-macros.jinja' as call_task_macros %}
+
+{%- if testing %}
+# ruff: noqa: E402
+
+"""WARNING: This file is generated in a testing context and should not be used in production.
+Lines specific to the testing context are marked with a test tube emoji (🧪) to indicate
+that they would not be included (or would be different) in the production version of this file.
+"""
+{% endif -%}
+
+import argparse
+import os
+import yaml
+{%- if testing %}
+import warnings  # 🧪
+from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
+{% endif %}
+
+{% for t in spec.workflow -%}
+{{ t.known_task.importable_reference.statement }}
+{% if loop.last %}
+{% endif -%}
+{% endfor -%}
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    g = parser.add_argument_group("{{ spec.id }}")
+    g.add_argument(
+        "--config-file",
+        dest="config_file",
+        required=True,
+        type=argparse.FileType(mode="r"),
+    )
+    args = parser.parse_args()
+    params = yaml.safe_load(args.config_file)
+    {%- if testing %}
+    warnings.warn("This test script should not be used in production!")  # 🧪
+    {% endif %}
+    {% for t in spec.workflow %}
+    {% set validate = true %}
+    {% set params = 'params["' ~ t.id ~ '"]' %}
+    {% set indent = '    ' %}
+    {{ call_task_macros.call_task(t, validate, params, indent) }}
+    {% if loop.last %}
+    print({{ t.id }})
+    {% endif %}
+    {% endfor -%}

@@ -1,0 +1,49 @@
+context:
+  name: lonboard
+  version: 0.0.3
+
+package:
+  name: lonboard
+  version: ${{ version }}
+
+source:
+  url: https://github.com/wildlife-dynamics/lonboard/archive/v${{ version }}.tar.gz
+  sha256: c7ba5ca0b2690242c307efed89f93a980ca07036c4c0bb6ad5f386b15be9ef3b
+
+build:
+  python:
+    entry_points:
+      - lonboard = lonboard._cli:main
+  noarch: python
+  script: pip install . -v
+
+requirements:
+  host:
+    - python
+    - poetry-core
+    - pip
+  run:
+    - python >=3.8.0,<4.0.0
+    - anywidget >=0.9.0,<0.10.0
+    - pyarrow >=14.0.1
+    - geopandas >=0.13
+    - pandas >=2.0.0,<3.0.0
+    - palettable >=3.3.3,<4.0.0
+    - matplotlib-base >=3.7.0,<4.0.0
+    - shapely >=2.0.0,<3.0.0
+    - typing-extensions >=4.6.0,<5.0.0
+    - click >=8.1.7,<9.0.0
+    - pyogrio >=0.7.2,<0.8.0
+
+tests:
+  - python:
+      imports:
+        - lonboard
+
+about:
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - cisaacstern

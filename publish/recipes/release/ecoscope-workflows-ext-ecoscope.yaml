@@ -1,0 +1,40 @@
+context:
+  name: ecoscope-workflows-ext-ecoscope
+  version: 0.0.0
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  path: ../../..  # get back to root of repo
+
+build:
+  noarch: python
+  script: python -m pip install src/ecoscope-workflows-ext-ecoscope -vv --no-deps
+  number: 0
+
+requirements:
+  host:
+    - python
+    - hatchling
+    - hatch-vcs
+    - pip
+  run:
+    - python
+    - ecoscope-workflows-core ==${{ version }}  # core & ext-ecoscope pinned to same version
+    - ecoscope ==v1.8.3
+
+tests:
+  - python:
+      imports:
+        - ecoscope_workflows_ext_ecoscope
+        - ecoscope_workflows_ext_ecoscope.tasks
+        - ecoscope_workflows_ext_ecoscope.tasks.results
+
+about:
+  license: BSD-3-Clause
+
+extra:
+  recipe-maintainers:
+    - cisaacstern

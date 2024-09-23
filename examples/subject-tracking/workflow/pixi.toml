@@ -1,0 +1,37 @@
+[project]
+name = "subject_tracking"
+channels = [
+    "file:///tmp/ecoscope-workflows/release/artifacts/",
+    "https://repo.prefix.dev/ecoscope-workflows/",
+    "conda-forge",
+]
+platforms = [
+    "linux-64",
+    "linux-aarch64",
+    "osx-arm64",
+]
+
+[dependencies.ecoscope-workflows-core]
+version = "*"
+channel = "file:///tmp/ecoscope-workflows/release/artifacts/"
+
+[dependencies.ecoscope-workflows-ext-ecoscope]
+version = "*"
+channel = "file:///tmp/ecoscope-workflows/release/artifacts/"
+
+[feature.test.dependencies.pytest]
+version = "*"
+
+[feature.test.tasks]
+test-async-local-mock-io = "python -m pytest tests -k 'async and mock-io'"
+test-sequential-local-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
+
+[environments.default]
+features = []
+solve-group = "default"
+
+[environments.test]
+features = [
+    "test",
+]
+solve-group = "default"

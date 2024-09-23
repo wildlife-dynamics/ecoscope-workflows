@@ -1,0 +1,66 @@
+name: Examples
+
+on:
+  push:
+    branches: ["*"]
+    # types: [ opened, reopened, synchronize, labeled ]
+  # pull_request:
+  #   branches: ["*"]
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pixi
+        run: curl -fsSL https://pixi.sh/install.sh | bash && echo "$HOME/.pixi/bin" >> $GITHUB_PATH
+      - name: Build release
+        run: |
+          pixi run \
+          --manifest-path ./pixi.toml \
+          --locked --environment conda-dist \
+          build-release
+      - name: Upload conda channel
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-artifacts
+          path: |
+            /tmp/ecoscope-workflows/release/artifacts/
+            !/tmp/ecoscope-workflows/release/artifacts/bld
+            !/tmp/ecoscope-workflows/release/artifacts/src_cache
+          if-no-files-found: error
+          compression-level: 0
+
+  test-examples:
+    needs: build-release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        script: [
+          "async-local",
+          "sequential-local",
+        ]
+        compilation-spec: [
+          "mode-map",
+          "mode-mapvalues",
+          "patrol-events",
+          "patrol-workflow",
+          "subject-tracking",
+        ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download conda channel
+        uses: actions/download-artifact@v4
+        with:
+          name: release-artifacts
+          path: /tmp/ecoscope-workflows/release/artifacts
+      - name: Log conda channel contents
+        run: ls -lR /tmp/ecoscope-workflows/release/artifacts
+      - name: Install pixi
+        run: curl -fsSL https://pixi.sh/install.sh | bash && echo "$HOME/.pixi/bin" >> $GITHUB_PATH
+      - name: Test
+        working-directory: ./examples/${{ matrix.compilation-spec }}/workflow
+        run: |
+          pixi run --locked --manifest-path pixi.toml -e test \
+          test-${{ matrix.script }}-mock-io --case test1

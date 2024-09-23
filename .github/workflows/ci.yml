@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  push:
+    branches: ["*"]
+  # pull_request:
+  #   branches: ["*"]
+  #   # types: [ opened, reopened, synchronize, labeled ]
+  schedule:
+    - cron: '0 4 * * *' # run once a day at 4 AM
+
+jobs:
+  mypy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        namespace: ["core", "ext-ecoscope"]
+        python-version: ["310", "311", "312"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pixi
+        run: curl -fsSL https://pixi.sh/install.sh | bash && echo "$HOME/.pixi/bin" >> $GITHUB_PATH
+      - name: Mypy
+        run: |
+          pixi run \
+          --manifest-path src/ecoscope-workflows-${{ matrix.namespace }}/pyproject.toml \
+          --locked --environment mypy-py${{ matrix.python-version }} \
+          mypy
+
+  doctest:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        namespace: ["core"]  #, "ext/ecoscope"]  # todo: enable once ext/ecoscope has doctests
+        python-version: ["310", "311", "312"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pixi
+        run: curl -fsSL https://pixi.sh/install.sh | bash && echo "$HOME/.pixi/bin" >> $GITHUB_PATH
+      - name: Test
+        run: |
+          pixi run \
+          --manifest-path src/ecoscope-workflows-${{ matrix.namespace }}/pyproject.toml \
+          --locked --environment test-py${{ matrix.python-version }} \
+          pytest -v src/ecoscope-workflows-${{ matrix.namespace }} \
+          --doctest-modules
+
+  test-core:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["310", "311", "312"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pixi
+        run: curl -fsSL https://pixi.sh/install.sh | bash && echo "$HOME/.pixi/bin" >> $GITHUB_PATH
+      - name: Test
+        run: |
+          pixi run \
+          --manifest-path src/ecoscope-workflows-core/pyproject.toml \
+          --locked --environment test-py${{ matrix.python-version }} \
+          pytest src/ecoscope-workflows-core/tests -vx
+
+  test-ext-ecoscope-not-io:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["310", "311", "312"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pixi
+        run: curl -fsSL https://pixi.sh/install.sh | bash && echo "$HOME/.pixi/bin" >> $GITHUB_PATH
+      - name: Test
+        run: |
+          pixi run \
+          --manifest-path src/ecoscope-workflows-ext-ecoscope/pyproject.toml \
+          --locked --environment test-py${{ matrix.python-version }} \
+          pytest src/ecoscope-workflows-ext-ecoscope/tests -vx \
+          -m "not io"
+
+  test-ext-ecoscope-io:
+    # run if:
+    #  - all pushes to main
+    #  - schedule defined above
+    #  - a PR was just labeled 'test-io'
+    #  - a PR with labeled 'test-io' label was opened, reopened, or synchronized
+    if: |
+      github.event_name == 'push' ||
+      github.event_name == 'schedule' ||
+      github.event.label.name == 'test-io' ||
+      contains( github.event.pull_request.labels.*.name, 'test-io')
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["310", "311", "312"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pixi
+        run: curl -fsSL https://pixi.sh/install.sh | bash && echo "$HOME/.pixi/bin" >> $GITHUB_PATH
+      - name: Test
+        env:
+          EARTHRANGER_SERVER: ${{ secrets.EARTHRANGER_SERVER }}
+          EARTHRANGER_USERNAME: ${{ secrets.EARTHRANGER_USERNAME }}
+          EARTHRANGER_PASSWORD: ${{ secrets.EARTHRANGER_PASSWORD }}
+        run: |
+          pixi run \
+          --manifest-path src/ecoscope-workflows-ext-ecoscope/pyproject.toml \
+          --locked --environment test-py${{ matrix.python-version }} \
+          pytest src/ecoscope-workflows-ext-ecoscope/tests -vx \
+          -m "io"
