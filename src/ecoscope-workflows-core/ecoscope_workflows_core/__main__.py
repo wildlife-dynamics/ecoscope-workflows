@@ -1,33 +1,13 @@
 import argparse
 import json
-import subprocess
-import sys
 from enum import Enum
 from getpass import getpass
-from pathlib import Path
-
-if sys.version_info >= (3, 11):
-    from contextlib import chdir
-else:
-    import os
-    from contextlib import contextmanager
-
-    # xref https://stackoverflow.com/a/24176022/14658879
-    @contextmanager
-    def chdir(newdir):
-        prevdir = os.getcwd()
-        os.chdir(os.path.expanduser(newdir))
-        try:
-            yield
-        finally:
-            os.chdir(prevdir)
-
 
 import ruamel.yaml
 from pydantic import SecretStr
 
 from ecoscope_workflows_core import config
-from ecoscope_workflows_core.artifacts import Dags, WorkflowArtifacts
+from ecoscope_workflows_core.artifacts import Dags, PackageDirectory, WorkflowArtifacts
 from ecoscope_workflows_core.compiler import DagCompiler, Spec
 from ecoscope_workflows_core.config import TomlConfigTable
 from ecoscope_workflows_core.registry import known_tasks
@@ -55,18 +35,16 @@ def compile_command(args):
         }
     )
     wa = WorkflowArtifacts(
-        dags=dags,
-        params_jsonschema=dc.get_params_jsonschema(),
         pixi_toml=dc.get_pixi_toml(),
+        pyproject_toml=...,
+        package=PackageDirectory(
+            dags=dags,
+            params_jsonschema=dc.get_params_jsonschema(),
+        ),
     )
-    if args.outpath:
-        dst = Path(args.outpath)
-        wa.dump(dst, clobber=args.clobber)
-        if args.lock:
-            with chdir(dst):
-                subprocess.run("pixi install -a --manifest-path pixi.toml".split())
-    else:
-        print(wa)
+    wa.dump(clobber=args.clobber)
+    if args.lock:
+        wa.lock()
 
 
 def tasks_command(args):
@@ -170,10 +148,6 @@ def main():
         dest="spec",
         required=True,
         type=argparse.FileType(mode="r"),
-    )
-    compile_parser.add_argument(
-        "--outpath",
-        dest="outpath",
     )
     compile_parser.add_argument(
         "--clobber",

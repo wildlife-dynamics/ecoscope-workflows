@@ -1,6 +1,7 @@
 import copy
 import json
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -120,18 +121,15 @@ import pytest
 from ecoscope_workflows_core.testing import test_case
 
 
-WORKFLOW = Path(__file__).parent.parent
-DAGS = [
-    p
-    for p in WORKFLOW.joinpath("dags").iterdir()
-    if p.suffix == ".py" and not p.name.startswith("_")
-]
-TEST_CASES_YAML = WORKFLOW.parent / "test-cases.yaml"
+ARTIFACTS = Path(__file__).parent.parent
+TEST_CASES_YAML = ARTIFACTS.parent / "test-cases.yaml"
+ENTRYPOINT = "ecoscope-workflows-mode-map-workflow"
 
 
-@pytest.mark.parametrize("script", DAGS, ids=[p.stem for p in DAGS])
-def test_end_to_end(script: Path, case: str, tmp_path: Path):
-    test_case(script, case, TEST_CASES_YAML, tmp_path)
+@pytest.mark.parametrize("execution_mode", ["sequential"])
+@pytest.mark.parametrize("mock_io", [True], ids=["mock-io"])
+def test_end_to_end(execution_mode: str, mock_io: bool, case: str, tmp_path: Path):
+    test_case(ENTRYPOINT, execution_mode, mock_io, case, TEST_CASES_YAML, tmp_path)
 """
 
 
@@ -140,13 +138,93 @@ class Tests(BaseModel):
     test_dags: str = Field(default=TEST_DAGS, alias="test_dags.py")
 
 
-class WorkflowArtifacts(_AllowArbitraryTypes):
+MAIN_DOT_PY = """\
+from io import TextIOWrapper
+
+import click
+import ruamel.yaml
+
+from .dags import sequential_mock_io
+
+
+@click.command()
+@click.option(
+    "--config-file",
+    type=click.File("r"),
+    required=True,
+    help="Configuration parameters for running the workflow.",
+)
+@click.option(
+    "--execution-mode",
+    required=True,
+    type=click.Choice(["async", "sequential"]),
+)
+@click.option(
+    "--mock-io/--no-mock-io",
+    is_flag=True,
+    default=False,
+    help="Whether or not to mock io with 3rd party services; for testing only.",
+)
+def main(
+    config_file: TextIOWrapper,
+    execution_mode: str,
+    mock_io: bool,
+) -> None:
+    yaml = ruamel.yaml.YAML(typ="safe")
+    params = yaml.load(config_file)
+    match execution_mode, mock_io:
+        case ("async", True):
+            raise NotImplementedError
+        case ("async", False):
+            raise NotImplementedError
+        case ("sequential", True):
+            result = sequential_mock_io(params=params)
+        case ("sequential", False):
+            raise NotImplementedError
+        case _:
+            raise ValueError(f"Invalid execution mode: {execution_mode}")
+
+    print(result)
+
+
+if __name__ == "__main__":
+    main()
+"""
+
+
+class PackageDirectory(BaseModel):
     dags: Dags
     params_jsonschema: dict
+    main: str = Field(default=MAIN_DOT_PY, alias="main.py")
+    init_dot_py: str = Field(default="", alias="__init__.py")
+
+
+class WorkflowArtifacts(_AllowArbitraryTypes):
+    spec_id: str  # todo: add validation (in Spec.id)
     pixi_toml: PixiToml
+    pyproject_toml: str
+    package: PackageDirectory
     tests: Tests = Field(default_factory=Tests)
 
-    def dump(self, root: Path, clobber: bool = False):
+    @property
+    def pkg_name_prefix(self) -> str:
+        return "ecoscope-workflows"
+
+    @property
+    def release_name(self) -> str:
+        return f"{self.pkg_name_prefix}-{self.spec_id}-workflow"
+
+    @property
+    def package_name(self) -> str:
+        return self.release_name.replace("-", "_")
+
+    def lock(self):
+        subprocess.run(
+            f"pixi install -a --manifest-path {self.release_name}/pixi.toml".split()
+        )
+
+    def dump(self, clobber: bool = False):
+        root = Path(self.release_name)
         if root.exists() and not clobber:
             raise FileExistsError(
                 f"Path '{root}' already exists. Set clobber=True to overwrite."
@@ -155,15 +233,18 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
             raise FileExistsError(f"Cannot clobber existing '{root}'; not a directory.")
         if root.exists() and clobber:
             shutil.rmtree(root)
-        root.joinpath("dags").mkdir(parents=True)
-        for fname, content in self.dags.model_dump(by_alias=True).items():
-            root.joinpath("dags").joinpath(fname).write_text(content)
 
+        # dump root artifacts
+        self.pixi_toml.dump(root.joinpath("pixi.toml"))
+        root.joinpath("pyproject.toml").write_text(self.pyproject_toml)
         root.joinpath("tests").mkdir(parents=True)
         for fname, content in self.tests.model_dump(by_alias=True).items():
             root.joinpath("tests").joinpath(fname).write_text(content)
 
-        with root.joinpath("params-jsonschema.json").open("w") as f:
-            json.dump(self.params_jsonschema, f, indent=2)
-
-        self.pixi_toml.dump(root.joinpath("pixi.toml"))
+        # dump package artifacts
+        pkg = root.joinpath(self.package_name)
+        pkg.joinpath("dags").mkdir(parents=True)
+        for fname, content in self.package.dags.model_dump(by_alias=True).items():
+            root.joinpath("dags").joinpath(fname).write_text(content)
+        with pkg.joinpath("params-jsonschema.json").open("w") as f:
+            json.dump(self.package.params_jsonschema, f, indent=2)
