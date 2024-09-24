@@ -11,6 +11,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel, Field, SecretStr
 
+from ecoscope_workflows_mode_map_workflow.params import (
+    EcoscopeWorkflowConfigurationsForm,
+)
+
 
 app = FastAPI(
     title="Ecoscope Workflows Runner",
@@ -56,7 +60,7 @@ class LithopsConfig(BaseModel):
 @app.post("/", status_code=200)
 def run(
     entrypoint: str,
-    params: dict,
+    params: EcoscopeWorkflowConfigurationsForm,
     data_connections_env_vars: dict[str, SecretStr],
     execution_mode: Literal["async", "sequential"],
     mock_io: bool,
