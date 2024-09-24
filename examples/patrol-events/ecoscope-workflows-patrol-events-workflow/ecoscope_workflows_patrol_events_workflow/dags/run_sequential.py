@@ -1,23 +1,7 @@
-# ruff: noqa: E402
-
-"""WARNING: This file is generated in a testing context and should not be used in production.
-Lines specific to the testing context are marked with a test tube emoji (🧪) to indicate
-that they would not be included (or would be different) in the production version of this file.
-"""
-
-import argparse
 import os
-import yaml
-import warnings  # 🧪
-from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
-
 
 from ecoscope_workflows_core.tasks.groupby import set_groupers
-
-get_patrol_events = create_task_magicmock(  # 🧪
-    anchor="ecoscope_workflows_ext_ecoscope.tasks.io",  # 🧪
-    func_name="get_patrol_events",  # 🧪
-)  # 🧪
+from ecoscope_workflows_ext_ecoscope.tasks.io import get_patrol_events
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import (
     apply_reloc_coord_filter,
 )
@@ -36,28 +20,15 @@ from ecoscope_workflows_core.tasks.results import merge_widget_views
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_pie_chart
 from ecoscope_workflows_core.tasks.results import gather_dashboard
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    g = parser.add_argument_group("patrol_events_workflow")
-    g.add_argument(
-        "--config-file",
-        dest="config_file",
-        required=True,
-        type=argparse.FileType(mode="r"),
-    )
-    args = parser.parse_args()
-    params = yaml.safe_load(args.config_file)
-    warnings.warn("This test script should not be used in production!")  # 🧪
 
+def main(params: dict):
     groupers = set_groupers.validate().partial(**params["groupers"]).call()
 
-    patrol_events = (
-        get_patrol_events.validate().partial(**params["patrol_events"]).call()
-    )
+    pe = get_patrol_events.validate().partial(**params["pe"]).call()
 
     filter_patrol_events = (
         apply_reloc_coord_filter.validate()
-        .partial(df=patrol_events, **params["filter_patrol_events"])
+        .partial(df=pe, **params["filter_patrol_events"])
         .call()
     )
 
@@ -306,4 +277,4 @@ if __name__ == "__main__":
         .call()
     )
 
-    print(patrol_dashboard)
+    return patrol_dashboard

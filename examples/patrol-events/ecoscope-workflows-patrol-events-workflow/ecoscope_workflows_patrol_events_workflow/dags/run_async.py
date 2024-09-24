@@ -1,6 +1,4 @@
-import argparse
 import os
-import yaml
 
 from ecoscope_workflows_core.graph import DependsOn, DependsOnSequence, Graph, Node
 
@@ -24,22 +22,12 @@ from ecoscope_workflows_core.tasks.results import merge_widget_views
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_pie_chart
 from ecoscope_workflows_core.tasks.results import gather_dashboard
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    g = parser.add_argument_group("patrol_events_workflow")
-    g.add_argument(
-        "--config-file",
-        dest="config_file",
-        required=True,
-        type=argparse.FileType(mode="r"),
-    )
-    args = parser.parse_args()
-    params = yaml.safe_load(args.config_file)
 
+def main(params: dict):
     dependencies = {
         "groupers": [],
-        "patrol_events": [],
-        "filter_patrol_events": ["patrol_events"],
+        "pe": [],
+        "filter_patrol_events": ["pe"],
         "pe_add_temporal_index": ["filter_patrol_events"],
         "pe_colormap": ["pe_add_temporal_index"],
         "pe_map_layer": ["pe_colormap"],
@@ -90,15 +78,15 @@ if __name__ == "__main__":
             partial=params["groupers"],
             method="call",
         ),
-        "patrol_events": Node(
+        "pe": Node(
             async_task=get_patrol_events.validate().set_executor("lithops"),
-            partial=params["patrol_events"],
+            partial=params["pe"],
             method="call",
         ),
         "filter_patrol_events": Node(
             async_task=apply_reloc_coord_filter.validate().set_executor("lithops"),
             partial={
-                "df": DependsOn("patrol_events"),
+                "df": DependsOn("pe"),
             }
             | params["filter_patrol_events"],
             method="call",
@@ -422,4 +410,4 @@ if __name__ == "__main__":
     }
     graph = Graph(dependencies=dependencies, nodes=nodes)
     results = graph.execute()
-    print(results)
+    return results

@@ -1,7 +1,7 @@
 # ruff: noqa: E402
 
 # %% [markdown]
-# # Patrol Events Workflow
+# # Patrol Events
 # TODO: top level description
 
 # %% [markdown]
@@ -51,7 +51,7 @@ groupers = set_groupers.partial(**groupers_params).call()
 # %%
 # parameters
 
-patrol_events_params = dict(
+pe_params = dict(
     client=...,
     since=...,
     until=...,
@@ -63,7 +63,7 @@ patrol_events_params = dict(
 # call the task
 
 
-patrol_events = get_patrol_events.partial(**patrol_events_params).call()
+pe = get_patrol_events.partial(**pe_params).call()
 
 
 # %% [markdown]
@@ -85,7 +85,7 @@ filter_patrol_events_params = dict(
 
 
 filter_patrol_events = apply_reloc_coord_filter.partial(
-    df=patrol_events, **filter_patrol_events_params
+    df=pe, **filter_patrol_events_params
 ).call()
 
 
