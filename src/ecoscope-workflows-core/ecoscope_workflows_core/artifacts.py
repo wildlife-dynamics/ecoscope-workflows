@@ -1,8 +1,10 @@
 import copy
 import json
 import shutil
+import subprocess
 import sys
 from pathlib import Path
+from textwrap import dedent
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -28,11 +30,29 @@ from ecoscope_workflows_core.requirements import (
 class Dags(BaseModel):
     """Target directory for the generated DAGs."""
 
+    init_dot_py: str = Field(
+        default=dedent(
+            """\
+            from .run_async import main as run_async
+            from .run_async_mock_io import main as run_async_mock_io
+            from .run_sequential import main as run_sequential
+            from .run_sequential_mock_io import main as run_sequential_mock_io
+
+            __all__ = [
+                "run_async",
+                "run_async_mock_io",
+                "run_sequential",
+                "run_sequential_mock_io",
+            ]
+            """
+        ),
+        alias="__init__.py",
+    )
     jupytext: str = Field(..., alias="jupytext.py")
-    script_async_mock_io: str = Field(..., alias="script-async.mock-io.py")
-    script_async: str = Field(..., alias="script-async.py")
-    script_sequential_mock_io: str = Field(..., alias="script-sequential.mock-io.py")
-    script_sequential: str = Field(..., alias="script-sequential.py")
+    run_async_mock_io: str = Field(..., alias="run_async_mock_io.py")
+    run_async: str = Field(..., alias="run_async.py")
+    run_sequential_mock_io: str = Field(..., alias="run_sequential_mock_io.py")
+    run_sequential: str = Field(..., alias="run_sequential.py")
 
 
 class PixiProject(_AllowArbitraryTypes):
@@ -69,6 +89,9 @@ class PixiToml(_AllowArbitraryAndValidateAssignment):
     dependencies: dict[str, NamelessMatchSpecType]
     feature: dict[FeatureName, Feature] = Field(default_factory=dict)
     environments: dict[str, Environment] = Field(default_factory=dict)
+    pypi_dependencies: dict[str, dict] = Field(
+        default_factory=dict, alias="pypi-dependencies"
+    )
 
     @classmethod
     def from_file(cls, src: str | Path) -> "PixiToml":
@@ -112,41 +135,93 @@ def case(pytestconfig: pytest.Config) -> str:
     return pytestconfig.getoption("case")
 """
 
-TEST_DAGS = """\
-from pathlib import Path
 
-import pytest
-
-from ecoscope_workflows_core.testing import test_case
+class Tests(BaseModel):
+    test_dags: str = Field(..., alias="test_dags.py")
+    conftest: str = Field(default=CONFTEST, alias="conftest.py")
 
 
-WORKFLOW = Path(__file__).parent.parent
-DAGS = [
-    p
-    for p in WORKFLOW.joinpath("dags").iterdir()
-    if p.suffix == ".py" and not p.name.startswith("_")
-]
-TEST_CASES_YAML = WORKFLOW.parent / "test-cases.yaml"
+MAIN_DOT_PY = """\
+from io import TextIOWrapper
+
+import click
+import ruamel.yaml
+
+from .dags import (
+    run_async,
+    run_async_mock_io,
+    run_sequential,
+    run_sequential_mock_io,
+)
 
 
-@pytest.mark.parametrize("script", DAGS, ids=[p.stem for p in DAGS])
-def test_end_to_end(script: Path, case: str, tmp_path: Path):
-    test_case(script, case, TEST_CASES_YAML, tmp_path)
+@click.command()
+@click.option(
+    "--config-file",
+    type=click.File("r"),
+    required=True,
+    help="Configuration parameters for running the workflow.",
+)
+@click.option(
+    "--execution-mode",
+    required=True,
+    type=click.Choice(["async", "sequential"]),
+)
+@click.option(
+    "--mock-io/--no-mock-io",
+    is_flag=True,
+    default=False,
+    help="Whether or not to mock io with 3rd party services; for testing only.",
+)
+def main(
+    config_file: TextIOWrapper,
+    execution_mode: str,
+    mock_io: bool,
+) -> None:
+    yaml = ruamel.yaml.YAML(typ="safe")
+    params = yaml.load(config_file)
+    match execution_mode, mock_io:
+        case ("async", True):
+            result = run_async_mock_io(params=params)
+        case ("async", False):
+            result = run_async(params=params)
+        case ("sequential", True):
+            result = run_sequential_mock_io(params=params)
+        case ("sequential", False):
+            result = run_sequential(params=params)
+        case _:
+            raise ValueError(f"Invalid execution mode: {execution_mode}")
+
+    print(result)
+
+
+if __name__ == "__main__":
+    main()
 """
 
 
-class Tests(BaseModel):
-    conftest: str = Field(default=CONFTEST, alias="conftest.py")
-    test_dags: str = Field(default=TEST_DAGS, alias="test_dags.py")
+class PackageDirectory(BaseModel):
+    dags: Dags
+    params_jsonschema: dict
+    main: str = Field(default=MAIN_DOT_PY, alias="main.py")
+    init_dot_py: str = Field(default="", alias="__init__.py")
 
 
 class WorkflowArtifacts(_AllowArbitraryTypes):
-    dags: Dags
-    params_jsonschema: dict
+    release_name: str
+    package_name: str
     pixi_toml: PixiToml
-    tests: Tests = Field(default_factory=Tests)
+    pyproject_toml: str
+    package: PackageDirectory
+    tests: Tests
 
-    def dump(self, root: Path, clobber: bool = False):
+    def lock(self):
+        subprocess.run(
+            f"pixi install -a --manifest-path {self.release_name}/pixi.toml".split()
+        )
+
+    def dump(self, clobber: bool = False):
+        root = Path().cwd().joinpath(self.release_name)
         if root.exists() and not clobber:
             raise FileExistsError(
                 f"Path '{root}' already exists. Set clobber=True to overwrite."
@@ -155,15 +230,25 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
             raise FileExistsError(f"Cannot clobber existing '{root}'; not a directory.")
         if root.exists() and clobber:
             shutil.rmtree(root)
-        root.joinpath("dags").mkdir(parents=True)
-        for fname, content in self.dags.model_dump(by_alias=True).items():
-            root.joinpath("dags").joinpath(fname).write_text(content)
 
+        root.mkdir(parents=True)
+
+        # root artifacts
+        self.pixi_toml.dump(root.joinpath("pixi.toml"))
+        root.joinpath("pyproject.toml").write_text(self.pyproject_toml)
         root.joinpath("tests").mkdir(parents=True)
         for fname, content in self.tests.model_dump(by_alias=True).items():
             root.joinpath("tests").joinpath(fname).write_text(content)
 
-        with root.joinpath("params-jsonschema.json").open("w") as f:
-            json.dump(self.params_jsonschema, f, indent=2)
-
-        self.pixi_toml.dump(root.joinpath("pixi.toml"))
+        # package artifacts
+        pkg = root.joinpath(self.package_name)
+        pkg.mkdir(parents=True)
+        pkg.joinpath("dags").mkdir(parents=True)
+        # top level
+        pkg.joinpath("__init__.py").write_text("")
+        pkg.joinpath("main.py").write_text(self.package.main)
+        with pkg.joinpath("params-jsonschema.json").open("w") as f:
+            json.dump(self.package.params_jsonschema, f, indent=2)
+        # dags
+        for fname, content in self.package.dags.model_dump(by_alias=True).items():
+            pkg.joinpath("dags").joinpath(fname).write_text(content)

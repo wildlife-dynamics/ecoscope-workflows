@@ -2,10 +2,10 @@ name: Examples
 
 on:
   push:
-    branches: ["main", "cs/vipingo"]
-  pull_request:
-    branches: ["*"]
-    types: [ opened, reopened, synchronize, labeled ]
+    branches: ["main", "cs/vipingo", "click-entrypoint"]
+  # pull_request:
+  #   branches: ["*"]
+  #   types: [ opened, reopened, synchronize, labeled ]
 
 jobs:
   build-release:
@@ -37,15 +37,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        script: [
-          "async-local",
-          "sequential-local",
+        mode: [
+          "async",
+          "sequential",
         ]
-        compilation-spec: [
+        example: [
           "mode-map",
           "mode-mapvalues",
+          "patrols",
           "patrol-events",
-          "patrol-workflow",
           "subject-tracking",
         ]
     steps:
@@ -60,7 +60,8 @@ jobs:
       - name: Install pixi
         run: curl -fsSL https://pixi.sh/install.sh | bash && echo "$HOME/.pixi/bin" >> $GITHUB_PATH
       - name: Test
-        working-directory: ./examples/${{ matrix.compilation-spec }}/workflow
         run: |
-          pixi run --locked --manifest-path pixi.toml -e test \
-          test-${{ matrix.script }}-mock-io --case test1
+          pixi run \
+          --manifest-path ./examples/${{ matrix.example }}/ecoscope-workflows-${{ matrix.example }}-workflow/pixi.toml \
+          --locked --environment test \
+          test-${{ matrix.mode }}-mock-io --case test1

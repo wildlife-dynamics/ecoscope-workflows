@@ -490,7 +490,7 @@ class Spec(_ForbidExtra):
         return self
 
 
-DagTypes = Literal["jupytext", "script-async", "script-sequential"]
+DagTypes = Literal["jupytext", "async", "sequential"]
 
 
 class DagCompiler(BaseModel):
@@ -567,7 +567,7 @@ class DagCompiler(BaseModel):
             # TODO: allow removing the LOCAL_CHANNEL for production releases
             f"""\
             [project]
-            name = "{self.spec.id}"
+            name = "{self.release_name}"
             channels = ["{LOCAL_CHANNEL.base_url}", "{RELEASE_CHANNEL.base_url}", "conda-forge"]
             platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
             """
@@ -580,8 +580,8 @@ class DagCompiler(BaseModel):
             [feature.test.dependencies]
             pytest = "*"
             [feature.test.tasks]
-            test-async-local-mock-io = "python -m pytest tests -k 'async and mock-io'"
-            test-sequential-local-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
+            test-async-mock-io = "python -m pytest tests -k 'async and mock-io'"
+            test-sequential-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
             """
             # todo: support build; push; deploy; run; test; etc. tasks
             # [feature.docker.tasks]
@@ -598,10 +598,61 @@ class DagCompiler(BaseModel):
         )
         return PixiToml(
             project=tomllib.loads(project)["project"],
-            pypi_dependencies={},  # type: ignore[call-arg]
             dependencies=tomllib.loads(dependencies)["dependencies"],
             feature=tomllib.loads(feature)["feature"],
             environments=tomllib.loads(environments)["environments"],
+            **{
+                "pypi-dependencies": {
+                    self.release_name: {"path": ".", "editable": True}
+                }
+            },
+        )
+
+    @property
+    def pkg_name_prefix(self) -> str:
+        return "ecoscope-workflows"
+
+    @property
+    def release_name(self) -> str:
+        return f"{self.pkg_name_prefix}-{self.spec.id.replace('_', '-')}-workflow"
+
+    @property
+    def package_name(self) -> str:
+        return self.release_name.replace("-", "_")
+
+    def get_pyproject_toml(self) -> str:
+        return dedent(
+            f"""\
+            [project]
+            name = "{self.release_name}"
+            version = "0.0.0"  # todo: versioning
+            requires-python = ">=3.10"  # TODO: sync with ecoscope-workflows-core
+            description = ""  # TODO: description from spec
+            license = {{ text = "BSD-3-Clause" }}
+            scripts = {{ {self.release_name} = "{self.package_name}.main:main" }}
+            """
+        )
+
+    def get_test_dags(self) -> str:
+        return dedent(
+            f"""\
+            from pathlib import Path
+
+            import pytest
+
+            from ecoscope_workflows_core.testing import test_case
+
+
+            ARTIFACTS = Path(__file__).parent.parent
+            TEST_CASES_YAML = ARTIFACTS.parent / "test-cases.yaml"
+            ENTRYPOINT = "{self.release_name}"
+
+
+            @pytest.mark.parametrize("execution_mode", ["async", "sequential"])
+            @pytest.mark.parametrize("mock_io", [True], ids=["mock-io"])
+            def test_end_to_end(execution_mode: str, mock_io: bool, case: str, tmp_path: Path):
+                test_case(ENTRYPOINT, execution_mode, mock_io, case, TEST_CASES_YAML, tmp_path)
+            """
         )
 
     @property
@@ -610,7 +661,9 @@ class DagCompiler(BaseModel):
 
     @ruff_formatted
     def generate_dag(self, dag_type: DagTypes, mock_io: bool = False) -> str:
-        template = self._jinja_env.get_template(f"{dag_type}.jinja2")
+        template = self._jinja_env.get_template(
+            f"run-{dag_type}.jinja2" if dag_type != "jupytext" else "jupytext.jinja2"
+        )
         testing = True if mock_io else False
         return template.render(
             self.get_dag_config(dag_type, mock_io=mock_io) | {"testing": testing}
