@@ -11,10 +11,6 @@ platforms = [
     "osx-arm64",
 ]
 
-[pypi-dependencies.ecoscope-workflows-mode-map-workflow]
-path = "."
-editable = true
-
 [dependencies.ecoscope-workflows-core]
 version = "*"
 channel = "file:///tmp/ecoscope-workflows/release/artifacts/"
@@ -27,8 +23,8 @@ channel = "file:///tmp/ecoscope-workflows/release/artifacts/"
 version = "*"
 
 [feature.test.tasks]
-test-async-local-mock-io = "python -m pytest tests -k 'async and mock-io'"
-test-sequential-local-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
+test-async-mock-io = "python -m pytest tests -k 'async and mock-io'"
+test-sequential-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
 
 [environments.default]
 features = []
@@ -39,3 +35,7 @@ features = [
     "test",
 ]
 solve-group = "default"
+
+[pypi-dependencies.ecoscope-workflows-mode-map-workflow]
+path = "."
+editable = true
