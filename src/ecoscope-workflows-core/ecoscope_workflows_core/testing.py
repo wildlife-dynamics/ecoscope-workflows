@@ -50,8 +50,7 @@ def test_case(
     entrypoint: str,
     execution_mode: ExecutionMode,
     mock_io: bool,
-    case_name: str,
-    test_cases_yaml: Path,
+    case: TestCase,
     tmp_path: Path,
 ):
     """Run a single test case for a workflow.
@@ -60,17 +59,13 @@ def test_case(
         entrypoint (str): The entrypoint of the workflow.
         execution_mode (ExecutionMode): The execution mode to test. One of "async" or "sequential".
         mock_io (bool): Whether or not to mock IO with 3rd party services; for testing only.
-        case_name (str): The name of the test case to run. Test cases are defined by the `test-cases.yaml` file.
-        test_cases_yaml (Path): The path to the `test-cases.yaml` file.
+        case (TestCase): The test case to run. Test cases are defined by the `test-cases.yaml` file.
         tmp_path (Path): The temporary directory to use for the test.
     """
 
     yaml = ruamel.yaml.YAML(typ="safe")
-    all_cases = yaml.load(test_cases_yaml.read_text())
-    assert case_name in all_cases, f"{case_name =} not found in {test_cases_yaml =}"
-    test_case = TestCase(**all_cases[case_name])
     with tmp_path.joinpath("params.yaml").open("w") as f:
-        yaml.dump(test_case.params, f)
+        yaml.dump(case.params, f)
 
     cmd = (
         f"{entrypoint} "
@@ -114,5 +109,5 @@ def test_case(
     assert returncode == 0
     assert proc.stdout is not None
     stdout = proc.stdout.read().strip()
-    for expected_substring in test_case.assertions.result_stdout_contains:
+    for expected_substring in case.assertions.result_stdout_contains:
         assert expected_substring in stdout
