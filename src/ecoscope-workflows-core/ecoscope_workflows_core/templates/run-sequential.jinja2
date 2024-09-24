@@ -20,13 +20,17 @@ from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
 {% if loop.last %}
 {% endif -%}
 {% endfor -%}
-def main(params: dict):
+
+from ..params import Params
+
+
+def main(params: Params):
     {%- if testing %}
     warnings.warn("This test script should not be used in production!")  # 🧪
     {% endif %}
     {% for t in spec.workflow %}
     {% set validate = true %}
-    {% set params = 'params["' ~ t.id ~ '"]' %}
+    {% set params = 'params.' ~ t.id ~ '.model_dump(exclude_unset=True)' %}
     {% set indent = '    ' %}
     {{ call_task_macros.call_task(t, validate, params, indent) }}
     {% if loop.last %}

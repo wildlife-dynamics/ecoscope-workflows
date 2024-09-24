@@ -10,29 +10,41 @@ from ecoscope_workflows_core.tasks.results import create_map_widget_single_view
 from ecoscope_workflows_core.tasks.results import merge_widget_views
 from ecoscope_workflows_core.tasks.results import gather_dashboard
 
+from ..params import Params
 
-def main(params: dict):
+
+def main(params: Params):
     patrol_events = (
-        get_patrol_events.validate().partial(**params["patrol_events"]).call()
+        get_patrol_events.validate()
+        .partial(**params.patrol_events.model_dump(exclude_unset=True))
+        .call()
     )
 
-    groupers = set_groupers.validate().partial(**params["groupers"]).call()
+    groupers = (
+        set_groupers.validate()
+        .partial(**params.groupers.model_dump(exclude_unset=True))
+        .call()
+    )
 
     split_obs = (
         split_groups.validate()
-        .partial(df=patrol_events, groupers=groupers, **params["split_obs"])
+        .partial(
+            df=patrol_events,
+            groupers=groupers,
+            **params.split_obs.model_dump(exclude_unset=True),
+        )
         .call()
     )
 
     map_layers = (
         create_map_layer.validate()
-        .partial(**params["map_layers"])
+        .partial(**params.map_layers.model_dump(exclude_unset=True))
         .mapvalues(argnames=["geodataframe"], argvalues=split_obs)
     )
 
     ecomaps = (
         draw_ecomap.validate()
-        .partial(**params["ecomaps"])
+        .partial(**params.ecomaps.model_dump(exclude_unset=True))
         .mapvalues(argnames=["geo_layers"], argvalues=map_layers)
     )
 
@@ -40,27 +52,32 @@ def main(params: dict):
         persist_text.validate()
         .partial(
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-            **params["ecomaps_persist"],
+            **params.ecomaps_persist.model_dump(exclude_unset=True),
         )
         .mapvalues(argnames=["text"], argvalues=ecomaps)
     )
 
     ecomap_widgets = (
         create_map_widget_single_view.validate()
-        .partial(**params["ecomap_widgets"])
+        .partial(**params.ecomap_widgets.model_dump(exclude_unset=True))
         .map(argnames=["view", "data"], argvalues=ecomaps_persist)
     )
 
     ecomap_widgets_merged = (
         merge_widget_views.validate()
-        .partial(widgets=ecomap_widgets, **params["ecomap_widgets_merged"])
+        .partial(
+            widgets=ecomap_widgets,
+            **params.ecomap_widgets_merged.model_dump(exclude_unset=True),
+        )
         .call()
     )
 
     dashboard = (
         gather_dashboard.validate()
         .partial(
-            widgets=ecomap_widgets_merged, groupers=groupers, **params["dashboard"]
+            widgets=ecomap_widgets_merged,
+            groupers=groupers,
+            **params.dashboard.model_dump(exclude_unset=True),
         )
         .call()
     )
