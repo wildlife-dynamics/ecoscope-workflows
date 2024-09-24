@@ -14,8 +14,9 @@ RUN pixi install -a --locked
 FROM install as test
 ENTRYPOINT ["/bin/sh", "-c", "pixi run -e test \"$@\"", "--"]
 
-# FROM install as entrypoint
-# ENTRYPOINT ["/bin/sh", "-c", "pixi run -e default \"$@\"", "--"]
+FROM install as serve
+CMD pixi run -e serve uvicorn serve:app --host 0.0.0.0 --port 3000
+
 # FROM python:3.10-slim-buster AS unzip_proxy
 # RUN apt-get update && apt-get install -y \
 #     zip \

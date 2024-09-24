@@ -36,6 +36,22 @@ features = [
 ]
 solve-group = "default"
 
+[feature.app.dependencies.fastapi]
+version = "*"
+
+[feature.app.dependencies.httpx]
+version = "*"
+
+[feature.app.dependencies.uvicorn]
+version = "*"
+
+[environments.app]
+features = [
+    "app",
+]
+solve-group = "app"
+no-default-feature = true
+
 [pypi-dependencies.ecoscope-workflows-mode-map-workflow]
 path = "."
 editable = true
