@@ -3,40 +3,14 @@ from inspect import ismethod
 from typing import ClassVar, Generic, Type, TypeVar, get_args
 
 from pydantic.functional_validators import BeforeValidator
-from pydantic_settings import (
-    BaseSettings,
-    PydanticBaseSettingsSource,
-    PyprojectTomlConfigSettingsSource,
-    SettingsConfigDict,
-)
-
-import ecoscope_workflows_core.config as config
-
-
-class _Settings(BaseSettings):
-    @classmethod
-    def settings_customise_sources(
-        cls,
-        settings_cls: type[BaseSettings],
-        init_settings: PydanticBaseSettingsSource,
-        env_settings: PydanticBaseSettingsSource,
-        dotenv_settings: PydanticBaseSettingsSource,
-        file_secret_settings: PydanticBaseSettingsSource,
-    ) -> tuple[PydanticBaseSettingsSource, ...]:
-        return (
-            init_settings,
-            env_settings,
-            PyprojectTomlConfigSettingsSource(settings_cls, toml_file=config.PATH),
-            # dotenv_settings,
-            # file_secret_settings,
-        )
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 DataConnectionType = TypeVar("DataConnectionType", bound="DataConnection")
 ClientProtocolType = TypeVar("ClientProtocolType")
 
 
-class _DataConnection(_Settings):
+class _DataConnection(BaseSettings):
     @classmethod
     def from_named_connection(  # type: ignore[misc]
         cls: Type[DataConnectionType], name: str

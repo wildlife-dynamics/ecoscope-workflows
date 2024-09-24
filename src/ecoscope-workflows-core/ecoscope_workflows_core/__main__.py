@@ -1,5 +1,6 @@
-import argparse
+from io import TextIOWrapper
 
+import click
 import ruamel.yaml
 
 from ecoscope_workflows_core.artifacts import (
@@ -9,12 +10,36 @@ from ecoscope_workflows_core.artifacts import (
     WorkflowArtifacts,
 )
 from ecoscope_workflows_core.compiler import DagCompiler, Spec
+# from ecoscope_workflows_core.visualize import write_png  # TODO: add readme with visualization
 
 yaml = ruamel.yaml.YAML(typ="safe")
 
 
-def compile_command(args):
-    compilation_spec = Spec(**yaml.load(args.spec))
+@click.command()
+@click.option(
+    "--spec",
+    type=click.File("r"),
+    required=True,
+    help="A workflow compilation YAML spec.",
+)
+@click.option(
+    "--clobber/--no-clobber",
+    is_flag=True,
+    default=False,
+    help="Whether or not to clobber an existing build directory.",
+)
+@click.option(
+    "--lock/--no-lock",
+    is_flag=True,
+    default=True,
+    help="Whether or not to generate a pixi lockfile for the package.",
+)
+def compile(
+    spec: TextIOWrapper,
+    clobber: bool,
+    lock: bool,
+):
+    compilation_spec = Spec(**yaml.load(spec))
     dc = DagCompiler(spec=compilation_spec)
     dags = Dags(
         **{
@@ -37,60 +62,20 @@ def compile_command(args):
         tests=Tests(
             **{"test_dags.py": dc.get_test_dags()},
         ),
+        # dag_png=write_png(dc.dag, "dag.png"),
+        # readme=..., # TODO: readme with dag visualization
     )
-    wa.dump(clobber=args.clobber)
-    if args.lock:
+    wa.dump(clobber=clobber)
+    if lock:
         wa.lock()
 
 
-def visualize(args):
-    from ecoscope_workflows_core.visualize import write_png
-
-    compilation_spec = Spec(**yaml.load(args.spec))
-    outpath = args.outpath
-    write_png(compilation_spec, outpath)
-
-
+@click.group()
 def main():
-    parser = argparse.ArgumentParser(prog="ecoscope-workflows")
-    subparsers = parser.add_subparsers(title="subcommands", dest="command")
+    pass
 
-    # Subcommand 'compile'
-    compile_parser = subparsers.add_parser("compile", help="Compile workflows")
-    compile_parser.set_defaults(func=compile_command)
-    compile_parser.add_argument(
-        "--spec",
-        dest="spec",
-        required=True,
-        type=argparse.FileType(mode="r"),
-    )
-    compile_parser.add_argument(
-        "--clobber",
-        dest="clobber",
-        default=False,
-        action="store_true",
-    )
-    compile_parser.add_argument(
-        "--lock",
-        dest="lock",
-        default=True,
-        action="store_true",
-    )
 
-    # Subcommand 'visualize'
-    visualize_parser = subparsers.add_parser("visualize", help="Visualize workflows")
-    visualize_parser.set_defaults(func=visualize)
-    visualize_parser.add_argument(
-        "--spec",
-        dest="spec",
-        required=True,
-        type=argparse.FileType(mode="r"),
-    )
-    visualize_parser.add_argument(
-        "--outpath",
-        dest="outpath",
-    )
-
+main.add_command(compile)
 
 if __name__ == "__main__":
     main()
