@@ -5,9 +5,7 @@ Lines specific to the testing context are marked with a test tube emoji (🧪) t
 that they would not be included (or would be different) in the production version of this file.
 """
 
-import argparse
 import os
-import yaml
 import warnings  # 🧪
 from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
 
@@ -50,17 +48,8 @@ from ecoscope_workflows_ext_ecoscope.tasks.results import draw_pie_chart
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import calculate_time_density
 from ecoscope_workflows_core.tasks.results import gather_dashboard
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    g = parser.add_argument_group("patrol_workflow")
-    g.add_argument(
-        "--config-file",
-        dest="config_file",
-        required=True,
-        type=argparse.FileType(mode="r"),
-    )
-    args = parser.parse_args()
-    params = yaml.safe_load(args.config_file)
+
+def main(params: dict):
     warnings.warn("This test script should not be used in production!")  # 🧪
 
     groupers = set_groupers.validate().partial(**params["groupers"]).call()
@@ -390,4 +379,4 @@ if __name__ == "__main__":
         .call()
     )
 
-    print(patrol_dashboard)
+    return patrol_dashboard

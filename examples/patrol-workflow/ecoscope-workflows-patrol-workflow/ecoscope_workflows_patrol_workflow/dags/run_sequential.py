@@ -1,6 +1,4 @@
-import argparse
 import os
-import yaml
 
 from ecoscope_workflows_core.tasks.groupby import set_groupers
 from ecoscope_workflows_ext_ecoscope.tasks.io import get_patrol_observations
@@ -32,18 +30,8 @@ from ecoscope_workflows_ext_ecoscope.tasks.results import draw_pie_chart
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import calculate_time_density
 from ecoscope_workflows_core.tasks.results import gather_dashboard
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    g = parser.add_argument_group("patrol_workflow")
-    g.add_argument(
-        "--config-file",
-        dest="config_file",
-        required=True,
-        type=argparse.FileType(mode="r"),
-    )
-    args = parser.parse_args()
-    params = yaml.safe_load(args.config_file)
 
+def main(params: dict):
     groupers = set_groupers.validate().partial(**params["groupers"]).call()
 
     patrol_obs = (
@@ -371,4 +359,4 @@ if __name__ == "__main__":
         .call()
     )
 
-    print(patrol_dashboard)
+    return patrol_dashboard

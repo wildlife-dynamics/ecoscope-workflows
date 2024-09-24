@@ -1,4 +1,4 @@
-id: patrol_workflow
+id: patrol
 requirements:
   compile:
     - name: ecoscope-workflows-core
