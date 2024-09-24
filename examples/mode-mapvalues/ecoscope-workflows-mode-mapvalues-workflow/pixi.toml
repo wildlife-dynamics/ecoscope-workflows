@@ -1,5 +1,5 @@
 [project]
-name = "mapvalues_example"
+name = "ecoscope-workflows-mode-mapvalues-workflow"
 channels = [
     "file:///tmp/ecoscope-workflows/release/artifacts/",
     "https://repo.prefix.dev/ecoscope-workflows/",
@@ -23,8 +23,8 @@ channel = "file:///tmp/ecoscope-workflows/release/artifacts/"
 version = "*"
 
 [feature.test.tasks]
-test-async-local-mock-io = "python -m pytest tests -k 'async and mock-io'"
-test-sequential-local-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
+test-async-mock-io = "python -m pytest tests -k 'async and mock-io'"
+test-sequential-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
 
 [environments.default]
 features = []
@@ -35,3 +35,7 @@ features = [
     "test",
 ]
 solve-group = "default"
+
+[pypi-dependencies.ecoscope-workflows-mode-mapvalues-workflow]
+path = "."
+editable = true

@@ -1,10 +1,21 @@
-import argparse
+# ruff: noqa: E402
+
+"""WARNING: This file is generated in a testing context and should not be used in production.
+Lines specific to the testing context are marked with a test tube emoji (🧪) to indicate
+that they would not be included (or would be different) in the production version of this file.
+"""
+
 import os
-import yaml
+import warnings  # 🧪
+from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
+
 
 from ecoscope_workflows_core.graph import DependsOn, Graph, Node
 
-from ecoscope_workflows_ext_ecoscope.tasks.io import get_patrol_events
+get_patrol_events = create_task_magicmock(  # 🧪
+    anchor="ecoscope_workflows_ext_ecoscope.tasks.io",  # 🧪
+    func_name="get_patrol_events",  # 🧪
+)  # 🧪
 from ecoscope_workflows_core.tasks.groupby import set_groupers
 from ecoscope_workflows_core.tasks.groupby import split_groups
 from ecoscope_workflows_ext_ecoscope.tasks.results import create_map_layer
@@ -14,17 +25,9 @@ from ecoscope_workflows_core.tasks.results import create_map_widget_single_view
 from ecoscope_workflows_core.tasks.results import merge_widget_views
 from ecoscope_workflows_core.tasks.results import gather_dashboard
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    g = parser.add_argument_group("mapvalues_example")
-    g.add_argument(
-        "--config-file",
-        dest="config_file",
-        required=True,
-        type=argparse.FileType(mode="r"),
-    )
-    args = parser.parse_args()
-    params = yaml.safe_load(args.config_file)
+
+def main(params: dict):
+    warnings.warn("This test script should not be used in production!")  # 🧪
 
     dependencies = {
         "patrol_events": [],
@@ -117,4 +120,4 @@ if __name__ == "__main__":
     }
     graph = Graph(dependencies=dependencies, nodes=nodes)
     results = graph.execute()
-    print(results)
+    return results
