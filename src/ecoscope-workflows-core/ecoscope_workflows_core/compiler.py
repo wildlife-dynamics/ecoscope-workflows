@@ -657,7 +657,7 @@ class DagCompiler(BaseModel):
             requires-python = ">=3.10"  # TODO: sync with ecoscope-workflows-core
             description = ""  # TODO: description from spec
             license = {{ text = "BSD-3-Clause" }}
-            scripts = {{ {self.release_name} = "{self.package_name}.main:main" }}
+            scripts = {{ {self.release_name} = "{self.package_name}.cli:main" }}
             """
         )
 
