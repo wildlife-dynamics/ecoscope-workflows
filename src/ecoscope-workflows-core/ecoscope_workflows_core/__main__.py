@@ -60,7 +60,7 @@ def compile(
             params_jsonschema=dc.get_params_jsonschema(),
         ),
         tests=Tests(
-            **{"test_dags.py": dc.get_test_dags()},
+            **{"conftest.py": dc.get_conftest()},
         ),
         # dag_png=write_png(dc.dag, "dag.png"),
         # readme=..., # TODO: readme with dag visualization

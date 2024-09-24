@@ -124,23 +124,30 @@ class PixiToml(_AllowArbitraryAndValidateAssignment):
             tomli_w.dump(self.model_dump(by_alias=True), f)
 
 
-CONFTEST = """\
+TEST_DAGS = """\
+from pathlib import Path
+
 import pytest
 
-
-def pytest_addoption(parser: pytest.Parser):
-    parser.addoption("--case", action="store")
+from ecoscope_workflows_core.testing import TestCase, test_case
 
 
-@pytest.fixture(scope="session")
-def case(pytestconfig: pytest.Config) -> str:
-    return pytestconfig.getoption("case")
+@pytest.mark.parametrize("execution_mode", ["async", "sequential"])
+@pytest.mark.parametrize("mock_io", [True], ids=["mock-io"])
+def test_end_to_end(
+    entrypoint: str,
+    execution_mode: str,
+    mock_io: bool,
+    case: TestCase,
+    tmp_path: Path,
+):
+    test_case(entrypoint, execution_mode, mock_io, case, tmp_path)
 """
 
 
 class Tests(BaseModel):
-    test_dags: str = Field(..., alias="test_dags.py")
-    conftest: str = Field(default=CONFTEST, alias="conftest.py")
+    conftest: str = Field(..., alias="conftest.py")
+    test_dags: str = Field(default=TEST_DAGS, alias="test_dags.py")
 
 
 MAIN_DOT_PY = """\
@@ -223,6 +230,54 @@ class PackageDirectory(BaseModel):
         return model
 
 
+DOCKERFILE = """\
+FROM bitnami/minideb:bullseye as fetch
+RUN apt-get update && apt-get install -y curl
+RUN curl -fsSL https://pixi.sh/install.sh | bash
+
+FROM bitnami/minideb:bullseye as install
+COPY --from=fetch /root/.pixi /root/.pixi
+ENV PATH="/root/.pixi/bin:${PATH}"
+COPY .tmp /tmp
+WORKDIR /app
+COPY . .
+RUN rm -rf .tmp
+RUN pixi install -e app --locked \
+    && pixi install -e default --locked
+
+FROM install as app
+ENV PORT 8080
+ENV CONCURRENCY 1
+ENV TIMEOUT 600
+CMD pixi run -e app \
+    uvicorn --port $PORT --workers $CONCURRENCY --timeout-graceful-shutdown $TIMEOUT app:app
+
+# FROM python:3.10-slim-buster AS unzip_proxy
+# RUN apt-get update && apt-get install -y \
+#     zip \
+#     && rm -rf /var/lib/apt/lists/*
+# ENV APP_HOME /lithops
+# WORKDIR $APP_HOME
+# assumes the build context is running the lithops runtime build command
+# in a context with the same lithops version as the one in the container (?)
+# COPY lithops_cloudrun.zip .
+# RUN unzip lithops_cloudrun.zip && rm lithops_cloudrun.zip
+
+# FROM install AS worker
+# COPY --from=unzip_proxy /lithops /lithops
+# ENV PORT 8080
+# ENV CONCURRENCY 1
+# ENV TIMEOUT 600
+# WORKDIR /lithops
+# CMD gunicorn --bind :$PORT --workers $CONCURRENCY --timeout $TIMEOUT lithopsproxy:proxy
+"""
+
+DOCKERIGNORE = """\
+.pixi/
+*.egg-info/
+"""
+
+
 class WorkflowArtifacts(_AllowArbitraryTypes):
     release_name: str
     package_name: str
@@ -230,6 +285,8 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
     pyproject_toml: str
     package: PackageDirectory
     tests: Tests
+    dockerfile: str = Field(default=DOCKERFILE, alias="Dockerfile")
+    dockerignore: str = Field(default=DOCKERIGNORE, alias=".dockerignore")
 
     def lock(self):
         subprocess.run(
