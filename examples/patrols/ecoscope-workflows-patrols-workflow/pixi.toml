@@ -1,5 +1,5 @@
 [project]
-name = "ecoscope-workflows-patrol-workflow"
+name = "ecoscope-workflows-patrols-workflow"
 channels = [
     "file:///tmp/ecoscope-workflows/release/artifacts/",
     "https://repo.prefix.dev/ecoscope-workflows/",
@@ -36,6 +36,6 @@ features = [
 ]
 solve-group = "default"
 
-[pypi-dependencies.ecoscope-workflows-patrol-workflow]
+[pypi-dependencies.ecoscope-workflows-patrols-workflow]
 path = "."
 editable = true

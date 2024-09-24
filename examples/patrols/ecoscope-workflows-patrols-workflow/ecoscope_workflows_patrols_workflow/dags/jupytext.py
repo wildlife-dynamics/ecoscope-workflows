@@ -1,7 +1,7 @@
 # ruff: noqa: E402
 
 # %% [markdown]
-# # Patrol
+# # Patrols
 # TODO: top level description
 
 # %% [markdown]

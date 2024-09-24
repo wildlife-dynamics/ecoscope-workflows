@@ -7,7 +7,7 @@ from ecoscope_workflows_core.testing import test_case
 
 ARTIFACTS = Path(__file__).parent.parent
 TEST_CASES_YAML = ARTIFACTS.parent / "test-cases.yaml"
-ENTRYPOINT = "ecoscope-workflows-patrol-workflow"
+ENTRYPOINT = "ecoscope-workflows-patrols-workflow"
 
 
 @pytest.mark.parametrize("execution_mode", ["async", "sequential"])
