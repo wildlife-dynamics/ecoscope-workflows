@@ -9,13 +9,15 @@ COPY .tmp /tmp
 WORKDIR /app
 COPY . .
 RUN rm -rf .tmp
-RUN pixi install -a --locked
+RUN pixi install -e app --locked \
+    && pixi install -e default --locked
 
-FROM install as test
-ENTRYPOINT ["/bin/sh", "-c", "pixi run -e test \"$@\"", "--"]
-
-FROM install as serve
-CMD pixi run -e serve uvicorn serve:app --host 0.0.0.0 --port 3000
+FROM install as app
+ENV PORT 8080
+ENV CONCURRENCY 1
+ENV TIMEOUT 600
+CMD pixi run -e app \
+    gunicorn --bind :$PORT --workers $CONCURRENCY --timeout $TIMEOUT app:app
 
 # FROM python:3.10-slim-buster AS unzip_proxy
 # RUN apt-get update && apt-get install -y \

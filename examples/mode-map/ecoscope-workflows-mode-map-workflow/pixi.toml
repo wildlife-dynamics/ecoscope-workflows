@@ -42,7 +42,7 @@ version = "*"
 [feature.app.dependencies.httpx]
 version = "*"
 
-[feature.app.dependencies.uvicorn]
+[feature.app.dependencies.gunicorn]
 version = "*"
 
 [environments.app]
