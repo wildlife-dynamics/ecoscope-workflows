@@ -37,11 +37,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        script: [
-          "async-local",
-          "sequential-local",
+        mode: [
+          "async",
+          "sequential",
         ]
-        compilation-spec: [
+        example: [
           "mode-map",
           # FIXME: uncomment before merge
           # "mode-mapvalues",
@@ -61,7 +61,8 @@ jobs:
       - name: Install pixi
         run: curl -fsSL https://pixi.sh/install.sh | bash && echo "$HOME/.pixi/bin" >> $GITHUB_PATH
       - name: Test
-        working-directory: ./examples/${{ matrix.compilation-spec }}/artifacts
         run: |
-          pixi run --locked --manifest-path pixi.toml -e test \
-          test-${{ matrix.script }}-mock-io --case test1
+          pixi run \
+          --manifest-path ./examples/${{ matrix.example }}/ecoscope-workflows-${{ matrix.example }}-workflow \
+          --locked --environment test \
+          test-${{ mode }}-mock-io --case test1
