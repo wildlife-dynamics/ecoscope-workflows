@@ -27,7 +27,7 @@ ENTRYPOINT ["/bin/sh", "-c", "pixi run -e test \"$@\"", "--"]
 # COPY lithops_cloudrun.zip .
 # RUN unzip lithops_cloudrun.zip && rm lithops_cloudrun.zip
 
-# FROM install AS serve
+# FROM install AS worker
 # COPY --from=unzip_proxy /lithops /lithops
 # ENV PORT 8080
 # ENV CONCURRENCY 1
