@@ -34,6 +34,7 @@ requirements:
     - ruff
     - tomli-w
     # optionals that we want for deployment
+    - datamodel-code-generator
     - lithops >=3.4.1
     - cloudpathlib-gs
     - pydot

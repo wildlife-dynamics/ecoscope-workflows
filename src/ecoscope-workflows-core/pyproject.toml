@@ -57,6 +57,7 @@ ruff = "*"
 tomli-w = "*"
 # todo: split into optional package variants? (e.g. "ecoscope-workflows-core[gs,lithops,viz]")
 # this is just a lot simpler for now, and in most cases we will want these dependencies
+datamodel-code-generator = "*"
 cloudpathlib-gs = "*"
 lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
 pydot = "*"
