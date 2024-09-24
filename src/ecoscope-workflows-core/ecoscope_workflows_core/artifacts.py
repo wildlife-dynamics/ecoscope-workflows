@@ -91,6 +91,7 @@ class PixiToml(_AllowArbitraryAndValidateAssignment):
     dependencies: dict[str, NamelessMatchSpecType]
     feature: dict[FeatureName, Feature] = Field(default_factory=dict)
     environments: dict[str, Environment] = Field(default_factory=dict)
+    tasks: dict[PixiTaskName, PixiTaskCommand] = Field(default_factory=dict)
     pypi_dependencies: dict[str, dict] = Field(
         default_factory=dict, alias="pypi-dependencies"
     )
