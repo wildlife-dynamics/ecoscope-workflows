@@ -11,9 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel, Field, SecretStr
 
-from ecoscope_workflows_mode_map_workflow.params import (
-    EcoscopeWorkflowConfigurationsForm,
-)
+from ecoscope_workflows_mode_map_workflow.params import Params
 
 
 app = FastAPI(
@@ -60,7 +58,7 @@ class LithopsConfig(BaseModel):
 @app.post("/", status_code=200)
 def run(
     entrypoint: str,
-    params: EcoscopeWorkflowConfigurationsForm,
+    params: Params,
     data_connections_env_vars: dict[str, SecretStr],
     execution_mode: Literal["async", "sequential"],
     mock_io: bool,
@@ -72,7 +70,7 @@ def run(
     # TODO: use parameters jsonschema to validate config_file_params
     # OH WOW WE COULD GENERATE A PYDANTIC MODEL FROM THE PARAMS JSONSCHEMA AND USE THAT TO VALIDATE THE INPUT
     with tempfile.NamedTemporaryFile(delete=False, suffix=".yaml") as config_file:
-        yaml.dump(params, config_file)
+        yaml.dump(params.model_dump(exclude_unset=True), config_file)
 
     cmd = (
         f"pixi run -e default {entrypoint} "

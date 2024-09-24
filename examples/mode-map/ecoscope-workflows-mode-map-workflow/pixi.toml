@@ -55,6 +55,12 @@ features = [
 solve-group = "app"
 no-default-feature = true
 
+[environments.test-app]
+features = [
+    "test",
+    "app",
+]
+
 [pypi-dependencies.ecoscope-workflows-mode-map-workflow]
 path = "."
 editable = true

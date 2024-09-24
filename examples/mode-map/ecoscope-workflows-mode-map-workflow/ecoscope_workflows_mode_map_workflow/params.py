@@ -232,7 +232,7 @@ class CreateEcoMapForEachGroup(BaseModel):
     )
 
 
-class EcoscopeWorkflowConfigurationsForm(BaseModel):
+class Params(BaseModel):
     Get_Observations_A: Optional[GetObservationsA] = Field(
         None, alias="Get Observations A"
     )
