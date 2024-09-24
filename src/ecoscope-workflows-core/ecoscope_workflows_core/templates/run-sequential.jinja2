@@ -30,7 +30,7 @@ def main(params: Params):
     {% endif %}
     {% for t in spec.workflow %}
     {% set validate = true %}
-    {% set params = 'params.' ~ t.id ~ '.model_dump(exclude_unset=True)' %}
+    {% set params = 'params.model_dump(exclude_unset=True)["' ~ t.id ~ '"]' %}
     {% set indent = '    ' %}
     {{ call_task_macros.call_task(t, validate, params, indent) }}
     {% if loop.last %}

@@ -36,7 +36,7 @@ def main(params: Params):
     nodes = {
         {% for t in spec.workflow %}
         {% set validate = true %}
-        {% set params = 'params.' ~ t.id ~ '.model_dump(exclude_unset=True)' %}
+        {% set params = 'params.model_dump(exclude_unset=True)["' ~ t.id ~ '"]' %}
         {% set set_executor = '"lithops"' %}
         "{{ t.id }}": Node(
             async_task={{ call_task_macros.create_callable(t, false, false, validate, false, set_executor) }},

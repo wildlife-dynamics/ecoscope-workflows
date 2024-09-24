@@ -31,12 +31,12 @@ def main(params: Params):
     nodes = {
         "patrol_events": Node(
             async_task=get_patrol_events.validate().set_executor("lithops"),
-            partial=params.patrol_events.model_dump(exclude_unset=True),
+            partial=params.model_dump(exclude_unset=True)["patrol_events"],
             method="call",
         ),
         "groupers": Node(
             async_task=set_groupers.validate().set_executor("lithops"),
-            partial=params.groupers.model_dump(exclude_unset=True),
+            partial=params.model_dump(exclude_unset=True)["groupers"],
             method="call",
         ),
         "split_obs": Node(
@@ -45,12 +45,12 @@ def main(params: Params):
                 "df": DependsOn("patrol_events"),
                 "groupers": DependsOn("groupers"),
             }
-            | params.split_obs.model_dump(exclude_unset=True),
+            | params.model_dump(exclude_unset=True)["split_obs"],
             method="call",
         ),
         "map_layers": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
-            partial=params.map_layers.model_dump(exclude_unset=True),
+            partial=params.model_dump(exclude_unset=True)["map_layers"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geodataframe"],
@@ -59,7 +59,7 @@ def main(params: Params):
         ),
         "ecomaps": Node(
             async_task=draw_ecomap.validate().set_executor("lithops"),
-            partial=params.ecomaps.model_dump(exclude_unset=True),
+            partial=params.model_dump(exclude_unset=True)["ecomaps"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geo_layers"],
@@ -71,7 +71,7 @@ def main(params: Params):
             partial={
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
-            | params.ecomaps_persist.model_dump(exclude_unset=True),
+            | params.model_dump(exclude_unset=True)["ecomaps_persist"],
             method="mapvalues",
             kwargs={
                 "argnames": ["text"],
@@ -80,7 +80,7 @@ def main(params: Params):
         ),
         "ecomap_widgets": Node(
             async_task=create_map_widget_single_view.validate().set_executor("lithops"),
-            partial=params.ecomap_widgets.model_dump(exclude_unset=True),
+            partial=params.model_dump(exclude_unset=True)["ecomap_widgets"],
             method="map",
             kwargs={
                 "argnames": ["view", "data"],
@@ -92,7 +92,7 @@ def main(params: Params):
             partial={
                 "widgets": DependsOn("ecomap_widgets"),
             }
-            | params.ecomap_widgets_merged.model_dump(exclude_unset=True),
+            | params.model_dump(exclude_unset=True)["ecomap_widgets_merged"],
             method="call",
         ),
         "dashboard": Node(
@@ -101,7 +101,7 @@ def main(params: Params):
                 "widgets": DependsOn("ecomap_widgets_merged"),
                 "groupers": DependsOn("groupers"),
             }
-            | params.dashboard.model_dump(exclude_unset=True),
+            | params.model_dump(exclude_unset=True)["dashboard"],
             method="call",
         ),
     }
