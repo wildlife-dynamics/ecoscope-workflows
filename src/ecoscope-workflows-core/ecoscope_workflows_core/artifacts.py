@@ -3,6 +3,7 @@ import json
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from textwrap import dedent
 
@@ -12,6 +13,7 @@ else:
     import tomli as tomllib
 
 import tomli_w
+import datamodel_code_generator as dcg
 from pydantic import BaseModel, Field
 
 from ecoscope_workflows_core._models import (
@@ -206,6 +208,19 @@ class PackageDirectory(BaseModel):
     main: str = Field(default=MAIN_DOT_PY, alias="main.py")
     init_dot_py: str = Field(default="", alias="__init__.py")
 
+    def generate_params_model(self) -> None:
+        with tempfile.NamedTemporaryFile(suffix=".py") as tmp:
+            output = Path(tmp.name)
+            dcg.generate(
+                json.dumps(self.params_jsonschema),
+                input_file_type=dcg.InputFileType.JsonSchema,
+                input_filename="params-jsonschema.json",
+                output=output,
+                output_model_type=dcg.DataModelType.PydanticV2BaseModel,
+            )
+            model: str = output.read_text()
+        return model
+
 
 class WorkflowArtifacts(_AllowArbitraryTypes):
     release_name: str
@@ -247,6 +262,8 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
         # top level
         pkg.joinpath("__init__.py").write_text("")
         pkg.joinpath("main.py").write_text(self.package.main)
+        params_model = self.package.generate_params_model()
+        pkg.joinpath("params.py").write_text(params_model)
         with pkg.joinpath("params-jsonschema.json").open("w") as f:
             json.dump(self.package.params_jsonschema, f, indent=2)
         # dags
