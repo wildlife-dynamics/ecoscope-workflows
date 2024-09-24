@@ -66,6 +66,7 @@ def run(
 ):
     yaml = ruamel.yaml.YAML(typ="safe")
     # TODO: use parameters jsonschema to validate config_file_params
+    # OH WOW WE COULD GENERATE A PYDANTIC MODEL FROM THE PARAMS JSONSCHEMA AND USE THAT TO VALIDATE THE INPUT
     with tempfile.NamedTemporaryFile(delete=False, suffix=".yaml") as config_file:
         yaml.dump(params, config_file)
 
@@ -78,7 +79,7 @@ def run(
     with tempfile.NamedTemporaryFile(
         delete=False, suffix=".yaml"
     ) as lithops_config_file:
-        yaml.dump(lithops_config, lithops_config_file)
+        yaml.dump(lithops_config.model_dump(), lithops_config_file)
 
     env = (
         os.environ.copy()  # TODO: just copy PATH (not everything) from outer env?
