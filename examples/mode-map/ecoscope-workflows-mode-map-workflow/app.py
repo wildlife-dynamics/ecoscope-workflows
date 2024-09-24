@@ -36,11 +36,13 @@ class Lithops(BaseModel):
 
 class GCP(BaseModel):
     region: str = "us-central1"
-    credentials_path: str = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+    credentials_path: str = (
+        "placeholder"  # os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+    )
 
 
 class GCPCloudRun(BaseModel):
-    runtime: str = os.environ["LITHOPS_GCP_CLOUDRUN_RUNTIME"]
+    runtime: str = "placeholder"  # os.environ["LITHOPS_GCP_CLOUDRUN_RUNTIME"]
     runtime_cpu: int = 2
     runtime_memory: int = 1000
 

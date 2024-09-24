@@ -17,7 +17,7 @@ ENV PORT 8080
 ENV CONCURRENCY 1
 ENV TIMEOUT 600
 CMD pixi run -e app \
-    gunicorn --bind :$PORT --workers $CONCURRENCY --timeout $TIMEOUT app:app
+    uvicorn --port $PORT --workers $CONCURRENCY --timeout-graceful-shutdown $TIMEOUT app:app
 
 # FROM python:3.10-slim-buster AS unzip_proxy
 # RUN apt-get update && apt-get install -y \
