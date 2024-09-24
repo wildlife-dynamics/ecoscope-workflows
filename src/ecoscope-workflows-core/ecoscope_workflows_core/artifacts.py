@@ -155,6 +155,7 @@ from .dags import (
     run_sequential,
     run_sequential_mock_io,
 )
+from .params import Params
 
 
 @click.command()
@@ -181,7 +182,7 @@ def main(
     mock_io: bool,
 ) -> None:
     yaml = ruamel.yaml.YAML(typ="safe")
-    params = yaml.load(config_file)
+    params = Params(**yaml.load(config_file))
     match execution_mode, mock_io:
         case ("async", True):
             result = run_async_mock_io(params=params)
