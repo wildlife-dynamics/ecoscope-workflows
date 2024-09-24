@@ -1,23 +1,7 @@
-# ruff: noqa: E402
-
-"""WARNING: This file is generated in a testing context and should not be used in production.
-Lines specific to the testing context are marked with a test tube emoji (🧪) to indicate
-that they would not be included (or would be different) in the production version of this file.
-"""
-
-import argparse
 import os
-import yaml
-import warnings  # 🧪
-from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
-
 
 from ecoscope_workflows_core.tasks.groupby import set_groupers
-
-get_subjectgroup_observations = create_task_magicmock(  # 🧪
-    anchor="ecoscope_workflows_ext_ecoscope.tasks.io",  # 🧪
-    func_name="get_subjectgroup_observations",  # 🧪
-)  # 🧪
+from ecoscope_workflows_ext_ecoscope.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import process_relocations
 from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import (
     relocations_to_trajectory,
@@ -37,19 +21,8 @@ from ecoscope_workflows_ext_ecoscope.tasks.analysis import get_day_night_ratio
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import calculate_time_density
 from ecoscope_workflows_core.tasks.results import gather_dashboard
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    g = parser.add_argument_group("subject_tracking")
-    g.add_argument(
-        "--config-file",
-        dest="config_file",
-        required=True,
-        type=argparse.FileType(mode="r"),
-    )
-    args = parser.parse_args()
-    params = yaml.safe_load(args.config_file)
-    warnings.warn("This test script should not be used in production!")  # 🧪
 
+def main(params: dict):
     groupers = set_groupers.validate().partial(**params["groupers"]).call()
 
     subject_obs = (
@@ -254,4 +227,4 @@ if __name__ == "__main__":
         .call()
     )
 
-    print(subject_tracking_dashboard)
+    return subject_tracking_dashboard

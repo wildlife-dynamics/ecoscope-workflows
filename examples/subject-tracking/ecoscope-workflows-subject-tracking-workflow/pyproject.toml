@@ -1,0 +1,7 @@
+[project]
+name = "ecoscope-workflows-subject-tracking-workflow"
+version = "0.0.0"  # todo: versioning
+requires-python = ">=3.10"  # TODO: sync with ecoscope-workflows-core
+description = ""  # TODO: description from spec
+license = { text = "BSD-3-Clause" }
+scripts = { ecoscope-workflows-subject-tracking-workflow = "ecoscope_workflows_subject_tracking_workflow.main:main" }
