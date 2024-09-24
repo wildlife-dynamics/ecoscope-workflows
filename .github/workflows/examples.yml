@@ -43,11 +43,10 @@ jobs:
         ]
         example: [
           "mode-map",
-          # FIXME: uncomment before merge
-          # "mode-mapvalues",
-          # "patrol-events",
-          # "patrol-workflow",
-          # "subject-tracking",
+          "mode-mapvalues",
+          "patrol-events",
+          "patrol-workflow",
+          "subject-tracking",
         ]
     steps:
       - uses: actions/checkout@v4
