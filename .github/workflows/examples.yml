@@ -65,4 +65,4 @@ jobs:
           pixi run \
           --manifest-path ./examples/${{ matrix.example }}/ecoscope-workflows-${{ matrix.example }}-workflow \
           --locked --environment test \
-          test-${{ mode }}-mock-io --case test1
+          test-${{ matrix.mode }}-mock-io --case test1
