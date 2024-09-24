@@ -151,19 +151,104 @@ class Tests(BaseModel):
     test_dags: str = Field(default=TEST_DAGS, alias="test_dags.py")
 
 
-MAIN_DOT_PY = """\
+APP = """\
+import os
+import tempfile
+from typing import Literal
+
+import ruamel.yaml
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+from pydantic import BaseModel, Field, SecretStr
+
+from .dispatch import dispatch
+from .params import Params
+
+
+app = FastAPI(
+    title="Ecoscope Workflows Runner",
+    debug=True,
+    version="0.0.0",
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # TODO: restrict to only the fastapi server, anywhere else?
+    allow_credentials=True,
+    allow_methods=["POST"],
+    allow_headers=["*"],
+)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+
+class Lithops(BaseModel):
+    backend: str = "gcp_cloudrun"
+    storage: str = "gcp_storage"
+    log_level: str = "DEBUG"
+    data_limit: int = 16
+
+
+class GCP(BaseModel):
+    region: str = "us-central1"
+    credentials_path: str = (
+        "placeholder"  # os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+    )
+
+
+class GCPCloudRun(BaseModel):
+    runtime: str = "placeholder"  # os.environ["LITHOPS_GCP_CLOUDRUN_RUNTIME"]
+    runtime_cpu: int = 2
+    runtime_memory: int = 1000
+
+
+class LithopsConfig(BaseModel):
+    lithops: Lithops = Field(default_factory=Lithops)
+    gcp: GCP = Field(default_factory=GCP)
+    gcp_cloudrun: GCPCloudRun = Field(default_factory=GCPCloudRun)
+
+
+@app.post("/", status_code=200)
+def run(
+    params: Params,
+    data_connections_env_vars: dict[str, SecretStr],
+    execution_mode: Literal["async", "sequential"],
+    mock_io: bool,
+    results_url: str,
+    lithops_config: LithopsConfig,
+    callback_url: str,  # TODO: authenticatation (hmac)
+):
+    yaml = ruamel.yaml.YAML(typ="safe")
+
+    if execution_mode == "async":
+        with tempfile.NamedTemporaryFile(
+            delete=False, suffix=".yaml"
+        ) as lithops_config_file:
+            yaml.dump(lithops_config.model_dump(), lithops_config_file)
+
+    update_env = (
+        {k: v.get_secret_value() for k, v in data_connections_env_vars.items()}
+        | {"ECOSCOPE_WORKFLOWS_RESULTS": results_url}
+        | {"LITHOPS_CONFIG_FILE": lithops_config_file.name}
+    )
+    os.environ.update(update_env)
+    try:
+        result = dispatch(execution_mode, mock_io, params)
+    except Exception as e:
+        return {"error": str(e)}
+    finally:
+        for k in update_env:
+            del os.environ[k]
+
+    return result
+"""
+
+CLI = """\
 from io import TextIOWrapper
 
 import click
 import ruamel.yaml
 
-from .dags import (
-    run_async,
-    run_async_mock_io,
-    run_sequential,
-    run_sequential_mock_io,
-)
-from .params import Params
+from .dispatch import dispatch
 
 
 @click.command()
@@ -190,7 +275,34 @@ def main(
     mock_io: bool,
 ) -> None:
     yaml = ruamel.yaml.YAML(typ="safe")
-    params = Params(**yaml.load(config_file))
+    params = yaml.load(config_file)
+
+    result = dispatch(execution_mode, mock_io, params)
+
+    print(result)
+
+
+if __name__ == "__main__":
+    main()
+"""
+
+DISPATCH = """\
+from typing import Any
+
+from .dags import (
+    run_async,
+    run_async_mock_io,
+    run_sequential,
+    run_sequential_mock_io,
+)
+from .params import Params
+
+
+def dispatch(
+    execution_mode: str,  # TODO: literal type
+    mock_io: bool,
+    params: Params,
+) -> Any:  # TODO: Dynamically define the return type
     match execution_mode, mock_io:
         case ("async", True):
             result = run_async_mock_io(params=params)
@@ -203,18 +315,17 @@ def main(
         case _:
             raise ValueError(f"Invalid execution mode: {execution_mode}")
 
-    print(result)
+    return result
 
-
-if __name__ == "__main__":
-    main()
 """
 
 
 class PackageDirectory(BaseModel):
     dags: Dags
     params_jsonschema: dict
-    main: str = Field(default=MAIN_DOT_PY, alias="main.py")
+    app: str = Field(default=APP, alias="app.py")
+    cli: str = Field(default=CLI, alias="cli.py")
+    dispatch: str = Field(default=DISPATCH, alias="dispatch.py")
     init_dot_py: str = Field(default="", alias="__init__.py")
 
     def generate_params_model(self) -> None:
@@ -322,7 +433,9 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
         pkg.joinpath("dags").mkdir(parents=True)
         # top level
         pkg.joinpath("__init__.py").write_text("")
-        pkg.joinpath("main.py").write_text(self.package.main)
+        pkg.joinpath("app.py").write_text(self.package.app)
+        pkg.joinpath("cli.py").write_text(self.package.cli)
+        pkg.joinpath("dispatch.py").write_text(self.package.dispatch)
         params_model = self.package.generate_params_model()
         pkg.joinpath("params.py").write_text(params_model)
         with pkg.joinpath("params-jsonschema.json").open("w") as f:
