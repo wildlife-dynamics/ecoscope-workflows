@@ -309,6 +309,8 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
         # root artifacts
         self.pixi_toml.dump(root.joinpath("pixi.toml"))
         root.joinpath("pyproject.toml").write_text(self.pyproject_toml)
+        root.joinpath("Dockerfile").write_text(self.dockerfile)
+        root.joinpath(".dockerignore").write_text(self.dockerignore)
         root.joinpath("tests").mkdir(parents=True)
         for fname, content in self.tests.model_dump(by_alias=True).items():
             root.joinpath("tests").joinpath(fname).write_text(content)
