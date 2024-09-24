@@ -586,6 +586,12 @@ class DagCompiler(BaseModel):
             dependencies += f'{r.name} = {{ version = "{r.version}", channel = "{r.channel.base_url}" }}\n'
         feature = dedent(
             """\
+            [feature.app.dependencies]
+            fastapi = "*"
+            httpx = "*"
+            uvicorn = "*"
+            "ruamel.yaml" = "*"
+
             [feature.test.dependencies]
             pytest = "*"
             [feature.test.tasks]
@@ -602,13 +608,26 @@ class DagCompiler(BaseModel):
             """\
             [environments]
             default = { solve-group = "default" }
+            app = { features = ["app"], solve-group = "app", no-default-feature = true }
             test = { features = ["test"], solve-group = "default" }
+            test-app = { features = ["test", "app"] }
+            """
+        )
+        tasks = dedent(
+            """\
+            [tasks]
+            docker-build = '''
+            mkdir -p .tmp/ecoscope-workflows/release/artifacts/
+            && cp -r /tmp/ecoscope-workflows/release/artifacts/* .tmp/ecoscope-workflows/release/artifacts/
+            && docker buildx build -t ecoscope-workflows-mode-map-workflow .
+            '''
             """
         )
         return PixiToml(
             project=tomllib.loads(project)["project"],
             dependencies=tomllib.loads(dependencies)["dependencies"],
             feature=tomllib.loads(feature)["feature"],
+            tasks=tomllib.loads(tasks)["tasks"],
             environments=tomllib.loads(environments)["environments"],
             **{
                 "pypi-dependencies": {
