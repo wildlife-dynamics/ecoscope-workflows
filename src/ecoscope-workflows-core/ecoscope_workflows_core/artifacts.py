@@ -86,10 +86,12 @@ class PixiToml(_AllowArbitraryAndValidateAssignment):
     """The pixi.toml file that specifies the workflow."""
 
     project: PixiProject
-    pypi_dependencies: dict[str, dict] = Field(..., alias="pypi-dependencies")
     dependencies: dict[str, NamelessMatchSpecType]
     feature: dict[FeatureName, Feature] = Field(default_factory=dict)
     environments: dict[str, Environment] = Field(default_factory=dict)
+    pypi_dependencies: dict[str, dict] = Field(
+        default_factory=dict, alias="pypi-dependencies"
+    )
 
     @classmethod
     def from_file(cls, src: str | Path) -> "PixiToml":

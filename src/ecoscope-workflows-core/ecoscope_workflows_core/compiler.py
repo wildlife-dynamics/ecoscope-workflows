@@ -580,8 +580,8 @@ class DagCompiler(BaseModel):
             [feature.test.dependencies]
             pytest = "*"
             [feature.test.tasks]
-            test-async-local-mock-io = "python -m pytest tests -k 'async and mock-io'"
-            test-sequential-local-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
+            test-async-mock-io = "python -m pytest tests -k 'async and mock-io'"
+            test-sequential-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
             """
             # todo: support build; push; deploy; run; test; etc. tasks
             # [feature.docker.tasks]
@@ -598,14 +598,14 @@ class DagCompiler(BaseModel):
         )
         return PixiToml(
             project=tomllib.loads(project)["project"],
+            dependencies=tomllib.loads(dependencies)["dependencies"],
+            feature=tomllib.loads(feature)["feature"],
+            environments=tomllib.loads(environments)["environments"],
             **{
                 "pypi-dependencies": {
                     self.release_name: {"path": ".", "editable": True}
                 }
             },
-            dependencies=tomllib.loads(dependencies)["dependencies"],
-            feature=tomllib.loads(feature)["feature"],
-            environments=tomllib.loads(environments)["environments"],
         )
 
     @property
