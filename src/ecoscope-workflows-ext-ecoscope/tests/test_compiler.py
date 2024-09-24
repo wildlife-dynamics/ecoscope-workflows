@@ -774,7 +774,7 @@ def test_generate_dag_smoke():
     )
     spec = Spec(**yaml.load(s))
     dc = DagCompiler(spec=spec)
-    dag = dc.generate_dag(dag_type="script-sequential")
+    dag = dc.generate_dag(dag_type="sequential")
     assert isinstance(dag, str)
 
 
