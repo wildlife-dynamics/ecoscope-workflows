@@ -63,6 +63,6 @@ jobs:
       - name: Test
         run: |
           pixi run \
-          --manifest-path ./examples/${{ matrix.example }}/ecoscope-workflows-${{ matrix.example }}-workflow \
+          --manifest-path ./examples/${{ matrix.example }}/ecoscope-workflows-${{ matrix.example }}-workflow/pixi.toml \
           --locked --environment test \
           test-${{ matrix.mode }}-mock-io --case test1
