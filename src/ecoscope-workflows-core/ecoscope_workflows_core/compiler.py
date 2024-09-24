@@ -527,18 +527,27 @@ class DagCompiler(BaseModel):
         }
 
     def get_params_jsonschema(self) -> dict[str, Any]:
-        properties = {
-            t.name: t.known_task.parameters_jsonschema(
-                omit_args=self.per_taskinstance_omit_args.get(t.id, []),
-            )
-            for t in self.spec.workflow
-        }
+        def _props_and_defs_from_task_instance(
+            t: TaskInstance,
+            omit_args: list[str],
+        ) -> tuple[dict, dict]:
+            props = {t.id: t.known_task.parameters_jsonschema(omit_args=omit_args)}
+            defs = {}
+            for _, schema in props.items():
+                schema["title"] = t.name
+                if "$defs" in schema:
+                    defs.update(schema["$defs"])
+                    del schema["$defs"]
+            return props, defs
 
-        definitions = {}
-        for _, schema in properties.items():
-            if "$defs" in schema:
-                definitions.update(schema["$defs"])
-                del schema["$defs"]
+        properties: dict[str, Any] = {}
+        definitions: dict[str, Any] = {}
+        for t in self.spec.workflow:
+            props, defs = _props_and_defs_from_task_instance(
+                t, self.per_taskinstance_omit_args.get(t.id, [])
+            )
+            properties |= props
+            definitions |= defs
 
         react_json_schema_form = ReactJSONSchemaFormConfiguration(properties=properties)
         react_json_schema_form.definitions = definitions
