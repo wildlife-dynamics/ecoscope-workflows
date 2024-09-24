@@ -9,7 +9,7 @@ import ruamel.yaml
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from pydantic import SecretStr
+from pydantic import BaseModel, Field, SecretStr
 
 
 app = FastAPI(
@@ -27,24 +27,28 @@ app.add_middleware(
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 
-lithops_config = {
-    # TODO: all/most of this should be configurable
-    "lithops": {
-        "backend": "gcp_cloudrun",
-        "storage": "gcp_storage",
-        "log_level": "DEBUG",
-        "data_limit": 16,
-    },
-    "gcp": {
-        "region": "us-central1",
-        "credentials_path": os.environ["GOOGLE_APPLICATION_CREDENTIALS"],
-    },
-    "gcp_cloudrun": {
-        "runtime": os.environ["LITHOPS_GCP_CLOUDRUN_RUNTIME"],
-        "runtime_cpu": 2,
-        "runtime_memory": 1000,
-    },
-}
+class Lithops(BaseModel):
+    backend: str = "gcp_cloudrun"
+    storage: str = "gcp_storage"
+    log_level: str = "DEBUG"
+    data_limit: int = 16
+
+
+class GCP(BaseModel):
+    region: str = "us-central1"
+    credentials_path: str = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+
+
+class GCPCloudRun(BaseModel):
+    runtime: str = os.environ["LITHOPS_GCP_CLOUDRUN_RUNTIME"]
+    runtime_cpu: int = 2
+    runtime_memory: int = 1000
+
+
+class LithopsConfig(BaseModel):
+    lithops: Lithops = Field(default_factory=Lithops)
+    gcp: GCP = Field(default_factory=GCP)
+    gcp_cloudrun: GCPCloudRun = Field(default_factory=GCPCloudRun)
 
 
 @app.post("/", status_code=200)
@@ -55,7 +59,7 @@ def run(
     execution_mode: Literal["async", "sequential"],
     mock_io: bool,
     results_url: str,
-    lithops_config: dict,
+    lithops_config: LithopsConfig,
     callback_url: str,  # TODO: authenticatation (hmac)
 ):
     yaml = ruamel.yaml.YAML(typ="safe")
