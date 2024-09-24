@@ -39,3 +39,10 @@ solve-group = "default"
 [pypi-dependencies.ecoscope-workflows-mode-map-workflow]
 path = "."
 editable = true
+
+[tasks]
+docker-build = '''
+mkdir -p .tmp/ecoscope-workflows/release/artifacts/
+&& cp -r /tmp/ecoscope-workflows/release/artifacts/* .tmp/ecoscope-workflows/release/artifacts/
+&& docker buildx build -t ecoscope-workflows-mode-map-workflow .
+'''
