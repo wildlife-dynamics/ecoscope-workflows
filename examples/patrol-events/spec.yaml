@@ -19,13 +19,13 @@ workflow:
 
   # patrol events
   - name: Get Patrol Events from EarthRanger
-    id: patrol_events
+    id: pe
     task: get_patrol_events
   - name: Apply Relocation Coordinate Filter
     id: filter_patrol_events
     task: apply_reloc_coord_filter
     partial:
-      df: ${{ workflow.patrol_events.return }}
+      df: ${{ workflow.pe.return }}
   - name: Add temporal index to Patrol Events
     id: pe_add_temporal_index
     task: add_temporal_index
