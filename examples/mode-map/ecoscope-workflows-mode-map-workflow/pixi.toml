@@ -45,6 +45,9 @@ version = "*"
 [feature.app.dependencies.gunicorn]
 version = "*"
 
+[feature.app.dependencies."ruamel.yaml"]
+version = "*"
+
 [environments.app]
 features = [
     "app",

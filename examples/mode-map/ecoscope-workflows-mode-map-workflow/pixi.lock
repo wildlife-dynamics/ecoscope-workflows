@@ -55,6 +55,8 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/python_abi-3.12-5_cp312.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/readline-8.2-h8228510_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/rich-13.8.1-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/ruamel.yaml-0.18.6-py312h98912ed_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/ruamel.yaml.clib-0.2.8-py312h98912ed_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/setuptools-74.1.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/shellingham-1.5.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sniffio-1.3.1-pyhd8ed1ab_0.conda
@@ -116,6 +118,8 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/python_abi-3.12-5_cp312.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/readline-8.2-h8fc344f_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/rich-13.8.1-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/ruamel.yaml-0.18.6-py312hdd3e373_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/ruamel.yaml.clib-0.2.8-py312hdd3e373_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/setuptools-74.1.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/shellingham-1.5.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sniffio-1.3.1-pyhd8ed1ab_0.conda
@@ -169,6 +173,8 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/python_abi-3.12-5_cp312.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/readline-8.2-h92ec313_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/rich-13.8.1-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/ruamel.yaml-0.18.6-py312he37b823_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/ruamel.yaml.clib-0.2.8-py312he37b823_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/setuptools-74.1.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/shellingham-1.5.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sniffio-1.3.1-pyhd8ed1ab_0.conda
@@ -7337,26 +7343,6 @@ packages:
   - setuptools >=3.0
   license: MIT
   license_family: MIT
-  purls:
-  - pkg:pypi/gunicorn?source=hash-mapping
-  size: 181454
-  timestamp: 1724956070404
-- kind: conda
-  name: gunicorn
-  version: 23.0.0
-  build: py312h7900ff3_1
-  build_number: 1
-  subdir: linux-64
-  url: https://conda.anaconda.org/conda-forge/linux-64/gunicorn-23.0.0-py312h7900ff3_1.conda
-  sha256: 6fc98c84f36886d57cd23aaa426524749bce29ff8e5e7cba523cfa07b2e66287
-  md5: 0b3cda7592a578100a59e6249f3dd409
-  depends:
-  - packaging
-  - python >=3.12,<3.13.0a0
-  - python_abi 3.12.* *_cp312
-  - setuptools >=3.0
-  license: MIT
-  license_family: MIT
   size: 181454
   timestamp: 1724956070404
 - kind: conda
@@ -7376,50 +7362,8 @@ packages:
   - setuptools >=3.0
   license: MIT
   license_family: MIT
-  purls:
-  - pkg:pypi/gunicorn?source=hash-mapping
   size: 183409
   timestamp: 1724956244841
-- kind: conda
-  name: gunicorn
-  version: 23.0.0
-  build: py312h81bd7bf_1
-  build_number: 1
-  subdir: osx-arm64
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/gunicorn-23.0.0-py312h81bd7bf_1.conda
-  sha256: 3ea79bd4e2c2c27f018be003d0360eb6663ae17f3ca0cefa9fcd77782af3e3f1
-  md5: cd31c876e1c5dd477d2c64f702e63096
-  depends:
-  - packaging
-  - python >=3.12,<3.13.0a0
-  - python >=3.12,<3.13.0a0 *_cpython
-  - python_abi 3.12.* *_cp312
-  - setuptools >=3.0
-  license: MIT
-  license_family: MIT
-  size: 183409
-  timestamp: 1724956244841
-- kind: conda
-  name: gunicorn
-  version: 23.0.0
-  build: py312h996f985_1
-  build_number: 1
-  subdir: linux-aarch64
-  url: https://conda.anaconda.org/conda-forge/linux-aarch64/gunicorn-23.0.0-py312h996f985_1.conda
-  sha256: dbb61b1da353b60dc6d35e625c2766d7a0b596dce5f6c1f364b9a0449f627c2c
-  md5: af6360dd3219fe5b01134b864582c426
-  depends:
-  - packaging
-  - python >=3.12,<3.13.0a0
-  - python >=3.12,<3.13.0a0 *_cpython
-  - python_abi 3.12.* *_cp312
-  - setuptools >=3.0
-  license: MIT
-  license_family: MIT
-  purls:
-  - pkg:pypi/gunicorn?source=hash-mapping
-  size: 181950
-  timestamp: 1724956176488
 - kind: conda
   name: gunicorn
   version: 23.0.0
@@ -13762,23 +13706,6 @@ packages:
   - python >=3.8
   license: Apache-2.0
   license_family: APACHE
-  purls:
-  - pkg:pypi/packaging?source=hash-mapping
-  size: 50290
-  timestamp: 1718189540074
-- kind: conda
-  name: packaging
-  version: '24.1'
-  build: pyhd8ed1ab_0
-  subdir: noarch
-  noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/packaging-24.1-pyhd8ed1ab_0.conda
-  sha256: 36aca948219e2c9fdd6d80728bcc657519e02f06c2703d8db3446aec67f51d81
-  md5: cbe1bb1f21567018ce595d9c2be0f0db
-  depends:
-  - python >=3.8
-  license: Apache-2.0
-  license_family: APACHE
   size: 50290
   timestamp: 1718189540074
 - kind: conda
@@ -16561,6 +16488,23 @@ packages:
 - kind: conda
   name: ruamel.yaml
   version: 0.18.6
+  build: py312h98912ed_0
+  subdir: linux-64
+  url: https://conda.anaconda.org/conda-forge/linux-64/ruamel.yaml-0.18.6-py312h98912ed_0.conda
+  sha256: 26856daba883254736b7f3767c08f445b5d010eebbf4fc7aa384ee80e24aa663
+  md5: a99a06a875138829ef65f44bbe2c30ca
+  depends:
+  - libgcc-ng >=12
+  - python >=3.12,<3.13.0a0
+  - python_abi 3.12.* *_cp312
+  - ruamel.yaml.clib >=0.1.2
+  license: MIT
+  license_family: MIT
+  size: 268015
+  timestamp: 1707298336196
+- kind: conda
+  name: ruamel.yaml
+  version: 0.18.6
   build: py312hdd3e373_0
   subdir: linux-aarch64
   url: https://conda.anaconda.org/conda-forge/linux-aarch64/ruamel.yaml-0.18.6-py312hdd3e373_0.conda
@@ -16576,6 +16520,24 @@ packages:
   license_family: MIT
   purls:
   - pkg:pypi/ruamel-yaml?source=hash-mapping
+  size: 268146
+  timestamp: 1707298453178
+- kind: conda
+  name: ruamel.yaml
+  version: 0.18.6
+  build: py312hdd3e373_0
+  subdir: linux-aarch64
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/ruamel.yaml-0.18.6-py312hdd3e373_0.conda
+  sha256: d8576e72fec57ff9c4806fbcd6d336395652a3a3c1667bba6fc742e208a6dbdd
+  md5: 675a11ab58c2461d33d37275d117dcd2
+  depends:
+  - libgcc-ng >=12
+  - python >=3.12,<3.13.0a0
+  - python >=3.12,<3.13.0a0 *_cpython
+  - python_abi 3.12.* *_cp312
+  - ruamel.yaml.clib >=0.1.2
+  license: MIT
+  license_family: MIT
   size: 268146
   timestamp: 1707298453178
 - kind: conda
@@ -16598,6 +16560,23 @@ packages:
   size: 268637
   timestamp: 1707298502612
 - kind: conda
+  name: ruamel.yaml
+  version: 0.18.6
+  build: py312he37b823_0
+  subdir: osx-arm64
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/ruamel.yaml-0.18.6-py312he37b823_0.conda
+  sha256: 4a27b50445842e97a31e3f412816d4a0d576b4f1ee327b9a892a183ba5c60f6f
+  md5: cb9f9b4797001b2c52383f4007fa1f4b
+  depends:
+  - python >=3.12,<3.13.0a0
+  - python >=3.12,<3.13.0a0 *_cpython
+  - python_abi 3.12.* *_cp312
+  - ruamel.yaml.clib >=0.1.2
+  license: MIT
+  license_family: MIT
+  size: 268637
+  timestamp: 1707298502612
+- kind: conda
   name: ruamel.yaml.clib
   version: 0.2.8
   build: py312h98912ed_0
@@ -16613,6 +16592,22 @@ packages:
   license_family: MIT
   purls:
   - pkg:pypi/ruamel-yaml-clib?source=hash-mapping
+  size: 135640
+  timestamp: 1707314642857
+- kind: conda
+  name: ruamel.yaml.clib
+  version: 0.2.8
+  build: py312h98912ed_0
+  subdir: linux-64
+  url: https://conda.anaconda.org/conda-forge/linux-64/ruamel.yaml.clib-0.2.8-py312h98912ed_0.conda
+  sha256: 5965302881d8b1049291e3ba3912286cdc72cb82303230cbbf0a048c6f6dd7c1
+  md5: 05f31c2a79ba61df8d6d903ce4a4ce7b
+  depends:
+  - libgcc-ng >=12
+  - python >=3.12,<3.13.0a0
+  - python_abi 3.12.* *_cp312
+  license: MIT
+  license_family: MIT
   size: 135640
   timestamp: 1707314642857
 - kind: conda
@@ -16637,6 +16632,23 @@ packages:
 - kind: conda
   name: ruamel.yaml.clib
   version: 0.2.8
+  build: py312hdd3e373_0
+  subdir: linux-aarch64
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/ruamel.yaml.clib-0.2.8-py312hdd3e373_0.conda
+  sha256: d6d59cb7f978b80ed061447a51c992dfd23e443ab754612cb621f3f38b338830
+  md5: 7d6fe36395d184fd7cfa4469c722339f
+  depends:
+  - libgcc-ng >=12
+  - python >=3.12,<3.13.0a0
+  - python >=3.12,<3.13.0a0 *_cpython
+  - python_abi 3.12.* *_cp312
+  license: MIT
+  license_family: MIT
+  size: 127157
+  timestamp: 1707314746829
+- kind: conda
+  name: ruamel.yaml.clib
+  version: 0.2.8
   build: py312he37b823_0
   subdir: osx-arm64
   url: https://conda.anaconda.org/conda-forge/osx-arm64/ruamel.yaml.clib-0.2.8-py312he37b823_0.conda
@@ -16650,6 +16662,22 @@ packages:
   license_family: MIT
   purls:
   - pkg:pypi/ruamel-yaml-clib?source=hash-mapping
+  size: 111221
+  timestamp: 1707315016121
+- kind: conda
+  name: ruamel.yaml.clib
+  version: 0.2.8
+  build: py312he37b823_0
+  subdir: osx-arm64
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/ruamel.yaml.clib-0.2.8-py312he37b823_0.conda
+  sha256: c3138824f484cca2804d22758c75965b578cd35b35243ff02e64da06bda03477
+  md5: 2fa02324046cfcb7a67fae30fd06a945
+  depends:
+  - python >=3.12,<3.13.0a0
+  - python >=3.12,<3.13.0a0 *_cpython
+  - python_abi 3.12.* *_cp312
+  license: MIT
+  license_family: MIT
   size: 111221
   timestamp: 1707315016121
 - kind: conda
@@ -17029,23 +17057,6 @@ packages:
   - pkg:pypi/scipy?source=hash-mapping
   size: 14993910
   timestamp: 1724328538557
-- kind: conda
-  name: setuptools
-  version: 74.1.2
-  build: pyhd8ed1ab_0
-  subdir: noarch
-  noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/setuptools-74.1.2-pyhd8ed1ab_0.conda
-  sha256: 71a4603248167bacc0aa985697a93aff62f6bcf008edaece09e79e83e43a7e22
-  md5: 56c9c11d004428e81d02eeb730fc6336
-  depends:
-  - python >=3.8
-  license: MIT
-  license_family: MIT
-  purls:
-  - pkg:pypi/setuptools?source=hash-mapping
-  size: 784583
-  timestamp: 1726752322559
 - kind: conda
   name: setuptools
   version: 74.1.2
