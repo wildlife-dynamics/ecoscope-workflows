@@ -37,8 +37,10 @@ from ecoscope_workflows_ext_ecoscope.tasks.analysis import get_day_night_ratio
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import calculate_time_density
 from ecoscope_workflows_core.tasks.results import gather_dashboard
 
+from ..params import Params
 
-def main(params: dict):
+
+def main(params: Params):
     warnings.warn("This test script should not be used in production!")  # 🧪
 
     dependencies = {
@@ -85,12 +87,12 @@ def main(params: dict):
     nodes = {
         "groupers": Node(
             async_task=set_groupers.validate().set_executor("lithops"),
-            partial=params["groupers"],
+            partial=params.model_dump(exclude_unset=True)["groupers"],
             method="call",
         ),
         "subject_obs": Node(
             async_task=get_subjectgroup_observations.validate().set_executor("lithops"),
-            partial=params["subject_obs"],
+            partial=params.model_dump(exclude_unset=True)["subject_obs"],
             method="call",
         ),
         "subject_reloc": Node(
@@ -98,7 +100,7 @@ def main(params: dict):
             partial={
                 "observations": DependsOn("subject_obs"),
             }
-            | params["subject_reloc"],
+            | params.model_dump(exclude_unset=True)["subject_reloc"],
             method="call",
         ),
         "subject_traj": Node(
@@ -106,7 +108,7 @@ def main(params: dict):
             partial={
                 "relocations": DependsOn("subject_reloc"),
             }
-            | params["subject_traj"],
+            | params.model_dump(exclude_unset=True)["subject_traj"],
             method="call",
         ),
         "traj_add_temporal_index": Node(
@@ -114,7 +116,7 @@ def main(params: dict):
             partial={
                 "df": DependsOn("subject_traj"),
             }
-            | params["traj_add_temporal_index"],
+            | params.model_dump(exclude_unset=True)["traj_add_temporal_index"],
             method="call",
         ),
         "split_subject_traj_groups": Node(
@@ -123,12 +125,12 @@ def main(params: dict):
                 "df": DependsOn("traj_add_temporal_index"),
                 "groupers": DependsOn("groupers"),
             }
-            | params["split_subject_traj_groups"],
+            | params.model_dump(exclude_unset=True)["split_subject_traj_groups"],
             method="call",
         ),
         "traj_map_layers": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
-            partial=params["traj_map_layers"],
+            partial=params.model_dump(exclude_unset=True)["traj_map_layers"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geodataframe"],
@@ -137,7 +139,7 @@ def main(params: dict):
         ),
         "traj_ecomap": Node(
             async_task=draw_ecomap.validate().set_executor("lithops"),
-            partial=params["traj_ecomap"],
+            partial=params.model_dump(exclude_unset=True)["traj_ecomap"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geo_layers"],
@@ -149,7 +151,7 @@ def main(params: dict):
             partial={
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
-            | params["ecomap_html_urls"],
+            | params.model_dump(exclude_unset=True)["ecomap_html_urls"],
             method="mapvalues",
             kwargs={
                 "argnames": ["text"],
@@ -158,7 +160,9 @@ def main(params: dict):
         ),
         "traj_map_widgets_single_views": Node(
             async_task=create_map_widget_single_view.validate().set_executor("lithops"),
-            partial=params["traj_map_widgets_single_views"],
+            partial=params.model_dump(exclude_unset=True)[
+                "traj_map_widgets_single_views"
+            ],
             method="map",
             kwargs={
                 "argnames": ["view", "data"],
@@ -170,12 +174,12 @@ def main(params: dict):
             partial={
                 "widgets": DependsOn("traj_map_widgets_single_views"),
             }
-            | params["traj_grouped_map_widget"],
+            | params.model_dump(exclude_unset=True)["traj_grouped_map_widget"],
             method="call",
         ),
         "mean_speed": Node(
             async_task=dataframe_column_mean.validate().set_executor("lithops"),
-            partial=params["mean_speed"],
+            partial=params.model_dump(exclude_unset=True)["mean_speed"],
             method="mapvalues",
             kwargs={
                 "argnames": ["df"],
@@ -186,7 +190,7 @@ def main(params: dict):
             async_task=create_single_value_widget_single_view.validate().set_executor(
                 "lithops"
             ),
-            partial=params["mean_speed_sv_widgets"],
+            partial=params.model_dump(exclude_unset=True)["mean_speed_sv_widgets"],
             method="map",
             kwargs={
                 "argnames": ["view", "data"],
@@ -198,12 +202,12 @@ def main(params: dict):
             partial={
                 "widgets": DependsOn("mean_speed_sv_widgets"),
             }
-            | params["mean_speed_grouped_sv_widget"],
+            | params.model_dump(exclude_unset=True)["mean_speed_grouped_sv_widget"],
             method="call",
         ),
         "max_speed": Node(
             async_task=dataframe_column_max.validate().set_executor("lithops"),
-            partial=params["max_speed"],
+            partial=params.model_dump(exclude_unset=True)["max_speed"],
             method="mapvalues",
             kwargs={
                 "argnames": ["df"],
@@ -214,7 +218,7 @@ def main(params: dict):
             async_task=create_single_value_widget_single_view.validate().set_executor(
                 "lithops"
             ),
-            partial=params["max_speed_sv_widgets"],
+            partial=params.model_dump(exclude_unset=True)["max_speed_sv_widgets"],
             method="map",
             kwargs={
                 "argnames": ["view", "data"],
@@ -226,12 +230,12 @@ def main(params: dict):
             partial={
                 "widgets": DependsOn("max_speed_sv_widgets"),
             }
-            | params["max_speed_grouped_sv_widget"],
+            | params.model_dump(exclude_unset=True)["max_speed_grouped_sv_widget"],
             method="call",
         ),
         "num_location": Node(
             async_task=dataframe_count.validate().set_executor("lithops"),
-            partial=params["num_location"],
+            partial=params.model_dump(exclude_unset=True)["num_location"],
             method="mapvalues",
             kwargs={
                 "argnames": ["df"],
@@ -242,7 +246,7 @@ def main(params: dict):
             async_task=create_single_value_widget_single_view.validate().set_executor(
                 "lithops"
             ),
-            partial=params["num_location_sv_widgets"],
+            partial=params.model_dump(exclude_unset=True)["num_location_sv_widgets"],
             method="map",
             kwargs={
                 "argnames": ["view", "data"],
@@ -254,12 +258,12 @@ def main(params: dict):
             partial={
                 "widgets": DependsOn("num_location_sv_widgets"),
             }
-            | params["num_location_grouped_sv_widget"],
+            | params.model_dump(exclude_unset=True)["num_location_grouped_sv_widget"],
             method="call",
         ),
         "daynight_ratio": Node(
             async_task=get_day_night_ratio.validate().set_executor("lithops"),
-            partial=params["daynight_ratio"],
+            partial=params.model_dump(exclude_unset=True)["daynight_ratio"],
             method="mapvalues",
             kwargs={
                 "argnames": ["df"],
@@ -270,7 +274,7 @@ def main(params: dict):
             async_task=create_single_value_widget_single_view.validate().set_executor(
                 "lithops"
             ),
-            partial=params["daynight_ratio_sv_widgets"],
+            partial=params.model_dump(exclude_unset=True)["daynight_ratio_sv_widgets"],
             method="map",
             kwargs={
                 "argnames": ["view", "data"],
@@ -282,12 +286,12 @@ def main(params: dict):
             partial={
                 "widgets": DependsOn("daynight_ratio_sv_widgets"),
             }
-            | params["daynight_ratio_grouped_sv_widget"],
+            | params.model_dump(exclude_unset=True)["daynight_ratio_grouped_sv_widget"],
             method="call",
         ),
         "td": Node(
             async_task=calculate_time_density.validate().set_executor("lithops"),
-            partial=params["td"],
+            partial=params.model_dump(exclude_unset=True)["td"],
             method="mapvalues",
             kwargs={
                 "argnames": ["trajectory_gdf"],
@@ -296,7 +300,7 @@ def main(params: dict):
         ),
         "td_map_layer": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
-            partial=params["td_map_layer"],
+            partial=params.model_dump(exclude_unset=True)["td_map_layer"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geodataframe"],
@@ -305,7 +309,7 @@ def main(params: dict):
         ),
         "td_ecomap": Node(
             async_task=draw_ecomap.validate().set_executor("lithops"),
-            partial=params["td_ecomap"],
+            partial=params.model_dump(exclude_unset=True)["td_ecomap"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geo_layers"],
@@ -317,7 +321,7 @@ def main(params: dict):
             partial={
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
-            | params["td_ecomap_html_url"],
+            | params.model_dump(exclude_unset=True)["td_ecomap_html_url"],
             method="mapvalues",
             kwargs={
                 "argnames": ["text"],
@@ -326,7 +330,7 @@ def main(params: dict):
         ),
         "td_map_widget": Node(
             async_task=create_map_widget_single_view.validate().set_executor("lithops"),
-            partial=params["td_map_widget"],
+            partial=params.model_dump(exclude_unset=True)["td_map_widget"],
             method="map",
             kwargs={
                 "argnames": ["view", "data"],
@@ -338,7 +342,7 @@ def main(params: dict):
             partial={
                 "widgets": DependsOn("td_map_widget"),
             }
-            | params["td_grouped_map_widget"],
+            | params.model_dump(exclude_unset=True)["td_grouped_map_widget"],
             method="call",
         ),
         "subject_tracking_dashboard": Node(
@@ -356,7 +360,7 @@ def main(params: dict):
                 ),
                 "groupers": DependsOn("groupers"),
             }
-            | params["subject_tracking_dashboard"],
+            | params.model_dump(exclude_unset=True)["subject_tracking_dashboard"],
             method="call",
         ),
     }
