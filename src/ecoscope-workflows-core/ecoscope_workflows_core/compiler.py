@@ -697,6 +697,16 @@ class DagCompiler(BaseModel):
                 return TestCase(**all_cases[case_name])
 
 
+            @pytest.fixture(params=["async", "sequential"])
+            def execution_mode(request: pytest.FixtureRequest) -> str:
+                return request.param
+
+
+            @pytest.fixture(params=[True], ids=["mock-io"])
+            def mock_io(request: pytest.FixtureRequest) -> bool:
+                return request.param
+
+
             @pytest.fixture(scope="session")
             def entrypoint() -> str:
                 return ENTRYPOINT
