@@ -37,6 +37,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        api: [
+          "app",
+          "cli",
+        ]
         mode: [
           "async",
           "sequential",
@@ -59,9 +63,9 @@ jobs:
         run: ls -lR /tmp/ecoscope-workflows/release/artifacts
       - name: Install pixi
         run: curl -fsSL https://pixi.sh/install.sh | bash && echo "$HOME/.pixi/bin" >> $GITHUB_PATH
-      - name: Test cli
+      - name: Test
         run: |
           pixi run \
           --manifest-path ./examples/${{ matrix.example }}/ecoscope-workflows-${{ matrix.example }}-workflow/pixi.toml \
           --locked --environment test \
-          test-cli-${{ matrix.mode }}-mock-io --case test1
+          test-${{ matrix.api }}-${{ matrix.mode }}-mock-io --case test1
