@@ -207,7 +207,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgfortran-14.1.0-h69a702a_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgfortran-ng-14.1.0-h69a702a_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgfortran5-14.1.0-hc5f4f2c_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/libglib-2.80.3-h315aac3_2.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/libglib-2.80.4-h2ff4ddf_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgomp-14.1.0-h77fa898_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgoogle-cloud-2.28.0-h26d7fe4_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgoogle-cloud-storage-2.28.0-ha262f82_0.conda
@@ -620,7 +620,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgfortran-14.1.0-he9431aa_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgfortran-ng-14.1.0-he9431aa_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgfortran5-14.1.0-h9420597_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libglib-2.80.3-haee52c6_2.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libglib-2.80.4-hc486b8e_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgomp-14.1.0-he277a41_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgoogle-cloud-2.28.0-hc02380a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgoogle-cloud-storage-2.28.0-hd572f31_0.conda
@@ -1028,7 +1028,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgdal-3.8.5-h0bd8f10_11.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgfortran-5.0.0-13_2_0_hd922786_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgfortran5-13.2.0-hf226fd6_3.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libglib-2.80.3-h59d46d9_2.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libglib-2.80.4-h4821c08_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgoogle-cloud-2.28.0-hfe08963_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgoogle-cloud-storage-2.28.0-h1466eeb_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgrpc-1.62.2-h9c18a4f_0.conda
@@ -1437,7 +1437,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgfortran-14.1.0-h69a702a_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgfortran-ng-14.1.0-h69a702a_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgfortran5-14.1.0-hc5f4f2c_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/libglib-2.80.3-h315aac3_2.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/libglib-2.80.4-h2ff4ddf_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgomp-14.1.0-h77fa898_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgoogle-cloud-2.28.0-h26d7fe4_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgoogle-cloud-storage-2.28.0-ha262f82_0.conda
@@ -1854,7 +1854,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgfortran-14.1.0-he9431aa_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgfortran-ng-14.1.0-he9431aa_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgfortran5-14.1.0-h9420597_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libglib-2.80.3-haee52c6_2.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libglib-2.80.4-hc486b8e_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgomp-14.1.0-he277a41_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgoogle-cloud-2.28.0-hc02380a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgoogle-cloud-storage-2.28.0-hd572f31_0.conda
@@ -2266,7 +2266,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgdal-3.8.5-h0bd8f10_11.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgfortran-5.0.0-13_2_0_hd922786_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgfortran5-13.2.0-hf226fd6_3.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libglib-2.80.3-h59d46d9_2.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libglib-2.80.4-h4821c08_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgoogle-cloud-2.28.0-hfe08963_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgoogle-cloud-storage-2.28.0-h1466eeb_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgrpc-1.62.2-h9c18a4f_0.conda
@@ -10793,35 +10793,33 @@ packages:
   timestamp: 1724801851300
 - kind: conda
   name: libglib
-  version: 2.80.3
-  build: h315aac3_2
-  build_number: 2
+  version: 2.80.4
+  build: h2ff4ddf_0
   subdir: linux-64
-  url: https://conda.anaconda.org/conda-forge/linux-64/libglib-2.80.3-h315aac3_2.conda
-  sha256: 7470e664b780b91708bed356cc634874dfc3d6f17cbf884a1d6f5d6d59c09f91
-  md5: b0143a3e98136a680b728fdf9b42a258
+  url: https://conda.anaconda.org/conda-forge/linux-64/libglib-2.80.4-h2ff4ddf_0.conda
+  sha256: f94a5b40abd8635a89b4fd4a7a45ed7b9ab24f541b1134e6e5785aad94235f24
+  md5: 5294bd65c0c3c1c8d45482ab92f8927b
   depends:
   - __glibc >=2.17,<3.0.a0
   - libffi >=3.4,<4.0a0
-  - libgcc-ng >=12
+  - libgcc >=13
   - libiconv >=1.17,<2.0a0
   - libzlib >=1.3.1,<2.0a0
   - pcre2 >=10.44,<10.45.0a0
   constrains:
-  - glib 2.80.3 *_2
+  - glib 2.80.4 *_0
   license: LGPL-2.1-or-later
   purls: []
-  size: 3922900
-  timestamp: 1723208802469
+  size: 3907062
+  timestamp: 1727285772662
 - kind: conda
   name: libglib
-  version: 2.80.3
-  build: h59d46d9_2
-  build_number: 2
+  version: 2.80.4
+  build: h4821c08_0
   subdir: osx-arm64
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/libglib-2.80.3-h59d46d9_2.conda
-  sha256: 15cc86d7d91fb78a76e3e2b965e5d6e8b7c79cc4f4ec3322d48fb712d792eff6
-  md5: 17ac2bac18ec707efc8575fae2f09990
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/libglib-2.80.4-h4821c08_0.conda
+  sha256: eb415a57d5882d6a71f18f647e64b9fcb7cbd7fc03536a9ac984835041d2ab47
+  md5: 814bfdbcf5b398697bc6cc164416a55f
   depends:
   - __osx >=11.0
   - libffi >=3.4,<4.0a0
@@ -10830,32 +10828,31 @@ packages:
   - libzlib >=1.3.1,<2.0a0
   - pcre2 >=10.44,<10.45.0a0
   constrains:
-  - glib 2.80.3 *_2
+  - glib 2.80.4 *_0
   license: LGPL-2.1-or-later
   purls: []
-  size: 3632316
-  timestamp: 1723209072976
+  size: 3598837
+  timestamp: 1727286080158
 - kind: conda
   name: libglib
-  version: 2.80.3
-  build: haee52c6_2
-  build_number: 2
+  version: 2.80.4
+  build: hc486b8e_0
   subdir: linux-aarch64
-  url: https://conda.anaconda.org/conda-forge/linux-aarch64/libglib-2.80.3-haee52c6_2.conda
-  sha256: c32705e0cec1edb6c43fd32cb230e03f882c3dce7921dab3a361ce84b7cacb21
-  md5: 937a787ab5789a1e0c818b9545b6deb9
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/libglib-2.80.4-hc486b8e_0.conda
+  sha256: 9afdc4288f7e7de537101ce5a93a1eb1a3b5d812033ab26500d0cc2627fd58de
+  md5: f67ba170e43147a86bb21433e4579891
   depends:
   - libffi >=3.4,<4.0a0
-  - libgcc-ng >=12
+  - libgcc >=13
   - libiconv >=1.17,<2.0a0
   - libzlib >=1.3.1,<2.0a0
   - pcre2 >=10.44,<10.45.0a0
   constrains:
-  - glib 2.80.3 *_2
+  - glib 2.80.4 *_0
   license: LGPL-2.1-or-later
   purls: []
-  size: 4016353
-  timestamp: 1723208981686
+  size: 3972391
+  timestamp: 1727285765115
 - kind: conda
   name: libgomp
   version: 14.1.0
