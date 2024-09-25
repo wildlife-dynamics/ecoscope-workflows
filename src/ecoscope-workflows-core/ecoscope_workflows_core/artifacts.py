@@ -171,7 +171,7 @@ def test_cli(
 
 class Tests(BaseModel):
     conftest: str = Field(..., alias="conftest.py")
-    test_app: str = Field(default=TEST_CLI, alias="test_app.py")
+    test_app: str = Field(default=TEST_APP, alias="test_app.py")
     test_cli: str = Field(default=TEST_CLI, alias="test_cli.py")
 
 
