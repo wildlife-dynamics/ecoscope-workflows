@@ -595,8 +595,11 @@ class DagCompiler(BaseModel):
             [feature.test.dependencies]
             pytest = "*"
             [feature.test.tasks]
-            test-async-mock-io = "python -m pytest tests -k 'async and mock-io'"
-            test-sequential-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
+            test-all = "python -m pytest -v tests"
+            test-app-async-mock-io = "python -m pytest -v tests/test_app.py -k 'async and mock-io'"
+            test-app-sequential-mock-io = "python -m pytest -v tests/test_app.py -k 'sequential and mock-io'"
+            test-cli-async-mock-io = "python -m pytest -v tests/test_cli.py -k 'async and mock-io'"
+            test-cli-sequential-mock-io = "python -m pytest -v tests/test_cli.py -k 'sequential and mock-io'"
             """
             # todo: support build; push; deploy; run; test; etc. tasks
             # [feature.docker.tasks]
