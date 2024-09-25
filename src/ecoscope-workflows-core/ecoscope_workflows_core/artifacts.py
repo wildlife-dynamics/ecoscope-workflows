@@ -126,7 +126,6 @@ class PixiToml(_AllowArbitraryAndValidateAssignment):
 
 
 TEST_APP = """\
-import pytest
 from fastapi.testclient import TestClient
 
 from ecoscope_workflows_core.testing import TestCase
@@ -149,8 +148,6 @@ def test_app(client: TestClient, execution_mode: str, mock_io: bool, case: TestC
 TEST_CLI = """\
 from pathlib import Path
 
-import pytest
-
 from ecoscope_workflows_core.testing import TestCase, run_cli_test_case
 
 
@@ -161,7 +158,7 @@ def test_cli(
     case: TestCase,
     tmp_path: Path,
 ):
-    test_case(entrypoint, execution_mode, mock_io, case, tmp_path)
+    run_cli_test_case(entrypoint, execution_mode, mock_io, case, tmp_path)
 """
 
 
