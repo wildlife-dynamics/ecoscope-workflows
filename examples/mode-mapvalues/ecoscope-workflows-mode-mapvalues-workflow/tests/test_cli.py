@@ -7,7 +7,7 @@ from ecoscope_workflows_core.testing import TestCase, test_case
 
 @pytest.mark.parametrize("execution_mode", ["async", "sequential"])
 @pytest.mark.parametrize("mock_io", [True], ids=["mock-io"])
-def test_end_to_end(
+def test_cli(
     entrypoint: str,
     execution_mode: str,
     mock_io: bool,
