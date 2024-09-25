@@ -12,7 +12,7 @@ source:
 build:
   noarch: python
   script: python -m pip install src/ecoscope-workflows-ext-ecoscope -vv --no-deps
-  number: 2
+  number: 0
 
 requirements:
   host:
