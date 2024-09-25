@@ -581,17 +581,19 @@ class DagCompiler(BaseModel):
             platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
             """
         )
-        dependencies = "[dependencies]\n"
-        for r in self.spec.requirements.run:
-            dependencies += f'{r.name} = {{ version = "{r.version}", channel = "{r.channel.base_url}" }}\n'
-        feature = dedent(
+        dependencies = dedent(
             """\
-            [feature.app.dependencies]
+            [dependencies]
             fastapi = "*"
             httpx = "*"
             uvicorn = "*"
             "ruamel.yaml" = "*"
-
+            """
+        )
+        for r in self.spec.requirements.run:
+            dependencies += f'{r.name} = {{ version = "{r.version}", channel = "{r.channel.base_url}" }}\n'
+        feature = dedent(
+            """\
             [feature.test.dependencies]
             pytest = "*"
             [feature.test.tasks]
@@ -611,9 +613,7 @@ class DagCompiler(BaseModel):
             """\
             [environments]
             default = { solve-group = "default" }
-            app = { features = ["app"], solve-group = "app", no-default-feature = true }
             test = { features = ["test"], solve-group = "default" }
-            test-app = { features = ["test", "app"] }
             """
         )
         tasks = dedent(
