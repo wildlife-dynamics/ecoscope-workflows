@@ -668,8 +668,10 @@ class DagCompiler(BaseModel):
 
             import pytest
             import ruamel.yaml
+            from fastapi.testclient import TestClient
 
             from ecoscope_workflows_core.testing import TestCase
+            from {self.package_name}.app import app
 
 
             ARTIFACTS = Path(__file__).parent.parent
@@ -698,6 +700,12 @@ class DagCompiler(BaseModel):
             @pytest.fixture(scope="session")
             def entrypoint() -> str:
                 return ENTRYPOINT
+
+
+            @pytest.fixture
+            def client():
+                with TestClient(app) as client:
+                    yield client
             """
         )
 

@@ -125,7 +125,7 @@ class PixiToml(_AllowArbitraryAndValidateAssignment):
             tomli_w.dump(self.model_dump(by_alias=True), f)
 
 
-TEST_DAGS = """\
+TEST_CLI = """\
 from pathlib import Path
 
 import pytest
@@ -135,7 +135,7 @@ from ecoscope_workflows_core.testing import TestCase, test_case
 
 @pytest.mark.parametrize("execution_mode", ["async", "sequential"])
 @pytest.mark.parametrize("mock_io", [True], ids=["mock-io"])
-def test_end_to_end(
+def test_cli(
     entrypoint: str,
     execution_mode: str,
     mock_io: bool,
@@ -148,7 +148,8 @@ def test_end_to_end(
 
 class Tests(BaseModel):
     conftest: str = Field(..., alias="conftest.py")
-    test_dags: str = Field(default=TEST_DAGS, alias="test_dags.py")
+    test_app: str = Field(default=TEST_CLI, alias="test_app.py")
+    test_cli: str = Field(default=TEST_CLI, alias="test_cli.py")
 
 
 APP = """\

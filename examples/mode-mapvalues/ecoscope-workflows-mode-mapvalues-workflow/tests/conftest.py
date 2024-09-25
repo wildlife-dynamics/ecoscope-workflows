@@ -2,8 +2,10 @@ from pathlib import Path
 
 import pytest
 import ruamel.yaml
+from fastapi.testclient import TestClient
 
 from ecoscope_workflows_core.testing import TestCase
+from ecoscope_workflows_mode_mapvalues_workflow.app import app
 
 
 ARTIFACTS = Path(__file__).parent.parent
@@ -32,3 +34,9 @@ def case(pytestconfig: pytest.Config, test_cases_yaml: Path) -> TestCase:
 @pytest.fixture(scope="session")
 def entrypoint() -> str:
     return ENTRYPOINT
+
+
+@pytest.fixture
+def client():
+    with TestClient(app) as client:
+        yield client
