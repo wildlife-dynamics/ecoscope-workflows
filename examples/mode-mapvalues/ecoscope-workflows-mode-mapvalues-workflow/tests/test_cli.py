@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from ecoscope_workflows_core.testing import TestCase, run_test_case
+from ecoscope_workflows_core.testing import TestCase, run_cli_test_case
 
 
 def test_cli(
@@ -10,4 +10,4 @@ def test_cli(
     case: TestCase,
     tmp_path: Path,
 ):
-    run_test_case(entrypoint, execution_mode, mock_io, case, tmp_path)
+    run_cli_test_case(entrypoint, execution_mode, mock_io, case, tmp_path)
