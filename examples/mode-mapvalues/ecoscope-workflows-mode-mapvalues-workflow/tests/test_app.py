@@ -12,13 +12,17 @@ def test_app(
     case: TestCase,
     tmp_path: Path,
 ):
+    request = {"params": case.params}
+    query_params = {
+        "execution_mode": execution_mode,
+        "mock_io": mock_io,
+        "results_url": tmp_path.as_uri(),
+    }
+    headers = {"Content-Type": "application/json"}
     response = client.post(
         "/",
-        json={
-            "params": case.params,
-            "execution_mode": execution_mode,
-            "mock_io": mock_io,
-            "results_url": tmp_path.as_posix(),
-        },
+        json=request,
+        params=query_params,
+        headers=headers,
     )
     assert response.status_code == 200

@@ -64,6 +64,7 @@ def run(
     callback_url: str | None = None,  # TODO: authentication (hmac)
 ):
     yaml = ruamel.yaml.YAML(typ="safe")
+    update_env = {"ECOSCOPE_WORKFLOWS_RESULTS": results_url}
 
     if execution_mode == "async":
         if not lithops_config:
@@ -72,15 +73,12 @@ def run(
             delete=False, suffix=".yaml"
         ) as lithops_config_file:
             yaml.dump(lithops_config.model_dump(), lithops_config_file)
+            update_env["LITHOPS_CONFIG_FILE"] = lithops_config_file.name
 
-    update_env = {
-        "ECOSCOPE_WORKFLOWS_RESULTS": results_url,
-        "LITHOPS_CONFIG_FILE": lithops_config_file.name,
-    } | (
-        {k: v.get_secret_value() for k, v in data_connections_env_vars.items()}
-        if data_connections_env_vars
-        else {}
-    )
+    if data_connections_env_vars:
+        update_env |= {
+            k: v.get_secret_value() for k, v in data_connections_env_vars.items()
+        }
     os.environ.update(update_env)
     try:
         result = dispatch(execution_mode, mock_io, params)
