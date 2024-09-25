@@ -9,6 +9,7 @@ that they would not be included (or would be different) in the production versio
 """
 {% endif -%}
 
+import json
 import os
 {%- if testing %}
 import warnings  # 🧪
@@ -30,13 +31,14 @@ def main(params: Params):
     {%- if testing %}
     warnings.warn("This test script should not be used in production!")  # 🧪
     {% endif %}
+    params_dict = json.loads(params.model_dump_json(exclude_unset=True))
 
     dependencies = {{ spec.task_instance_dependencies }}
 
     nodes = {
         {% for t in spec.workflow %}
         {% set validate = true %}
-        {% set params = 'params.model_dump(exclude_unset=True)["' ~ t.id ~ '"]' %}
+        {% set params = 'params_dict["' ~ t.id ~ '"]' %}
         {% set set_executor = '"lithops"' %}
         "{{ t.id }}": Node(
             async_task={{ call_task_macros.create_callable(t, false, false, validate, false, set_executor) }},

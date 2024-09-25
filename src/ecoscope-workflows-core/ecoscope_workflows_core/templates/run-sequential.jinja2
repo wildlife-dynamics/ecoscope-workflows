@@ -9,6 +9,7 @@ that they would not be included (or would be different) in the production versio
 """
 {% endif -%}
 
+import json
 import os
 {%- if testing %}
 import warnings  # 🧪
@@ -28,9 +29,10 @@ def main(params: Params):
     {%- if testing %}
     warnings.warn("This test script should not be used in production!")  # 🧪
     {% endif %}
+    params_dict = json.loads(params.model_dump_json(exclude_unset=True))
     {% for t in spec.workflow %}
     {% set validate = true %}
-    {% set params = 'params.model_dump(exclude_unset=True)["' ~ t.id ~ '"]' %}
+    {% set params = 'params_dict["' ~ t.id ~ '"]' %}
     {% set indent = '    ' %}
     {{ call_task_macros.call_task(t, validate, params, indent) }}
     {% if loop.last %}

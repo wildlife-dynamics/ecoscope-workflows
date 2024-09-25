@@ -5,9 +5,7 @@ import pytest
 from ecoscope_workflows_core.testing import TestCase, run_cli_test_case
 
 
-@pytest.mark.xfail(
-    reason="Params parsing behavior is broken; try using click.testing.CliRunner"
-)
+@pytest.mark.xfail(reason="Params parsing behavior is broken; try using click.testing.CliRunner")
 def test_cli(
     entrypoint: str,
     execution_mode: str,

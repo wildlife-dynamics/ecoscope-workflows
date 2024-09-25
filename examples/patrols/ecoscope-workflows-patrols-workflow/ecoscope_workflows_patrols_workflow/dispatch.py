@@ -27,3 +27,4 @@ def dispatch(
             raise ValueError(f"Invalid execution mode: {execution_mode}")
 
     return result
+
