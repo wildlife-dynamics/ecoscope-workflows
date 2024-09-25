@@ -614,12 +614,12 @@ class DagCompiler(BaseModel):
             """
         )
         tasks = dedent(
-            """\
+            f"""\
             [tasks]
             docker-build = '''
             mkdir -p .tmp/ecoscope-workflows/release/artifacts/
             && cp -r /tmp/ecoscope-workflows/release/artifacts/* .tmp/ecoscope-workflows/release/artifacts/
-            && docker buildx build -t ecoscope-workflows-mode-map-workflow .
+            && docker buildx build -t {self.release_name} .
             '''
             """
         )
