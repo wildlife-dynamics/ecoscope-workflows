@@ -19,16 +19,39 @@ channel = "file:///tmp/ecoscope-workflows/release/artifacts/"
 version = "*"
 channel = "file:///tmp/ecoscope-workflows/release/artifacts/"
 
+[feature.app.dependencies.fastapi]
+version = "*"
+
+[feature.app.dependencies.httpx]
+version = "*"
+
+[feature.app.dependencies.uvicorn]
+version = "*"
+
+[feature.app.dependencies."ruamel.yaml"]
+version = "*"
+
+[feature.app.tasks]
+
 [feature.test.dependencies.pytest]
 version = "*"
 
 [feature.test.tasks]
-test-async-mock-io = "python -m pytest tests -k 'async and mock-io'"
-test-sequential-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
+test-all = "python -m pytest -v tests"
+test-app-async-mock-io = "python -m pytest -v tests/test_app.py -k 'async and mock-io'"
+test-app-sequential-mock-io = "python -m pytest -v tests/test_app.py -k 'sequential and mock-io'"
+test-cli-async-mock-io = "python -m pytest -v tests/test_cli.py -k 'async and mock-io'"
+test-cli-sequential-mock-io = "python -m pytest -v tests/test_cli.py -k 'sequential and mock-io'"
 
 [environments.default]
 features = []
 solve-group = "default"
+
+[environments.app]
+features = [
+    "app",
+]
+solve-group = "app"
 
 [environments.test]
 features = [
@@ -36,38 +59,16 @@ features = [
 ]
 solve-group = "default"
 
-[feature.app.dependencies.fastapi]
-version = "*"
-
-[feature.app.dependencies.httpx]
-version = "*"
-
-[feature.app.dependencies.gunicorn]
-version = "*"
-
-[feature.app.dependencies."ruamel.yaml"]
-version = "*"
-
-[environments.app]
-features = [
-    "app",
-]
-solve-group = "app"
-no-default-feature = true
-
 [environments.test-app]
 features = [
     "test",
     "app",
 ]
+solve-group = "default"
+
+[tasks]
+docker-build = "mkdir -p .tmp/ecoscope-workflows/release/artifacts/\n&& cp -r /tmp/ecoscope-workflows/release/artifacts/* .tmp/ecoscope-workflows/release/artifacts/\n&& docker buildx build -t ecoscope-workflows-mode-map-workflow .\n"
 
 [pypi-dependencies.ecoscope-workflows-mode-map-workflow]
 path = "."
 editable = true
-
-[tasks]
-docker-build = '''
-mkdir -p .tmp/ecoscope-workflows/release/artifacts/
-&& cp -r /tmp/ecoscope-workflows/release/artifacts/* .tmp/ecoscope-workflows/release/artifacts/
-&& docker buildx build -t ecoscope-workflows-mode-map-workflow .
-'''

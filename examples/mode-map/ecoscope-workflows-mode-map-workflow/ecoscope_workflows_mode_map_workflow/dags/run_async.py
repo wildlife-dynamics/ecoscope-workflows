@@ -7,8 +7,10 @@ from ecoscope_workflows_ext_ecoscope.tasks.results import create_map_layer
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecomap
 from ecoscope_workflows_core.tasks.io import persist_text
 
+from ..params import Params
 
-def main(params: dict):
+
+def main(params: Params):
     dependencies = {
         "obs_a": [],
         "obs_b": [],
@@ -21,22 +23,22 @@ def main(params: dict):
     nodes = {
         "obs_a": Node(
             async_task=get_subjectgroup_observations.validate().set_executor("lithops"),
-            partial=params["obs_a"],
+            partial=params.model_dump(exclude_unset=True)["obs_a"],
             method="call",
         ),
         "obs_b": Node(
             async_task=get_subjectgroup_observations.validate().set_executor("lithops"),
-            partial=params["obs_b"],
+            partial=params.model_dump(exclude_unset=True)["obs_b"],
             method="call",
         ),
         "obs_c": Node(
             async_task=get_subjectgroup_observations.validate().set_executor("lithops"),
-            partial=params["obs_c"],
+            partial=params.model_dump(exclude_unset=True)["obs_c"],
             method="call",
         ),
         "map_layers": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
-            partial=params["map_layers"],
+            partial=params.model_dump(exclude_unset=True)["map_layers"],
             method="map",
             kwargs={
                 "argnames": ["geodataframe"],
@@ -51,7 +53,7 @@ def main(params: dict):
         ),
         "ecomaps": Node(
             async_task=draw_ecomap.validate().set_executor("lithops"),
-            partial=params["ecomaps"],
+            partial=params.model_dump(exclude_unset=True)["ecomaps"],
             method="map",
             kwargs={
                 "argnames": ["geo_layers"],
@@ -63,7 +65,7 @@ def main(params: dict):
             partial={
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
-            | params["td_ecomap_html_url"],
+            | params.model_dump(exclude_unset=True)["td_ecomap_html_url"],
             method="map",
             kwargs={
                 "argnames": ["text"],

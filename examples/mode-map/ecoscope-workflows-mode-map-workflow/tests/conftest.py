@@ -2,8 +2,10 @@ from pathlib import Path
 
 import pytest
 import ruamel.yaml
+from fastapi.testclient import TestClient
 
 from ecoscope_workflows_core.testing import TestCase
+from ecoscope_workflows_mode_map_workflow.app import app
 
 
 ARTIFACTS = Path(__file__).parent.parent
@@ -29,6 +31,22 @@ def case(pytestconfig: pytest.Config, test_cases_yaml: Path) -> TestCase:
     return TestCase(**all_cases[case_name])
 
 
+@pytest.fixture(params=["async", "sequential"])
+def execution_mode(request: pytest.FixtureRequest) -> str:
+    return request.param
+
+
+@pytest.fixture(params=[True], ids=["mock-io"])
+def mock_io(request: pytest.FixtureRequest) -> bool:
+    return request.param
+
+
 @pytest.fixture(scope="session")
 def entrypoint() -> str:
     return ENTRYPOINT
+
+
+@pytest.fixture
+def client():
+    with TestClient(app) as client:
+        yield client

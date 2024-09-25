@@ -1,18 +1,16 @@
 from fastapi.testclient import TestClient
 
-from ecoscope_workflows_mode_map_workflow.app import app
-
-client = TestClient(app)
+from ecoscope_workflows_core.testing import TestCase
 
 
-def test_run():
+def test_app(client: TestClient, execution_mode: str, mock_io: bool, case: TestCase):
     response = client.post(
         "/",
         json={
-            "entrypoint": "ecoscope-workflows-mode-map-workflow",
-            "execution_mode": "sequential",
-            "mock_io": True,
-            "case_name": "case",
+            "execution_mode": execution_mode,
+            "mock_io": mock_io,
+            "params": case.params,
+            "results_url": ...,
         },
     )
     assert response.status_code == 200

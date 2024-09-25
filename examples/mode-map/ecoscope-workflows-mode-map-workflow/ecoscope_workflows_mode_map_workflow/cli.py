@@ -4,6 +4,7 @@ import click
 import ruamel.yaml
 
 from .dispatch import dispatch
+from .params import Params
 
 
 @click.command()
@@ -30,7 +31,7 @@ def main(
     mock_io: bool,
 ) -> None:
     yaml = ruamel.yaml.YAML(typ="safe")
-    params = yaml.load(config_file)
+    params = Params(**yaml.load(config_file))
 
     result = dispatch(execution_mode, mock_io, params)
 
