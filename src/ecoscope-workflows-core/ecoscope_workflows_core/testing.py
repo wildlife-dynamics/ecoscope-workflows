@@ -46,7 +46,7 @@ class TestCase(BaseModel):
 ExecutionMode = Literal["async", "sequential"]  # TODO: move to executors module
 
 
-def run_test_case(
+def run_cli_test_case(
     entrypoint: str,
     execution_mode: ExecutionMode,
     mock_io: bool,
