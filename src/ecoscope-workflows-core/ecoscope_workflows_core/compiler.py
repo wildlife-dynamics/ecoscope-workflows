@@ -743,7 +743,7 @@ class DagCompiler(BaseModel):
             ENV CONCURRENCY 1
             ENV TIMEOUT 600
             CMD pixi run -e default \\
-                uvicorn --port $PORT --workers $CONCURRENCY --timeout-graceful-shutdown $TIMEOUT {self.package_name}.app:app
+                uvicorn --host 0.0.0.0 --port $PORT --workers $CONCURRENCY --timeout-graceful-shutdown $TIMEOUT {self.package_name}.app:app
 
             # FROM python:3.10-slim-buster AS unzip_proxy
             # RUN apt-get update && apt-get install -y \\
