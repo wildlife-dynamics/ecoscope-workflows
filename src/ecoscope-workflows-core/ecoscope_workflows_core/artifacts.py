@@ -132,8 +132,6 @@ from fastapi.testclient import TestClient
 from ecoscope_workflows_core.testing import TestCase
 
 
-@pytest.mark.parametrize("execution_mode", ["async", "sequential"])
-@pytest.mark.parametrize("mock_io", [True], ids=["mock-io"])
 def test_app(client: TestClient, execution_mode: str, mock_io: bool, case: TestCase):
     response = client.post(
         "/",
@@ -153,11 +151,9 @@ from pathlib import Path
 
 import pytest
 
-from ecoscope_workflows_core.testing import TestCase, test_case
+from ecoscope_workflows_core.testing import TestCase, run_cli_test_case
 
 
-@pytest.mark.parametrize("execution_mode", ["async", "sequential"])
-@pytest.mark.parametrize("mock_io", [True], ids=["mock-io"])
 def test_cli(
     entrypoint: str,
     execution_mode: str,
