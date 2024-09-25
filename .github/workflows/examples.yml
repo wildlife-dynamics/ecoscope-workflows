@@ -49,7 +49,7 @@ jobs:
           "mode-map",
           "mode-mapvalues",
           "patrol-events",
-          # "patrols",
+          "patrols",
           # "subject-tracking",
         ]
     steps:

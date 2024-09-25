@@ -1,7 +1,7 @@
 {
-  "title": "Ecoscope Workflow Configurations Form",
+  "title": "Params",
   "properties": {
-    "Set Groupers": {
+    "groupers": {
       "additionalProperties": false,
       "properties": {
         "groupers": {
@@ -16,9 +16,10 @@
       "required": [
         "groupers"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Set Groupers"
     },
-    "Get Patrol Observations from EarthRanger": {
+    "patrol_obs": {
       "additionalProperties": false,
       "properties": {
         "client": {
@@ -72,9 +73,10 @@
         "patrol_type",
         "status"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Get Patrol Observations from EarthRanger"
     },
-    "Transform Observations to Relocations": {
+    "patrol_reloc": {
       "additionalProperties": false,
       "properties": {
         "filter_point_coords": {
@@ -96,9 +98,10 @@
         "filter_point_coords",
         "relocs_columns"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Transform Observations to Relocations"
     },
-    "Transform Relocations to Trajectories": {
+    "patrol_traj": {
       "additionalProperties": false,
       "properties": {
         "min_length_meters": {
@@ -133,9 +136,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Transform Relocations to Trajectories"
     },
-    "Add temporal index to Patrol Trajectories": {
+    "traj_add_temporal_index": {
       "additionalProperties": false,
       "properties": {
         "index_name": {
@@ -196,15 +200,17 @@
         "time_col",
         "directive"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Add temporal index to Patrol Trajectories"
     },
-    "Split Patrol Trajectories by Group": {
+    "split_patrol_traj_groups": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Split Patrol Trajectories by Group"
     },
-    "Create map layer for each Patrol Trajectories group": {
+    "patrol_traj_map_layers": {
       "additionalProperties": false,
       "properties": {
         "layer_style": {
@@ -236,9 +242,10 @@
       "required": [
         "layer_style"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create map layer for each Patrol Trajectories group"
     },
-    "Get Patrol Events from EarthRanger": {
+    "patrol_events": {
       "additionalProperties": false,
       "properties": {
         "client": {
@@ -280,9 +287,10 @@
         "patrol_type",
         "status"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Get Patrol Events from EarthRanger"
     },
-    "Apply Relocation Coordinate Filter": {
+    "filter_patrol_events": {
       "additionalProperties": false,
       "properties": {
         "min_x": {
@@ -320,9 +328,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Apply Relocation Coordinate Filter"
     },
-    "Add temporal index to Patrol Events": {
+    "pe_add_temporal_index": {
       "additionalProperties": false,
       "properties": {
         "index_name": {
@@ -383,15 +392,17 @@
         "time_col",
         "directive"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Add temporal index to Patrol Events"
     },
-    "Split Patrol Events by Group": {
+    "split_pe_groups": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Split Patrol Events by Group"
     },
-    "Create map layers for each Patrols Events group": {
+    "patrol_events_map_layers": {
       "additionalProperties": false,
       "properties": {
         "layer_style": {
@@ -423,15 +434,17 @@
       "required": [
         "layer_style"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create map layers for each Patrols Events group"
     },
-    "Combine Trajectories and Patrol Events layers": {
+    "combined_traj_and_pe_map_layers": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Combine Trajectories and Patrol Events layers"
     },
-    "Draw Ecomaps for each combined Trajectory and Patrol Events group": {
+    "traj_patrol_events_ecomap": {
       "additionalProperties": false,
       "properties": {
         "tile_layer": {
@@ -481,9 +494,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Draw Ecomaps for each combined Trajectory and Patrol Events group"
     },
-    "Persist Patrols Ecomap as Text": {
+    "traj_pe_ecomap_html_urls": {
       "additionalProperties": false,
       "properties": {
         "filename": {
@@ -494,9 +508,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Persist Patrols Ecomap as Text"
     },
-    "Create Map Widgets for Patrol Events": {
+    "traj_pe_map_widgets_single_views": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -508,15 +523,17 @@
       "required": [
         "title"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Map Widgets for Patrol Events"
     },
-    "Merge EcoMap Widget Views": {
+    "traj_pe_grouped_map_widget": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Merge EcoMap Widget Views"
     },
-    "Calculate Total Patrols Per Group": {
+    "total_patrols": {
       "additionalProperties": false,
       "properties": {
         "column_name": {
@@ -528,9 +545,10 @@
       "required": [
         "column_name"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Calculate Total Patrols Per Group"
     },
-    "Create Single Value Widgets for Total Patrols Per Group": {
+    "total_patrols_sv_widgets": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -542,15 +560,17 @@
       "required": [
         "title"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Single Value Widgets for Total Patrols Per Group"
     },
-    "Merge per group Total Patrols SV widgets": {
+    "total_patrols_grouped_sv_widget": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Merge per group Total Patrols SV widgets"
     },
-    "Calculate Total Patrol Time Per Group": {
+    "total_patrol_time": {
       "additionalProperties": false,
       "properties": {
         "column_name": {
@@ -562,9 +582,10 @@
       "required": [
         "column_name"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Calculate Total Patrol Time Per Group"
     },
-    "Convert total patrol time units": {
+    "total_patrol_time_converted": {
       "additionalProperties": false,
       "properties": {
         "b": {
@@ -598,9 +619,10 @@
         "b",
         "operation"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Convert total patrol time units"
     },
-    "Create Single Value Widgets for Total Patrol Time Per Group": {
+    "total_patrol_time_sv_widgets": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -612,15 +634,17 @@
       "required": [
         "title"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Single Value Widgets for Total Patrol Time Per Group"
     },
-    "Merge per group Total Patrol Time SV widgets": {
+    "patrol_time_grouped_widget": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Merge per group Total Patrol Time SV widgets"
     },
-    "Calculate Total Distance Per Group": {
+    "total_patrol_dist": {
       "additionalProperties": false,
       "properties": {
         "column_name": {
@@ -632,9 +656,10 @@
       "required": [
         "column_name"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Calculate Total Distance Per Group"
     },
-    "Convert total patrol distance units": {
+    "total_patrol_dist_converted": {
       "additionalProperties": false,
       "properties": {
         "b": {
@@ -668,9 +693,10 @@
         "b",
         "operation"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Convert total patrol distance units"
     },
-    "Create Single Value Widgets for Total Distance Per Group": {
+    "total_patrol_dist_sv_widgets": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -682,15 +708,17 @@
       "required": [
         "title"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Single Value Widgets for Total Distance Per Group"
     },
-    "Merge per group Total Patrol Distance SV widgets": {
+    "patrol_dist_grouped_widget": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Merge per group Total Patrol Distance SV widgets"
     },
-    "Calculate Average Speed Per Group": {
+    "avg_speed": {
       "additionalProperties": false,
       "properties": {
         "column_name": {
@@ -702,9 +730,10 @@
       "required": [
         "column_name"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Calculate Average Speed Per Group"
     },
-    "Create Single Value Widgets for Avg Speed Per Group": {
+    "avg_speed_sv_widgets": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -716,15 +745,17 @@
       "required": [
         "title"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Single Value Widgets for Avg Speed Per Group"
     },
-    "Merge per group Avg Speed SV widgets": {
+    "avg_speed_grouped_widget": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Merge per group Avg Speed SV widgets"
     },
-    "Calculate Max Speed Per Group": {
+    "max_speed": {
       "additionalProperties": false,
       "properties": {
         "column_name": {
@@ -736,9 +767,10 @@
       "required": [
         "column_name"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Calculate Max Speed Per Group"
     },
-    "Create Single Value Widgets for Max Speed Per Group": {
+    "max_speed_sv_widgets": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -750,15 +782,17 @@
       "required": [
         "title"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Single Value Widgets for Max Speed Per Group"
     },
-    "Merge per group Max Speed SV widgets": {
+    "max_speed_grouped_widget": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Merge per group Max Speed SV widgets"
     },
-    "Draw Time Series Bar Chart for Patrols Events": {
+    "patrol_events_bar_chart": {
       "additionalProperties": false,
       "properties": {
         "x_axis": {
@@ -843,9 +877,10 @@
         "agg_function",
         "time_interval"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Draw Time Series Bar Chart for Patrols Events"
     },
-    "Persist Patrols Bar Chart as Text": {
+    "patrol_events_bar_chart_html_url": {
       "additionalProperties": false,
       "properties": {
         "filename": {
@@ -856,9 +891,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Persist Patrols Bar Chart as Text"
     },
-    "Create Plot Widget for Patrol Events": {
+    "patrol_events_bar_chart_widget": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -870,9 +906,10 @@
       "required": [
         "title"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Plot Widget for Patrol Events"
     },
-    "Draw Pie Chart for Patrols Events": {
+    "patrol_events_pie_chart": {
       "additionalProperties": false,
       "properties": {
         "value_column": {
@@ -916,9 +953,10 @@
       "required": [
         "value_column"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Draw Pie Chart for Patrols Events"
     },
-    "Persist Patrols Pie Chart as Text": {
+    "pe_pie_chart_html_urls": {
       "additionalProperties": false,
       "properties": {
         "filename": {
@@ -929,15 +967,32 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Persist Patrols Pie Chart as Text"
     },
-    "Merge Pie Chart Widget Views": {
+    "patrol_events_pie_chart_widgets": {
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title",
+          "type": "string",
+          "description": "The title of the widget"
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "type": "object",
+      "title": "Create Plot Widget for Patrol Events"
+    },
+    "patrol_events_pie_widget_grouped": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Merge Pie Chart Widget Views"
     },
-    "Calculate Time Density from Trajectory": {
+    "td": {
       "additionalProperties": false,
       "properties": {
         "pixel_size": {
@@ -988,9 +1043,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Calculate Time Density from Trajectory"
     },
-    "Create map layer from Time Density": {
+    "td_map_layer": {
       "additionalProperties": false,
       "properties": {
         "layer_style": {
@@ -1022,9 +1078,10 @@
       "required": [
         "layer_style"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create map layer from Time Density"
     },
-    "Draw Ecomap from Time Density": {
+    "td_ecomap": {
       "additionalProperties": false,
       "properties": {
         "tile_layer": {
@@ -1074,9 +1131,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Draw Ecomap from Time Density"
     },
-    "Persist Ecomap as Text": {
+    "td_ecomap_html_url": {
       "additionalProperties": false,
       "properties": {
         "filename": {
@@ -1087,9 +1145,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Persist Ecomap as Text"
     },
-    "Create Time Density Map Widget": {
+    "td_map_widget": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -1101,9 +1160,10 @@
       "required": [
         "title"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Time Density Map Widget"
     },
-    "Create Dashboard with Patrol Map Widgets": {
+    "patrol_dashboard": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -1121,7 +1181,8 @@
         "title",
         "description"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Dashboard with Patrol Map Widgets"
     }
   },
   "$defs": {
