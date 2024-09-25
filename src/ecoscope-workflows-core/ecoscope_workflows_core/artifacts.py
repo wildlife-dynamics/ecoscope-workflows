@@ -372,6 +372,7 @@ class PackageDirectory(BaseModel):
                 input_filename="params-jsonschema.json",
                 output=output,
                 output_model_type=dcg.DataModelType.PydanticV2BaseModel,
+                use_subclass_enum=True,
             )
             model: str = output.read_text()
         return model
