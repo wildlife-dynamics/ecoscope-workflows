@@ -346,7 +346,7 @@ class PackageDirectory(BaseModel):
     dispatch: str = Field(default=DISPATCH, alias="dispatch.py")
     init_dot_py: str = Field(default="", alias="__init__.py")
 
-    def generate_params_model(self) -> None:
+    def generate_params_model(self) -> str:
         with tempfile.NamedTemporaryFile(suffix=".py") as tmp:
             output = Path(tmp.name)
             dcg.generate(
