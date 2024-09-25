@@ -56,29 +56,34 @@ class LithopsConfig(BaseModel):
 @app.post("/", status_code=200)
 def run(
     params: Params,
-    data_connections_env_vars: dict[str, SecretStr],
     execution_mode: Literal["async", "sequential"],
     mock_io: bool,
     results_url: str,
-    lithops_config: LithopsConfig,
-    callback_url: str,  # TODO: authenticatation (hmac)
+    data_connections_env_vars: dict[str, SecretStr] | None = None,
+    lithops_config: LithopsConfig | None = None,
+    callback_url: str | None = None,  # TODO: authentication (hmac)
 ):
     yaml = ruamel.yaml.YAML(typ="safe")
+    update_env = {"ECOSCOPE_WORKFLOWS_RESULTS": results_url}
 
     if execution_mode == "async":
+        if not lithops_config:
+            lithops_config = LithopsConfig()
         with tempfile.NamedTemporaryFile(
             delete=False, suffix=".yaml"
         ) as lithops_config_file:
             yaml.dump(lithops_config.model_dump(), lithops_config_file)
+            update_env["LITHOPS_CONFIG_FILE"] = lithops_config_file.name
 
-    update_env = (
-        {k: v.get_secret_value() for k, v in data_connections_env_vars.items()}
-        | {"ECOSCOPE_WORKFLOWS_RESULTS": results_url}
-        | {"LITHOPS_CONFIG_FILE": lithops_config_file.name}
-    )
+    if data_connections_env_vars:
+        update_env |= {
+            k: v.get_secret_value() for k, v in data_connections_env_vars.items()
+        }
     os.environ.update(update_env)
     try:
         result = dispatch(execution_mode, mock_io, params)
+        if callback_url:
+            raise NotImplementedError("Callbacks are not yet implemented.")
     except Exception as e:
         return {"error": str(e)}
     finally:

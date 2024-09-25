@@ -11,6 +11,18 @@ platforms = [
     "osx-arm64",
 ]
 
+[dependencies.fastapi]
+version = "*"
+
+[dependencies.httpx]
+version = "*"
+
+[dependencies.uvicorn]
+version = "*"
+
+[dependencies."ruamel.yaml"]
+version = "*"
+
 [dependencies.ecoscope-workflows-core]
 version = "*"
 channel = "file:///tmp/ecoscope-workflows/release/artifacts/"
@@ -18,20 +30,6 @@ channel = "file:///tmp/ecoscope-workflows/release/artifacts/"
 [dependencies.ecoscope-workflows-ext-ecoscope]
 version = "*"
 channel = "file:///tmp/ecoscope-workflows/release/artifacts/"
-
-[feature.app.dependencies.fastapi]
-version = "*"
-
-[feature.app.dependencies.httpx]
-version = "*"
-
-[feature.app.dependencies.uvicorn]
-version = "*"
-
-[feature.app.dependencies."ruamel.yaml"]
-version = "*"
-
-[feature.app.tasks]
 
 [feature.test.dependencies.pytest]
 version = "*"
@@ -47,22 +45,9 @@ test-cli-sequential-mock-io = "python -m pytest -v tests/test_cli.py -k 'sequent
 features = []
 solve-group = "default"
 
-[environments.app]
-features = [
-    "app",
-]
-solve-group = "app"
-
 [environments.test]
 features = [
     "test",
-]
-solve-group = "default"
-
-[environments.test-app]
-features = [
-    "test",
-    "app",
 ]
 solve-group = "default"
 

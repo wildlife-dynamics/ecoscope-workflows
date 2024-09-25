@@ -46,7 +46,7 @@ jobs:
           "sequential",
         ]
         example: [
-          # "mode-map",
+          "mode-map",
           "mode-mapvalues",
           # "patrols",
           # "patrol-events",
