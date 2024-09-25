@@ -84,8 +84,10 @@ jobs:
     #  - schedule defined above
     #  - a PR was just labeled 'test-io'
     #  - a PR with labeled 'test-io' label was opened, reopened, or synchronized
+
+    # FIXME: io tests disabled; reenable with:
+    # github.event_name == 'push' ||
     if: |
-      github.event_name == 'push' ||
       github.event_name == 'schedule' ||
       github.event.label.name == 'test-io' ||
       contains( github.event.pull_request.labels.*.name, 'test-io')
