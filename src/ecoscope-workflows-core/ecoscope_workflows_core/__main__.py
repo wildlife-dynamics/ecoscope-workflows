@@ -62,6 +62,7 @@ def compile(
         tests=Tests(
             **{"conftest.py": dc.get_conftest()},
         ),
+        dockerfile=dc.get_dockerfile(),
         # dag_png=write_png(dc.dag, "dag.png"),
         # readme=..., # TODO: readme with dag visualization
     )
