@@ -48,8 +48,8 @@ jobs:
         example: [
           "mode-map",
           "mode-mapvalues",
+          "patrol-events",
           # "patrols",
-          # "patrol-events",
           # "subject-tracking",
         ]
     steps:
