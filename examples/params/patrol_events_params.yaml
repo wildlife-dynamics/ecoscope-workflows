@@ -58,11 +58,11 @@ pe_map_widget:
 
 # Parameters for 'Draw Time Series Bar Chart for Patrols Events' using task `draw_time_series_bar_chart`.
 pe_bar_chart:
-  x_axis: "updated_at" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the x axis.'))
+  x_axis: "time" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the x axis.'))
   y_axis: "event_type" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the y axis.'))
   category: "event_type" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to stack in the y axis.'))
   agg_function: "count" # (typing.Literal['count', 'mean', 'sum', 'min', 'max'], FieldInfo(annotation=NoneType, required=True, description='The aggregate function to apply to the group.'))
-  time_interval: "month" # (typing.Literal['year', 'month', 'week', 'day', 'hour'], FieldInfo(annotation=NoneType, required=True, description='Sets the time interval of the x axis.'))
+  time_interval: "year" # (typing.Literal['year', 'month', 'week', 'day', 'hour'], FieldInfo(annotation=NoneType, required=True, description='Sets the time interval of the x axis.'))
   color_column: "event_type_colormap"
   plot_style:
     xperiodalignment: "middle"
@@ -86,7 +86,7 @@ pe_feature_density:
 # Parameters for 'Feature Density Colormap' using task `apply_color_map`.
 fd_colormap:
   input_column_name: "density"   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
-  colormap: "Oranges"  # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
+  colormap: "RdYlGn_r"  # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
   output_column_name: "density_colormap"
 
 # Parameters for 'Create map layer from Feature Density' using task `create_map_layer`.
@@ -124,6 +124,9 @@ grouped_pe_map_layer:
     layer_type: "point"
     fill_color_column: "event_type_colormap"
     get_radius: 5
+  legend:
+    label_column: "event_type"
+    color_column: "event_type_colormap"
 
 # Parameters for 'Draw Ecomap from grouped Patrol Events' using task `draw_ecomap`.
 grouped_pe_ecomap:
@@ -163,7 +166,7 @@ grouped_pe_feature_density:
 # Parameters for 'Grouped Feature Density Colormap' using task `apply_color_map`.
 grouped_fd_colormap:
   input_column_name: "density"   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
-  colormap: "Oranges"  # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
+  colormap: "RdYlGn_r"  # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
   output_column_name: "density_colormap"
 
 # Parameters for 'Create map layer from Feature Density' using task `create_map_layer`.
