@@ -5,6 +5,7 @@ Lines specific to the testing context are marked with a test tube emoji (🧪) t
 that they would not be included (or would be different) in the production version of this file.
 """
 
+import json
 import os
 import warnings  # 🧪
 from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
@@ -40,57 +41,39 @@ from ..params import Params
 def main(params: Params):
     warnings.warn("This test script should not be used in production!")  # 🧪
 
-    groupers = (
-        set_groupers.validate()
-        .partial(**params.model_dump(exclude_unset=True)["groupers"])
-        .call()
-    )
+    params_dict = json.loads(params.model_dump_json(exclude_unset=True))
 
-    pe = (
-        get_patrol_events.validate()
-        .partial(**params.model_dump(exclude_unset=True)["pe"])
-        .call()
-    )
+    groupers = set_groupers.validate().partial(**params_dict["groupers"]).call()
+
+    pe = get_patrol_events.validate().partial(**params_dict["pe"]).call()
 
     filter_patrol_events = (
         apply_reloc_coord_filter.validate()
-        .partial(df=pe, **params.model_dump(exclude_unset=True)["filter_patrol_events"])
+        .partial(df=pe, **params_dict["filter_patrol_events"])
         .call()
     )
 
     pe_add_temporal_index = (
         add_temporal_index.validate()
-        .partial(
-            df=filter_patrol_events,
-            **params.model_dump(exclude_unset=True)["pe_add_temporal_index"],
-        )
+        .partial(df=filter_patrol_events, **params_dict["pe_add_temporal_index"])
         .call()
     )
 
     pe_colormap = (
         apply_color_map.validate()
-        .partial(
-            df=pe_add_temporal_index,
-            **params.model_dump(exclude_unset=True)["pe_colormap"],
-        )
+        .partial(df=pe_add_temporal_index, **params_dict["pe_colormap"])
         .call()
     )
 
     pe_map_layer = (
         create_map_layer.validate()
-        .partial(
-            geodataframe=pe_colormap,
-            **params.model_dump(exclude_unset=True)["pe_map_layer"],
-        )
+        .partial(geodataframe=pe_colormap, **params_dict["pe_map_layer"])
         .call()
     )
 
     pe_ecomap = (
         draw_ecomap.validate()
-        .partial(
-            geo_layers=pe_map_layer,
-            **params.model_dump(exclude_unset=True)["pe_ecomap"],
-        )
+        .partial(geo_layers=pe_map_layer, **params_dict["pe_ecomap"])
         .call()
     )
 
@@ -99,26 +82,20 @@ def main(params: Params):
         .partial(
             text=pe_ecomap,
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-            **params.model_dump(exclude_unset=True)["pe_ecomap_html_url"],
+            **params_dict["pe_ecomap_html_url"],
         )
         .call()
     )
 
     pe_map_widget = (
         create_map_widget_single_view.validate()
-        .partial(
-            data=pe_ecomap_html_url,
-            **params.model_dump(exclude_unset=True)["pe_map_widget"],
-        )
+        .partial(data=pe_ecomap_html_url, **params_dict["pe_map_widget"])
         .call()
     )
 
     pe_bar_chart = (
         draw_time_series_bar_chart.validate()
-        .partial(
-            dataframe=pe_colormap,
-            **params.model_dump(exclude_unset=True)["pe_bar_chart"],
-        )
+        .partial(dataframe=pe_colormap, **params_dict["pe_bar_chart"])
         .call()
     )
 
@@ -127,26 +104,20 @@ def main(params: Params):
         .partial(
             text=pe_bar_chart,
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-            **params.model_dump(exclude_unset=True)["pe_bar_chart_html_url"],
+            **params_dict["pe_bar_chart_html_url"],
         )
         .call()
     )
 
     pe_bar_chart_widget = (
         create_plot_widget_single_view.validate()
-        .partial(
-            data=pe_bar_chart_html_url,
-            **params.model_dump(exclude_unset=True)["pe_bar_chart_widget"],
-        )
+        .partial(data=pe_bar_chart_html_url, **params_dict["pe_bar_chart_widget"])
         .call()
     )
 
     pe_meshgrid = (
         create_meshgrid.validate()
-        .partial(
-            aoi=pe_add_temporal_index,
-            **params.model_dump(exclude_unset=True)["pe_meshgrid"],
-        )
+        .partial(aoi=pe_add_temporal_index, **params_dict["pe_meshgrid"])
         .call()
     )
 
@@ -155,35 +126,26 @@ def main(params: Params):
         .partial(
             geodataframe=pe_add_temporal_index,
             meshgrid=pe_meshgrid,
-            **params.model_dump(exclude_unset=True)["pe_feature_density"],
+            **params_dict["pe_feature_density"],
         )
         .call()
     )
 
     fd_colormap = (
         apply_color_map.validate()
-        .partial(
-            df=pe_feature_density,
-            **params.model_dump(exclude_unset=True)["fd_colormap"],
-        )
+        .partial(df=pe_feature_density, **params_dict["fd_colormap"])
         .call()
     )
 
     fd_map_layer = (
         create_map_layer.validate()
-        .partial(
-            geodataframe=fd_colormap,
-            **params.model_dump(exclude_unset=True)["fd_map_layer"],
-        )
+        .partial(geodataframe=fd_colormap, **params_dict["fd_map_layer"])
         .call()
     )
 
     fd_ecomap = (
         draw_ecomap.validate()
-        .partial(
-            geo_layers=fd_map_layer,
-            **params.model_dump(exclude_unset=True)["fd_ecomap"],
-        )
+        .partial(geo_layers=fd_map_layer, **params_dict["fd_ecomap"])
         .call()
     )
 
@@ -192,17 +154,14 @@ def main(params: Params):
         .partial(
             text=fd_ecomap,
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-            **params.model_dump(exclude_unset=True)["fd_ecomap_html_url"],
+            **params_dict["fd_ecomap_html_url"],
         )
         .call()
     )
 
     fd_map_widget = (
         create_map_widget_single_view.validate()
-        .partial(
-            data=fd_ecomap_html_url,
-            **params.model_dump(exclude_unset=True)["fd_map_widget"],
-        )
+        .partial(data=fd_ecomap_html_url, **params_dict["fd_map_widget"])
         .call()
     )
 
@@ -211,20 +170,20 @@ def main(params: Params):
         .partial(
             df=pe_colormap,
             groupers=groupers,
-            **params.model_dump(exclude_unset=True)["split_patrol_event_groups"],
+            **params_dict["split_patrol_event_groups"],
         )
         .call()
     )
 
     grouped_pe_map_layer = (
         create_map_layer.validate()
-        .partial(**params.model_dump(exclude_unset=True)["grouped_pe_map_layer"])
+        .partial(**params_dict["grouped_pe_map_layer"])
         .mapvalues(argnames=["geodataframe"], argvalues=split_patrol_event_groups)
     )
 
     grouped_pe_ecomap = (
         draw_ecomap.validate()
-        .partial(**params.model_dump(exclude_unset=True)["grouped_pe_ecomap"])
+        .partial(**params_dict["grouped_pe_ecomap"])
         .mapvalues(argnames=["geo_layers"], argvalues=grouped_pe_map_layer)
     )
 
@@ -232,29 +191,28 @@ def main(params: Params):
         persist_text.validate()
         .partial(
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-            **params.model_dump(exclude_unset=True)["grouped_pe_ecomap_html_url"],
+            **params_dict["grouped_pe_ecomap_html_url"],
         )
         .mapvalues(argnames=["text"], argvalues=grouped_pe_ecomap)
     )
 
     grouped_pe_map_widget = (
         create_map_widget_single_view.validate()
-        .partial(**params.model_dump(exclude_unset=True)["grouped_pe_map_widget"])
+        .partial(**params_dict["grouped_pe_map_widget"])
         .map(argnames=["view", "data"], argvalues=grouped_pe_ecomap_html_url)
     )
 
     grouped_pe_map_widget_merge = (
         merge_widget_views.validate()
         .partial(
-            widgets=grouped_pe_map_widget,
-            **params.model_dump(exclude_unset=True)["grouped_pe_map_widget_merge"],
+            widgets=grouped_pe_map_widget, **params_dict["grouped_pe_map_widget_merge"]
         )
         .call()
     )
 
     grouped_pe_pie_chart = (
         draw_pie_chart.validate()
-        .partial(**params.model_dump(exclude_unset=True)["grouped_pe_pie_chart"])
+        .partial(**params_dict["grouped_pe_pie_chart"])
         .mapvalues(argnames=["dataframe"], argvalues=split_patrol_event_groups)
     )
 
@@ -262,16 +220,14 @@ def main(params: Params):
         persist_text.validate()
         .partial(
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-            **params.model_dump(exclude_unset=True)["grouped_pe_pie_chart_html_urls"],
+            **params_dict["grouped_pe_pie_chart_html_urls"],
         )
         .mapvalues(argnames=["text"], argvalues=grouped_pe_pie_chart)
     )
 
     grouped_pe_pie_chart_widgets = (
         create_plot_widget_single_view.validate()
-        .partial(
-            **params.model_dump(exclude_unset=True)["grouped_pe_pie_chart_widgets"]
-        )
+        .partial(**params_dict["grouped_pe_pie_chart_widgets"])
         .map(argnames=["view", "data"], argvalues=grouped_pe_pie_chart_html_urls)
     )
 
@@ -279,35 +235,32 @@ def main(params: Params):
         merge_widget_views.validate()
         .partial(
             widgets=grouped_pe_pie_chart_widgets,
-            **params.model_dump(exclude_unset=True)["grouped_pe_pie_widget_merge"],
+            **params_dict["grouped_pe_pie_widget_merge"],
         )
         .call()
     )
 
     grouped_pe_feature_density = (
         calculate_feature_density.validate()
-        .partial(
-            meshgrid=pe_meshgrid,
-            **params.model_dump(exclude_unset=True)["grouped_pe_feature_density"],
-        )
+        .partial(meshgrid=pe_meshgrid, **params_dict["grouped_pe_feature_density"])
         .mapvalues(argnames=["geodataframe"], argvalues=split_patrol_event_groups)
     )
 
     grouped_fd_colormap = (
         apply_color_map.validate()
-        .partial(**params.model_dump(exclude_unset=True)["grouped_fd_colormap"])
+        .partial(**params_dict["grouped_fd_colormap"])
         .mapvalues(argnames=["df"], argvalues=grouped_pe_feature_density)
     )
 
     grouped_fd_map_layer = (
         create_map_layer.validate()
-        .partial(**params.model_dump(exclude_unset=True)["grouped_fd_map_layer"])
+        .partial(**params_dict["grouped_fd_map_layer"])
         .mapvalues(argnames=["geodataframe"], argvalues=grouped_fd_colormap)
     )
 
     grouped_fd_ecomap = (
         draw_ecomap.validate()
-        .partial(**params.model_dump(exclude_unset=True)["grouped_fd_ecomap"])
+        .partial(**params_dict["grouped_fd_ecomap"])
         .mapvalues(argnames=["geo_layers"], argvalues=grouped_fd_map_layer)
     )
 
@@ -315,22 +268,21 @@ def main(params: Params):
         persist_text.validate()
         .partial(
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-            **params.model_dump(exclude_unset=True)["grouped_fd_ecomap_html_url"],
+            **params_dict["grouped_fd_ecomap_html_url"],
         )
         .mapvalues(argnames=["text"], argvalues=grouped_fd_ecomap)
     )
 
     grouped_fd_map_widget = (
         create_map_widget_single_view.validate()
-        .partial(**params.model_dump(exclude_unset=True)["grouped_fd_map_widget"])
+        .partial(**params_dict["grouped_fd_map_widget"])
         .map(argnames=["view", "data"], argvalues=grouped_fd_ecomap_html_url)
     )
 
     grouped_fd_map_widget_merge = (
         merge_widget_views.validate()
         .partial(
-            widgets=grouped_fd_map_widget,
-            **params.model_dump(exclude_unset=True)["grouped_fd_map_widget_merge"],
+            widgets=grouped_fd_map_widget, **params_dict["grouped_fd_map_widget_merge"]
         )
         .call()
     )
@@ -347,7 +299,7 @@ def main(params: Params):
                 grouped_fd_map_widget_merge,
             ],
             groupers=groupers,
-            **params.model_dump(exclude_unset=True)["patrol_dashboard"],
+            **params_dict["patrol_dashboard"],
         )
         .call()
     )

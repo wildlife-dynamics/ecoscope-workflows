@@ -9,16 +9,19 @@ COPY .tmp /tmp
 WORKDIR /app
 COPY . .
 RUN rm -rf .tmp
-RUN pixi install -e app --locked     && pixi install -e default --locked
+RUN pixi install -e default --locked
 
 FROM install as app
 ENV PORT 8080
 ENV CONCURRENCY 1
 ENV TIMEOUT 600
-CMD pixi run -e app     uvicorn --port $PORT --workers $CONCURRENCY --timeout-graceful-shutdown $TIMEOUT app:app
+CMD pixi run -e default \
+    uvicorn --host 0.0.0.0 --port $PORT --workers $CONCURRENCY --timeout-graceful-shutdown $TIMEOUT ecoscope_workflows_patrol_events_workflow.app:app
 
 # FROM python:3.10-slim-buster AS unzip_proxy
-# RUN apt-get update && apt-get install -y #     zip #     && rm -rf /var/lib/apt/lists/*
+# RUN apt-get update && apt-get install -y \
+#     zip \
+#     && rm -rf /var/lib/apt/lists/*
 # ENV APP_HOME /lithops
 # WORKDIR $APP_HOME
 # assumes the build context is running the lithops runtime build command

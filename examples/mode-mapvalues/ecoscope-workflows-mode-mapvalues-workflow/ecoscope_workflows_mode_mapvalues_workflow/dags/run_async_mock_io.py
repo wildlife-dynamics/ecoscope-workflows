@@ -5,6 +5,7 @@ Lines specific to the testing context are marked with a test tube emoji (🧪) t
 that they would not be included (or would be different) in the production version of this file.
 """
 
+import json
 import os
 import warnings  # 🧪
 from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
@@ -31,6 +32,8 @@ from ..params import Params
 def main(params: Params):
     warnings.warn("This test script should not be used in production!")  # 🧪
 
+    params_dict = json.loads(params.model_dump_json(exclude_unset=True))
+
     dependencies = {
         "patrol_events": [],
         "groupers": [],
@@ -46,12 +49,12 @@ def main(params: Params):
     nodes = {
         "patrol_events": Node(
             async_task=get_patrol_events.validate().set_executor("lithops"),
-            partial=params.model_dump(exclude_unset=True)["patrol_events"],
+            partial=params_dict["patrol_events"],
             method="call",
         ),
         "groupers": Node(
             async_task=set_groupers.validate().set_executor("lithops"),
-            partial=params.model_dump(exclude_unset=True)["groupers"],
+            partial=params_dict["groupers"],
             method="call",
         ),
         "split_obs": Node(
@@ -60,12 +63,12 @@ def main(params: Params):
                 "df": DependsOn("patrol_events"),
                 "groupers": DependsOn("groupers"),
             }
-            | params.model_dump(exclude_unset=True)["split_obs"],
+            | params_dict["split_obs"],
             method="call",
         ),
         "map_layers": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
-            partial=params.model_dump(exclude_unset=True)["map_layers"],
+            partial=params_dict["map_layers"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geodataframe"],
@@ -74,7 +77,7 @@ def main(params: Params):
         ),
         "ecomaps": Node(
             async_task=draw_ecomap.validate().set_executor("lithops"),
-            partial=params.model_dump(exclude_unset=True)["ecomaps"],
+            partial=params_dict["ecomaps"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geo_layers"],
@@ -86,7 +89,7 @@ def main(params: Params):
             partial={
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
-            | params.model_dump(exclude_unset=True)["ecomaps_persist"],
+            | params_dict["ecomaps_persist"],
             method="mapvalues",
             kwargs={
                 "argnames": ["text"],
@@ -95,7 +98,7 @@ def main(params: Params):
         ),
         "ecomap_widgets": Node(
             async_task=create_map_widget_single_view.validate().set_executor("lithops"),
-            partial=params.model_dump(exclude_unset=True)["ecomap_widgets"],
+            partial=params_dict["ecomap_widgets"],
             method="map",
             kwargs={
                 "argnames": ["view", "data"],
@@ -107,7 +110,7 @@ def main(params: Params):
             partial={
                 "widgets": DependsOn("ecomap_widgets"),
             }
-            | params.model_dump(exclude_unset=True)["ecomap_widgets_merged"],
+            | params_dict["ecomap_widgets_merged"],
             method="call",
         ),
         "dashboard": Node(
@@ -116,7 +119,7 @@ def main(params: Params):
                 "widgets": DependsOn("ecomap_widgets_merged"),
                 "groupers": DependsOn("groupers"),
             }
-            | params.model_dump(exclude_unset=True)["dashboard"],
+            | params_dict["dashboard"],
             method="call",
         ),
     }
