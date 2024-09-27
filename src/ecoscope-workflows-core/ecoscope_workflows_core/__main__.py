@@ -1,4 +1,3 @@
-import hashlib
 import warnings
 from io import TextIOWrapper
 
@@ -59,10 +58,9 @@ def compile(
     if carryover_lockfile:
         warnings.warn(CARRYOVER_LOCKFILE_WARNING)
     spec_text = spec.read()
-    spec_sha256 = hashlib.sha256(spec_text.encode()).hexdigest()
     compilation_spec = Spec(**yaml.load(spec_text))
     dc = DagCompiler(spec=compilation_spec)
-    wa = dc.generate_artifacts(spec_sha256, spec_relpath=spec.name)
+    wa = dc.generate_artifacts(spec_relpath=spec.name)
     wa.dump(clobber=clobber, carryover_lockfile=carryover_lockfile)
     if lock:
         wa.lock()

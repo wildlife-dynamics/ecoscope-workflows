@@ -3,8 +3,6 @@ import json
 import shutil
 import subprocess
 import sys
-import tempfile
-from importlib.metadata import version
 from pathlib import Path
 from textwrap import dedent
 
@@ -14,7 +12,6 @@ else:
     import tomli as tomllib
 
 import tomli_w
-import datamodel_code_generator as dcg
 from pydantic import BaseModel, Field
 
 from ecoscope_workflows_core._models import (
@@ -385,26 +382,11 @@ def _get_default_dispatch() -> str:
 class PackageDirectory(BaseModel):
     dags: Dags
     params_jsonschema: dict
+    params_model: str
     app: str = Field(default_factory=_get_default_app, alias="app.py")
     cli: str = Field(default_factory=_get_default_cli, alias="cli.py")
     dispatch: str = Field(default_factory=_get_default_dispatch, alias="dispatch.py")
     init_dot_py: str = Field(default="", alias="__init__.py")
-
-    @ruff_formatted
-    def generate_params_model(self, file_header: str) -> str:
-        with tempfile.NamedTemporaryFile(suffix=".py") as tmp:
-            output = Path(tmp.name)
-            dcg.generate(
-                json.dumps(self.params_jsonschema),
-                input_file_type=dcg.InputFileType.JsonSchema,
-                input_filename="params-jsonschema.json",
-                output=output,
-                output_model_type=dcg.DataModelType.PydanticV2BaseModel,
-                use_subclass_enum=True,
-                custom_file_header=file_header,
-            )
-            model: str = output.read_text()
-        return model
 
 
 DOCKERIGNORE = """\
@@ -414,7 +396,6 @@ DOCKERIGNORE = """\
 
 
 class WorkflowArtifacts(_AllowArbitraryTypes):
-    spec_sha256: str
     spec_relpath: str
     release_name: str
     package_name: str
@@ -424,16 +405,6 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
     tests: Tests
     dockerfile: str
     dockerignore: str = Field(default=DOCKERIGNORE, alias=".dockerignore")
-
-    @property
-    def file_header(self):
-        return dedent(
-            f"""\
-            # [generated]
-            # by = {{ compiler = "ecoscope-workflows-core", version = "{version('ecoscope-workflows-core')}" }}
-            # from-spec-sha256 = "{self.spec_sha256}"
-            """
-        )
 
     @property
     def release_dir(self) -> Path:
@@ -496,8 +467,7 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
         pkg.joinpath("app.py").write_text(self.package.app)
         pkg.joinpath("cli.py").write_text(self.package.cli)
         pkg.joinpath("dispatch.py").write_text(self.package.dispatch)
-        params_model = self.package.generate_params_model(file_header=self.file_header)
-        pkg.joinpath("params.py").write_text(params_model)
+        pkg.joinpath("params.py").write_text(self.package.params_model)
         with pkg.joinpath("params-jsonschema.json").open("w") as f:
             json.dump(self.package.params_jsonschema, f, indent=2)
             f.write("\n")

@@ -1,7 +1,12 @@
 import builtins
+import hashlib
+import json
 import keyword
 import pathlib
 import sys
+from pathlib import Path
+import tempfile
+from importlib.metadata import version
 from textwrap import dedent
 from typing import Annotated, Any, Literal, TypeAlias, TypeVar, TYPE_CHECKING
 
@@ -10,6 +15,7 @@ if sys.version_info >= (3, 11):
 else:
     import tomli as tomllib
 
+import datamodel_code_generator as dcg
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
     BaseModel,
@@ -398,6 +404,10 @@ class Spec(_ForbidExtra):
     )
 
     @property
+    def sha256(self) -> str:
+        return hashlib.sha256(self.model_dump_json().encode()).hexdigest()
+
+    @property
     def all_task_ids(self) -> dict[str, str]:
         return {task_instance.name: task_instance.id for task_instance in self.workflow}
 
@@ -753,6 +763,17 @@ class DagCompiler(BaseModel):
     def _jinja_env(self) -> Environment:
         return Environment(loader=FileSystemLoader(self.jinja_templates_dir))
 
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def file_header(self) -> str:
+        return dedent(
+            f"""\
+            # [generated]
+            # by = {{ compiler = "ecoscope-workflows-core", version = "{version('ecoscope-workflows-core')}" }}
+            # from-spec-sha256 = "{self.spec.sha256}"
+            """
+        )
+
     @ruff_formatted
     def generate_dag(self, dag_type: DagTypes, mock_io: bool = False) -> str:
         template = self._jinja_env.get_template(
@@ -763,9 +784,23 @@ class DagCompiler(BaseModel):
             self.get_dag_config(dag_type, mock_io=mock_io) | {"testing": testing}
         )
 
-    def generate_artifacts(
-        self, spec_sha256: str, spec_relpath: str
-    ) -> WorkflowArtifacts:
+    @ruff_formatted
+    def generate_params_model(self, params_jsonschema: dict, file_header: str) -> str:
+        with tempfile.NamedTemporaryFile(suffix=".py") as tmp:
+            output = Path(tmp.name)
+            dcg.generate(
+                json.dumps(params_jsonschema),
+                input_file_type=dcg.InputFileType.JsonSchema,
+                input_filename="params-jsonschema.json",
+                output=output,
+                output_model_type=dcg.DataModelType.PydanticV2BaseModel,
+                use_subclass_enum=True,
+                custom_file_header=file_header,
+            )
+            model: str = output.read_text()
+        return model
+
+    def generate_artifacts(self, spec_relpath: str) -> WorkflowArtifacts:
         dags = Dags(
             **{
                 "jupytext.py": self.generate_dag("jupytext"),
@@ -777,8 +812,8 @@ class DagCompiler(BaseModel):
                 "run_sequential.py": self.generate_dag("sequential"),
             }
         )
+        params_jsonschema = self.get_params_jsonschema()
         return WorkflowArtifacts(
-            spec_sha256=spec_sha256,
             spec_relpath=spec_relpath,
             package_name=self.package_name,
             release_name=self.release_name,
@@ -786,7 +821,10 @@ class DagCompiler(BaseModel):
             pyproject_toml=self.get_pyproject_toml(),
             package=PackageDirectory(
                 dags=dags,
-                params_jsonschema=self.get_params_jsonschema(),
+                params_jsonschema=params_jsonschema,
+                params_model=self.generate_params_model(
+                    params_jsonschema, self.file_header
+                ),
             ),
             tests=Tests(
                 **{"conftest.py": self.get_conftest()},
