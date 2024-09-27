@@ -12758,7 +12758,7 @@ packages:
   name: ecoscope-workflows-ext-ecoscope
   version: '9999'
   path: .
-  sha256: 7c417b9a0d4ef7e83836b46cc89cc92c4355dfbb4dd02321f2c68c3ecc5a076a
+  sha256: 183b256a8c463010b89aa430330aff4f8412e7dc420385ae161ea7b32feec03b
   requires_python: '>=3.10'
   editable: true
 - kind: conda
