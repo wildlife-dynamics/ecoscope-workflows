@@ -1109,10 +1109,10 @@
             "properties": {
                 "widget_type": {
                     "enum": [
-                        "plot",
+                        "graph",
                         "map",
                         "text",
-                        "single_value"
+                        "stat"
                     ],
                     "title": "Widget Type",
                     "type": "string"
@@ -1189,10 +1189,10 @@
             "properties": {
                 "widget_type": {
                     "enum": [
-                        "plot",
+                        "graph",
                         "map",
                         "text",
-                        "single_value"
+                        "stat"
                     ],
                     "title": "Widget Type",
                     "type": "string"
