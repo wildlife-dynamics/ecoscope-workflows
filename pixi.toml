@@ -35,7 +35,7 @@ recompile-subject-tracking-carryover-lockfile = { cmd = "./dev/recompile.sh subj
 recompile-all-carryover-lockfile = { cmd ="echo 'recompile-all-carryover-lockfile' complete", depends-on = [
     "recompile-mode-map-carryover-lockfile",
     "recompile-mode-mapvalues-carryover-lockfile",
-    "recompile-patrol-event-carryover-lockfile",
+    "recompile-patrol-events-carryover-lockfile",
     "recompile-patrols-carryover-lockfile",
     "recompile-subject-tracking-carryover-lockfile",
 ]}
