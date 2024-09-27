@@ -7,8 +7,13 @@ platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
 rattler-build = "*"
 
 [tasks]
+
+# build ----------------------------------------------------------------------------------------
+
 build-vendor = { cmd = "./publish/build.sh vendor", inputs = ["publish/recipes/vendor/*.yaml"] }
 build-release = { cmd = "./publish/build.sh release", inputs = ["publish/recipes/release/*.yaml", "src/**/*.py", "src/**/pyproject.toml"] }
+
+# examples ---------------------------------------------------------------------------------
 
 recompile-mode-map = { cmd = "./dev/recompile.sh mode-map", depends-on = ["build-release"] }
 recompile-mode-mapvalues = { cmd = "./dev/recompile.sh mode-mapvalues", depends-on = ["build-release"] }
@@ -23,8 +28,13 @@ recompile-all = { cmd ="echo 'recompile-all' complete", depends-on = [
     "recompile-subject-tracking",
 ]}
 
+
+# lock ---------------------------------------------------------------------------------------------------
+
 lock-core = { cmd = "pixi install -a --manifest-path pyproject.toml", cwd = "src/ecoscope-workflows-core" }
 lock-ext-ecoscope = { cmd = "pixi install -a --manifest-path pyproject.toml", cwd = "src/ecoscope-workflows-ext-ecoscope" }
+
+# core ----------------------------------------------------------------------
 
 mypy-core-310 = { cmd = "./dev/mypy.sh core 310", depends-on = ["lock-core"]}
 mypy-core-311 = { cmd = "./dev/mypy.sh core 310", depends-on = ["lock-core"]}
@@ -35,6 +45,15 @@ mypy-core-all = { cmd = "echo 'pytest-core-all' complete", depends-on = [
     "mypy-core-312",
 ]}
 
+doctest-core-310 = { cmd = "./dev/doctest.sh core 310", depends-on = ["lock-core"]}
+doctest-core-311 = { cmd = "./dev/doctest.sh core 311", depends-on = ["lock-core"]}
+doctest-core-312 = { cmd = "./dev/doctest.sh core 312", depends-on = ["lock-core"]}
+doctest-core-all = { cmd = "echo 'doctest-core-all' complete", depends-on = [
+    "doctest-core-310",
+    "doctest-core-311",
+    "doctest-core-312",
+]}
+
 pytest-core-310 = { cmd = "./dev/pytest.sh core 310", depends-on = ["lock-core"]}
 pytest-core-311 = { cmd = "./dev/pytest.sh core 311", depends-on = ["lock-core"]}
 pytest-core-312 = { cmd = "./dev/pytest.sh core 312", depends-on = ["lock-core"]}
@@ -43,6 +62,8 @@ pytest-core-all = { cmd = "echo 'pytest-core-all' complete", depends-on = [
     "pytest-core-311",
     "pytest-core-312",
 ]}
+
+# ext-ecoscope -------------------------------------------------------------------------------------
 
 mypy-ext-ecoscope-310 = { cmd = "./dev/mypy.sh ext-ecoscope 310", depends-on = ["lock-ext-ecoscope"]}
 mypy-ext-ecoscope-311 = { cmd = "./dev/mypy.sh ext-ecoscope 310", depends-on = ["lock-ext-ecoscope"]}
