@@ -7,20 +7,66 @@ platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
 rattler-build = "*"
 
 [tasks]
-rmrf-release-artifacts = { cmd = "rm -rf /tmp/ecoscope-workflows/release/artifacts" }
-build-vendor = { cmd = "./publish/build.sh vendor", inputs = ["publish/recipes/vendor/*.yaml"], depends-on = ["rmrf-release-artifacts"] }
-build-release = { cmd = "./publish/build.sh release", depends-on = ["build-vendor"] }
+build-vendor = { cmd = "./publish/build.sh vendor", inputs = ["publish/recipes/vendor/*.yaml"] }
+build-release = { cmd = "./publish/build.sh release", inputs = ["publish/recipes/release/*.yaml", "src/**/*.py", "src/**/pyproject.toml"] }
 
 recompile-mode-map = { cmd = "./dev/recompile.sh mode-map", depends-on = ["build-release"] }
 recompile-mode-mapvalues = { cmd = "./dev/recompile.sh mode-mapvalues", depends-on = ["build-release"] }
 recompile-patrol-events = { cmd = "./dev/recompile.sh patrol-events", depends-on = ["build-release"] }
 recompile-patrols = { cmd = "./dev/recompile.sh patrols", depends-on = ["build-release"] }
 recompile-subject-tracking = { cmd = "./dev/recompile.sh subject-tracking", depends-on = ["build-release"] }
-
-recompile-all = { cmd = "echo 'all examples recompiled'", depends-on = [
+recompile-all = { cmd ="echo 'recompile-all' complete", depends-on = [
     "recompile-mode-map",
     "recompile-mode-mapvalues",
     "recompile-patrol-events",
     "recompile-patrols",
     "recompile-subject-tracking",
-] }
+]}
+
+lock-core = { cmd = "pixi install -a --manifest-path pyproject.toml", cwd = "src/ecoscope-workflows-core" }
+lock-ext-ecoscope = { cmd = "pixi install -a --manifest-path pyproject.toml", cwd = "src/ecoscope-workflows-ext-ecoscope" }
+
+mypy-core-310 = { cmd = "./dev/mypy.sh core 310", depends-on = ["lock-core"]}
+mypy-core-311 = { cmd = "./dev/mypy.sh core 310", depends-on = ["lock-core"]}
+mypy-core-312 = { cmd = "./dev/mypy.sh core 310", depends-on = ["lock-core"]}
+mypy-core-all = { cmd = "echo 'pytest-core-all' complete", depends-on = [
+    "mypy-core-310",
+    "mypy-core-311",
+    "mypy-core-312",
+]}
+
+pytest-core-310 = { cmd = "./dev/pytest.sh core 310", depends-on = ["lock-core"]}
+pytest-core-311 = { cmd = "./dev/pytest.sh core 311", depends-on = ["lock-core"]}
+pytest-core-312 = { cmd = "./dev/pytest.sh core 312", depends-on = ["lock-core"]}
+pytest-core-all = { cmd = "echo 'pytest-core-all' complete", depends-on = [
+    "pytest-core-310",
+    "pytest-core-311",
+    "pytest-core-312",
+]}
+
+mypy-ext-ecoscope-310 = { cmd = "./dev/mypy.sh ext-ecoscope 310", depends-on = ["lock-ext-ecoscope"]}
+mypy-ext-ecoscope-311 = { cmd = "./dev/mypy.sh ext-ecoscope 310", depends-on = ["lock-ext-ecoscope"]}
+mypy-ext-ecoscope-312 = { cmd = "./dev/mypy.sh ext-ecoscope 310", depends-on = ["lock-ext-ecoscope"]}
+mypy-ext-ecoscope-all = { cmd = "echo 'mypy-ext-ecoscope-all' complete", depends-on = [
+    "mypy-ext-ecoscope-310",
+    "mypy-ext-ecoscope-311",
+    "mypy-ext-ecoscope-312",
+]}
+
+pytest-ext-ecoscope-310-not-io = { cmd = "./dev/pytest.sh ext-ecoscope 310 'not io'", depends-on = ["lock-ext-ecoscope"]}
+pytest-ext-ecoscope-311-not-io = { cmd = "./dev/pytest.sh ext-ecoscope 311 'not io'", depends-on = ["lock-ext-ecoscope"]}
+pytest-ext-ecoscope-312-not-io = { cmd = "./dev/pytest.sh ext-ecoscope 312 'not io'", depends-on = ["lock-ext-ecoscope"]}
+pytest-ext-ecoscope-all-not-io = { cmd = "echo 'pytest-ext-ecoscope-all-not-io' complete", depends-on = [
+    "pytest-ext-ecoscope-310-not-io",
+    "pytest-ext-ecoscope-311-not-io",
+    "pytest-ext-ecoscope-312-not-io",
+]}
+
+pytest-ext-ecoscope-310-io = { cmd = "./dev/pytest.sh ext-ecoscope 310 'io'", depends-on = ["lock-ext-ecoscope"]}
+pytest-ext-ecoscope-311-io = { cmd = "./dev/pytest.sh ext-ecoscope 311 'io'", depends-on = ["lock-ext-ecoscope"]}
+pytest-ext-ecoscope-312-io = { cmd = "./dev/pytest.sh ext-ecoscope 312 'io'", depends-on = ["lock-ext-ecoscope"]}
+pytest-ext-ecoscope-all-io = { cmd = "echo 'pytest-ext-ecoscope-all-io' complete", depends-on = [
+    "pytest-ext-ecoscope-310-io",
+    "pytest-ext-ecoscope-311-io",
+    "pytest-ext-ecoscope-312-io",
+]}
