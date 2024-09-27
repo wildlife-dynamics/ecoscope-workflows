@@ -78,7 +78,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/contourpy-1.3.0-py312h68727a3_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/cryptography-43.0.1-py312hda17c39_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/cycler-0.12.1-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/datamodel-code-generator-0.26.0-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/datamodel-code-generator-0.26.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/dateparser-1.2.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/dav1d-1.2.1-hd590300_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/decorator-5.1.1-pyhd8ed1ab_0.tar.bz2
@@ -490,7 +490,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/contourpy-1.3.0-py312h451a7dd_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/cryptography-43.0.1-py312he723553_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/cycler-0.12.1-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/datamodel-code-generator-0.26.0-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/datamodel-code-generator-0.26.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/dateparser-1.2.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/dav1d-1.2.1-h31becfc_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/decorator-5.1.1-pyhd8ed1ab_0.tar.bz2
@@ -901,7 +901,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/contourpy-1.3.0-py312h6142ec9_2.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/cryptography-43.0.1-py312h3ddc590_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/cycler-0.12.1-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/datamodel-code-generator-0.26.0-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/datamodel-code-generator-0.26.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/dateparser-1.2.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/dav1d-1.2.1-hb547adb_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/decorator-5.1.1-pyhd8ed1ab_0.tar.bz2
@@ -1305,7 +1305,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/contourpy-1.3.0-py312h68727a3_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/cryptography-43.0.1-py312hda17c39_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/cycler-0.12.1-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/datamodel-code-generator-0.26.0-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/datamodel-code-generator-0.26.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/dateparser-1.2.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/dav1d-1.2.1-hd590300_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/decorator-5.1.1-pyhd8ed1ab_0.tar.bz2
@@ -1721,7 +1721,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/contourpy-1.3.0-py312h451a7dd_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/cryptography-43.0.1-py312he723553_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/cycler-0.12.1-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/datamodel-code-generator-0.26.0-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/datamodel-code-generator-0.26.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/dateparser-1.2.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/dav1d-1.2.1-h31becfc_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/decorator-5.1.1-pyhd8ed1ab_0.tar.bz2
@@ -2136,7 +2136,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/contourpy-1.3.0-py312h6142ec9_2.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/cryptography-43.0.1-py312h3ddc590_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/cycler-0.12.1-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/datamodel-code-generator-0.26.0-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/datamodel-code-generator-0.26.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/dateparser-1.2.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/dav1d-1.2.1-hb547adb_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/decorator-5.1.1-pyhd8ed1ab_0.tar.bz2
@@ -5427,13 +5427,13 @@ packages:
   timestamp: 1696677888423
 - kind: conda
   name: datamodel-code-generator
-  version: 0.26.0
+  version: 0.26.1
   build: pyhd8ed1ab_0
   subdir: noarch
   noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/datamodel-code-generator-0.26.0-pyhd8ed1ab_0.conda
-  sha256: 706bd9330e9ed018ba2b488e63db38c8a1566fba4166e2f638075bfb70b420e4
-  md5: b23c9ba0775a42908a6a65ca33ca5180
+  url: https://conda.anaconda.org/conda-forge/noarch/datamodel-code-generator-0.26.1-pyhd8ed1ab_0.conda
+  sha256: fb07114feb13985096fff5ab8177cc5b8aeb50719ef33f29bc4927c7aeea958d
+  md5: 8f7d63611ba770db54130da697b1c23c
   depends:
   - argcomplete >=1.10,<4.0
   - black >=19.10b0
@@ -5449,11 +5449,10 @@ packages:
   - python >=3.7,<4.0
   - toml >=0.10.0,<1.0.0
   license: MIT
-  license_family: MIT
   purls:
   - pkg:pypi/datamodel-code-generator?source=hash-mapping
-  size: 76474
-  timestamp: 1725312646910
+  size: 76585
+  timestamp: 1727469233785
 - kind: conda
   name: dateparser
   version: 1.2.0
@@ -5649,8 +5648,8 @@ packages:
   subdir: noarch
   noarch: python
   url: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-core-0.0.0-pyh4616a5c_0.conda
-  sha256: e591a2899c9bb6f97955a99525abc7854e536fd1bc2a09eb188965446350157f
-  md5: 3c1618b2f2d10abf843855cf320c14cd
+  sha256: d8429b084674d0cf72e65b994fa17c5334f48b0e1f8caef18ba9d31cb548ed4b
+  md5: ee558a8105a15b98f9b580c40919c755
   depends:
   - python
   - jinja2
@@ -5667,8 +5666,8 @@ packages:
   - pydot
   - python
   license: BSD-3-Clause
-  size: 45026
-  timestamp: 1727462401180
+  size: 45029
+  timestamp: 1727471213037
 - kind: conda
   name: ecoscope-workflows-ext-ecoscope
   version: 0.0.0
@@ -5676,16 +5675,16 @@ packages:
   subdir: noarch
   noarch: python
   url: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-ext-ecoscope-0.0.0-pyh4616a5c_0.conda
-  sha256: 38815e16b0a99c7385df8b500693c2653def450eec23a5a36beffcaa67d26b1e
-  md5: a1b4db5952cf35984bca059580b88e51
+  sha256: 22c3951f0f5d8cc47166c1bf62f6916e4bf975d85bc281908b99575a62f00e1d
+  md5: 113f2c8abe0d7718246223bc94144539
   depends:
   - python
   - ecoscope-workflows-core ==0.0.0
   - ecoscope ==v1.8.3
   - python
   license: BSD-3-Clause
-  size: 416313
-  timestamp: 1727462451578
+  size: 416321
+  timestamp: 1727471263803
 - kind: pypi
   name: ecoscope-workflows-patrol-events-workflow
   version: 0.0.0
@@ -18105,7 +18104,7 @@ packages:
   license: BSD-3-Clause
   license_family: BSD
   purls:
-  - pkg:pypi/tifffile?source=compressed-mapping
+  - pkg:pypi/tifffile?source=hash-mapping
   size: 180655
   timestamp: 1727250532025
 - kind: conda
