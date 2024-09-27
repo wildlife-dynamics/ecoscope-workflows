@@ -1,17 +1,21 @@
 [project]
-name = "ecoscope-workflows-manage"
-channels = [
-    "https://prefix.dev/ecoscope-workflows",
-    "conda-forge",
-]
+name = "ecoscope-workflows-dev"
+channels = ["conda-forge"]
 platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
 
+[dependencies]
+rattler-build = "*"
+
 [tasks]
-recompile-mode-map = { cmd = "./dev/recompile.sh mode-map" }
-recompile-mode-mapvalues = { cmd = "./dev/recompile.sh mode-mapvalues" }
-recompile-patrol-events = { cmd = "./dev/recompile.sh patrol-events" }
-recompile-patrols = { cmd = "./dev/recompile.sh patrols" }
-recompile-subject-tracking = { cmd = "./dev/recompile.sh subject-tracking" }
+rmrf-release-artifacts = { cmd = "rm -rf /tmp/ecoscope-workflows/release/artifacts" }
+build-vendor = { cmd = "./publish/build.sh vendor", inputs = ["publish/recipes/vendor/*.yaml"], depends-on = ["rmrf-release-artifacts"] }
+build-release = { cmd = "./publish/build.sh release", depends-on = ["build-vendor"] }
+
+recompile-mode-map = { cmd = "./dev/recompile.sh mode-map", depends-on = ["build-release"] }
+recompile-mode-mapvalues = { cmd = "./dev/recompile.sh mode-mapvalues", depends-on = ["build-release"] }
+recompile-patrol-events = { cmd = "./dev/recompile.sh patrol-events", depends-on = ["build-release"] }
+recompile-patrols = { cmd = "./dev/recompile.sh patrols", depends-on = ["build-release"] }
+recompile-subject-tracking = { cmd = "./dev/recompile.sh subject-tracking", depends-on = ["build-release"] }
 
 recompile-all = { cmd = "echo 'all examples recompiled'", depends-on = [
     "recompile-mode-map",
@@ -20,17 +24,3 @@ recompile-all = { cmd = "echo 'all examples recompiled'", depends-on = [
     "recompile-patrols",
     "recompile-subject-tracking",
 ] }
-
-
-[feature.conda-dist]
-dependencies = { rattler-build = "*" }
-# tasks to:
-#  - manually build the vendor packages from the recipes; and then
-#  - manually push built packages to the channel (requires prefix api key env var)
-# these are not run in ci. if `vendor-version-check check` fails, use these to update the vendor packages.
-# note: in this case, the recipes themselves likely need to be manually updated before build/push.
-tasks = { build-release = "publish/build.sh release"}
-
-[environments]
-default = { solve-group = "default" }
-conda-dist = { features = ["conda-dist"], solve-group = "conda-dist", no-default-feature = true }
