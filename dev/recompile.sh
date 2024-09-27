@@ -1,7 +1,8 @@
 #!/bin/bash
 
 example=$1
-flags=$2
+shift
+flags=$*
 
 echo "recompiling 'examples/${example}/spec.yaml' with flags '--clobber ${flags}'"
 
