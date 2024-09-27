@@ -12,11 +12,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        environment-name: [
-          "py3.10-ecoscope1.8.3",
-          "py3.11-ecoscope1.8.3",
-          "py3.12-ecoscope1.8.3",
-        ]
+        environment-name:
+          [
+            "py3.10-ecoscope1.8.3",
+            "py3.11-ecoscope1.8.3",
+            "py3.12-ecoscope1.8.3",
+          ]
 
     steps:
       - uses: actions/checkout@v4
@@ -24,8 +25,6 @@ jobs:
         uses: mamba-org/setup-micromamba@v1
         with:
           environment-file: ./ci/envs/${{ matrix.environment-name }}.yml
-          cache-environment: true
-          cache-downloads: true
           init-shell: bash
 
       - name: Install pip dependencies and our package
