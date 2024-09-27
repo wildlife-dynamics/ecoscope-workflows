@@ -54,9 +54,9 @@ doctest-core-all = { cmd = "echo 'doctest-core-all' complete", depends-on = [
     "doctest-core-312",
 ]}
 
-pytest-core-310 = { cmd = "./dev/pytest.sh core 310", depends-on = ["lock-core"]}
-pytest-core-311 = { cmd = "./dev/pytest.sh core 311", depends-on = ["lock-core"]}
-pytest-core-312 = { cmd = "./dev/pytest.sh core 312", depends-on = ["lock-core"]}
+pytest-core-310 = { cmd = "./dev/pytest-src.sh core 310", depends-on = ["lock-core"]}
+pytest-core-311 = { cmd = "./dev/pytest-src.sh core 311", depends-on = ["lock-core"]}
+pytest-core-312 = { cmd = "./dev/pytest-src.sh core 312", depends-on = ["lock-core"]}
 pytest-core-all = { cmd = "echo 'pytest-core-all' complete", depends-on = [
     "pytest-core-310",
     "pytest-core-311",
@@ -74,18 +74,18 @@ mypy-ext-ecoscope-all = { cmd = "echo 'mypy-ext-ecoscope-all' complete", depends
     "mypy-ext-ecoscope-312",
 ]}
 
-pytest-ext-ecoscope-310-not-io = { cmd = "./dev/pytest.sh ext-ecoscope 310 'not io'", depends-on = ["lock-ext-ecoscope"]}
-pytest-ext-ecoscope-311-not-io = { cmd = "./dev/pytest.sh ext-ecoscope 311 'not io'", depends-on = ["lock-ext-ecoscope"]}
-pytest-ext-ecoscope-312-not-io = { cmd = "./dev/pytest.sh ext-ecoscope 312 'not io'", depends-on = ["lock-ext-ecoscope"]}
+pytest-ext-ecoscope-310-not-io = { cmd = "./dev/pytest-src.sh ext-ecoscope 310 'not io'", depends-on = ["lock-ext-ecoscope"]}
+pytest-ext-ecoscope-311-not-io = { cmd = "./dev/pytest-src.sh ext-ecoscope 311 'not io'", depends-on = ["lock-ext-ecoscope"]}
+pytest-ext-ecoscope-312-not-io = { cmd = "./dev/pytest-src.sh ext-ecoscope 312 'not io'", depends-on = ["lock-ext-ecoscope"]}
 pytest-ext-ecoscope-all-not-io = { cmd = "echo 'pytest-ext-ecoscope-all-not-io' complete", depends-on = [
     "pytest-ext-ecoscope-310-not-io",
     "pytest-ext-ecoscope-311-not-io",
     "pytest-ext-ecoscope-312-not-io",
 ]}
 
-pytest-ext-ecoscope-310-io = { cmd = "./dev/pytest.sh ext-ecoscope 310 'io'", depends-on = ["lock-ext-ecoscope"]}
-pytest-ext-ecoscope-311-io = { cmd = "./dev/pytest.sh ext-ecoscope 311 'io'", depends-on = ["lock-ext-ecoscope"]}
-pytest-ext-ecoscope-312-io = { cmd = "./dev/pytest.sh ext-ecoscope 312 'io'", depends-on = ["lock-ext-ecoscope"]}
+pytest-ext-ecoscope-310-io = { cmd = "./dev/pytest-src.sh ext-ecoscope 310 'io'", depends-on = ["lock-ext-ecoscope"]}
+pytest-ext-ecoscope-311-io = { cmd = "./dev/pytest-src.sh ext-ecoscope 311 'io'", depends-on = ["lock-ext-ecoscope"]}
+pytest-ext-ecoscope-312-io = { cmd = "./dev/pytest-src.sh ext-ecoscope 312 'io'", depends-on = ["lock-ext-ecoscope"]}
 pytest-ext-ecoscope-all-io = { cmd = "echo 'pytest-ext-ecoscope-all-io' complete", depends-on = [
     "pytest-ext-ecoscope-310-io",
     "pytest-ext-ecoscope-311-io",
