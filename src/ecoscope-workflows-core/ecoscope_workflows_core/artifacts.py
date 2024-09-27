@@ -402,8 +402,14 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
             f"pixi install -a --manifest-path {self.release_name}/pixi.toml".split()
         )
 
-    def dump(self, clobber: bool = False):
-        root = Path().cwd().joinpath(self.release_name)
+    def dump(self, spec_relpath: str, clobber: bool = False):
+        """Dump the artifacts to disk.
+
+        Args:
+            spec_relpath (str): The path to the spec file, relative to the current working directory from which the script is run.
+            clobber (bool, optional): Whether or not to clobber an existing build directory. Defaults to False.
+        """
+        root = Path(spec_relpath).parent.joinpath(self.release_name)
         if root.exists() and not clobber:
             raise FileExistsError(
                 f"Path '{root}' already exists. Set clobber=True to overwrite."

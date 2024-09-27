@@ -66,7 +66,7 @@ def compile(
         # dag_png=write_png(dc.dag, "dag.png"),
         # readme=..., # TODO: readme with dag visualization
     )
-    wa.dump(clobber=clobber)
+    wa.dump(spec_relpath=spec.name, clobber=clobber)
     if lock:
         wa.lock()
 
