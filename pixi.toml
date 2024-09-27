@@ -37,8 +37,8 @@ lock-ext-ecoscope = { cmd = "pixi install -a --manifest-path pyproject.toml", cw
 # core ----------------------------------------------------------------------
 
 mypy-core-310 = { cmd = "./dev/mypy.sh core 310", depends-on = ["lock-core"]}
-mypy-core-311 = { cmd = "./dev/mypy.sh core 310", depends-on = ["lock-core"]}
-mypy-core-312 = { cmd = "./dev/mypy.sh core 310", depends-on = ["lock-core"]}
+mypy-core-311 = { cmd = "./dev/mypy.sh core 311", depends-on = ["lock-core"]}
+mypy-core-312 = { cmd = "./dev/mypy.sh core 312", depends-on = ["lock-core"]}
 mypy-core-all = { cmd = "echo 'pytest-core-all' complete", depends-on = [
     "mypy-core-310",
     "mypy-core-311",
@@ -66,8 +66,8 @@ pytest-core-all = { cmd = "echo 'pytest-core-all' complete", depends-on = [
 # ext-ecoscope -------------------------------------------------------------------------------------
 
 mypy-ext-ecoscope-310 = { cmd = "./dev/mypy.sh ext-ecoscope 310", depends-on = ["lock-ext-ecoscope"]}
-mypy-ext-ecoscope-311 = { cmd = "./dev/mypy.sh ext-ecoscope 310", depends-on = ["lock-ext-ecoscope"]}
-mypy-ext-ecoscope-312 = { cmd = "./dev/mypy.sh ext-ecoscope 310", depends-on = ["lock-ext-ecoscope"]}
+mypy-ext-ecoscope-311 = { cmd = "./dev/mypy.sh ext-ecoscope 311", depends-on = ["lock-ext-ecoscope"]}
+mypy-ext-ecoscope-312 = { cmd = "./dev/mypy.sh ext-ecoscope 312", depends-on = ["lock-ext-ecoscope"]}
 mypy-ext-ecoscope-all = { cmd = "echo 'mypy-ext-ecoscope-all' complete", depends-on = [
     "mypy-ext-ecoscope-310",
     "mypy-ext-ecoscope-311",
