@@ -1,11 +1,9 @@
 import builtins
-import functools
 import keyword
 import pathlib
-import subprocess
 import sys
 from textwrap import dedent
-from typing import Annotated, Any, Callable, Literal, TypeAlias, TypeVar, TYPE_CHECKING
+from typing import Annotated, Any, Literal, TypeAlias, TypeVar, TYPE_CHECKING
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -26,6 +24,7 @@ from pydantic.functional_validators import AfterValidator, BeforeValidator
 
 from ecoscope_workflows_core._models import _AllowArbitraryAndForbidExtra, _ForbidExtra
 from ecoscope_workflows_core.artifacts import PixiToml
+from ecoscope_workflows_core.formatting import ruff_formatted
 from ecoscope_workflows_core.jsonschema import ReactJSONSchemaFormConfiguration
 from ecoscope_workflows_core.registry import KnownTask, known_tasks
 from ecoscope_workflows_core.requirements import (
@@ -364,28 +363,6 @@ class TaskInstance(_ForbidExtra):
             if self.mapvalues
             else None or "call"
         )
-
-
-def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
-    """Decorator to format the output of a function that returns a string with ruff."""
-
-    @functools.wraps(returns_str_func)
-    def wrapper(*args, **kwargs):
-        unformatted = returns_str_func(*args, **kwargs)
-        # https://github.com/astral-sh/ruff/issues/8401#issuecomment-1788806462
-        formatted = subprocess.check_output(
-            [sys.executable, "-m", "ruff", "format", "-s", "-"],
-            input=unformatted,
-            encoding="utf-8",
-        )
-        linted = subprocess.check_output(
-            [sys.executable, "-m", "ruff", "check", "--fix", "--exit-zero", "-s", "-"],
-            input=formatted,
-            encoding="utf-8",
-        )
-        return linted
-
-    return wrapper
 
 
 class SpecRequirement(_AllowArbitraryAndForbidExtra):

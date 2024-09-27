@@ -20,6 +20,7 @@ from ecoscope_workflows_core._models import (
     _AllowArbitraryTypes,
     _AllowArbitraryAndValidateAssignment,
 )
+from ecoscope_workflows_core.formatting import ruff_formatted
 from ecoscope_workflows_core.requirements import (
     ChannelType,
     NamelessMatchSpecType,
@@ -358,14 +359,30 @@ def dispatch(
 """
 
 
+@ruff_formatted
+def _get_default_app() -> str:
+    return APP
+
+
+@ruff_formatted
+def _get_default_cli() -> str:
+    return CLI
+
+
+@ruff_formatted
+def _get_default_dispatch() -> str:
+    return DISPATCH
+
+
 class PackageDirectory(BaseModel):
     dags: Dags
     params_jsonschema: dict
-    app: str = Field(default=APP, alias="app.py")
-    cli: str = Field(default=CLI, alias="cli.py")
-    dispatch: str = Field(default=DISPATCH, alias="dispatch.py")
+    app: str = Field(default_factory=_get_default_app, alias="app.py")
+    cli: str = Field(default_factory=_get_default_cli, alias="cli.py")
+    dispatch: str = Field(default_factory=_get_default_dispatch, alias="dispatch.py")
     init_dot_py: str = Field(default="", alias="__init__.py")
 
+    @ruff_formatted
     def generate_params_model(self) -> str:
         with tempfile.NamedTemporaryFile(suffix=".py") as tmp:
             output = Path(tmp.name)
