@@ -178,10 +178,20 @@ def test_cli(
 """
 
 
+@ruff_formatted
+def _get_default_test_app() -> str:
+    return TEST_APP
+
+
+@ruff_formatted
+def _get_default_test_cli() -> str:
+    return TEST_CLI
+
+
 class Tests(BaseModel):
     conftest: str = Field(..., alias="conftest.py")
-    test_app: str = Field(default=TEST_APP, alias="test_app.py")
-    test_cli: str = Field(default=TEST_CLI, alias="test_cli.py")
+    test_app: str = Field(default_factory=_get_default_test_app, alias="test_app.py")
+    test_cli: str = Field(default_factory=_get_default_test_cli, alias="test_cli.py")
 
 
 APP = """\
