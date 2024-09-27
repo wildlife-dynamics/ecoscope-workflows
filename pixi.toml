@@ -47,6 +47,12 @@ pytest-patrol-events-app-sequential = { cmd = "./dev/pytest-examples.sh patrol-e
 pytest-patrols-app-sequential = { cmd = "./dev/pytest-examples.sh patrols 'app' 'sequential'" }
 pytest-subject-tracking-app-sequential = { cmd = "./dev/pytest-examples.sh patrols 'app' 'sequential'" }
 
+pytest-mode-map-cli-sequential = { cmd = "./dev/pytest-examples.sh mode-map 'cli' 'sequential'" }
+pytest-mode-mapvalues-cli-sequential = { cmd = "./dev/pytest-examples.sh mode-mapvalues 'cli' 'sequential'" }
+pytest-patrol-events-cli-sequential = { cmd = "./dev/pytest-examples.sh patrol-events 'cli' 'sequential'" }
+pytest-patrols-cli-sequential = { cmd = "./dev/pytest-examples.sh patrols 'cli' 'sequential'" }
+pytest-subject-tracking-cli-sequential = { cmd = "./dev/pytest-examples.sh patrols 'cli' 'sequential'" }
+
 # lock ---------------------------------------------------------------------------------------------------
 
 lock-core = { cmd = "pixi install -a --manifest-path pyproject.toml", cwd = "src/ecoscope-workflows-core" }
