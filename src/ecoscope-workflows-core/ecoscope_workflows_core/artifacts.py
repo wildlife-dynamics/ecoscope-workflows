@@ -388,6 +388,7 @@ DOCKERIGNORE = """\
 
 
 class WorkflowArtifacts(_AllowArbitraryTypes):
+    spec_relpath: str
     release_name: str
     package_name: str
     pixi_toml: PixiToml
@@ -397,41 +398,47 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
     dockerfile: str
     dockerignore: str = Field(default=DOCKERIGNORE, alias=".dockerignore")
 
-    def lock(self):
-        subprocess.run(
-            f"pixi install -a --manifest-path {self.release_name}/pixi.toml".split()
+    @property
+    def release_dir(self) -> Path:
+        return (
+            Path().cwd().joinpath(self.spec_relpath).parent.joinpath(self.release_name)
         )
 
-    def dump(self, spec_relpath: str, clobber: bool = False):
+    def lock(self):
+        subprocess.run(
+            f"pixi install -a --manifest-path {self.release_dir.joinpath('pixi.toml')}".split()
+        )
+
+    def dump(self, clobber: bool = False):
         """Dump the artifacts to disk.
 
         Args:
-            spec_relpath (str): The path to the spec file, relative to the current working directory from which the script is run.
             clobber (bool, optional): Whether or not to clobber an existing build directory. Defaults to False.
         """
-        root = Path(spec_relpath).parent.joinpath(self.release_name)
-        if root.exists() and not clobber:
+        if self.release_dir.exists() and not clobber:
             raise FileExistsError(
-                f"Path '{root}' already exists. Set clobber=True to overwrite."
+                f"Path '{self.release_dir}' already exists. Set clobber=True to overwrite."
             )
-        if root.exists() and clobber and not root.is_dir():
-            raise FileExistsError(f"Cannot clobber existing '{root}'; not a directory.")
-        if root.exists() and clobber:
-            shutil.rmtree(root)
+        if self.release_dir.exists() and clobber and not self.release_dir.is_dir():
+            raise FileExistsError(
+                f"Cannot clobber existing '{self.release_dir}'; not a directory."
+            )
+        if self.release_dir.exists() and clobber:
+            shutil.rmtree(self.release_dir)
 
-        root.mkdir(parents=True)
+        self.release_dir.mkdir(parents=True)
 
         # root artifacts
-        self.pixi_toml.dump(root.joinpath("pixi.toml"))
-        root.joinpath("pyproject.toml").write_text(self.pyproject_toml)
-        root.joinpath("Dockerfile").write_text(self.dockerfile)
-        root.joinpath(".dockerignore").write_text(self.dockerignore)
-        root.joinpath("tests").mkdir(parents=True)
+        self.pixi_toml.dump(self.release_dir.joinpath("pixi.toml"))
+        self.release_dir.joinpath("pyproject.toml").write_text(self.pyproject_toml)
+        self.release_dir.joinpath("Dockerfile").write_text(self.dockerfile)
+        self.release_dir.joinpath(".dockerignore").write_text(self.dockerignore)
+        self.release_dir.joinpath("tests").mkdir(parents=True)
         for fname, content in self.tests.model_dump(by_alias=True).items():
-            root.joinpath("tests").joinpath(fname).write_text(content)
+            self.release_dir.joinpath("tests").joinpath(fname).write_text(content)
 
         # package artifacts
-        pkg = root.joinpath(self.package_name)
+        pkg = self.release_dir.joinpath(self.package_name)
         pkg.mkdir(parents=True)
         pkg.joinpath("dags").mkdir(parents=True)
         # top level

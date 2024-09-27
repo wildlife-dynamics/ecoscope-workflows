@@ -51,6 +51,7 @@ def compile(
         }
     )
     wa = WorkflowArtifacts(
+        spec_relpath=spec.name,
         package_name=dc.package_name,
         release_name=dc.release_name,
         pixi_toml=dc.get_pixi_toml(),
@@ -66,7 +67,7 @@ def compile(
         # dag_png=write_png(dc.dag, "dag.png"),
         # readme=..., # TODO: readme with dag visualization
     )
-    wa.dump(spec_relpath=spec.name, clobber=clobber)
+    wa.dump(clobber=clobber)
     if lock:
         wa.lock()
 
