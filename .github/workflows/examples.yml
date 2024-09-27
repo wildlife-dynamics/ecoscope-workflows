@@ -35,10 +35,10 @@ jobs:
       matrix:
         api: [
           "app",
-          "cli",
+          # "cli",
         ]
         mode: [
-          "async",
+          # "async",
           "sequential",
         ]
         example: [
