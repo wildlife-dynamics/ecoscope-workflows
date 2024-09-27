@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from importlib.metadata import version
 from pathlib import Path
 from textwrap import dedent
 
@@ -393,7 +394,7 @@ class PackageDirectory(BaseModel):
     init_dot_py: str = Field(default="", alias="__init__.py")
 
     @ruff_formatted
-    def generate_params_model(self) -> str:
+    def generate_params_model(self, file_header: str) -> str:
         with tempfile.NamedTemporaryFile(suffix=".py") as tmp:
             output = Path(tmp.name)
             dcg.generate(
@@ -403,6 +404,7 @@ class PackageDirectory(BaseModel):
                 output=output,
                 output_model_type=dcg.DataModelType.PydanticV2BaseModel,
                 use_subclass_enum=True,
+                custom_file_header=file_header,
             )
             model: str = output.read_text()
         return model
@@ -415,6 +417,7 @@ DOCKERIGNORE = """\
 
 
 class WorkflowArtifacts(_AllowArbitraryTypes):
+    spec_sha256: str
     spec_relpath: str
     release_name: str
     package_name: str
@@ -424,6 +427,16 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
     tests: Tests
     dockerfile: str
     dockerignore: str = Field(default=DOCKERIGNORE, alias=".dockerignore")
+
+    @property
+    def file_header(self):
+        return dedent(
+            f"""\
+            # [generated]
+            # by = {{ compiler = "ecoscope-workflows-core", version = "{version('ecoscope-workflows-core')}" }}
+            # from-spec-sha256 = "{self.spec_sha256}"
+            """
+        )
 
     @property
     def release_dir(self) -> Path:
@@ -473,10 +486,11 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
         pkg.joinpath("app.py").write_text(self.package.app)
         pkg.joinpath("cli.py").write_text(self.package.cli)
         pkg.joinpath("dispatch.py").write_text(self.package.dispatch)
-        params_model = self.package.generate_params_model()
+        params_model = self.package.generate_params_model(file_header=self.file_header)
         pkg.joinpath("params.py").write_text(params_model)
         with pkg.joinpath("params-jsonschema.json").open("w") as f:
             json.dump(self.package.params_jsonschema, f, indent=2)
+            f.write("\n")
         # dags
         for fname, content in self.package.dags.model_dump(by_alias=True).items():
             pkg.joinpath("dags").joinpath(fname).write_text(content)

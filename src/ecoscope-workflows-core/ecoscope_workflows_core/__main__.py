@@ -1,3 +1,4 @@
+import hashlib
 from io import TextIOWrapper
 
 import click
@@ -39,7 +40,9 @@ def compile(
     clobber: bool,
     lock: bool,
 ):
-    compilation_spec = Spec(**yaml.load(spec))
+    spec_text = spec.read()
+    spec_sha256 = hashlib.sha256(spec_text.encode()).hexdigest()
+    compilation_spec = Spec(**yaml.load(spec_text))
     dc = DagCompiler(spec=compilation_spec)
     dags = Dags(
         **{
@@ -51,6 +54,7 @@ def compile(
         }
     )
     wa = WorkflowArtifacts(
+        spec_sha256=spec_sha256,
         spec_relpath=spec.name,
         package_name=dc.package_name,
         release_name=dc.release_name,
