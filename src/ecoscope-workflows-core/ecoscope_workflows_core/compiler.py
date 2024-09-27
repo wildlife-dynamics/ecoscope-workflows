@@ -23,7 +23,13 @@ from pydantic import (
 from pydantic.functional_validators import AfterValidator, BeforeValidator
 
 from ecoscope_workflows_core._models import _AllowArbitraryAndForbidExtra, _ForbidExtra
-from ecoscope_workflows_core.artifacts import PixiToml
+from ecoscope_workflows_core.artifacts import (
+    Dags,
+    PackageDirectory,
+    PixiToml,
+    Tests,
+    WorkflowArtifacts,
+)
 from ecoscope_workflows_core.formatting import ruff_formatted
 from ecoscope_workflows_core.jsonschema import ReactJSONSchemaFormConfiguration
 from ecoscope_workflows_core.registry import KnownTask, known_tasks
@@ -755,4 +761,37 @@ class DagCompiler(BaseModel):
         testing = True if mock_io else False
         return template.render(
             self.get_dag_config(dag_type, mock_io=mock_io) | {"testing": testing}
+        )
+
+    def generate_artifacts(
+        self, spec_sha256: str, spec_relpath: str
+    ) -> WorkflowArtifacts:
+        dags = Dags(
+            **{
+                "jupytext.py": self.generate_dag("jupytext"),
+                "run_async_mock_io.py": self.generate_dag("async", mock_io=True),
+                "run_async.py": self.generate_dag("async"),
+                "run_sequential_mock_io.py": self.generate_dag(
+                    "sequential", mock_io=True
+                ),
+                "run_sequential.py": self.generate_dag("sequential"),
+            }
+        )
+        return WorkflowArtifacts(
+            spec_sha256=spec_sha256,
+            spec_relpath=spec_relpath,
+            package_name=self.package_name,
+            release_name=self.release_name,
+            pixi_toml=self.get_pixi_toml(),
+            pyproject_toml=self.get_pyproject_toml(),
+            package=PackageDirectory(
+                dags=dags,
+                params_jsonschema=self.get_params_jsonschema(),
+            ),
+            tests=Tests(
+                **{"conftest.py": self.get_conftest()},
+            ),
+            dockerfile=self.get_dockerfile(),
+            # dag_png=write_png(dc.dag, "dag.png"),
+            # readme=..., # TODO: readme with dag visualization
         )
