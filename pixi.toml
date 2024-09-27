@@ -28,6 +28,11 @@ recompile-all = { cmd ="echo 'recompile-all' complete", depends-on = [
     "recompile-subject-tracking",
 ]}
 
+pytest-mode-map-app-sequential = { cmd = "./dev/pytest-examples.sh mode-map 'app' 'sequential'" }
+pytest-mode-mapvalues-app-sequential = { cmd = "./dev/pytest-examples.sh mode-mapvalues 'app' 'sequential'" }
+pytest-patrol-events-app-sequential = { cmd = "./dev/pytest-examples.sh patrol-events 'app' 'sequential'" }
+pytest-patrols-app-sequential = { cmd = "./dev/pytest-examples.sh patrols 'app' 'sequential'" }
+pytest-subject-tracking-app-sequential = { cmd = "./dev/pytest-examples.sh patrols 'app' 'sequential'" }
 
 # lock ---------------------------------------------------------------------------------------------------
 

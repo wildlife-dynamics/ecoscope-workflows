@@ -60,8 +60,4 @@ jobs:
       - name: Install pixi
         run: curl -fsSL https://pixi.sh/install.sh | bash && echo "$HOME/.pixi/bin" >> $GITHUB_PATH
       - name: Test
-        run: |
-          pixi run \
-          --manifest-path ./examples/${{ matrix.example }}/ecoscope-workflows-${{ matrix.example }}-workflow/pixi.toml \
-          --locked --environment test \
-          test-${{ matrix.api }}-${{ matrix.mode }}-mock-io --case test1
+        run: pixi run --manifest-path pixi.toml -e default pytest-${{ matrix.example }}-${{ matrix.api }}-${{ matrix.mode }}
