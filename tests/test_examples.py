@@ -112,8 +112,8 @@ assert_that_stdout = {
         lambda out: "widget_type='map', title='Trajectories & Patrol Events Map'"
         in out,
         lambda out: "widget_type='map', title='Time Density Map'" in out,
-        lambda out: "widget_type='plot', title='Patrol Events Bar Chart'" in out,
-        lambda out: "widget_type='plot', title='Patrol Events Pie Chart'" in out,
+        lambda out: "widget_type='graph', title='Patrol Events Bar Chart'" in out,
+        lambda out: "widget_type='graph', title='Patrol Events Pie Chart'" in out,
         lambda out: "widget_type='stat', title='Total Patrols'" in out,
         lambda out: "widget_type='stat', title='Total Time'" in out,
         lambda out: "widget_type='stat', title='Total Distance'" in out,
@@ -148,8 +148,8 @@ assert_that_stdout = {
         lambda out: "widget_type='map', title='Density Map'" in out,
         lambda out: "widget_type='map', title='Grouped Patrol Events Map'" in out,
         lambda out: "widget_type='map', title='Grouped Density Map'" in out,
-        lambda out: "widget_type='plot', title='Patrol Events Bar Chart'" in out,
-        lambda out: "widget_type='plot', title='Patrol Events Pie Chart'" in out,
+        lambda out: "widget_type='graph', title='Patrol Events Bar Chart'" in out,
+        lambda out: "widget_type='graph', title='Patrol Events Pie Chart'" in out,
     ],
 }
 
