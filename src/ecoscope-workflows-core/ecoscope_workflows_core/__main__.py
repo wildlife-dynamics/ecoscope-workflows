@@ -1,4 +1,5 @@
 import hashlib
+import warnings
 from io import TextIOWrapper
 
 import click
@@ -14,6 +15,11 @@ from ecoscope_workflows_core.compiler import DagCompiler, Spec
 # from ecoscope_workflows_core.visualize import write_png  # TODO: add readme with visualization
 
 yaml = ruamel.yaml.YAML(typ="safe")
+
+CARRYOVER_LOCKFILE_WARNING = (
+    "Warning: it is much safer to always re-lock the package, as the lockfile may be out of "
+    "date or otherwise incorrect. This option is given as a convenience for development purposes."
+)
 
 
 @click.command()
@@ -35,11 +41,30 @@ yaml = ruamel.yaml.YAML(typ="safe")
     default=True,
     help="Whether or not to generate a pixi lockfile for the package.",
 )
+@click.option(
+    "--carryover-lockfile/--no-carryover-lockfile",
+    is_flag=True,
+    default=False,
+    help=(
+        "In the case of combining the options `--clobber` + `--no-lock`, whether or not to "
+        "carryover the lockfile from the clobbered directory. If true, this option allows for "
+        "rebuilding the package with a (potentially!) functional lockfile, without paying the "
+        "cost of actually re-locking the package. " + CARRYOVER_LOCKFILE_WARNING
+    ),
+)
 def compile(
     spec: TextIOWrapper,
     clobber: bool,
     lock: bool,
+    carryover_lockfile: bool,
 ):
+    if carryover_lockfile and not (clobber and not lock):
+        raise ValueError(
+            "The `--carryover-lockfile` option is only valid when used in conjunction with "
+            "both `--clobber` option and `--no-lock` option."
+        )
+    if carryover_lockfile:
+        warnings.warn(CARRYOVER_LOCKFILE_WARNING)
     spec_text = spec.read()
     spec_sha256 = hashlib.sha256(spec_text.encode()).hexdigest()
     compilation_spec = Spec(**yaml.load(spec_text))
@@ -71,7 +96,7 @@ def compile(
         # dag_png=write_png(dc.dag, "dag.png"),
         # readme=..., # TODO: readme with dag visualization
     )
-    wa.dump(clobber=clobber)
+    wa.dump(clobber=clobber, carryover_lockfile=carryover_lockfile)
     if lock:
         wa.lock()
 

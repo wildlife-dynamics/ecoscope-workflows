@@ -449,11 +449,15 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
             f"pixi install -a --manifest-path {self.release_dir.joinpath('pixi.toml')}".split()
         )
 
-    def dump(self, clobber: bool = False):
+    def dump(self, clobber: bool = False, carryover_lockfile: bool = False):
         """Dump the artifacts to disk.
 
         Args:
             clobber (bool, optional): Whether or not to clobber an existing build directory. Defaults to False.
+            carryover_lockfile (bool, optional): In the case of combining the options `--clobber` + `--no-lock`,
+                whether or not to carryover the lockfile from the clobbered directory. If true, this option
+                allows for rebuilding the package with a (potentially!) functional lockfile, without paying
+                the cost of actually re-locking the package. Defaults to False.
         """
         if self.release_dir.exists() and not clobber:
             raise FileExistsError(
@@ -464,12 +468,21 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
                 f"Cannot clobber existing '{self.release_dir}'; not a directory."
             )
         if self.release_dir.exists() and clobber:
+            if carryover_lockfile:
+                lockfile = self.release_dir.joinpath("pixi.lock")
+                if not lockfile.exists():
+                    raise FileNotFoundError(
+                        f"Cannot carryover lockfile; '{lockfile}' does not exist."
+                    )
+                original_lockfile = lockfile.read_text()
             shutil.rmtree(self.release_dir)
 
         self.release_dir.mkdir(parents=True)
 
         # root artifacts
         self.pixi_toml.dump(self.release_dir.joinpath("pixi.toml"))
+        if carryover_lockfile:
+            self.release_dir.joinpath("pixi.lock").write_text(original_lockfile)
         self.release_dir.joinpath("pyproject.toml").write_text(self.pyproject_toml)
         self.release_dir.joinpath("Dockerfile").write_text(self.dockerfile)
         self.release_dir.joinpath(".dockerignore").write_text(self.dockerignore)

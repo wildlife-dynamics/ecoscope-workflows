@@ -15,11 +15,11 @@ build-release = { cmd = "./publish/build.sh release", inputs = ["publish/recipes
 
 # examples ---------------------------------------------------------------------------------
 
-recompile-mode-map = { cmd = "./dev/recompile.sh mode-map", depends-on = ["build-release"] }
-recompile-mode-mapvalues = { cmd = "./dev/recompile.sh mode-mapvalues", depends-on = ["build-release"] }
-recompile-patrol-events = { cmd = "./dev/recompile.sh patrol-events", depends-on = ["build-release"] }
-recompile-patrols = { cmd = "./dev/recompile.sh patrols", depends-on = ["build-release"] }
-recompile-subject-tracking = { cmd = "./dev/recompile.sh subject-tracking", depends-on = ["build-release"] }
+recompile-mode-map = { cmd = "./dev/recompile.sh mode-map --lock", depends-on = ["build-release"] }
+recompile-mode-mapvalues = { cmd = "./dev/recompile.sh mode-mapvalues --lock", depends-on = ["build-release"] }
+recompile-patrol-events = { cmd = "./dev/recompile.sh patrol-events --lock", depends-on = ["build-release"] }
+recompile-patrols = { cmd = "./dev/recompile.sh patrols --lock", depends-on = ["build-release"] }
+recompile-subject-tracking = { cmd = "./dev/recompile.sh subject-tracking --lock", depends-on = ["build-release"] }
 recompile-all = { cmd ="echo 'recompile-all' complete", depends-on = [
     "recompile-mode-map",
     "recompile-mode-mapvalues",
@@ -27,6 +27,19 @@ recompile-all = { cmd ="echo 'recompile-all' complete", depends-on = [
     "recompile-patrols",
     "recompile-subject-tracking",
 ]}
+recompile-mode-map-carryover-lockfile = { cmd = "./dev/recompile.sh mode-map --no-lock --carryover-lockfile" }
+recompile-mode-mapvalues-carryover-lockfile = { cmd = "./dev/recompile.sh mode-mapvalues --no-lock --carryover-lockfile" }
+recompile-patrol-events-carryover-lockfile = { cmd = "./dev/recompile.sh patrol-events --no-lock --carryover-lockfile" }
+recompile-patrols-carryover-lockfile = { cmd = "./dev/recompile.sh patrols --no-lock --carryover-lockfile" }
+recompile-subject-tracking-carryover-lockfile = { cmd = "./dev/recompile.sh subject-tracking --no-lock --carryover-lockfile" }
+recompile-all-carryover-lockfile = { cmd ="echo 'recompile-all-carryover-lockfile' complete", depends-on = [
+    "recompile-mode-map-carryover-lockfile",
+    "recompile-mode-mapvalues-carryover-lockfile",
+    "recompile-patrol-event-carryover-lockfile",
+    "recompile-patrols-carryover-lockfile",
+    "recompile-subject-tracking-carryover-lockfile",
+]}
+
 
 pytest-mode-map-app-sequential = { cmd = "./dev/pytest-examples.sh mode-map 'app' 'sequential'" }
 pytest-mode-mapvalues-app-sequential = { cmd = "./dev/pytest-examples.sh mode-mapvalues 'app' 'sequential'" }
