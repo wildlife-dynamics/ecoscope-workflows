@@ -7,11 +7,11 @@ channels = [
 platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
 
 [tasks]
-recompile-mode-map = { cmd = "./recompile.sh mode-map" }
-recompile-mode-mapvalues = { cmd = "./recompile.sh mode-mapvalues" }
-recompile-patrol-events = { cmd = "./recompile.sh patrol-events" }
-recompile-patrols = { cmd = "./recompile.sh patrols" }
-recompile-subject-tracking = { cmd = "./recompile.sh subject-tracking" }
+recompile-mode-map = { cmd = "./dev/recompile.sh mode-map" }
+recompile-mode-mapvalues = { cmd = "./dev/recompile.sh mode-mapvalues" }
+recompile-patrol-events = { cmd = "./dev/recompile.sh patrol-events" }
+recompile-patrols = { cmd = "./dev/recompile.sh patrols" }
+recompile-subject-tracking = { cmd = "./dev/recompile.sh subject-tracking" }
 
 recompile-all = { cmd = "echo 'all examples recompiled'", depends-on = [
     "recompile-mode-map",
