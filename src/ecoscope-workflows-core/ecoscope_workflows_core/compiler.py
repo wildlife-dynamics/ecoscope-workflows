@@ -717,9 +717,11 @@ class DagCompiler(BaseModel):
         )
 
     @ruff_formatted
-    def generate_dag(self, dag_type: DagTypes, mock_io: bool = False) -> str:
+    def render_dag(self, dag_type: DagTypes, mock_io: bool = False) -> str:
         template = self._jinja_env.get_template(
-            f"run-{dag_type}.jinja2" if dag_type != "jupytext" else "jupytext.jinja2"
+            f"pkg/dags/run-{dag_type}.jinja2"
+            if dag_type != "jupytext"
+            else "pkg/dags/jupytext.jinja2"
         )
         testing = True if mock_io else False
         return template.render(
@@ -743,22 +745,22 @@ class DagCompiler(BaseModel):
         return model
 
     @ruff_formatted
-    def render_template(self) -> str:
-        return self._jinja_env.get_template("dags-init.jinja2").render(
+    def render(self, template: str) -> str:
+        return self._jinja_env.get_template(template).render(
             file_header=self.file_header
         )
 
     def generate_artifacts(self, spec_relpath: str) -> WorkflowArtifacts:
         dags = Dags(
             **{
-                "__init__.py": self.generate_dags_init(),
-                "jupytext.py": self.generate_dag("jupytext"),
-                "run_async_mock_io.py": self.generate_dag("async", mock_io=True),
-                "run_async.py": self.generate_dag("async"),
-                "run_sequential_mock_io.py": self.generate_dag(
+                "__init__.py": self.render("pkg/dags/init.jinja2"),
+                "jupytext.py": self.render_dag("jupytext"),
+                "run_async_mock_io.py": self.render_dag("async", mock_io=True),
+                "run_async.py": self.render_dag("async"),
+                "run_sequential_mock_io.py": self.render_dag(
                     "sequential", mock_io=True
                 ),
-                "run_sequential.py": self.generate_dag("sequential"),
+                "run_sequential.py": self.render_dag("sequential"),
             }
         )
         params_jsonschema = self.get_params_jsonschema()
@@ -777,8 +779,9 @@ class DagCompiler(BaseModel):
             ),
             tests=Tests(
                 **{
-                    "test_app.py": self.generate_test_app(),
-                    "conftest.py": self.generate_conftest(),
+                    "conftest.py": self.render("tests/conftest.jinja2"),
+                    "test_app.py": self.render("tests/test_app.jinja2"),
+                    "test_cli.py": self.render("tests/test_cli.jinja2"),
                 },
             ),
             dockerfile=self.get_dockerfile(),
