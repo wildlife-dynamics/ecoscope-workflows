@@ -4,7 +4,6 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from textwrap import dedent
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -31,24 +30,7 @@ from ecoscope_workflows_core.requirements import (
 class Dags(BaseModel):
     """Target directory for the generated DAGs."""
 
-    init_dot_py: str = Field(
-        default=dedent(
-            """\
-            from .run_async import main as run_async
-            from .run_async_mock_io import main as run_async_mock_io
-            from .run_sequential import main as run_sequential
-            from .run_sequential_mock_io import main as run_sequential_mock_io
-
-            __all__ = [
-                "run_async",
-                "run_async_mock_io",
-                "run_sequential",
-                "run_sequential_mock_io",
-            ]
-            """
-        ),
-        alias="__init__.py",
-    )
+    init_dot_py: str = Field(..., alias="__init__.py")
     jupytext: str = Field(..., alias="jupytext.py")
     run_async_mock_io: str = Field(..., alias="run_async_mock_io.py")
     run_async: str = Field(..., alias="run_async.py")
