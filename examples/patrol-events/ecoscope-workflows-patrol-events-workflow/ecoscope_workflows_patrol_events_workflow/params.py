@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "bff9fb1063b3c799764280e1c82c2f8d8142f807c786674db06e2a56a9bfdc5a"
+# from-spec-sha256 = "fa950b21ec7849e96fc8bf374d37a52f3e19695d2c355a3d16d15fdfd1343696"
 
 
 from __future__ import annotations
