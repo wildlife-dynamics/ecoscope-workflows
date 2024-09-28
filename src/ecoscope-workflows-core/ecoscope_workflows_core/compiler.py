@@ -698,11 +698,17 @@ class DagCompiler(BaseModel):
 
     @ruff_formatted
     def ruffrender(self, template: str, **kws) -> str:
-        env = Environment(loader=FileSystemLoader(self.jinja_templates_dir))
+        env = Environment(
+            loader=FileSystemLoader(self.jinja_templates_dir),
+            keep_trailing_newline=True,
+        )
         return env.get_template(template).render(file_header=self.file_header, **kws)
 
     def plainrender(self, template: str, **kws) -> str:
-        env = Environment(loader=FileSystemLoader(self.jinja_templates_dir))
+        env = Environment(
+            loader=FileSystemLoader(self.jinja_templates_dir),
+            keep_trailing_newline=True,
+        )
         return env.get_template(template).render(file_header=self.file_header, **kws)
 
     def generate_artifacts(self, spec_relpath: str) -> WorkflowArtifacts:
