@@ -620,6 +620,7 @@ class DagCompiler(BaseModel):
             """
         )
         return PixiToml(
+            file_header=self.file_header,
             project=tomllib.loads(project)["project"],
             dependencies=tomllib.loads(dependencies)["dependencies"],
             feature=tomllib.loads(feature)["feature"],

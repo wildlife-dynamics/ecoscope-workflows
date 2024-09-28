@@ -68,6 +68,7 @@ class Environment(BaseModel):
 class PixiToml(_AllowArbitraryAndValidateAssignment):
     """The pixi.toml file that specifies the workflow."""
 
+    file_header: str
     project: PixiProject
     dependencies: dict[str, NamelessMatchSpecType]
     feature: dict[FeatureName, Feature] = Field(default_factory=dict)
@@ -103,7 +104,9 @@ class PixiToml(_AllowArbitraryAndValidateAssignment):
 
     def dump(self, dst: Path):
         with dst.open("wb") as f:
-            tomli_w.dump(self.model_dump(by_alias=True), f)
+            f.write(self.file_header.encode("utf-8"))
+            f.write(b"\n")
+            tomli_w.dump(self.model_dump(by_alias=True, exclude={"file_header"}), f)
 
 
 class Tests(BaseModel):
