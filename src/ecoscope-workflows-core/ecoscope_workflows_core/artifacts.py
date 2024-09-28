@@ -11,8 +11,8 @@ else:
     import tomli as tomllib
 
 import tomli_w
+import pydot as dot  # type: ignore[import-untyped]
 from pydantic import BaseModel, Field
-from pydot import Dot  # type: [import-untyped]
 
 from ecoscope_workflows_core._models import (
     _AllowArbitraryTypes,
@@ -146,7 +146,7 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
     package: PackageDirectory
     tests: Tests
     pixi_toml: PixiToml = Field(..., alias="pixi.toml")
-    pydot_graph: Dot = Field(..., alias="graph.png")
+    pydot_graph: dot.Dot = Field(..., alias="graph.png")
     pyproject_toml: str = Field(..., alias="pyproject.toml")
     dockerfile: str = Field(..., alias="Dockerfile")
     dockerignore: str = Field(..., alias=".dockerignore")

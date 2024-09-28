@@ -15,6 +15,7 @@ if sys.version_info >= (3, 11):
 else:
     import tomli as tomllib
 import datamodel_code_generator as dcg
+import pydot as dot  # type: ignore[import-untyped]
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
     BaseModel,
@@ -26,7 +27,6 @@ from pydantic import (
     model_validator,
 )
 from pydantic.functional_validators import AfterValidator, BeforeValidator
-from pydot import Dot, Node, Edge  # type: [import-untyped]
 
 from ecoscope_workflows_core._models import _AllowArbitraryAndForbidExtra, _ForbidExtra
 from ecoscope_workflows_core.artifacts import (
@@ -753,8 +753,8 @@ class DagCompiler(BaseModel):
             },
         )
 
-    def build_pydot_graph(self) -> Dot:
-        graph = Dot(self.spec.id, graph_type="graph", rankdir="LR")
+    def build_pydot_graph(self) -> dot.Dot:
+        graph = dot.Dot(self.spec.id, graph_type="graph", rankdir="LR")
         for t in self.spec.workflow:
             label = (
                 "<<table border='1' cellspacing='0'>"
@@ -765,12 +765,12 @@ class DagCompiler(BaseModel):
             label += (
                 "<tr><td port='return' border='1'><i>return</i></td></tr>" "</table>>"
             )
-            node = Node(t.id, shape="none", label=label)
+            node = dot.Node(t.id, shape="none", label=label)
             graph.add_node(node)
         for t in self.spec.workflow:
             for arg, dep in t.all_dependencies_dict.items():
                 for d in dep:
-                    edge = Edge(
+                    edge = dot.Edge(
                         f"{d}:return",
                         f"{t.id}:{arg}",
                         dir="forward",
