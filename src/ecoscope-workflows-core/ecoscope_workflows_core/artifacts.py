@@ -138,22 +138,18 @@ class PackageDirectory(BaseModel):
             dst.joinpath("dags").joinpath(fname).write_text(content)
 
 
-DOCKERIGNORE = """\
-.pixi/
-*.egg-info/
-"""
-
-
 class WorkflowArtifacts(_AllowArbitraryTypes):
     spec_relpath: str
     release_name: str
     package_name: str
-    pixi_toml: PixiToml
-    pyproject_toml: str
     package: PackageDirectory
     tests: Tests
-    dockerfile: str
-    dockerignore: str = Field(default=DOCKERIGNORE, alias=".dockerignore")
+    pixi_toml: PixiToml = Field(..., alias="pixi.toml")
+    pyproject_toml: str = Field(..., alias="pyproject.toml")
+    dockerfile: str = Field(..., alias="Dockerfile")
+    dockerignore: str = Field(..., alias=".dockerignore")
+    # graph_png: bytes = Field(..., alias="graph.png")
+    # readme_md: str = Field(..., alias="README.md")
 
     @property
     def release_dir(self) -> Path:

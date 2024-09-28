@@ -711,8 +711,8 @@ class DagCompiler(BaseModel):
         )
         return env.get_template(template).render(file_header=self.file_header, **kws)
 
-    def generate_artifacts(self, spec_relpath: str) -> WorkflowArtifacts:
-        dags = Dags(
+    def get_dags(self) -> Dags:
+        return Dags(
             **{
                 "__init__.py": self.ruffrender("pkg/dags/init.jinja2"),
                 "jupytext.py": self.render_dag("jupytext"),
@@ -724,39 +724,50 @@ class DagCompiler(BaseModel):
                 "run_sequential.py": self.render_dag("sequential"),
             }
         )
+
+    def get_tests(self) -> Tests:
+        return Tests(
+            **{
+                "conftest.py": self.ruffrender(
+                    "tests/conftest.jinja2",
+                    package_name=self.package_name,
+                    release_name=self.release_name,
+                ),
+                "test_app.py": self.ruffrender("tests/test_app.jinja2"),
+                "test_cli.py": self.ruffrender("tests/test_cli.jinja2"),
+            },
+        )
+
+    def get_package(self) -> PackageDirectory:
         params_jsonschema = self.get_params_jsonschema()
+        return PackageDirectory(
+            dags=self.get_dags(),
+            **{
+                "app.py": self.ruffrender("pkg/app.jinja2"),
+                "cli.py": self.ruffrender("pkg/cli.jinja2"),
+                "dispatch.py": self.ruffrender("pkg/dispatch.jinja2"),
+                "params-jsonschema.json": params_jsonschema,
+                "params.py": self.generate_params_model(
+                    params_jsonschema, self.file_header
+                ),
+            },
+        )
+
+    def generate_artifacts(self, spec_relpath: str) -> WorkflowArtifacts:
         return WorkflowArtifacts(
             spec_relpath=spec_relpath,
             package_name=self.package_name,
             release_name=self.release_name,
-            pixi_toml=self.get_pixi_toml(),
-            pyproject_toml=self.get_pyproject_toml(),
-            package=PackageDirectory(
-                dags=dags,
-                **{
-                    "app.py": self.ruffrender("pkg/app.jinja2"),
-                    "cli.py": self.ruffrender("pkg/cli.jinja2"),
-                    "dispatch.py": self.ruffrender("pkg/dispatch.jinja2"),
-                    "params-jsonschema.json": params_jsonschema,
-                    "params.py": self.generate_params_model(
-                        params_jsonschema, self.file_header
-                    ),
-                },
-            ),
-            tests=Tests(
-                **{
-                    "conftest.py": self.ruffrender(
-                        "tests/conftest.jinja2",
-                        package_name=self.package_name,
-                        release_name=self.release_name,
-                    ),
-                    "test_app.py": self.ruffrender("tests/test_app.jinja2"),
-                    "test_cli.py": self.ruffrender("tests/test_cli.jinja2"),
-                },
-            ),
-            dockerfile=self.plainrender(
-                "Dockerfile.jinja2", ruff=False, package_name=self.package_name
-            ),
+            package=self.get_package(),
+            tests=self.get_tests(),
+            **{
+                "pixi.toml": self.get_pixi_toml(),
+                "pyproject.toml": self.get_pyproject_toml(),
+                "Dockerfile": self.plainrender(
+                    "Dockerfile.jinja2", package_name=self.package_name
+                ),
+                ".dockerignore": self.plainrender("dockerignore.jinja2"),
+            },
             # dag_png=write_png(dc.dag, "dag.png"),
             # readme=..., # TODO: readme with dag visualization
         )
