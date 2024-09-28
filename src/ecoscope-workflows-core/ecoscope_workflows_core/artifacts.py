@@ -200,9 +200,13 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
         self.pixi_toml.dump(self.release_dir.joinpath("pixi.toml"))
         if carryover_lockfile:
             self.release_dir.joinpath("pixi.lock").write_text(original_lockfile)
-        self.release_dir.joinpath("pyproject.toml").write_text(self.pyproject_toml)
-        self.release_dir.joinpath("Dockerfile").write_text(self.dockerfile)
-        self.release_dir.joinpath(".dockerignore").write_text(self.dockerignore)
+        for k, v in {
+            "pyproject.toml": self.pyproject_toml,
+            "Dockerfile": self.dockerfile,
+            ".dockerignore": self.dockerignore,
+        }.items():
+            self.release_dir.joinpath(k).write_text(v)
+        # tests
         self.tests.dump(self.release_dir)
         # package artifacts
         pkg = self.release_dir.joinpath(self.package_name)
