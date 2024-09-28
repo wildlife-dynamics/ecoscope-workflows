@@ -657,50 +657,6 @@ class DagCompiler(BaseModel):
             """
         )
 
-    def get_dockerfile(self) -> str:
-        return dedent(
-            f"""\
-            FROM bitnami/minideb:bullseye as fetch
-            RUN apt-get update && apt-get install -y curl
-            RUN curl -fsSL https://pixi.sh/install.sh | bash
-
-            FROM bitnami/minideb:bullseye as install
-            COPY --from=fetch /root/.pixi /root/.pixi
-            ENV PATH="/root/.pixi/bin:${{PATH}}"
-            COPY .tmp /tmp
-            WORKDIR /app
-            COPY . .
-            RUN rm -rf .tmp
-            RUN pixi install -e default --locked
-
-            FROM install as app
-            ENV PORT 8080
-            ENV CONCURRENCY 1
-            ENV TIMEOUT 600
-            CMD pixi run -e default \\
-                uvicorn --host 0.0.0.0 --port $PORT --workers $CONCURRENCY --timeout-graceful-shutdown $TIMEOUT {self.package_name}.app:app
-
-            # FROM python:3.10-slim-buster AS unzip_proxy
-            # RUN apt-get update && apt-get install -y \\
-            #     zip \\
-            #     && rm -rf /var/lib/apt/lists/*
-            # ENV APP_HOME /lithops
-            # WORKDIR $APP_HOME
-            # assumes the build context is running the lithops runtime build command
-            # in a context with the same lithops version as the one in the container (?)
-            # COPY lithops_cloudrun.zip .
-            # RUN unzip lithops_cloudrun.zip && rm lithops_cloudrun.zip
-
-            # FROM install AS worker
-            # COPY --from=unzip_proxy /lithops /lithops
-            # ENV PORT 8080
-            # ENV CONCURRENCY 1
-            # ENV TIMEOUT 600
-            # WORKDIR /lithops
-            # CMD gunicorn --bind :$PORT --workers $CONCURRENCY --timeout $TIMEOUT lithopsproxy:proxy
-            """
-        )
-
     @computed_field  # type: ignore[prop-decorator]
     @property
     def file_header(self) -> str:
@@ -741,14 +697,18 @@ class DagCompiler(BaseModel):
         return model
 
     @ruff_formatted
-    def render(self, template: str, **kws) -> str:
+    def ruffrender(self, template: str, **kws) -> str:
+        env = Environment(loader=FileSystemLoader(self.jinja_templates_dir))
+        return env.get_template(template).render(file_header=self.file_header, **kws)
+
+    def plainrender(self, template: str, **kws) -> str:
         env = Environment(loader=FileSystemLoader(self.jinja_templates_dir))
         return env.get_template(template).render(file_header=self.file_header, **kws)
 
     def generate_artifacts(self, spec_relpath: str) -> WorkflowArtifacts:
         dags = Dags(
             **{
-                "__init__.py": self.render("pkg/dags/init.jinja2"),
+                "__init__.py": self.ruffrender("pkg/dags/init.jinja2"),
                 "jupytext.py": self.render_dag("jupytext"),
                 "run_async_mock_io.py": self.render_dag("async", mock_io=True),
                 "run_async.py": self.render_dag("async"),
@@ -768,9 +728,9 @@ class DagCompiler(BaseModel):
             package=PackageDirectory(
                 dags=dags,
                 **{
-                    "app.py": self.render("pkg/app.jinja2"),
-                    "cli.py": self.render("pkg/cli.jinja2"),
-                    "dispatch.py": self.render("pkg/dispatch.jinja2"),
+                    "app.py": self.ruffrender("pkg/app.jinja2"),
+                    "cli.py": self.ruffrender("pkg/cli.jinja2"),
+                    "dispatch.py": self.ruffrender("pkg/dispatch.jinja2"),
                     "params-jsonschema.json": params_jsonschema,
                     "params.py": self.generate_params_model(
                         params_jsonschema, self.file_header
@@ -779,16 +739,18 @@ class DagCompiler(BaseModel):
             ),
             tests=Tests(
                 **{
-                    "conftest.py": self.render(
+                    "conftest.py": self.ruffrender(
                         "tests/conftest.jinja2",
                         package_name=self.package_name,
                         release_name=self.release_name,
                     ),
-                    "test_app.py": self.render("tests/test_app.jinja2"),
-                    "test_cli.py": self.render("tests/test_cli.jinja2"),
+                    "test_app.py": self.ruffrender("tests/test_app.jinja2"),
+                    "test_cli.py": self.ruffrender("tests/test_cli.jinja2"),
                 },
             ),
-            dockerfile=self.get_dockerfile(),
+            dockerfile=self.plainrender(
+                "Dockerfile.jinja2", ruff=False, package_name=self.package_name
+            ),
             # dag_png=write_png(dc.dag, "dag.png"),
             # readme=..., # TODO: readme with dag visualization
         )
