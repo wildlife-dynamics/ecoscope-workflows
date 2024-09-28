@@ -1,10 +1,15 @@
+# [generated]
+# by = { compiler = "ecoscope-workflows-core", version = "9999" }
+# from-spec-sha256 = "9ffe7e163c247511be3e17d2cb0e44fe511fc12b67f8b18189a0078542e757ea"
+
+
 FROM bitnami/minideb:bullseye as fetch
 RUN apt-get update && apt-get install -y curl
 RUN curl -fsSL https://pixi.sh/install.sh | bash
 
 FROM bitnami/minideb:bullseye as install
 COPY --from=fetch /root/.pixi /root/.pixi
-ENV PATH="/root/.pixi/bin:${PATH}"
+ENV PATH="/root/.pixi/bin:$PATH"
 COPY .tmp /tmp
 WORKDIR /app
 COPY . .
