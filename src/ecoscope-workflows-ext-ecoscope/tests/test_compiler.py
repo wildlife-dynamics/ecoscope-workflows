@@ -667,17 +667,12 @@ def test_wrong_topological_order_map_raises():
         """\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Process Relocations
             id: relocs
