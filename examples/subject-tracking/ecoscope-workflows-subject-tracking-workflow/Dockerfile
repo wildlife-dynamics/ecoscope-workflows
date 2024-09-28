@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "8c073c9dfe83157e0b1a195deeda0cea0c44622309fff4ef288d4a3b827985b5"
+# from-spec-sha256 = "5d1d6b603ad0254b5a6ce0477f76434f313cf972a29552346a9ebe0425e6ad4a"
 
 
 FROM bitnami/minideb:bullseye as fetch
