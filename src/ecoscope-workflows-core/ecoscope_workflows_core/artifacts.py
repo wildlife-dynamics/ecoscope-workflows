@@ -120,6 +120,18 @@ class PackageDirectory(BaseModel):
     dispatch: str = Field(..., alias="dispatch.py")
     init_dot_py: str = Field(default="", alias="__init__.py")
 
+    def dump(self, dst: Path):
+        for fname, content in self.model_dump(
+            by_alias=True, exclude={"params_jsonschema", "dags"}
+        ).items():
+            dst.joinpath(fname).write_text(content)
+        with dst.joinpath("params-jsonschema.json").open("w") as f:
+            json.dump(self.params_jsonschema, f, indent=2)
+            f.write("\n")
+        dst.joinpath("dags").mkdir(parents=True)
+        for fname, content in self.dags.model_dump(by_alias=True).items():
+            dst.joinpath("dags").joinpath(fname).write_text(content)
+
 
 DOCKERIGNORE = """\
 .pixi/
@@ -193,16 +205,4 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
         # package artifacts
         pkg = self.release_dir.joinpath(self.package_name)
         pkg.mkdir(parents=True)
-        pkg.joinpath("dags").mkdir(parents=True)
-        # top level
-        pkg.joinpath("__init__.py").write_text("")
-        pkg.joinpath("app.py").write_text(self.package.app)
-        pkg.joinpath("cli.py").write_text(self.package.cli)
-        pkg.joinpath("dispatch.py").write_text(self.package.dispatch)
-        pkg.joinpath("params.py").write_text(self.package.params_model)
-        with pkg.joinpath("params-jsonschema.json").open("w") as f:
-            json.dump(self.package.params_jsonschema, f, indent=2)
-            f.write("\n")
-        # dags
-        for fname, content in self.package.dags.model_dump(by_alias=True).items():
-            pkg.joinpath("dags").joinpath(fname).write_text(content)
+        self.package.dump(pkg)
