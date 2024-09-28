@@ -110,6 +110,11 @@ class Tests(BaseModel):
     test_app: str = Field(..., alias="test_app.py")
     test_cli: str = Field(..., alias="test_cli.py")
 
+    def dump(self, dst: Path):
+        dst.joinpath("tests").mkdir(parents=True)
+        for fname, content in self.model_dump(by_alias=True).items():
+            dst.joinpath("tests").joinpath(fname).write_text(content)
+
 
 class PackageDirectory(BaseModel):
     dags: Dags
@@ -198,10 +203,7 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
         self.release_dir.joinpath("pyproject.toml").write_text(self.pyproject_toml)
         self.release_dir.joinpath("Dockerfile").write_text(self.dockerfile)
         self.release_dir.joinpath(".dockerignore").write_text(self.dockerignore)
-        self.release_dir.joinpath("tests").mkdir(parents=True)
-        for fname, content in self.tests.model_dump(by_alias=True).items():
-            self.release_dir.joinpath("tests").joinpath(fname).write_text(content)
-
+        self.tests.dump(self.release_dir)
         # package artifacts
         pkg = self.release_dir.joinpath(self.package_name)
         pkg.mkdir(parents=True)
