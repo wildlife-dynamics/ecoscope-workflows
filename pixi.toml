@@ -40,7 +40,6 @@ recompile-all-carryover-lockfile = { cmd ="echo 'recompile-all-carryover-lockfil
     "recompile-subject-tracking-carryover-lockfile",
 ]}
 
-
 pytest-mode-map-app-sequential = { cmd = "./dev/pytest-examples.sh mode-map 'app' 'sequential'" }
 pytest-mode-mapvalues-app-sequential = { cmd = "./dev/pytest-examples.sh mode-mapvalues 'app' 'sequential'" }
 pytest-patrol-events-app-sequential = { cmd = "./dev/pytest-examples.sh patrol-events 'app' 'sequential'" }
@@ -52,6 +51,12 @@ pytest-mode-mapvalues-cli-sequential = { cmd = "./dev/pytest-examples.sh mode-ma
 pytest-patrol-events-cli-sequential = { cmd = "./dev/pytest-examples.sh patrol-events 'cli' 'sequential'" }
 pytest-patrols-cli-sequential = { cmd = "./dev/pytest-examples.sh patrols 'cli' 'sequential'" }
 pytest-subject-tracking-cli-sequential = { cmd = "./dev/pytest-examples.sh patrols 'cli' 'sequential'" }
+
+docker-build-mode-map = { cmd = "./dev/docker-build.sh mode-map" }
+docker-build-mode-mapvalues = { cmd = "./dev/docker-build.sh mode-mapvalues" }
+docker-build-patrol-events = { cmd = "./dev/docker-build.sh patrol-events" }
+docker-build-patrols = { cmd = "./dev/docker-build.sh patrols" }
+docker-build-subject-tracking = { cmd = "./dev/docker-build.sh subject-tracking" }
 
 # lock ---------------------------------------------------------------------------------------------------
 

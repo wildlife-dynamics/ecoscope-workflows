@@ -5,16 +5,32 @@
 ```
 .
 ├── dev
-│   └── ...
+│   └── ...     -
 ├── examples
-│   └── ...
-├── pixi.lock
-├── pixi.toml
+│   └── ...     -
+├── pixi.lock   -
+├── pixi.toml   -
 ├── publish
-│   └── ...
+│   └── ...     -
 └── src
-    ├── ecoscope-workflows-core
-    └── ecoscope-workflows-ext-ecoscope
+    ├── ecoscope-workflows-core           -
+    └── ecoscope-workflows-ext-ecoscope   -
+```
+
+
+```
+examples/patrols
+├── ecoscope-workflows-patrols-workflow
+│   ├── Dockerfile
+│   ├── README.md
+│   ├── ecoscope_workflows_patrols_workflow
+│   ├── graph.png
+│   ├── pixi.lock
+│   ├── pixi.toml
+│   ├── pyproject.toml
+│   └── tests
+├── spec.yaml
+└── test-cases.yaml
 ```
 
 ## Development
