@@ -701,10 +701,6 @@ class DagCompiler(BaseModel):
             """
         )
 
-    @property
-    def _jinja_env(self) -> Environment:
-        return Environment(loader=FileSystemLoader(self.jinja_templates_dir))
-
     @computed_field  # type: ignore[prop-decorator]
     @property
     def file_header(self) -> str:
@@ -718,10 +714,10 @@ class DagCompiler(BaseModel):
 
     @ruff_formatted
     def render_dag(self, dag_type: DagTypes, mock_io: bool = False) -> str:
-        template = self._jinja_env.get_template(
-            f"pkg/dags/run-{dag_type}.jinja2"
-            if dag_type != "jupytext"
-            else "pkg/dags/jupytext.jinja2"
+        loader = FileSystemLoader(self.jinja_templates_dir / "pkg" / "dags")
+        env = Environment(loader=loader)
+        template = env.get_template(
+            f"run_{dag_type}.jinja2" if dag_type != "jupytext" else "jupytext.jinja2"
         )
         testing = True if mock_io else False
         return template.render(
@@ -745,10 +741,9 @@ class DagCompiler(BaseModel):
         return model
 
     @ruff_formatted
-    def render(self, template: str) -> str:
-        return self._jinja_env.get_template(template).render(
-            file_header=self.file_header
-        )
+    def render(self, template: str, **kws) -> str:
+        env = Environment(loader=FileSystemLoader(self.jinja_templates_dir))
+        return env.get_template(template).render(file_header=self.file_header, **kws)
 
     def generate_artifacts(self, spec_relpath: str) -> WorkflowArtifacts:
         dags = Dags(
@@ -772,14 +767,23 @@ class DagCompiler(BaseModel):
             pyproject_toml=self.get_pyproject_toml(),
             package=PackageDirectory(
                 dags=dags,
-                params_jsonschema=params_jsonschema,
-                params_model=self.generate_params_model(
-                    params_jsonschema, self.file_header
-                ),
+                **{
+                    "app.py": self.render("pkg/app.jinja2"),
+                    "cli.py": self.render("pkg/cli.jinja2"),
+                    "dispatch.py": self.render("pkg/dispatch.jinja2"),
+                    "params-jsonschema.json": params_jsonschema,
+                    "params.py": self.generate_params_model(
+                        params_jsonschema, self.file_header
+                    ),
+                },
             ),
             tests=Tests(
                 **{
-                    "conftest.py": self.render("tests/conftest.jinja2"),
+                    "conftest.py": self.render(
+                        "tests/conftest.jinja2",
+                        package_name=self.package_name,
+                        release_name=self.release_name,
+                    ),
                     "test_app.py": self.render("tests/test_app.jinja2"),
                     "test_cli.py": self.render("tests/test_cli.jinja2"),
                 },
