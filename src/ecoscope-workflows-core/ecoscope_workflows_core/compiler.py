@@ -657,7 +657,8 @@ class DagCompiler(BaseModel):
             """
         )
 
-    def get_conftest(self) -> str:
+    @ruff_formatted
+    def generate_conftest(self) -> str:
         return dedent(
             f"""\
             from pathlib import Path
@@ -834,7 +835,10 @@ class DagCompiler(BaseModel):
                 ),
             ),
             tests=Tests(
-                **{"conftest.py": self.get_conftest()},
+                **{
+                    "test_app.py": self.generate_test_app(),
+                    "conftest.py": self.generate_conftest(),
+                },
             ),
             dockerfile=self.get_dockerfile(),
             # dag_png=write_png(dc.dag, "dag.png"),
