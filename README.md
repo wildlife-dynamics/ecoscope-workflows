@@ -1,6 +1,35 @@
 # ecoscope-workflows
 
+## Structure
+
+```
+.
+├── dev
+│   └── ...
+├── examples
+│   └── ...
+├── pixi.lock
+├── pixi.toml
+├── publish
+│   └── ...
+└── src
+    ├── ecoscope-workflows-core
+    └── ecoscope-workflows-ext-ecoscope
+```
+
 ## Development
+
+## Why pixi?
+
+| feature            | pip | poetry | conda | mamba | micromamba | pixi.sh |
+| ---------------    | --- | ------ | ----- | ----- | ---------- | ------- |
+| python deps        |  ✅ |   ✅   | ✅    | ✅    | ✅         |  ✅     |
+| conda-compatible   |  ❌ |   ❌   | ✅    | ✅    | ✅         |  ✅     |
+| native lockfiles   |  ❌ |   ✅   | ❌    | ❌    | ❌         |  ✅     |
+| performance        |  ✅ |   ✅   | ❌    | 🤷    | 🤷         |  🔥     |
+
+
+## Examples
 
 To recompile all examples in the `examples/` directory
 
