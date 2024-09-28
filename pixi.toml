@@ -60,6 +60,18 @@ docker-build-patrol-events = { cmd = "./dev/docker-build.sh patrol-events" }
 docker-build-patrols = { cmd = "./dev/docker-build.sh patrols" }
 docker-build-subject-tracking = { cmd = "./dev/docker-build.sh subject-tracking" }
 
+docker-run-mode-map = { cmd = "./dev/docker-run.sh mode-map" }
+docker-run-mode-mapvalues = { cmd = "./dev/docker-run.sh mode-mapvalues" }
+docker-run-patrol-events = { cmd = "./dev/docker-run.sh patrol-events" }
+docker-run-patrols = { cmd = "./dev/docker-run.sh patrols" }
+docker-run-subject-tracking = { cmd = "./dev/docker-build.sh subject-tracking" }
+
+curl-invoke-mode-map = { cmd = "./dev/curl-invoke-docker.sh mode-map" }
+curl-invoke-mode-mapvalues = { cmd = "./dev/curl-invoke-docker.sh mode-mapvalues" }
+curl-invoke-patrol-events = { cmd = "./dev/curl-invoke-docker.sh patrol-events" }
+curl-invoke-patrols = { cmd = "./dev/curl-invoke-docker.sh patrols" }
+curl-invoke-subject-tracking = { cmd = "./dev/curl-invoke-docker.sh subject-tracking" }
+
 # lock ---------------------------------------------------------------------------------------------------
 
 lock-core = { cmd = "pixi install -a --manifest-path pyproject.toml", cwd = "src/ecoscope-workflows-core" }
