@@ -645,19 +645,6 @@ class DagCompiler(BaseModel):
     def package_name(self) -> str:
         return self.release_name.replace("-", "_")
 
-    def get_pyproject_toml(self) -> str:
-        return dedent(
-            f"""\
-            [project]
-            name = "{self.release_name}"
-            version = "0.0.0"  # todo: versioning
-            requires-python = ">=3.10"  # TODO: sync with ecoscope-workflows-core
-            description = ""  # TODO: description from spec
-            license = {{ text = "BSD-3-Clause" }}
-            scripts = {{ {self.release_name} = "{self.package_name}.cli:main" }}
-            """
-        )
-
     @computed_field  # type: ignore[prop-decorator]
     @property
     def file_header(self) -> str:
@@ -666,6 +653,19 @@ class DagCompiler(BaseModel):
             # [generated]
             # by = {{ compiler = "ecoscope-workflows-core", version = "{version('ecoscope-workflows-core')}" }}
             # from-spec-sha256 = "{self.spec.sha256}"
+            """
+        )
+
+    def get_pyproject_toml(self) -> str:
+        return self.file_header + dedent(
+            f"""
+            [project]
+            name = "{self.release_name}"
+            version = "0.0.0"  # todo: versioning
+            requires-python = ">=3.10"  # TODO: sync with ecoscope-workflows-core
+            description = ""  # TODO: description from spec
+            license = {{ text = "BSD-3-Clause" }}
+            scripts = {{ {self.release_name} = "{self.package_name}.cli:main" }}
             """
         )
 
