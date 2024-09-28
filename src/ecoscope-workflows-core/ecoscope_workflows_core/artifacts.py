@@ -68,7 +68,6 @@ class Environment(BaseModel):
 class PixiToml(_AllowArbitraryAndValidateAssignment):
     """The pixi.toml file that specifies the workflow."""
 
-    file_header: str
     project: PixiProject
     dependencies: dict[str, NamelessMatchSpecType]
     feature: dict[FeatureName, Feature] = Field(default_factory=dict)
@@ -77,6 +76,7 @@ class PixiToml(_AllowArbitraryAndValidateAssignment):
     pypi_dependencies: dict[str, dict] = Field(
         default_factory=dict, alias="pypi-dependencies"
     )
+    file_header: str = Field(default="")
 
     @classmethod
     def from_file(cls, src: str | Path) -> "PixiToml":
