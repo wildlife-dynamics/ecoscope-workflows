@@ -800,13 +800,16 @@ class DagCompiler(BaseModel):
             model: str = output.read_text()
         return model
 
+    @ruff_formatted
+    def generate_dags_init(self) -> str:
+        return self._jinja_env.get_template("dags-init.jinja2").render(
+            file_header=self.file_header
+        )
+
     def generate_artifacts(self, spec_relpath: str) -> WorkflowArtifacts:
-        header = {"file_header": self.file_header}
         dags = Dags(
             **{
-                "__init__.py": self._jinja_env.get_template("dags-init.jinja2").render(
-                    **header
-                ),
+                "__init__.py": self.generate_dags_init(),
                 "jupytext.py": self.generate_dag("jupytext"),
                 "run_async_mock_io.py": self.generate_dag("async", mock_io=True),
                 "run_async.py": self.generate_dag("async"),
