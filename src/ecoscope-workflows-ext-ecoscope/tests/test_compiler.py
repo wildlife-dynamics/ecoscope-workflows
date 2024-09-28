@@ -30,17 +30,12 @@ def test_dag_compiler_from_spec():
         """\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -64,17 +59,12 @@ def test_extra_forbid_raises():
         """\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -116,17 +106,12 @@ def test_invalid_id_raises(invalid_id: str, raises_match: str):
         f"""\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Subjectgroup Observations
             id: {invalid_id}
@@ -142,17 +127,12 @@ def test_ids_must_be_unique():
         """\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -184,17 +164,12 @@ def test_invalid_known_task_name_raises(task: str, valid_known_task_name: bool):
         f"""\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -226,17 +201,12 @@ def test_partial_args_must_be_valid_id_of_another_task(
         f"""\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -282,17 +252,12 @@ def test_all_partial_array_members_must_be_valid_id_of_another_task(
         f"""\
         id: create_dashboard
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Create Map Widget Single View
             id: map_widget
@@ -349,17 +314,12 @@ def test_invaild_spec_name_raises(invalid_name: str, raises_match: str):
         f"""\
         id: {invalid_name}
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -375,17 +335,12 @@ def test_method_default():
         """\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -401,17 +356,12 @@ def test_only_oneof_map_or_mapvalues():
         """\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -442,17 +392,12 @@ def test_depends_on_self_in_partial_raises():
         """\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -479,17 +424,12 @@ def test_depends_on_self_in_map_raises():
         """\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -517,17 +457,12 @@ def test_depends_on_self_in_mapvalues_raises():
         """\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -555,17 +490,12 @@ def test_task_id_collides_with_spec_id_raises():
         """\
         id: get_subjects
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Subjectgroup Observations
             id: get_subjects
@@ -589,17 +519,12 @@ def test_task_instance_dependencies_property():
         """\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -629,17 +554,12 @@ def test_wrong_topological_order_partial_raises():
         """\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Process Relocations
             id: relocs
@@ -701,17 +621,12 @@ def test_wrong_topological_order_mapvalues_raises():
         """\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Process Relocations
             id: relocs
@@ -740,17 +655,12 @@ def test_generate_dag_smoke():
         """\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -788,17 +698,12 @@ def test_map_both_fields_required_if_either_given(
         f"""\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Process Relocations
             id: relocs
@@ -821,17 +726,12 @@ def test_per_taskinstance_omit_args():
         """\
         id: mapvalues_example
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Observations
             id: obs
@@ -861,17 +761,12 @@ def test_duplicate_argnames_dont_result_in_omissions():
         """\
         id: mapvalues_example
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Observations
             id: obs
@@ -914,17 +809,12 @@ def test_partial_argnames_not_identifiers_raises(invalid_argname):
         f"""\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
@@ -958,17 +848,12 @@ def test_parallel_op_argnames_not_identifiers_raises(method, invalid_argname):
         f"""\
         id: calculate_time_density
         requirements:
-          compile:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-          run:
-            - name: ecoscope-workflows-core
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
-            - name: ecoscope-workflows-ext-ecoscope
-              version: "*"
-              channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-core
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
+          - name: ecoscope-workflows-ext-ecoscope
+            version: "*"
+            channel: file:///tmp/ecoscope-workflows/release/artifacts/
         workflow:
           - name: Get Subjectgroup Observations
             id: obs
