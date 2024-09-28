@@ -794,6 +794,8 @@ class DagCompiler(BaseModel):
                     "Dockerfile.jinja2", package_name=self.package_name
                 ),
                 ".dockerignore": self.plainrender("dockerignore.jinja2"),
+                "README.md": self.plainrender(
+                    "README.jinja2", release_name=self.release_name
+                ),
             },
-            # readme=..., # TODO: readme with dag visualization
         )

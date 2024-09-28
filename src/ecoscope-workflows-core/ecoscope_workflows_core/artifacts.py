@@ -150,8 +150,7 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
     pyproject_toml: str = Field(..., alias="pyproject.toml")
     dockerfile: str = Field(..., alias="Dockerfile")
     dockerignore: str = Field(..., alias=".dockerignore")
-    # graph_png: bytes = Field(..., alias="graph.png")
-    # readme_md: str = Field(..., alias="README.md")
+    readme_md: str = Field(..., alias="README.md")
 
     @property
     def release_dir(self) -> Path:
@@ -203,6 +202,7 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
             "pyproject.toml": self.pyproject_toml,
             "Dockerfile": self.dockerfile,
             ".dockerignore": self.dockerignore,
+            "README.md": self.readme_md,
         }.items():
             self.release_dir.joinpath(k).write_text(v)
         # tests
