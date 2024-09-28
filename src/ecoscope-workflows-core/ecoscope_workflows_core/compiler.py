@@ -383,13 +383,6 @@ class SpecRequirement(_AllowArbitraryAndForbidExtra):
     channel: ChannelType
 
 
-class Requirements(_ForbidExtra):
-    """Requirements for a workflow."""
-
-    compile: list[SpecRequirement]
-    run: list[SpecRequirement]
-
-
 class Spec(_ForbidExtra):
     id: SpecId = Field(
         description="""\
@@ -398,7 +391,7 @@ class Spec(_ForbidExtra):
         Python keywords, or Python builtins. The maximum length is 64 chars.
         """
     )
-    requirements: Requirements
+    requirements: list[SpecRequirement]
     workflow: list[TaskInstance] = Field(
         description="A list of task instances that define the workflow.",
     )
@@ -583,7 +576,7 @@ class DagCompiler(BaseModel):
             "ruamel.yaml" = "*"
             """
         )
-        for r in self.spec.requirements.run:
+        for r in self.spec.requirements:
             dependencies += f'{r.name} = {{ version = "{r.version}", channel = "{r.channel.base_url}" }}\n'
         feature = dedent(
             """\
