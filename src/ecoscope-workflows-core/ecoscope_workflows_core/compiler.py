@@ -14,7 +14,6 @@ if sys.version_info >= (3, 11):
     import tomllib
 else:
     import tomli as tomllib
-
 import datamodel_code_generator as dcg
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
@@ -27,6 +26,7 @@ from pydantic import (
     model_validator,
 )
 from pydantic.functional_validators import AfterValidator, BeforeValidator
+from pydot import Dot, Node, Edge  # type: [import-untyped]
 
 from ecoscope_workflows_core._models import _AllowArbitraryAndForbidExtra, _ForbidExtra
 from ecoscope_workflows_core.artifacts import (
@@ -753,6 +753,32 @@ class DagCompiler(BaseModel):
             },
         )
 
+    def build_pydot_graph(self) -> Dot:
+        graph = Dot(self.spec.id, graph_type="graph", rankdir="LR")
+        for t in self.spec.workflow:
+            label = (
+                "<<table border='1' cellspacing='0'>"
+                f"<tr><td port='{t.id}' border='1' bgcolor='grey'>{t.id}</td></tr>"
+            )
+            for arg in t.all_dependencies_dict:
+                label += f"<tr><td port='{arg}' border='1'>{arg}</td></tr>"
+            label += (
+                "<tr><td port='return' border='1'><i>return</i></td></tr>" "</table>>"
+            )
+            node = Node(t.id, shape="none", label=label)
+            graph.add_node(node)
+        for t in self.spec.workflow:
+            for arg, dep in t.all_dependencies_dict.items():
+                for d in dep:
+                    edge = Edge(
+                        f"{d}:return",
+                        f"{t.id}:{arg}",
+                        dir="forward",
+                        arrowhead="normal",
+                    )
+                    graph.add_edge(edge)
+        return graph
+
     def generate_artifacts(self, spec_relpath: str) -> WorkflowArtifacts:
         return WorkflowArtifacts(
             spec_relpath=spec_relpath,
@@ -762,12 +788,12 @@ class DagCompiler(BaseModel):
             tests=self.get_tests(),
             **{
                 "pixi.toml": self.get_pixi_toml(),
+                "graph.png": self.build_pydot_graph(),
                 "pyproject.toml": self.get_pyproject_toml(),
                 "Dockerfile": self.plainrender(
                     "Dockerfile.jinja2", package_name=self.package_name
                 ),
                 ".dockerignore": self.plainrender("dockerignore.jinja2"),
             },
-            # dag_png=write_png(dc.dag, "dag.png"),
             # readme=..., # TODO: readme with dag visualization
         )

@@ -12,6 +12,7 @@ else:
 
 import tomli_w
 from pydantic import BaseModel, Field
+from pydot import Dot  # type: [import-untyped]
 
 from ecoscope_workflows_core._models import (
     _AllowArbitraryTypes,
@@ -145,6 +146,7 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
     package: PackageDirectory
     tests: Tests
     pixi_toml: PixiToml = Field(..., alias="pixi.toml")
+    pydot_graph: Dot = Field(..., alias="graph.png")
     pyproject_toml: str = Field(..., alias="pyproject.toml")
     dockerfile: str = Field(..., alias="Dockerfile")
     dockerignore: str = Field(..., alias=".dockerignore")
@@ -194,6 +196,7 @@ class WorkflowArtifacts(_AllowArbitraryTypes):
 
         # root artifacts
         self.pixi_toml.dump(self.release_dir.joinpath("pixi.toml"))
+        self.pydot_graph.write_png(path=self.release_dir.joinpath("graph.png"))
         if carryover_lockfile:
             self.release_dir.joinpath("pixi.lock").write_text(original_lockfile)
         for k, v in {
