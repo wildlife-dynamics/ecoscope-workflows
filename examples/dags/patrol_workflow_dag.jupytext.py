@@ -25,7 +25,7 @@ from ecoscope_workflows.tasks.results import merge_widget_views
 from ecoscope_workflows.tasks.analysis import dataframe_column_nunique
 from ecoscope_workflows.tasks.results import create_single_value_widget_single_view
 from ecoscope_workflows.tasks.analysis import dataframe_column_sum
-from ecoscope_workflows.tasks.transformation import unit_convert
+from ecoscope_workflows.tasks.transformation import with_unit
 from ecoscope_workflows.tasks.analysis import dataframe_column_mean
 from ecoscope_workflows.tasks.analysis import dataframe_column_max
 from ecoscope_workflows.tasks.results import draw_time_series_bar_chart
@@ -405,6 +405,7 @@ total_patrols = dataframe_column_nunique.partial(**total_patrols_params).mapvalu
 
 total_patrols_sv_widgets_params = dict(
     title=...,
+    decimal_places=...,
 )
 
 # %%
@@ -461,16 +462,15 @@ total_patrol_time = dataframe_column_sum.partial(**total_patrol_time_params).map
 total_patrol_time_converted_params = dict(
     original_unit=...,
     new_unit=...,
-    decimal_places=...,
 )
 
 # %%
 # call the task
 
 
-total_patrol_time_converted = unit_convert.partial(
+total_patrol_time_converted = with_unit.partial(
     **total_patrol_time_converted_params
-).mapvalues(argnames=["number"], argvalues=total_patrol_time)
+).mapvalues(argnames=["value"], argvalues=total_patrol_time)
 
 
 # %% [markdown]
@@ -481,6 +481,7 @@ total_patrol_time_converted = unit_convert.partial(
 
 total_patrol_time_sv_widgets_params = dict(
     title=...,
+    decimal_places=...,
 )
 
 # %%
@@ -535,16 +536,16 @@ total_patrol_dist = dataframe_column_sum.partial(**total_patrol_dist_params).map
 # parameters
 
 total_patrol_dist_converted_params = dict(
+    value=...,
     original_unit=...,
     new_unit=...,
-    decimal_places=...,
 )
 
 # %%
 # call the task
 
 
-total_patrol_dist_converted = unit_convert.partial(
+total_patrol_dist_converted = with_unit.partial(
     **total_patrol_dist_converted_params
 ).mapvalues(argnames=["number"], argvalues=total_patrol_dist)
 
@@ -557,6 +558,7 @@ total_patrol_dist_converted = unit_convert.partial(
 
 total_patrol_dist_sv_widgets_params = dict(
     title=...,
+    decimal_places=...,
 )
 
 # %%
@@ -611,18 +613,18 @@ avg_speed = dataframe_column_mean.partial(**avg_speed_params).mapvalues(
 # parameters
 
 average_speed_converted_params = dict(
+    value=...,
     original_unit=...,
     new_unit=...,
-    decimal_places=...,
 )
 
 # %%
 # call the task
 
 
-average_speed_converted = unit_convert.partial(
-    **average_speed_converted_params
-).mapvalues(argnames=["number"], argvalues=avg_speed)
+average_speed_converted = with_unit.partial(**average_speed_converted_params).mapvalues(
+    argnames=["number"], argvalues=avg_speed
+)
 
 
 # %% [markdown]
@@ -633,6 +635,7 @@ average_speed_converted = unit_convert.partial(
 
 avg_speed_sv_widgets_params = dict(
     title=...,
+    decimal_places=...,
 )
 
 # %%
@@ -687,16 +690,16 @@ max_speed = dataframe_column_max.partial(**max_speed_params).mapvalues(
 # parameters
 
 max_speed_converted_params = dict(
+    value=...,
     original_unit=...,
     new_unit=...,
-    decimal_places=...,
 )
 
 # %%
 # call the task
 
 
-max_speed_converted = unit_convert.partial(**max_speed_converted_params).mapvalues(
+max_speed_converted = with_unit.partial(**max_speed_converted_params).mapvalues(
     argnames=["number"], argvalues=max_speed
 )
 
@@ -709,6 +712,7 @@ max_speed_converted = unit_convert.partial(**max_speed_converted_params).mapvalu
 
 max_speed_sv_widgets_params = dict(
     title=...,
+    decimal_places=...,
 )
 
 # %%

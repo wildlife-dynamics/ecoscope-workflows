@@ -132,9 +132,9 @@ workflow:
       argvalues: ${{ workflow.split_patrol_traj_groups.return }}
   - name: Convert total patrol time units
     id: total_patrol_time_converted
-    task: unit_convert
+    task: with_unit
     mapvalues:
-      argnames: number
+      argnames: value
       argvalues: ${{ workflow.total_patrol_time.return }}
   - name: Create Single Value Widgets for Total Patrol Time Per Group
     id: total_patrol_time_sv_widgets
@@ -157,7 +157,7 @@ workflow:
       argvalues: ${{ workflow.split_patrol_traj_groups.return }}
   - name: Convert total patrol distance units
     id: total_patrol_dist_converted
-    task: unit_convert
+    task: with_unit
     mapvalues:
       argnames: number
       argvalues: ${{ workflow.total_patrol_dist.return }}
@@ -182,7 +182,7 @@ workflow:
       argvalues: ${{ workflow.split_patrol_traj_groups.return }}
   - name: Convert Average Speed units
     id: average_speed_converted
-    task: unit_convert
+    task: with_unit
     mapvalues:
       argnames: number
       argvalues: ${{ workflow.avg_speed.return }}
@@ -207,7 +207,7 @@ workflow:
       argvalues: ${{ workflow.split_patrol_traj_groups.return }}
   - name: Convert Max Speed units
     id: max_speed_converted
-    task: unit_convert
+    task: with_unit
     mapvalues:
       argnames: number
       argvalues: ${{ workflow.max_speed.return }}

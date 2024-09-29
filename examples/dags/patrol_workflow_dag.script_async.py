@@ -21,7 +21,7 @@ from ecoscope_workflows.tasks.results import merge_widget_views
 from ecoscope_workflows.tasks.analysis import dataframe_column_nunique
 from ecoscope_workflows.tasks.results import create_single_value_widget_single_view
 from ecoscope_workflows.tasks.analysis import dataframe_column_sum
-from ecoscope_workflows.tasks.transformation import unit_convert
+from ecoscope_workflows.tasks.transformation import with_unit
 from ecoscope_workflows.tasks.analysis import dataframe_column_mean
 from ecoscope_workflows.tasks.analysis import dataframe_column_max
 from ecoscope_workflows.tasks.results import draw_time_series_bar_chart
@@ -289,11 +289,11 @@ if __name__ == "__main__":
             },
         ),
         "total_patrol_time_converted": Node(
-            async_task=unit_convert.validate().set_executor("lithops"),
+            async_task=with_unit.validate().set_executor("lithops"),
             partial=params["total_patrol_time_converted"],
             method="mapvalues",
             kwargs={
-                "argnames": ["number"],
+                "argnames": ["value"],
                 "argvalues": DependsOn("total_patrol_time"),
             },
         ),
@@ -326,7 +326,7 @@ if __name__ == "__main__":
             },
         ),
         "total_patrol_dist_converted": Node(
-            async_task=unit_convert.validate().set_executor("lithops"),
+            async_task=with_unit.validate().set_executor("lithops"),
             partial=params["total_patrol_dist_converted"],
             method="mapvalues",
             kwargs={
@@ -363,7 +363,7 @@ if __name__ == "__main__":
             },
         ),
         "average_speed_converted": Node(
-            async_task=unit_convert.validate().set_executor("lithops"),
+            async_task=with_unit.validate().set_executor("lithops"),
             partial=params["average_speed_converted"],
             method="mapvalues",
             kwargs={
@@ -400,7 +400,7 @@ if __name__ == "__main__":
             },
         ),
         "max_speed_converted": Node(
-            async_task=unit_convert.validate().set_executor("lithops"),
+            async_task=with_unit.validate().set_executor("lithops"),
             partial=params["max_speed_converted"],
             method="mapvalues",
             kwargs={

@@ -19,7 +19,7 @@ from ecoscope_workflows.tasks.results import merge_widget_views
 from ecoscope_workflows.tasks.analysis import dataframe_column_nunique
 from ecoscope_workflows.tasks.results import create_single_value_widget_single_view
 from ecoscope_workflows.tasks.analysis import dataframe_column_sum
-from ecoscope_workflows.tasks.transformation import unit_convert
+from ecoscope_workflows.tasks.transformation import with_unit
 from ecoscope_workflows.tasks.analysis import dataframe_column_mean
 from ecoscope_workflows.tasks.analysis import dataframe_column_max
 from ecoscope_workflows.tasks.results import draw_time_series_bar_chart
@@ -177,9 +177,9 @@ if __name__ == "__main__":
     )
 
     total_patrol_time_converted = (
-        unit_convert.validate()
+        with_unit.validate()
         .partial(**params["total_patrol_time_converted"])
-        .mapvalues(argnames=["number"], argvalues=total_patrol_time)
+        .mapvalues(argnames=["value"], argvalues=total_patrol_time)
     )
 
     total_patrol_time_sv_widgets = (
@@ -203,7 +203,7 @@ if __name__ == "__main__":
     )
 
     total_patrol_dist_converted = (
-        unit_convert.validate()
+        with_unit.validate()
         .partial(**params["total_patrol_dist_converted"])
         .mapvalues(argnames=["number"], argvalues=total_patrol_dist)
     )
@@ -229,7 +229,7 @@ if __name__ == "__main__":
     )
 
     average_speed_converted = (
-        unit_convert.validate()
+        with_unit.validate()
         .partial(**params["average_speed_converted"])
         .mapvalues(argnames=["number"], argvalues=avg_speed)
     )
@@ -253,7 +253,7 @@ if __name__ == "__main__":
     )
 
     max_speed_converted = (
-        unit_convert.validate()
+        with_unit.validate()
         .partial(**params["max_speed_converted"])
         .mapvalues(argnames=["number"], argvalues=max_speed)
     )

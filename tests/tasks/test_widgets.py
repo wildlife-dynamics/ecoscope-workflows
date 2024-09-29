@@ -72,6 +72,34 @@ def test_create_single_value_widget_single_view():
     )
 
 
+def test_create_single_value_widget_single_view_float():
+    title = "A Great Value"
+    view = (("month", "=", "january"), ("year", "=", "2022"))
+    data = 123.45
+
+    widget = create_single_value_widget_single_view(title, data, view)
+    assert widget == WidgetSingleView(
+        widget_type="single_value",
+        title=title,
+        data="123.5",
+        view=view,
+    )
+
+
+def test_create_single_value_widget_single_view_int():
+    title = "A Great Value"
+    view = (("month", "=", "january"), ("year", "=", "2022"))
+    data = 123
+
+    widget = create_single_value_widget_single_view(title, data, view)
+    assert widget == WidgetSingleView(
+        widget_type="single_value",
+        title=title,
+        data="123",
+        view=view,
+    )
+
+
 def test_create_single_value_widget_single_view_unit():
     title = "A Great Value"
     view = (("month", "=", "january"), ("year", "=", "2022"))

@@ -11,7 +11,7 @@ from ecoscope_workflows.tasks.results._widget_types import (
     TextWidgetData,
     WidgetSingleView,
 )
-from ecoscope_workflows.tasks.transformation import Quantity
+from ecoscope_workflows.tasks.transformation._unit import Quantity
 
 
 @task
@@ -102,7 +102,7 @@ def create_text_widget_single_view(
 @task
 def create_single_value_widget_single_view(
     title: Annotated[str, Field(description="The title of the widget")],
-    data: Annotated[Quantity, Field(description="Value to display.")],
+    data: Annotated[Quantity | float | int, Field(description="Value to display.")],
     view: Annotated[
         CompositeFilter | None,
         Field(description="If grouped, the view of the widget", exclude=True),
@@ -121,11 +121,19 @@ def create_single_value_widget_single_view(
     Returns:
         The widget.
     """
+    data_str = ""
+    if isinstance(data, Quantity):
+        data_str = f"{data.value:.{decimal_places}f} {data.unit or ''}".strip()
+    elif isinstance(data, float):
+        data_str = f"{data:.{decimal_places}f}"
+    else:
+        data_str = str(data)
+
     return WidgetSingleView(
         widget_type="single_value",
         title=title,
         view=view,
-        data=f"{data.value:.{decimal_places}f} {data.unit or ''}".strip(),
+        data=data_str,
     )
 
 

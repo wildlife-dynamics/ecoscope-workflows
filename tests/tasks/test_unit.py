@@ -1,7 +1,7 @@
 import astropy.units as u
 import pytest
 
-from ecoscope_workflows.tasks.transformation import Unit, with_unit
+from ecoscope_workflows.tasks.transformation._unit import Unit, with_unit
 
 
 def test_apply_unit_conversion():
