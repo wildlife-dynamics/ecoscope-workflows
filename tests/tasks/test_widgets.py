@@ -5,14 +5,15 @@ import pytest
 from ecoscope_workflows.tasks.results import (
     create_map_widget_single_view,
     create_plot_widget_single_view,
-    create_text_widget_single_view,
     create_single_value_widget_single_view,
+    create_text_widget_single_view,
     merge_widget_views,
 )
 from ecoscope_workflows.tasks.results._widget_tasks import (
     GroupedWidget,
     WidgetSingleView,
 )
+from ecoscope_workflows.tasks.transformation._unit import Quantity, Unit
 
 
 def test_create_map_widget_single_view():
@@ -60,13 +61,41 @@ def test_create_text_widget_single_view():
 def test_create_single_value_widget_single_view():
     title = "A Great Value"
     view = (("month", "=", "january"), ("year", "=", "2022"))
-    data = 123.45
+    data = Quantity(value=123.45)
 
     widget = create_single_value_widget_single_view(title, data, view)
     assert widget == WidgetSingleView(
         widget_type="single_value",
         title=title,
-        data=data,
+        data="123.5",
+        view=view,
+    )
+
+
+def test_create_single_value_widget_single_view_unit():
+    title = "A Great Value"
+    view = (("month", "=", "january"), ("year", "=", "2022"))
+    data = Quantity(value=123.45, unit=Unit.HOUR)
+
+    widget = create_single_value_widget_single_view(title, data, view)
+    assert widget == WidgetSingleView(
+        widget_type="single_value",
+        title=title,
+        data="123.5 h",
+        view=view,
+    )
+
+
+def test_create_single_value_widget_single_view_decimal_places():
+    title = "A Great Value"
+    view = (("month", "=", "january"), ("year", "=", "2022"))
+    data = Quantity(value=123.45, unit=Unit.HOUR)
+
+    widget = create_single_value_widget_single_view(title, data, view, decimal_places=3)
+    assert widget == WidgetSingleView(
+        widget_type="single_value",
+        title=title,
+        data="123.450 h",
         view=view,
     )
 

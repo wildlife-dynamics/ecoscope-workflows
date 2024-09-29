@@ -8,10 +8,10 @@ from ecoscope_workflows.tasks.results._widget_types import (
     GroupedWidget,
     GroupedWidgetMergeKey,
     PrecomputedHTMLWidgetData,
-    SingleValueWidgetData,
     TextWidgetData,
     WidgetSingleView,
 )
+from ecoscope_workflows.tasks.transformation import Quantity
 
 
 @task
@@ -102,11 +102,14 @@ def create_text_widget_single_view(
 @task
 def create_single_value_widget_single_view(
     title: Annotated[str, Field(description="The title of the widget")],
-    data: Annotated[SingleValueWidgetData, Field(description="Value to display.")],
+    data: Annotated[Quantity, Field(description="Value to display.")],
     view: Annotated[
         CompositeFilter | None,
         Field(description="If grouped, the view of the widget", exclude=True),
     ] = None,
+    decimal_places: Annotated[
+        int, Field(description="The number of decimal places to display.")
+    ] = 1,
 ) -> Annotated[WidgetSingleView, Field(description="The widget")]:
     """Create a single value widget with a single view.
 
@@ -122,7 +125,7 @@ def create_single_value_widget_single_view(
         widget_type="single_value",
         title=title,
         view=view,
-        data=data,
+        data=f"{data.value:.{decimal_places}f} {data.unit or ''}".strip(),
     )
 
 

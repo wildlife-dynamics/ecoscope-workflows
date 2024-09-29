@@ -1,10 +1,10 @@
 from ._classification import apply_classification, apply_color_map
-from ._conversion import unit_convert
 from ._exploding import explode
 from ._filtering import apply_reloc_coord_filter
 from ._indexing import add_temporal_index
 from ._mapping import map_columns, map_values
 from ._sorting import sort_values
+from ._unit import Quantity, Unit, with_unit
 
 __all__ = [
     "add_temporal_index",
@@ -15,5 +15,7 @@ __all__ = [
     "apply_color_map",
     "apply_classification",
     "sort_values",
-    "unit_convert",
+    "with_unit",
+    "Quantity",
+    "Unit",
 ]

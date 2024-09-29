@@ -10,7 +10,7 @@ WidgetTypes = Literal["plot", "map", "text", "single_value"]
 
 PrecomputedHTMLWidgetData: TypeAlias = Path | Url
 TextWidgetData: TypeAlias = str
-SingleValueWidgetData: TypeAlias = int | float | str
+SingleValueWidgetData: TypeAlias = str
 
 WidgetData: TypeAlias = (
     PrecomputedHTMLWidgetData | TextWidgetData | SingleValueWidgetData
