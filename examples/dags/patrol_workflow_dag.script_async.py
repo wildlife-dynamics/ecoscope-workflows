@@ -330,7 +330,7 @@ if __name__ == "__main__":
             partial=params["total_patrol_dist_converted"],
             method="mapvalues",
             kwargs={
-                "argnames": ["number"],
+                "argnames": ["value"],
                 "argvalues": DependsOn("total_patrol_dist"),
             },
         ),
@@ -367,7 +367,7 @@ if __name__ == "__main__":
             partial=params["average_speed_converted"],
             method="mapvalues",
             kwargs={
-                "argnames": ["number"],
+                "argnames": ["value"],
                 "argvalues": DependsOn("avg_speed"),
             },
         ),
@@ -404,7 +404,7 @@ if __name__ == "__main__":
             partial=params["max_speed_converted"],
             method="mapvalues",
             kwargs={
-                "argnames": ["number"],
+                "argnames": ["value"],
                 "argvalues": DependsOn("max_speed"),
             },
         ),

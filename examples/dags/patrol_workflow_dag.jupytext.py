@@ -536,7 +536,6 @@ total_patrol_dist = dataframe_column_sum.partial(**total_patrol_dist_params).map
 # parameters
 
 total_patrol_dist_converted_params = dict(
-    value=...,
     original_unit=...,
     new_unit=...,
 )
@@ -547,7 +546,7 @@ total_patrol_dist_converted_params = dict(
 
 total_patrol_dist_converted = with_unit.partial(
     **total_patrol_dist_converted_params
-).mapvalues(argnames=["number"], argvalues=total_patrol_dist)
+).mapvalues(argnames=["value"], argvalues=total_patrol_dist)
 
 
 # %% [markdown]
@@ -613,7 +612,6 @@ avg_speed = dataframe_column_mean.partial(**avg_speed_params).mapvalues(
 # parameters
 
 average_speed_converted_params = dict(
-    value=...,
     original_unit=...,
     new_unit=...,
 )
@@ -623,7 +621,7 @@ average_speed_converted_params = dict(
 
 
 average_speed_converted = with_unit.partial(**average_speed_converted_params).mapvalues(
-    argnames=["number"], argvalues=avg_speed
+    argnames=["value"], argvalues=avg_speed
 )
 
 
@@ -690,7 +688,6 @@ max_speed = dataframe_column_max.partial(**max_speed_params).mapvalues(
 # parameters
 
 max_speed_converted_params = dict(
-    value=...,
     original_unit=...,
     new_unit=...,
 )
@@ -700,7 +697,7 @@ max_speed_converted_params = dict(
 
 
 max_speed_converted = with_unit.partial(**max_speed_converted_params).mapvalues(
-    argnames=["number"], argvalues=max_speed
+    argnames=["value"], argvalues=max_speed
 )
 
 

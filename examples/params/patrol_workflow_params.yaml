@@ -134,9 +134,8 @@ total_patrol_time:
 
 # Parameters for 'Convert total patrol time units' using task `apply_arithmetic_operation`.
 total_patrol_time_converted:
-  original_unit: "second"
-  new_unit: "hour"
-  decimal_places: 2
+  original_unit: "s"
+  new_unit: "h"
 
 # Parameters for 'Create Single Value Widgets for Total Patrol Time Per Group' using task `create_single_value_widget_single_view`.
 total_patrol_time_sv_widgets:
@@ -153,7 +152,6 @@ total_patrol_dist:
 total_patrol_dist_converted:
   original_unit: "m"
   new_unit: "km"
-  decimal_places: 2
 
 # Parameters for 'Create Single Value Widgets for Total Distance Per Group' using task `create_single_value_widget_single_view`.
 total_patrol_dist_sv_widgets:
@@ -169,7 +167,6 @@ avg_speed:
 average_speed_converted:
   original_unit: "km/h"
   new_unit: "km/h"
-  decimal_places: 2
 
 # Parameters for 'Create Single Value Widgets for Avg Speed Per Group' using task `create_single_value_widget_single_view`.
 avg_speed_sv_widgets:
@@ -185,7 +182,6 @@ max_speed:
 max_speed_converted:
   original_unit: "km/h"
   new_unit: "km/h"
-  decimal_places: 2
 
 # Parameters for 'Create Single Value Widgets for Max Speed Per Group' using task `create_single_value_widget_single_view`.
 max_speed_sv_widgets:

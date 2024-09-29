@@ -1,4 +1,3 @@
-import logging
 from dataclasses import dataclass
 from enum import Enum
 from typing import Annotated
@@ -7,8 +6,6 @@ from pydantic import Field
 from pydantic.json_schema import SkipJsonSchema
 
 from ecoscope_workflows.decorators import task
-
-logger = logging.getLogger(__name__)
 
 
 class Unit(Enum):
@@ -41,7 +38,7 @@ def with_unit(
         Unit | SkipJsonSchema[None],
         Field(description="The unit to convert to."),
     ] = None,
-) -> Annotated[Quantity, Field(description="The converted value.")]:
+) -> Annotated[Quantity, Field(description="The value with an optional unit.")]:
     if not original_unit:
         return Quantity(value=value)
 

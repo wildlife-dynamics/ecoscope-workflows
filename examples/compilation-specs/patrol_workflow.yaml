@@ -159,7 +159,7 @@ workflow:
     id: total_patrol_dist_converted
     task: with_unit
     mapvalues:
-      argnames: number
+      argnames: value
       argvalues: ${{ workflow.total_patrol_dist.return }}
   - name: Create Single Value Widgets for Total Distance Per Group
     id: total_patrol_dist_sv_widgets
@@ -184,7 +184,7 @@ workflow:
     id: average_speed_converted
     task: with_unit
     mapvalues:
-      argnames: number
+      argnames: value
       argvalues: ${{ workflow.avg_speed.return }}
   - name: Create Single Value Widgets for Avg Speed Per Group
     id: avg_speed_sv_widgets
@@ -209,7 +209,7 @@ workflow:
     id: max_speed_converted
     task: with_unit
     mapvalues:
-      argnames: number
+      argnames: value
       argvalues: ${{ workflow.max_speed.return }}
   - name: Create Single Value Widgets for Max Speed Per Group
     id: max_speed_sv_widgets

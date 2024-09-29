@@ -205,7 +205,7 @@ if __name__ == "__main__":
     total_patrol_dist_converted = (
         with_unit.validate()
         .partial(**params["total_patrol_dist_converted"])
-        .mapvalues(argnames=["number"], argvalues=total_patrol_dist)
+        .mapvalues(argnames=["value"], argvalues=total_patrol_dist)
     )
 
     total_patrol_dist_sv_widgets = (
@@ -231,7 +231,7 @@ if __name__ == "__main__":
     average_speed_converted = (
         with_unit.validate()
         .partial(**params["average_speed_converted"])
-        .mapvalues(argnames=["number"], argvalues=avg_speed)
+        .mapvalues(argnames=["value"], argvalues=avg_speed)
     )
 
     avg_speed_sv_widgets = (
@@ -255,7 +255,7 @@ if __name__ == "__main__":
     max_speed_converted = (
         with_unit.validate()
         .partial(**params["max_speed_converted"])
-        .mapvalues(argnames=["number"], argvalues=max_speed)
+        .mapvalues(argnames=["value"], argvalues=max_speed)
     )
 
     max_speed_sv_widgets = (
