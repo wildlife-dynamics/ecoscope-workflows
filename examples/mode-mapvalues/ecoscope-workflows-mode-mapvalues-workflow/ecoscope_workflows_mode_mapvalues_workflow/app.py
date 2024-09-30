@@ -8,7 +8,7 @@ import tempfile
 from typing import Literal
 
 import ruamel.yaml
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel, Field, SecretStr
@@ -60,6 +60,9 @@ class LithopsConfig(BaseModel):
 
 @app.post("/", status_code=200)
 def run(
+    # service response
+    response: Response,
+    # user (http) inputs
     params: Params,
     execution_mode: Literal["async", "sequential"],
     mock_io: bool,
@@ -90,6 +93,7 @@ def run(
         if callback_url:
             raise NotImplementedError("Callbacks are not yet implemented.")
     except Exception as e:
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {"error": str(e)}
     finally:
         for k in update_env:
