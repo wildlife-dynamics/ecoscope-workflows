@@ -100,4 +100,5 @@ jobs:
           docker ps
           docker logs ${{ matrix.example }}
       - name: Invoke container with curl
-        run: pixi run --manifest-path pixi.toml curl-invoke-${{ matrix.example }}
+        # sleep 5 seconds to allow the container to start; then invoke the container with curl
+        run: sleep 5 && pixi run --manifest-path pixi.toml curl-invoke-${{ matrix.example }}
