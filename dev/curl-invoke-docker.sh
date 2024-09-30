@@ -3,7 +3,7 @@
 set -e
 
 example=$1
-execution_mode=sequential
+execution_mode=$2
 mock_io=true
 port=4000
 results_url=/workflow/results  # must be consistent with volume mount set in docker-run.sh

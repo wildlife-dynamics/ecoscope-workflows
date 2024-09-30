@@ -69,8 +69,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mode: [
-          # "async",
+        execution-mode: [
+          "async",
           "sequential",
         ]
         example: [
@@ -101,4 +101,4 @@ jobs:
           docker logs ${{ matrix.example }}
       - name: Invoke container with curl
         # sleep 5 seconds to allow the container to start; then invoke the container with curl
-        run: sleep 5 && pixi run --manifest-path pixi.toml curl-invoke-${{ matrix.example }}
+        run: sleep 5 && pixi run --manifest-path pixi.toml curl-invoke-${{ matrix.example }} ${{ matrix.execution-mode }}
