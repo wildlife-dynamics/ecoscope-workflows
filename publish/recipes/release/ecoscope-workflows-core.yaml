@@ -35,7 +35,7 @@ requirements:
     - tomli-w
     # optionals that we want for deployment
     - datamodel-code-generator
-    - lithops >=3.4.1
+    - lithops ==3.5.1cisaacstern
     - cloudpathlib-gs
     - pydot
 

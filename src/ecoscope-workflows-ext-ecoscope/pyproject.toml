@@ -70,7 +70,7 @@ tomli-w = "*"
 # this is just a lot simpler for now, and in most cases we will want these dependencies
 datamodel-code-generator = "*"
 cloudpathlib-gs = "*"
-lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
+lithops = { version = "==3.5.1cisaacstern", channel = "https://prefix.dev/ecoscope-workflows" }
 pydot = "*"
 # additional dependencies added by this extension
 ecoscope = { version = "v1.8.3", channel = "https://prefix.dev/ecoscope-workflows" }
