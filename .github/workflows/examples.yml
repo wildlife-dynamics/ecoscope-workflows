@@ -73,13 +73,13 @@ jobs:
       # 'local' deployment test -------------------------------------------------------------------
       - name: Test
         if: matrix.deployment == 'local'
-        run: pixi run --manifest-path pixi.toml -e default pytest-${{ matrix.example }}-${{ matrix.api }} ${{ matrix.mode }}
+        run: pixi run --manifest-path pixi.toml -e default pytest-${{ matrix.example }}-${{ matrix.api }} ${{ matrix.execution-mode }}
       # 'docker' deployment test ------------------------------------------------------------------
       - name: Docker build + run
         if: matrix.deployment == 'docker'
         run: |
-          pixi run --manifest-path pixi.toml docker-build ${{ matrix.example }}
-          pixi run --manifest-path pixi.toml docker-run ${{ matrix.example }}
+          pixi run --manifest-path pixi.toml docker-build-${{ matrix.example }}
+          pixi run --manifest-path pixi.toml docker-run-${{ matrix.example }}
           sleep 5
           docker ps
           docker logs ${{ matrix.example }}
