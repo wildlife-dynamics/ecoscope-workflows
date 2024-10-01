@@ -33,6 +33,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        example: [
+          "mode-map",
+          "mode-mapvalues",
+          "patrol-events",
+          "patrols",
+          "subject-tracking",
+        ]
         deployment: [
           "local",
           "docker",
@@ -44,13 +51,6 @@ jobs:
         execution-mode: [
           "async",
           "sequential",
-        ]
-        example: [
-          "mode-map",
-          "mode-mapvalues",
-          "patrol-events",
-          "patrols",
-          "subject-tracking",
         ]
         exclude:
           # at this point, the docker container we are building runs the app only (not the cli)
