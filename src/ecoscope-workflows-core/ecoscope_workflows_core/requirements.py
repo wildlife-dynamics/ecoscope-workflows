@@ -26,6 +26,9 @@ PLATFORMS: list[Platform] = [
 ]
 
 
+# Workaround for https://github.com/conda/rattler/issues/884
+# This can be removed once the issue is resolved, and the
+# associated type-ignore below can be removed as well.
 class NamelessMatchSpec(_NamelessMatchSpec):
     @property
     def channel(self):
