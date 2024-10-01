@@ -33,8 +33,8 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 
 class Lithops(BaseModel):
-    backend: str = "gcp_cloudrun"
-    storage: str = "gcp_storage"
+    backend: Literal["localhost", "gcp_cloudrun"] = "localhost"
+    storage: Literal["localhost", "gcp_storage"] = "localhost"
     log_level: str = "DEBUG"
     data_limit: int = 16
 
@@ -54,8 +54,8 @@ class GCPCloudRun(BaseModel):
 
 class LithopsConfig(BaseModel):
     lithops: Lithops = Field(default_factory=Lithops)
-    gcp: GCP = Field(default_factory=GCP)
-    gcp_cloudrun: GCPCloudRun = Field(default_factory=GCPCloudRun)
+    gcp: GCP | None = None
+    gcp_cloudrun: GCPCloudRun | None = None
 
 
 @app.post("/", status_code=200)
@@ -80,7 +80,7 @@ def run(
         with tempfile.NamedTemporaryFile(
             delete=False, suffix=".yaml"
         ) as lithops_config_file:
-            yaml.dump(lithops_config.model_dump(), lithops_config_file)
+            yaml.dump(lithops_config.model_dump(exclude_none=True), lithops_config_file)
             update_env["LITHOPS_CONFIG_FILE"] = lithops_config_file.name
 
     if data_connections_env_vars:
