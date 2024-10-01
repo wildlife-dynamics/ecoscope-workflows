@@ -6,7 +6,7 @@ from rattler import (
     MatchSpec,
     Channel,
     ChannelConfig,
-    NamelessMatchSpec,
+    NamelessMatchSpec as _NamelessMatchSpec,
     Platform,
 )
 
@@ -24,6 +24,14 @@ PLATFORMS: list[Platform] = [
     Platform("linux-aarch64"),
     Platform("osx-arm64"),
 ]
+
+
+class NamelessMatchSpec(_NamelessMatchSpec):
+    @property
+    def channel(self):
+        if (channel := self._nameless_match_spec.channel) is not None:
+            return next(c for c in CHANNELS if c.name == channel.name)
+        return None
 
 
 def _channel_from_str(value: str) -> Channel:
