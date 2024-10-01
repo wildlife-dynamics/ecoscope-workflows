@@ -5,6 +5,7 @@
 
 import os
 import tempfile
+import traceback
 from typing import Literal
 
 import ruamel.yaml
@@ -94,7 +95,8 @@ def run(
             raise NotImplementedError("Callbacks are not yet implemented.")
     except Exception as e:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {"error": str(e)}
+        trace = traceback.format_exc().splitlines()
+        return {"error": str(e), "traceback": trace}
     finally:
         for k in update_env:
             del os.environ[k]
