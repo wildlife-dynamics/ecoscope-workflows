@@ -24,7 +24,7 @@ where:
 
 - `EXAMPLE-NAME` is the workflow author's selected name for this example
 - `spec.yaml` is the YAML specification defining the workflow
-- `test-cases.yaml` defines 1 or more test cases, inclusive of example parameters and expected outputs, which can be used to test the workflow after it has been compiled.
+- `test-cases.yaml` defines one or more test cases, inclusive of example parameters and expected outputs, which can be used to test the workflow after it has been compiled.
 - `ecoscope-workflows-<EXAMPLE-NAME>-workflow` is the dynamically generated package. _**Note**: All code in this subdirectory is machine-generated._
 
 
