@@ -68,12 +68,6 @@ class ObsC(BaseModel):
     )
 
 
-class DataSources(BaseModel):
-    obs_a: Optional[ObsA] = Field(None, title="Get Observations A")
-    obs_b: Optional[ObsB] = Field(None, title="Get Observations B")
-    obs_c: Optional[ObsC] = Field(None, title="Get Observations C")
-
-
 class TdEcomapHtmlUrl(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -239,22 +233,14 @@ class Ecomaps(BaseModel):
     )
 
 
-class CreateMaps(BaseModel):
+class Params(BaseModel):
+    obs_a: Optional[ObsA] = Field(None, title="Get Observations A")
+    obs_b: Optional[ObsB] = Field(None, title="Get Observations B")
+    obs_c: Optional[ObsC] = Field(None, title="Get Observations C")
     map_layers: Optional[MapLayers] = Field(
         None, title="Create Map Layer For Each Group"
     )
     ecomaps: Optional[Ecomaps] = Field(None, title="Create EcoMap For Each Group")
     td_ecomap_html_url: Optional[TdEcomapHtmlUrl] = Field(
         None, title="Persist Ecomaps as Text"
-    )
-
-
-class Params(BaseModel):
-    Data_Sources: Optional[DataSources] = Field(
-        None,
-        alias="Data Sources",
-        description="Fetching observations from three independent data sources.",
-    )
-    Create_maps: Optional[CreateMaps] = Field(
-        None, alias="Create maps", description="Create maps for each group."
     )
