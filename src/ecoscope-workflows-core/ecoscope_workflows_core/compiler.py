@@ -8,7 +8,7 @@ from pathlib import Path
 import tempfile
 from importlib.metadata import version
 from textwrap import dedent
-from typing import Annotated, Any, Literal, TypeAlias, TypeVar, TYPE_CHECKING
+from typing import Annotated, Any, Literal, TypeAlias, TypeVar, Union, TYPE_CHECKING
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -19,8 +19,10 @@ import pydot as dot  # type: ignore[import-untyped]
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
     BaseModel,
+    Discriminator,
     Field,
     PlainSerializer,
+    Tag as PydanticTag,
     computed_field,
     field_validator,
     model_serializer,
@@ -377,6 +379,26 @@ class TaskInstance(_ForbidExtra):
         )
 
 
+class TaskGroup(_ForbidExtra):
+    title: str
+    description: str
+    tasks: list[TaskInstance]
+    type: Literal["task-group"] = "task-group"
+
+
+def _group_or_instance(v: Any) -> str:
+    msg = "The `workflow` field must be a list of task instances or task groups."
+    if not isinstance(v, dict):
+        raise ValueError(msg)
+    match v:
+        case _ if v.get("type") == "task-group":
+            return "group"
+        case _ if all(k in v for k in ("name", "id", "task")):
+            return "instance"
+        case _:
+            raise ValueError(msg)
+
+
 class SpecRequirement(_AllowArbitraryAndForbidExtra):
     name: str
     version: NamelessMatchSpecType
@@ -392,17 +414,40 @@ class Spec(_ForbidExtra):
         """
     )
     requirements: list[SpecRequirement]
-    workflow: list[TaskInstance] = Field(
-        description="A list of task instances that define the workflow.",
+    workflow: list[
+        Annotated[
+            Union[
+                Annotated[TaskInstance, PydanticTag("instance")],
+                Annotated[TaskGroup, PydanticTag("group")],
+            ],
+            Discriminator(_group_or_instance),
+        ]
+    ] = Field(
+        description="A list of task groups and/or instances that define the workflow.",
     )
 
     @property
     def sha256(self) -> str:
         return hashlib.sha256(self.model_dump_json().encode()).hexdigest()
 
+    @computed_field  # type: ignore[misc]
+    @property
+    def flat_workflow(self) -> list[TaskInstance]:
+        return [
+            task_instance
+            for group_or_instance in self.workflow
+            for task_instance in (
+                group_or_instance.tasks
+                if isinstance(group_or_instance, TaskGroup)
+                else [group_or_instance]
+            )
+        ]
+
     @property
     def all_task_ids(self) -> dict[str, str]:
-        return {task_instance.name: task_instance.id for task_instance in self.workflow}
+        return {
+            task_instance.name: task_instance.id for task_instance in self.flat_workflow
+        }
 
     @model_validator(mode="after")
     def check_task_ids_dont_collide_with_spec_id(self) -> "Spec":
@@ -435,7 +480,7 @@ class Spec(_ForbidExtra):
 
     @model_validator(mode="after")
     def check_all_task_id_deps_use_actual_ids_of_other_tasks(self) -> "Spec":
-        all_ids = [task_instance.id for task_instance in self.workflow]
+        all_ids = [task_instance.id for task_instance in self.flat_workflow]
         for ti_id, deps in self.task_instance_dependencies.items():
             for d in deps:
                 if d not in all_ids:
@@ -454,7 +499,7 @@ class Spec(_ForbidExtra):
                 for d in task_instance.all_dependencies
                 if isinstance(d, TaskIdVariable)
             ]
-            for task_instance in self.workflow
+            for task_instance in self.flat_workflow
         }
 
     @model_validator(mode="after")
@@ -464,9 +509,13 @@ class Spec(_ForbidExtra):
             seen_task_instance_ids.add(task_instance_id)
             for dep_id in deps:
                 if dep_id not in seen_task_instance_ids:
-                    dep_name = next(ti.name for ti in self.workflow if ti.id == dep_id)
+                    dep_name = next(
+                        ti.name for ti in self.flat_workflow if ti.id == dep_id
+                    )
                     task_instance_name = next(
-                        ti.name for ti in self.workflow if ti.id == task_instance_id
+                        ti.name
+                        for ti in self.flat_workflow
+                        if ti.id == task_instance_id
                     )
                     raise ValueError(
                         f"Task instances are not in topological order. "
@@ -509,7 +558,7 @@ class DagCompiler(BaseModel):
                 + [arg for arg in t.map.argnames]
                 + [arg for arg in t.mapvalues.argnames]
             )
-            for t in self.spec.workflow
+            for t in self.spec.flat_workflow
         }
 
     def get_params_jsonschema(self) -> dict[str, Any]:
@@ -528,12 +577,30 @@ class DagCompiler(BaseModel):
 
         properties: dict[str, Any] = {}
         definitions: dict[str, Any] = {}
-        for t in self.spec.workflow:
-            props, defs = _props_and_defs_from_task_instance(
-                t, self.per_taskinstance_omit_args.get(t.id, [])
-            )
-            properties |= props
-            definitions |= defs
+        for group_or_instance in self.spec.workflow:
+            match group_or_instance:
+                case TaskGroup(
+                    title=title, description=description, tasks=task_instances
+                ):
+                    grouped_props: dict[str, str | dict] = {
+                        "type": "object",
+                        "description": description,
+                        "properties": {},
+                    }
+                    for t in task_instances:
+                        omit_args = self.per_taskinstance_omit_args.get(t.id, [])
+                        props, defs = _props_and_defs_from_task_instance(t, omit_args)
+                        grouped_props["properties"] |= props  # type: ignore[operator]
+                        definitions |= defs
+                    grouped_props["uiSchema"] = {
+                        "ui:order": [prop for prop in grouped_props["properties"]]
+                    }
+                    properties[title] = grouped_props
+                case TaskInstance() as t:
+                    omit_args = self.per_taskinstance_omit_args.get(t.id, [])
+                    props, defs = _props_and_defs_from_task_instance(t, omit_args)
+                    properties |= props
+                    definitions |= defs
 
         react_json_schema_form = ReactJSONSchemaFormConfiguration(properties=properties)
         react_json_schema_form.definitions = definitions
@@ -541,7 +608,7 @@ class DagCompiler(BaseModel):
 
     def get_params_fillable_yaml(self) -> str:
         yaml_str = ""
-        for t in self.spec.workflow:
+        for t in self.spec.flat_workflow:
             yaml_str += t.known_task.parameters_annotation_yaml_str(
                 title=t.id,
                 description=f"# Parameters for '{t.name}' using task `{t.known_task_name}`.",
@@ -554,7 +621,7 @@ class DagCompiler(BaseModel):
             t.id: t.known_task.parameters_notebook(
                 omit_args=self.per_taskinstance_omit_args.get(t.id, []),
             )
-            for t in self.spec.workflow
+            for t in self.spec.flat_workflow
         }
 
     def get_pixi_toml(self) -> PixiToml:
