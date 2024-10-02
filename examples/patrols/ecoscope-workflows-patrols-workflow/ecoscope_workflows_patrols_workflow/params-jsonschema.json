@@ -19,423 +19,474 @@
       "type": "object",
       "title": "Set Groupers"
     },
-    "patrol_obs": {
-      "additionalProperties": false,
-      "properties": {
-        "client": {
-          "description": "A named EarthRanger connection.",
-          "title": "Client",
-          "type": "string"
-        },
-        "since": {
-          "title": "Since",
-          "type": "string",
-          "description": "Start date"
-        },
-        "until": {
-          "title": "Until",
-          "type": "string",
-          "description": "End date"
-        },
-        "patrol_type": {
-          "items": {
-            "type": "string"
-          },
-          "title": "Patrol Type",
-          "type": "array",
-          "description": "list of UUID of patrol types"
-        },
-        "status": {
-          "items": {
-            "enum": [
-              "active",
-              "overdue",
-              "done",
-              "cancelled"
-            ],
-            "type": "string"
-          },
-          "title": "Status",
-          "type": "array",
-          "description": "list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"
-        },
-        "include_patrol_details": {
-          "default": false,
-          "title": "Include Patrol Details",
-          "type": "boolean",
-          "description": "Include patrol details"
-        }
-      },
-      "required": [
-        "client",
-        "since",
-        "until",
-        "patrol_type",
-        "status"
-      ],
+    "Fetch and preprocess patrol observations": {
       "type": "object",
-      "title": "Get Patrol Observations from EarthRanger"
-    },
-    "patrol_reloc": {
-      "additionalProperties": false,
+      "description": "Fetch patrol observations from EarthRanger, preprocess them into trajectories, and add a temporal index.",
       "properties": {
-        "filter_point_coords": {
-          "items": {
-            "$ref": "#/$defs/Coordinate"
-          },
-          "title": "Filter Point Coords",
-          "type": "array"
-        },
-        "relocs_columns": {
-          "items": {
-            "type": "string"
-          },
-          "title": "Relocs Columns",
-          "type": "array"
-        }
-      },
-      "required": [
-        "filter_point_coords",
-        "relocs_columns"
-      ],
-      "type": "object",
-      "title": "Transform Observations to Relocations"
-    },
-    "patrol_traj": {
-      "additionalProperties": false,
-      "properties": {
-        "min_length_meters": {
-          "default": 0.1,
-          "title": "Min Length Meters",
-          "type": "number"
-        },
-        "max_length_meters": {
-          "default": 10000,
-          "title": "Max Length Meters",
-          "type": "number"
-        },
-        "max_time_secs": {
-          "default": 3600,
-          "title": "Max Time Secs",
-          "type": "number"
-        },
-        "min_time_secs": {
-          "default": 1,
-          "title": "Min Time Secs",
-          "type": "number"
-        },
-        "max_speed_kmhr": {
-          "default": 120,
-          "title": "Max Speed Kmhr",
-          "type": "number"
-        },
-        "min_speed_kmhr": {
-          "default": 0.0,
-          "title": "Min Speed Kmhr",
-          "type": "number"
-        }
-      },
-      "required": [],
-      "type": "object",
-      "title": "Transform Relocations to Trajectories"
-    },
-    "traj_add_temporal_index": {
-      "additionalProperties": false,
-      "properties": {
-        "index_name": {
-          "title": "Index Name",
-          "type": "string",
-          "description": "A name for the new index which will be added."
-        },
-        "time_col": {
-          "title": "Time Col",
-          "type": "string",
-          "description": "Name of existing column containing time data."
-        },
-        "directive": {
-          "enum": [
-            "%a",
-            "%A",
-            "%b",
-            "%B",
-            "%c",
-            "%d",
-            "%f",
-            "%H",
-            "%I",
-            "%j",
-            "%m",
-            "%M",
-            "%p",
-            "%S",
-            "%U",
-            "%w",
-            "%W",
-            "%x",
-            "%X",
-            "%y",
-            "%Y",
-            "%z",
-            "%%"
-          ],
-          "title": "Directive",
-          "type": "string",
-          "description": "A directive for formatting the time data."
-        },
-        "cast_to_datetime": {
-          "default": true,
-          "title": "Cast To Datetime",
-          "type": "boolean",
-          "description": "Whether to attempt casting `time_col` to datetime."
-        },
-        "format": {
-          "default": "mixed",
-          "title": "Format",
-          "type": "string",
-          "description": "            If `cast_to_datetime=True`, the format to pass to `pd.to_datetime`\n            when attempting to cast `time_col` to datetime. Defaults to \"mixed\".\n            "
-        }
-      },
-      "required": [
-        "index_name",
-        "time_col",
-        "directive"
-      ],
-      "type": "object",
-      "title": "Add temporal index to Patrol Trajectories"
-    },
-    "split_patrol_traj_groups": {
-      "additionalProperties": false,
-      "properties": {},
-      "required": [],
-      "type": "object",
-      "title": "Split Patrol Trajectories by Group"
-    },
-    "patrol_traj_map_layers": {
-      "additionalProperties": false,
-      "properties": {
-        "layer_style": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/PolylineLayerStyle"
+        "patrol_obs": {
+          "additionalProperties": false,
+          "properties": {
+            "client": {
+              "description": "A named EarthRanger connection.",
+              "title": "Client",
+              "type": "string"
             },
-            {
-              "$ref": "#/$defs/PolygonLayerStyle"
+            "since": {
+              "title": "Since",
+              "type": "string",
+              "description": "Start date"
             },
-            {
-              "$ref": "#/$defs/PointLayerStyle"
-            }
-          ],
-          "title": "Layer Style",
-          "description": "Style arguments for the layer."
-        },
-        "legend": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/LegendDefinition"
-            }
-          ],
-          "default": null,
-          "title": "Legend",
-          "description": "If present, includes this layer in the map legend"
-        }
-      },
-      "required": [
-        "layer_style"
-      ],
-      "type": "object",
-      "title": "Create map layer for each Patrol Trajectories group"
-    },
-    "patrol_events": {
-      "additionalProperties": false,
-      "properties": {
-        "client": {
-          "description": "A named EarthRanger connection.",
-          "title": "Client",
-          "type": "string"
-        },
-        "since": {
-          "title": "Since",
-          "type": "string",
-          "description": "Start date"
-        },
-        "until": {
-          "title": "Until",
-          "type": "string",
-          "description": "End date"
-        },
-        "patrol_type": {
-          "items": {
-            "type": "string"
-          },
-          "title": "Patrol Type",
-          "type": "array",
-          "description": "list of UUID of patrol types"
-        },
-        "status": {
-          "items": {
-            "type": "string"
-          },
-          "title": "Status",
-          "type": "array",
-          "description": "list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"
-        }
-      },
-      "required": [
-        "client",
-        "since",
-        "until",
-        "patrol_type",
-        "status"
-      ],
-      "type": "object",
-      "title": "Get Patrol Events from EarthRanger"
-    },
-    "filter_patrol_events": {
-      "additionalProperties": false,
-      "properties": {
-        "min_x": {
-          "default": -180.0,
-          "title": "Min X",
-          "type": "number"
-        },
-        "max_x": {
-          "default": 180.0,
-          "title": "Max X",
-          "type": "number"
-        },
-        "min_y": {
-          "default": -90.0,
-          "title": "Min Y",
-          "type": "number"
-        },
-        "max_y": {
-          "default": 90.0,
-          "title": "Max Y",
-          "type": "number"
-        },
-        "filter_point_coords": {
-          "default": [
-            {
-              "x": 0.0,
-              "y": 0.0
-            }
-          ],
-          "items": {
-            "$ref": "#/$defs/Coordinate"
-          },
-          "title": "Filter Point Coords",
-          "type": "array"
-        }
-      },
-      "required": [],
-      "type": "object",
-      "title": "Apply Relocation Coordinate Filter"
-    },
-    "pe_add_temporal_index": {
-      "additionalProperties": false,
-      "properties": {
-        "index_name": {
-          "title": "Index Name",
-          "type": "string",
-          "description": "A name for the new index which will be added."
-        },
-        "time_col": {
-          "title": "Time Col",
-          "type": "string",
-          "description": "Name of existing column containing time data."
-        },
-        "directive": {
-          "enum": [
-            "%a",
-            "%A",
-            "%b",
-            "%B",
-            "%c",
-            "%d",
-            "%f",
-            "%H",
-            "%I",
-            "%j",
-            "%m",
-            "%M",
-            "%p",
-            "%S",
-            "%U",
-            "%w",
-            "%W",
-            "%x",
-            "%X",
-            "%y",
-            "%Y",
-            "%z",
-            "%%"
-          ],
-          "title": "Directive",
-          "type": "string",
-          "description": "A directive for formatting the time data."
-        },
-        "cast_to_datetime": {
-          "default": true,
-          "title": "Cast To Datetime",
-          "type": "boolean",
-          "description": "Whether to attempt casting `time_col` to datetime."
-        },
-        "format": {
-          "default": "mixed",
-          "title": "Format",
-          "type": "string",
-          "description": "            If `cast_to_datetime=True`, the format to pass to `pd.to_datetime`\n            when attempting to cast `time_col` to datetime. Defaults to \"mixed\".\n            "
-        }
-      },
-      "required": [
-        "index_name",
-        "time_col",
-        "directive"
-      ],
-      "type": "object",
-      "title": "Add temporal index to Patrol Events"
-    },
-    "split_pe_groups": {
-      "additionalProperties": false,
-      "properties": {},
-      "required": [],
-      "type": "object",
-      "title": "Split Patrol Events by Group"
-    },
-    "patrol_events_map_layers": {
-      "additionalProperties": false,
-      "properties": {
-        "layer_style": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/PolylineLayerStyle"
+            "until": {
+              "title": "Until",
+              "type": "string",
+              "description": "End date"
             },
-            {
-              "$ref": "#/$defs/PolygonLayerStyle"
+            "patrol_type": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Patrol Type",
+              "type": "array",
+              "description": "list of UUID of patrol types"
             },
-            {
-              "$ref": "#/$defs/PointLayerStyle"
+            "status": {
+              "items": {
+                "enum": [
+                  "active",
+                  "overdue",
+                  "done",
+                  "cancelled"
+                ],
+                "type": "string"
+              },
+              "title": "Status",
+              "type": "array",
+              "description": "list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"
+            },
+            "include_patrol_details": {
+              "default": false,
+              "title": "Include Patrol Details",
+              "type": "boolean",
+              "description": "Include patrol details"
             }
+          },
+          "required": [
+            "client",
+            "since",
+            "until",
+            "patrol_type",
+            "status"
           ],
-          "title": "Layer Style",
-          "description": "Style arguments for the layer."
+          "type": "object",
+          "title": "Get Patrol Observations from EarthRanger"
         },
-        "legend": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/LegendDefinition"
+        "patrol_reloc": {
+          "additionalProperties": false,
+          "properties": {
+            "filter_point_coords": {
+              "items": {
+                "$ref": "#/$defs/Coordinate"
+              },
+              "title": "Filter Point Coords",
+              "type": "array"
+            },
+            "relocs_columns": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Relocs Columns",
+              "type": "array"
             }
+          },
+          "required": [
+            "filter_point_coords",
+            "relocs_columns"
           ],
-          "default": null,
-          "title": "Legend",
-          "description": "If present, includes this layer in the map legend"
+          "type": "object",
+          "title": "Transform Observations to Relocations"
+        },
+        "patrol_traj": {
+          "additionalProperties": false,
+          "properties": {
+            "min_length_meters": {
+              "default": 0.1,
+              "title": "Min Length Meters",
+              "type": "number"
+            },
+            "max_length_meters": {
+              "default": 10000,
+              "title": "Max Length Meters",
+              "type": "number"
+            },
+            "max_time_secs": {
+              "default": 3600,
+              "title": "Max Time Secs",
+              "type": "number"
+            },
+            "min_time_secs": {
+              "default": 1,
+              "title": "Min Time Secs",
+              "type": "number"
+            },
+            "max_speed_kmhr": {
+              "default": 120,
+              "title": "Max Speed Kmhr",
+              "type": "number"
+            },
+            "min_speed_kmhr": {
+              "default": 0.0,
+              "title": "Min Speed Kmhr",
+              "type": "number"
+            }
+          },
+          "required": [],
+          "type": "object",
+          "title": "Transform Relocations to Trajectories"
+        },
+        "traj_add_temporal_index": {
+          "additionalProperties": false,
+          "properties": {
+            "index_name": {
+              "title": "Index Name",
+              "type": "string",
+              "description": "A name for the new index which will be added."
+            },
+            "time_col": {
+              "title": "Time Col",
+              "type": "string",
+              "description": "Name of existing column containing time data."
+            },
+            "directive": {
+              "enum": [
+                "%a",
+                "%A",
+                "%b",
+                "%B",
+                "%c",
+                "%d",
+                "%f",
+                "%H",
+                "%I",
+                "%j",
+                "%m",
+                "%M",
+                "%p",
+                "%S",
+                "%U",
+                "%w",
+                "%W",
+                "%x",
+                "%X",
+                "%y",
+                "%Y",
+                "%z",
+                "%%"
+              ],
+              "title": "Directive",
+              "type": "string",
+              "description": "A directive for formatting the time data."
+            },
+            "cast_to_datetime": {
+              "default": true,
+              "title": "Cast To Datetime",
+              "type": "boolean",
+              "description": "Whether to attempt casting `time_col` to datetime."
+            },
+            "format": {
+              "default": "mixed",
+              "title": "Format",
+              "type": "string",
+              "description": "            If `cast_to_datetime=True`, the format to pass to `pd.to_datetime`\n            when attempting to cast `time_col` to datetime. Defaults to \"mixed\".\n            "
+            }
+          },
+          "required": [
+            "index_name",
+            "time_col",
+            "directive"
+          ],
+          "type": "object",
+          "title": "Add temporal index to Patrol Trajectories"
         }
       },
-      "required": [
-        "layer_style"
-      ],
+      "uiSchema": {
+        "ui:order": [
+          "patrol_obs",
+          "patrol_reloc",
+          "patrol_traj",
+          "traj_add_temporal_index"
+        ]
+      }
+    },
+    "Patrol trajectories map layers": {
       "type": "object",
-      "title": "Create map layers for each Patrols Events group"
+      "description": "Create map layers for each group of patrol trajectories.",
+      "properties": {
+        "split_patrol_traj_groups": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object",
+          "title": "Split Patrol Trajectories by Group"
+        },
+        "patrol_traj_map_layers": {
+          "additionalProperties": false,
+          "properties": {
+            "layer_style": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/PolylineLayerStyle"
+                },
+                {
+                  "$ref": "#/$defs/PolygonLayerStyle"
+                },
+                {
+                  "$ref": "#/$defs/PointLayerStyle"
+                }
+              ],
+              "title": "Layer Style",
+              "description": "Style arguments for the layer."
+            },
+            "legend": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/LegendDefinition"
+                }
+              ],
+              "default": null,
+              "title": "Legend",
+              "description": "If present, includes this layer in the map legend"
+            }
+          },
+          "required": [
+            "layer_style"
+          ],
+          "type": "object",
+          "title": "Create map layer for each Patrol Trajectories group"
+        }
+      },
+      "uiSchema": {
+        "ui:order": [
+          "split_patrol_traj_groups",
+          "patrol_traj_map_layers"
+        ]
+      }
+    },
+    "Fetch and preprocess patrol events": {
+      "type": "object",
+      "description": "Fetch patrol events from EarthRanger, filter them, and add a temporal index.",
+      "properties": {
+        "patrol_events": {
+          "additionalProperties": false,
+          "properties": {
+            "client": {
+              "description": "A named EarthRanger connection.",
+              "title": "Client",
+              "type": "string"
+            },
+            "since": {
+              "title": "Since",
+              "type": "string",
+              "description": "Start date"
+            },
+            "until": {
+              "title": "Until",
+              "type": "string",
+              "description": "End date"
+            },
+            "patrol_type": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Patrol Type",
+              "type": "array",
+              "description": "list of UUID of patrol types"
+            },
+            "status": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Status",
+              "type": "array",
+              "description": "list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"
+            }
+          },
+          "required": [
+            "client",
+            "since",
+            "until",
+            "patrol_type",
+            "status"
+          ],
+          "type": "object",
+          "title": "Get Patrol Events from EarthRanger"
+        },
+        "filter_patrol_events": {
+          "additionalProperties": false,
+          "properties": {
+            "min_x": {
+              "default": -180.0,
+              "title": "Min X",
+              "type": "number"
+            },
+            "max_x": {
+              "default": 180.0,
+              "title": "Max X",
+              "type": "number"
+            },
+            "min_y": {
+              "default": -90.0,
+              "title": "Min Y",
+              "type": "number"
+            },
+            "max_y": {
+              "default": 90.0,
+              "title": "Max Y",
+              "type": "number"
+            },
+            "filter_point_coords": {
+              "default": [
+                {
+                  "x": 0.0,
+                  "y": 0.0
+                }
+              ],
+              "items": {
+                "$ref": "#/$defs/Coordinate"
+              },
+              "title": "Filter Point Coords",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "type": "object",
+          "title": "Apply Relocation Coordinate Filter"
+        },
+        "pe_add_temporal_index": {
+          "additionalProperties": false,
+          "properties": {
+            "index_name": {
+              "title": "Index Name",
+              "type": "string",
+              "description": "A name for the new index which will be added."
+            },
+            "time_col": {
+              "title": "Time Col",
+              "type": "string",
+              "description": "Name of existing column containing time data."
+            },
+            "directive": {
+              "enum": [
+                "%a",
+                "%A",
+                "%b",
+                "%B",
+                "%c",
+                "%d",
+                "%f",
+                "%H",
+                "%I",
+                "%j",
+                "%m",
+                "%M",
+                "%p",
+                "%S",
+                "%U",
+                "%w",
+                "%W",
+                "%x",
+                "%X",
+                "%y",
+                "%Y",
+                "%z",
+                "%%"
+              ],
+              "title": "Directive",
+              "type": "string",
+              "description": "A directive for formatting the time data."
+            },
+            "cast_to_datetime": {
+              "default": true,
+              "title": "Cast To Datetime",
+              "type": "boolean",
+              "description": "Whether to attempt casting `time_col` to datetime."
+            },
+            "format": {
+              "default": "mixed",
+              "title": "Format",
+              "type": "string",
+              "description": "            If `cast_to_datetime=True`, the format to pass to `pd.to_datetime`\n            when attempting to cast `time_col` to datetime. Defaults to \"mixed\".\n            "
+            }
+          },
+          "required": [
+            "index_name",
+            "time_col",
+            "directive"
+          ],
+          "type": "object",
+          "title": "Add temporal index to Patrol Events"
+        }
+      },
+      "uiSchema": {
+        "ui:order": [
+          "patrol_events",
+          "filter_patrol_events",
+          "pe_add_temporal_index"
+        ]
+      }
+    },
+    "Patrol events map layers": {
+      "type": "object",
+      "description": "Create map layers for each group of patrol events.",
+      "properties": {
+        "split_pe_groups": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object",
+          "title": "Split Patrol Events by Group"
+        },
+        "patrol_events_map_layers": {
+          "additionalProperties": false,
+          "properties": {
+            "layer_style": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/PolylineLayerStyle"
+                },
+                {
+                  "$ref": "#/$defs/PolygonLayerStyle"
+                },
+                {
+                  "$ref": "#/$defs/PointLayerStyle"
+                }
+              ],
+              "title": "Layer Style",
+              "description": "Style arguments for the layer."
+            },
+            "legend": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/LegendDefinition"
+                }
+              ],
+              "default": null,
+              "title": "Legend",
+              "description": "If present, includes this layer in the map legend"
+            }
+          },
+          "required": [
+            "layer_style"
+          ],
+          "type": "object",
+          "title": "Create map layers for each Patrols Events group"
+        }
+      },
+      "uiSchema": {
+        "ui:order": [
+          "split_pe_groups",
+          "patrol_events_map_layers"
+        ]
+      }
     },
     "combined_traj_and_pe_map_layers": {
       "additionalProperties": false,
@@ -444,724 +495,847 @@
       "type": "object",
       "title": "Combine Trajectories and Patrol Events layers"
     },
-    "traj_patrol_events_ecomap": {
-      "additionalProperties": false,
+    "Combined Trajectories and Patrol Events EcoMap": {
+      "type": "object",
+      "description": "Draw EcoMaps for each combined Trajectory and Patrol Events group.",
       "properties": {
-        "tile_layer": {
-          "default": "",
-          "title": "Tile Layer",
-          "type": "string",
-          "description": "A named tile layer, ie OpenStreetMap."
-        },
-        "static": {
-          "default": false,
-          "title": "Static",
-          "type": "boolean",
-          "description": "Set to true to disable map pan/zoom."
-        },
-        "title": {
-          "default": "",
-          "title": "Title",
-          "type": "string",
-          "description": "The map title."
-        },
-        "north_arrow_style": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/NorthArrowStyle"
-            }
-          ],
-          "default": {
-            "placement": "top-left",
-            "style": {
-              "transform": "scale(0.8)"
+        "traj_patrol_events_ecomap": {
+          "additionalProperties": false,
+          "properties": {
+            "tile_layer": {
+              "default": "",
+              "title": "Tile Layer",
+              "type": "string",
+              "description": "A named tile layer, ie OpenStreetMap."
+            },
+            "static": {
+              "default": false,
+              "title": "Static",
+              "type": "boolean",
+              "description": "Set to true to disable map pan/zoom."
+            },
+            "title": {
+              "default": "",
+              "title": "Title",
+              "type": "string",
+              "description": "The map title."
+            },
+            "north_arrow_style": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/NorthArrowStyle"
+                }
+              ],
+              "default": {
+                "placement": "top-left",
+                "style": {
+                  "transform": "scale(0.8)"
+                }
+              },
+              "title": "North Arrow Style",
+              "description": "Additional arguments for configuring the North Arrow."
+            },
+            "legend_style": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/LegendStyle"
+                }
+              ],
+              "default": {
+                "placement": "bottom-right"
+              },
+              "title": "Legend Style",
+              "description": "Additional arguments for configuring the legend."
             }
           },
-          "title": "North Arrow Style",
-          "description": "Additional arguments for configuring the North Arrow."
+          "required": [],
+          "type": "object",
+          "title": "Draw Ecomaps for each combined Trajectory and Patrol Events group"
         },
-        "legend_style": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/LegendStyle"
+        "traj_pe_ecomap_html_urls": {
+          "additionalProperties": false,
+          "properties": {
+            "filename": {
+              "default": null,
+              "title": "Filename",
+              "type": "string",
+              "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
             }
-          ],
-          "default": {
-            "placement": "bottom-right"
           },
-          "title": "Legend Style",
-          "description": "Additional arguments for configuring the legend."
+          "required": [],
+          "type": "object",
+          "title": "Persist Patrols Ecomap as Text"
+        },
+        "traj_pe_map_widgets_single_views": {
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "title": "Title",
+              "type": "string",
+              "description": "The title of the widget"
+            }
+          },
+          "required": [
+            "title"
+          ],
+          "type": "object",
+          "title": "Create Map Widgets for Patrol Events"
+        },
+        "traj_pe_grouped_map_widget": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object",
+          "title": "Merge EcoMap Widget Views"
         }
       },
-      "required": [],
-      "type": "object",
-      "title": "Draw Ecomaps for each combined Trajectory and Patrol Events group"
+      "uiSchema": {
+        "ui:order": [
+          "traj_patrol_events_ecomap",
+          "traj_pe_ecomap_html_urls",
+          "traj_pe_map_widgets_single_views",
+          "traj_pe_grouped_map_widget"
+        ]
+      }
     },
-    "traj_pe_ecomap_html_urls": {
-      "additionalProperties": false,
+    "Total patrols per group": {
+      "type": "object",
+      "description": "Create a single value widget for the total patrols per group.",
       "properties": {
-        "filename": {
-          "default": null,
-          "title": "Filename",
-          "type": "string",
-          "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+        "total_patrols": {
+          "additionalProperties": false,
+          "properties": {
+            "column_name": {
+              "title": "Column Name",
+              "type": "string",
+              "description": "Column to aggregate"
+            }
+          },
+          "required": [
+            "column_name"
+          ],
+          "type": "object",
+          "title": "Calculate Total Patrols Per Group"
+        },
+        "total_patrols_sv_widgets": {
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "title": "Title",
+              "type": "string",
+              "description": "The title of the widget"
+            }
+          },
+          "required": [
+            "title"
+          ],
+          "type": "object",
+          "title": "Create Single Value Widgets for Total Patrols Per Group"
+        },
+        "total_patrols_grouped_sv_widget": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object",
+          "title": "Merge per group Total Patrols SV widgets"
         }
       },
-      "required": [],
-      "type": "object",
-      "title": "Persist Patrols Ecomap as Text"
+      "uiSchema": {
+        "ui:order": [
+          "total_patrols",
+          "total_patrols_sv_widgets",
+          "total_patrols_grouped_sv_widget"
+        ]
+      }
     },
-    "traj_pe_map_widgets_single_views": {
-      "additionalProperties": false,
+    "Total patrol time per group": {
+      "type": "object",
+      "description": "Create a single value widget for the total patrol time per group.",
       "properties": {
-        "title": {
-          "title": "Title",
-          "type": "string",
-          "description": "The title of the widget"
+        "total_patrol_time": {
+          "additionalProperties": false,
+          "properties": {
+            "column_name": {
+              "title": "Column Name",
+              "type": "string",
+              "description": "Column to aggregate"
+            }
+          },
+          "required": [
+            "column_name"
+          ],
+          "type": "object",
+          "title": "Calculate Total Patrol Time Per Group"
+        },
+        "total_patrol_time_converted": {
+          "additionalProperties": false,
+          "properties": {
+            "b": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "integer"
+                }
+              ],
+              "title": "B",
+              "description": "The second number"
+            },
+            "operation": {
+              "enum": [
+                "add",
+                "subtract",
+                "multiply",
+                "divide",
+                "floor_divide",
+                "modulo",
+                "power"
+              ],
+              "title": "Operation",
+              "type": "string",
+              "description": "The arithmetic operation to apply"
+            }
+          },
+          "required": [
+            "b",
+            "operation"
+          ],
+          "type": "object",
+          "title": "Convert total patrol time units"
+        },
+        "total_patrol_time_sv_widgets": {
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "title": "Title",
+              "type": "string",
+              "description": "The title of the widget"
+            }
+          },
+          "required": [
+            "title"
+          ],
+          "type": "object",
+          "title": "Create Single Value Widgets for Total Patrol Time Per Group"
+        },
+        "patrol_time_grouped_widget": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object",
+          "title": "Merge per group Total Patrol Time SV widgets"
         }
       },
-      "required": [
-        "title"
-      ],
-      "type": "object",
-      "title": "Create Map Widgets for Patrol Events"
+      "uiSchema": {
+        "ui:order": [
+          "total_patrol_time",
+          "total_patrol_time_converted",
+          "total_patrol_time_sv_widgets",
+          "patrol_time_grouped_widget"
+        ]
+      }
     },
-    "traj_pe_grouped_map_widget": {
-      "additionalProperties": false,
-      "properties": {},
-      "required": [],
+    "Total distance per group": {
       "type": "object",
-      "title": "Merge EcoMap Widget Views"
-    },
-    "total_patrols": {
-      "additionalProperties": false,
+      "description": "Create a single value widget for the total distance per group.",
       "properties": {
-        "column_name": {
-          "title": "Column Name",
-          "type": "string",
-          "description": "Column to aggregate"
+        "total_patrol_dist": {
+          "additionalProperties": false,
+          "properties": {
+            "column_name": {
+              "title": "Column Name",
+              "type": "string",
+              "description": "Column to aggregate"
+            }
+          },
+          "required": [
+            "column_name"
+          ],
+          "type": "object",
+          "title": "Calculate Total Distance Per Group"
+        },
+        "total_patrol_dist_converted": {
+          "additionalProperties": false,
+          "properties": {
+            "b": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "integer"
+                }
+              ],
+              "title": "B",
+              "description": "The second number"
+            },
+            "operation": {
+              "enum": [
+                "add",
+                "subtract",
+                "multiply",
+                "divide",
+                "floor_divide",
+                "modulo",
+                "power"
+              ],
+              "title": "Operation",
+              "type": "string",
+              "description": "The arithmetic operation to apply"
+            }
+          },
+          "required": [
+            "b",
+            "operation"
+          ],
+          "type": "object",
+          "title": "Convert total patrol distance units"
+        },
+        "total_patrol_dist_sv_widgets": {
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "title": "Title",
+              "type": "string",
+              "description": "The title of the widget"
+            }
+          },
+          "required": [
+            "title"
+          ],
+          "type": "object",
+          "title": "Create Single Value Widgets for Total Distance Per Group"
+        },
+        "patrol_dist_grouped_widget": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object",
+          "title": "Merge per group Total Patrol Distance SV widgets"
         }
       },
-      "required": [
-        "column_name"
-      ],
-      "type": "object",
-      "title": "Calculate Total Patrols Per Group"
+      "uiSchema": {
+        "ui:order": [
+          "total_patrol_dist",
+          "total_patrol_dist_converted",
+          "total_patrol_dist_sv_widgets",
+          "patrol_dist_grouped_widget"
+        ]
+      }
     },
-    "total_patrols_sv_widgets": {
-      "additionalProperties": false,
+    "Average speed per group": {
+      "type": "object",
+      "description": "Create a single value widget for the average speed per group.",
       "properties": {
-        "title": {
-          "title": "Title",
-          "type": "string",
-          "description": "The title of the widget"
+        "avg_speed": {
+          "additionalProperties": false,
+          "properties": {
+            "column_name": {
+              "title": "Column Name",
+              "type": "string",
+              "description": "Column to aggregate"
+            }
+          },
+          "required": [
+            "column_name"
+          ],
+          "type": "object",
+          "title": "Calculate Average Speed Per Group"
+        },
+        "avg_speed_sv_widgets": {
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "title": "Title",
+              "type": "string",
+              "description": "The title of the widget"
+            }
+          },
+          "required": [
+            "title"
+          ],
+          "type": "object",
+          "title": "Create Single Value Widgets for Avg Speed Per Group"
+        },
+        "avg_speed_grouped_widget": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object",
+          "title": "Merge per group Avg Speed SV widgets"
         }
       },
-      "required": [
-        "title"
-      ],
-      "type": "object",
-      "title": "Create Single Value Widgets for Total Patrols Per Group"
+      "uiSchema": {
+        "ui:order": [
+          "avg_speed",
+          "avg_speed_sv_widgets",
+          "avg_speed_grouped_widget"
+        ]
+      }
     },
-    "total_patrols_grouped_sv_widget": {
-      "additionalProperties": false,
-      "properties": {},
-      "required": [],
+    "Max speed per group": {
       "type": "object",
-      "title": "Merge per group Total Patrols SV widgets"
-    },
-    "total_patrol_time": {
-      "additionalProperties": false,
+      "description": "Create a single value widget for the max speed per group.",
       "properties": {
-        "column_name": {
-          "title": "Column Name",
-          "type": "string",
-          "description": "Column to aggregate"
+        "max_speed": {
+          "additionalProperties": false,
+          "properties": {
+            "column_name": {
+              "title": "Column Name",
+              "type": "string",
+              "description": "Column to aggregate"
+            }
+          },
+          "required": [
+            "column_name"
+          ],
+          "type": "object",
+          "title": "Calculate Max Speed Per Group"
+        },
+        "max_speed_sv_widgets": {
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "title": "Title",
+              "type": "string",
+              "description": "The title of the widget"
+            }
+          },
+          "required": [
+            "title"
+          ],
+          "type": "object",
+          "title": "Create Single Value Widgets for Max Speed Per Group"
+        },
+        "max_speed_grouped_widget": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object",
+          "title": "Merge per group Max Speed SV widgets"
         }
       },
-      "required": [
-        "column_name"
-      ],
-      "type": "object",
-      "title": "Calculate Total Patrol Time Per Group"
+      "uiSchema": {
+        "ui:order": [
+          "max_speed",
+          "max_speed_sv_widgets",
+          "max_speed_grouped_widget"
+        ]
+      }
     },
-    "total_patrol_time_converted": {
-      "additionalProperties": false,
+    "Patrol events bar chart": {
+      "type": "object",
+      "description": "Create the patrol events bar chart.",
       "properties": {
-        "b": {
-          "anyOf": [
-            {
+        "patrol_events_bar_chart": {
+          "additionalProperties": false,
+          "properties": {
+            "x_axis": {
+              "title": "X Axis",
+              "type": "string",
+              "description": "The dataframe column to plot in the x/time axis."
+            },
+            "y_axis": {
+              "title": "Y Axis",
+              "type": "string",
+              "description": "The dataframe column to plot in the y axis."
+            },
+            "category": {
+              "title": "Category",
+              "type": "string",
+              "description": "The dataframe column to stack in the y axis."
+            },
+            "agg_function": {
+              "enum": [
+                "count",
+                "mean",
+                "sum",
+                "min",
+                "max"
+              ],
+              "title": "Agg Function",
+              "type": "string",
+              "description": "The aggregate function to apply to the group."
+            },
+            "time_interval": {
+              "enum": [
+                "year",
+                "month",
+                "week",
+                "day",
+                "hour"
+              ],
+              "title": "Time Interval",
+              "type": "string",
+              "description": "Sets the time interval of the x axis."
+            },
+            "color_column": {
+              "default": null,
+              "title": "Color Column",
+              "type": "string",
+              "description": "The name of the dataframe column to color bars with."
+            },
+            "grouped_styles": {
+              "default": [],
+              "items": {
+                "$ref": "#/$defs/GroupedPlotStyle"
+              },
+              "title": "Grouped Styles",
+              "type": "array",
+              "description": "Style arguments passed to plotly.graph_objects.Bar and applied to individual groups."
+            },
+            "plot_style": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/PlotStyle"
+                }
+              ],
+              "default": null,
+              "title": "Plot Style",
+              "description": "Additional style kwargs passed to go.Bar()."
+            },
+            "layout_style": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/BarLayoutStyle"
+                }
+              ],
+              "default": null,
+              "title": "Layout Style",
+              "description": "Additional kwargs passed to plotly.go.Figure(layout)."
+            }
+          },
+          "required": [
+            "x_axis",
+            "y_axis",
+            "category",
+            "agg_function",
+            "time_interval"
+          ],
+          "type": "object",
+          "title": "Draw Time Series Bar Chart for Patrols Events"
+        },
+        "patrol_events_bar_chart_html_url": {
+          "additionalProperties": false,
+          "properties": {
+            "filename": {
+              "default": null,
+              "title": "Filename",
+              "type": "string",
+              "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+            }
+          },
+          "required": [],
+          "type": "object",
+          "title": "Persist Patrols Bar Chart as Text"
+        },
+        "patrol_events_bar_chart_widget": {
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "title": "Title",
+              "type": "string",
+              "description": "The title of the widget"
+            }
+          },
+          "required": [
+            "title"
+          ],
+          "type": "object",
+          "title": "Create Plot Widget for Patrol Events"
+        }
+      },
+      "uiSchema": {
+        "ui:order": [
+          "patrol_events_bar_chart",
+          "patrol_events_bar_chart_html_url",
+          "patrol_events_bar_chart_widget"
+        ]
+      }
+    },
+    "Patrol events pie chart": {
+      "type": "object",
+      "description": "Create the patrol events pie chart.",
+      "properties": {
+        "patrol_events_pie_chart": {
+          "additionalProperties": false,
+          "properties": {
+            "value_column": {
+              "title": "Value Column",
+              "type": "string",
+              "description": "The name of the dataframe column to pull slice values from."
+            },
+            "label_column": {
+              "default": null,
+              "title": "Label Column",
+              "type": "string",
+              "description": "The name of the dataframe column to label slices with, required if the data in value_column is numeric."
+            },
+            "color_column": {
+              "default": null,
+              "title": "Color Column",
+              "type": "string",
+              "description": "The name of the dataframe column to color slices with."
+            },
+            "plot_style": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/PlotStyle"
+                }
+              ],
+              "default": null,
+              "title": "Plot Style",
+              "description": "Additional style kwargs passed to go.Pie()."
+            },
+            "layout_style": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/LayoutStyle"
+                }
+              ],
+              "default": null,
+              "title": "Layout Style",
+              "description": "Additional kwargs passed to plotly.go.Figure(layout)."
+            }
+          },
+          "required": [
+            "value_column"
+          ],
+          "type": "object",
+          "title": "Draw Pie Chart for Patrols Events"
+        },
+        "pe_pie_chart_html_urls": {
+          "additionalProperties": false,
+          "properties": {
+            "filename": {
+              "default": null,
+              "title": "Filename",
+              "type": "string",
+              "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+            }
+          },
+          "required": [],
+          "type": "object",
+          "title": "Persist Patrols Pie Chart as Text"
+        },
+        "patrol_events_pie_chart_widgets": {
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "title": "Title",
+              "type": "string",
+              "description": "The title of the widget"
+            }
+          },
+          "required": [
+            "title"
+          ],
+          "type": "object",
+          "title": "Create Plot Widget for Patrol Events"
+        },
+        "patrol_events_pie_widget_grouped": {
+          "additionalProperties": false,
+          "properties": {},
+          "required": [],
+          "type": "object",
+          "title": "Merge Pie Chart Widget Views"
+        }
+      },
+      "uiSchema": {
+        "ui:order": [
+          "patrol_events_pie_chart",
+          "pe_pie_chart_html_urls",
+          "patrol_events_pie_chart_widgets",
+          "patrol_events_pie_widget_grouped"
+        ]
+      }
+    },
+    "Time Density Map": {
+      "type": "object",
+      "description": "Calculate time density from patrol trajectories and display it on a map.",
+      "properties": {
+        "td": {
+          "additionalProperties": false,
+          "properties": {
+            "pixel_size": {
+              "default": 250.0,
+              "title": "Pixel Size",
+              "type": "number",
+              "description": "Pixel size for raster profile."
+            },
+            "crs": {
+              "default": "ESRI:102022",
+              "title": "Crs",
+              "type": "string"
+            },
+            "nodata_value": {
+              "default": "nan",
+              "title": "Nodata Value",
               "type": "number"
             },
-            {
+            "band_count": {
+              "default": 1,
+              "title": "Band Count",
               "type": "integer"
-            }
-          ],
-          "title": "B",
-          "description": "The second number"
-        },
-        "operation": {
-          "enum": [
-            "add",
-            "subtract",
-            "multiply",
-            "divide",
-            "floor_divide",
-            "modulo",
-            "power"
-          ],
-          "title": "Operation",
-          "type": "string",
-          "description": "The arithmetic operation to apply"
-        }
-      },
-      "required": [
-        "b",
-        "operation"
-      ],
-      "type": "object",
-      "title": "Convert total patrol time units"
-    },
-    "total_patrol_time_sv_widgets": {
-      "additionalProperties": false,
-      "properties": {
-        "title": {
-          "title": "Title",
-          "type": "string",
-          "description": "The title of the widget"
-        }
-      },
-      "required": [
-        "title"
-      ],
-      "type": "object",
-      "title": "Create Single Value Widgets for Total Patrol Time Per Group"
-    },
-    "patrol_time_grouped_widget": {
-      "additionalProperties": false,
-      "properties": {},
-      "required": [],
-      "type": "object",
-      "title": "Merge per group Total Patrol Time SV widgets"
-    },
-    "total_patrol_dist": {
-      "additionalProperties": false,
-      "properties": {
-        "column_name": {
-          "title": "Column Name",
-          "type": "string",
-          "description": "Column to aggregate"
-        }
-      },
-      "required": [
-        "column_name"
-      ],
-      "type": "object",
-      "title": "Calculate Total Distance Per Group"
-    },
-    "total_patrol_dist_converted": {
-      "additionalProperties": false,
-      "properties": {
-        "b": {
-          "anyOf": [
-            {
+            },
+            "max_speed_factor": {
+              "default": 1.05,
+              "title": "Max Speed Factor",
               "type": "number"
             },
-            {
-              "type": "integer"
-            }
-          ],
-          "title": "B",
-          "description": "The second number"
-        },
-        "operation": {
-          "enum": [
-            "add",
-            "subtract",
-            "multiply",
-            "divide",
-            "floor_divide",
-            "modulo",
-            "power"
-          ],
-          "title": "Operation",
-          "type": "string",
-          "description": "The arithmetic operation to apply"
-        }
-      },
-      "required": [
-        "b",
-        "operation"
-      ],
-      "type": "object",
-      "title": "Convert total patrol distance units"
-    },
-    "total_patrol_dist_sv_widgets": {
-      "additionalProperties": false,
-      "properties": {
-        "title": {
-          "title": "Title",
-          "type": "string",
-          "description": "The title of the widget"
-        }
-      },
-      "required": [
-        "title"
-      ],
-      "type": "object",
-      "title": "Create Single Value Widgets for Total Distance Per Group"
-    },
-    "patrol_dist_grouped_widget": {
-      "additionalProperties": false,
-      "properties": {},
-      "required": [],
-      "type": "object",
-      "title": "Merge per group Total Patrol Distance SV widgets"
-    },
-    "avg_speed": {
-      "additionalProperties": false,
-      "properties": {
-        "column_name": {
-          "title": "Column Name",
-          "type": "string",
-          "description": "Column to aggregate"
-        }
-      },
-      "required": [
-        "column_name"
-      ],
-      "type": "object",
-      "title": "Calculate Average Speed Per Group"
-    },
-    "avg_speed_sv_widgets": {
-      "additionalProperties": false,
-      "properties": {
-        "title": {
-          "title": "Title",
-          "type": "string",
-          "description": "The title of the widget"
-        }
-      },
-      "required": [
-        "title"
-      ],
-      "type": "object",
-      "title": "Create Single Value Widgets for Avg Speed Per Group"
-    },
-    "avg_speed_grouped_widget": {
-      "additionalProperties": false,
-      "properties": {},
-      "required": [],
-      "type": "object",
-      "title": "Merge per group Avg Speed SV widgets"
-    },
-    "max_speed": {
-      "additionalProperties": false,
-      "properties": {
-        "column_name": {
-          "title": "Column Name",
-          "type": "string",
-          "description": "Column to aggregate"
-        }
-      },
-      "required": [
-        "column_name"
-      ],
-      "type": "object",
-      "title": "Calculate Max Speed Per Group"
-    },
-    "max_speed_sv_widgets": {
-      "additionalProperties": false,
-      "properties": {
-        "title": {
-          "title": "Title",
-          "type": "string",
-          "description": "The title of the widget"
-        }
-      },
-      "required": [
-        "title"
-      ],
-      "type": "object",
-      "title": "Create Single Value Widgets for Max Speed Per Group"
-    },
-    "max_speed_grouped_widget": {
-      "additionalProperties": false,
-      "properties": {},
-      "required": [],
-      "type": "object",
-      "title": "Merge per group Max Speed SV widgets"
-    },
-    "patrol_events_bar_chart": {
-      "additionalProperties": false,
-      "properties": {
-        "x_axis": {
-          "title": "X Axis",
-          "type": "string",
-          "description": "The dataframe column to plot in the x/time axis."
-        },
-        "y_axis": {
-          "title": "Y Axis",
-          "type": "string",
-          "description": "The dataframe column to plot in the y axis."
-        },
-        "category": {
-          "title": "Category",
-          "type": "string",
-          "description": "The dataframe column to stack in the y axis."
-        },
-        "agg_function": {
-          "enum": [
-            "count",
-            "mean",
-            "sum",
-            "min",
-            "max"
-          ],
-          "title": "Agg Function",
-          "type": "string",
-          "description": "The aggregate function to apply to the group."
-        },
-        "time_interval": {
-          "enum": [
-            "year",
-            "month",
-            "week",
-            "day",
-            "hour"
-          ],
-          "title": "Time Interval",
-          "type": "string",
-          "description": "Sets the time interval of the x axis."
-        },
-        "color_column": {
-          "default": null,
-          "title": "Color Column",
-          "type": "string",
-          "description": "The name of the dataframe column to color bars with."
-        },
-        "grouped_styles": {
-          "default": [],
-          "items": {
-            "$ref": "#/$defs/GroupedPlotStyle"
-          },
-          "title": "Grouped Styles",
-          "type": "array",
-          "description": "Style arguments passed to plotly.graph_objects.Bar and applied to individual groups."
-        },
-        "plot_style": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/PlotStyle"
-            }
-          ],
-          "default": null,
-          "title": "Plot Style",
-          "description": "Additional style kwargs passed to go.Bar()."
-        },
-        "layout_style": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/BarLayoutStyle"
-            }
-          ],
-          "default": null,
-          "title": "Layout Style",
-          "description": "Additional kwargs passed to plotly.go.Figure(layout)."
-        }
-      },
-      "required": [
-        "x_axis",
-        "y_axis",
-        "category",
-        "agg_function",
-        "time_interval"
-      ],
-      "type": "object",
-      "title": "Draw Time Series Bar Chart for Patrols Events"
-    },
-    "patrol_events_bar_chart_html_url": {
-      "additionalProperties": false,
-      "properties": {
-        "filename": {
-          "default": null,
-          "title": "Filename",
-          "type": "string",
-          "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
-        }
-      },
-      "required": [],
-      "type": "object",
-      "title": "Persist Patrols Bar Chart as Text"
-    },
-    "patrol_events_bar_chart_widget": {
-      "additionalProperties": false,
-      "properties": {
-        "title": {
-          "title": "Title",
-          "type": "string",
-          "description": "The title of the widget"
-        }
-      },
-      "required": [
-        "title"
-      ],
-      "type": "object",
-      "title": "Create Plot Widget for Patrol Events"
-    },
-    "patrol_events_pie_chart": {
-      "additionalProperties": false,
-      "properties": {
-        "value_column": {
-          "title": "Value Column",
-          "type": "string",
-          "description": "The name of the dataframe column to pull slice values from."
-        },
-        "label_column": {
-          "default": null,
-          "title": "Label Column",
-          "type": "string",
-          "description": "The name of the dataframe column to label slices with, required if the data in value_column is numeric."
-        },
-        "color_column": {
-          "default": null,
-          "title": "Color Column",
-          "type": "string",
-          "description": "The name of the dataframe column to color slices with."
-        },
-        "plot_style": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/PlotStyle"
-            }
-          ],
-          "default": null,
-          "title": "Plot Style",
-          "description": "Additional style kwargs passed to go.Pie()."
-        },
-        "layout_style": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/LayoutStyle"
-            }
-          ],
-          "default": null,
-          "title": "Layout Style",
-          "description": "Additional kwargs passed to plotly.go.Figure(layout)."
-        }
-      },
-      "required": [
-        "value_column"
-      ],
-      "type": "object",
-      "title": "Draw Pie Chart for Patrols Events"
-    },
-    "pe_pie_chart_html_urls": {
-      "additionalProperties": false,
-      "properties": {
-        "filename": {
-          "default": null,
-          "title": "Filename",
-          "type": "string",
-          "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
-        }
-      },
-      "required": [],
-      "type": "object",
-      "title": "Persist Patrols Pie Chart as Text"
-    },
-    "patrol_events_pie_chart_widgets": {
-      "additionalProperties": false,
-      "properties": {
-        "title": {
-          "title": "Title",
-          "type": "string",
-          "description": "The title of the widget"
-        }
-      },
-      "required": [
-        "title"
-      ],
-      "type": "object",
-      "title": "Create Plot Widget for Patrol Events"
-    },
-    "patrol_events_pie_widget_grouped": {
-      "additionalProperties": false,
-      "properties": {},
-      "required": [],
-      "type": "object",
-      "title": "Merge Pie Chart Widget Views"
-    },
-    "td": {
-      "additionalProperties": false,
-      "properties": {
-        "pixel_size": {
-          "default": 250.0,
-          "title": "Pixel Size",
-          "type": "number",
-          "description": "Pixel size for raster profile."
-        },
-        "crs": {
-          "default": "ESRI:102022",
-          "title": "Crs",
-          "type": "string"
-        },
-        "nodata_value": {
-          "default": "nan",
-          "title": "Nodata Value",
-          "type": "number"
-        },
-        "band_count": {
-          "default": 1,
-          "title": "Band Count",
-          "type": "integer"
-        },
-        "max_speed_factor": {
-          "default": 1.05,
-          "title": "Max Speed Factor",
-          "type": "number"
-        },
-        "expansion_factor": {
-          "default": 1.3,
-          "title": "Expansion Factor",
-          "type": "number"
-        },
-        "percentiles": {
-          "default": [
-            50.0,
-            60.0,
-            70.0,
-            80.0,
-            90.0,
-            95.0
-          ],
-          "items": {
-            "type": "number"
-          },
-          "title": "Percentiles",
-          "type": "array"
-        }
-      },
-      "required": [],
-      "type": "object",
-      "title": "Calculate Time Density from Trajectory"
-    },
-    "td_map_layer": {
-      "additionalProperties": false,
-      "properties": {
-        "layer_style": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/PolylineLayerStyle"
+            "expansion_factor": {
+              "default": 1.3,
+              "title": "Expansion Factor",
+              "type": "number"
             },
-            {
-              "$ref": "#/$defs/PolygonLayerStyle"
+            "percentiles": {
+              "default": [
+                50.0,
+                60.0,
+                70.0,
+                80.0,
+                90.0,
+                95.0
+              ],
+              "items": {
+                "type": "number"
+              },
+              "title": "Percentiles",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "type": "object",
+          "title": "Calculate Time Density from Trajectory"
+        },
+        "td_map_layer": {
+          "additionalProperties": false,
+          "properties": {
+            "layer_style": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/PolylineLayerStyle"
+                },
+                {
+                  "$ref": "#/$defs/PolygonLayerStyle"
+                },
+                {
+                  "$ref": "#/$defs/PointLayerStyle"
+                }
+              ],
+              "title": "Layer Style",
+              "description": "Style arguments for the layer."
             },
-            {
-              "$ref": "#/$defs/PointLayerStyle"
-            }
-          ],
-          "title": "Layer Style",
-          "description": "Style arguments for the layer."
-        },
-        "legend": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/LegendDefinition"
-            }
-          ],
-          "default": null,
-          "title": "Legend",
-          "description": "If present, includes this layer in the map legend"
-        }
-      },
-      "required": [
-        "layer_style"
-      ],
-      "type": "object",
-      "title": "Create map layer from Time Density"
-    },
-    "td_ecomap": {
-      "additionalProperties": false,
-      "properties": {
-        "tile_layer": {
-          "default": "",
-          "title": "Tile Layer",
-          "type": "string",
-          "description": "A named tile layer, ie OpenStreetMap."
-        },
-        "static": {
-          "default": false,
-          "title": "Static",
-          "type": "boolean",
-          "description": "Set to true to disable map pan/zoom."
-        },
-        "title": {
-          "default": "",
-          "title": "Title",
-          "type": "string",
-          "description": "The map title."
-        },
-        "north_arrow_style": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/NorthArrowStyle"
-            }
-          ],
-          "default": {
-            "placement": "top-left",
-            "style": {
-              "transform": "scale(0.8)"
+            "legend": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/LegendDefinition"
+                }
+              ],
+              "default": null,
+              "title": "Legend",
+              "description": "If present, includes this layer in the map legend"
             }
           },
-          "title": "North Arrow Style",
-          "description": "Additional arguments for configuring the North Arrow."
-        },
-        "legend_style": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/LegendStyle"
-            }
+          "required": [
+            "layer_style"
           ],
-          "default": {
-            "placement": "bottom-right"
+          "type": "object",
+          "title": "Create map layer from Time Density"
+        },
+        "td_ecomap": {
+          "additionalProperties": false,
+          "properties": {
+            "tile_layer": {
+              "default": "",
+              "title": "Tile Layer",
+              "type": "string",
+              "description": "A named tile layer, ie OpenStreetMap."
+            },
+            "static": {
+              "default": false,
+              "title": "Static",
+              "type": "boolean",
+              "description": "Set to true to disable map pan/zoom."
+            },
+            "title": {
+              "default": "",
+              "title": "Title",
+              "type": "string",
+              "description": "The map title."
+            },
+            "north_arrow_style": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/NorthArrowStyle"
+                }
+              ],
+              "default": {
+                "placement": "top-left",
+                "style": {
+                  "transform": "scale(0.8)"
+                }
+              },
+              "title": "North Arrow Style",
+              "description": "Additional arguments for configuring the North Arrow."
+            },
+            "legend_style": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/LegendStyle"
+                }
+              ],
+              "default": {
+                "placement": "bottom-right"
+              },
+              "title": "Legend Style",
+              "description": "Additional arguments for configuring the legend."
+            }
           },
-          "title": "Legend Style",
-          "description": "Additional arguments for configuring the legend."
+          "required": [],
+          "type": "object",
+          "title": "Draw Ecomap from Time Density"
+        },
+        "td_ecomap_html_url": {
+          "additionalProperties": false,
+          "properties": {
+            "filename": {
+              "default": null,
+              "title": "Filename",
+              "type": "string",
+              "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+            }
+          },
+          "required": [],
+          "type": "object",
+          "title": "Persist Ecomap as Text"
+        },
+        "td_map_widget": {
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "title": "Title",
+              "type": "string",
+              "description": "The title of the widget"
+            }
+          },
+          "required": [
+            "title"
+          ],
+          "type": "object",
+          "title": "Create Time Density Map Widget"
         }
       },
-      "required": [],
-      "type": "object",
-      "title": "Draw Ecomap from Time Density"
-    },
-    "td_ecomap_html_url": {
-      "additionalProperties": false,
-      "properties": {
-        "filename": {
-          "default": null,
-          "title": "Filename",
-          "type": "string",
-          "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
-        }
-      },
-      "required": [],
-      "type": "object",
-      "title": "Persist Ecomap as Text"
-    },
-    "td_map_widget": {
-      "additionalProperties": false,
-      "properties": {
-        "title": {
-          "title": "Title",
-          "type": "string",
-          "description": "The title of the widget"
-        }
-      },
-      "required": [
-        "title"
-      ],
-      "type": "object",
-      "title": "Create Time Density Map Widget"
+      "uiSchema": {
+        "ui:order": [
+          "td",
+          "td_map_layer",
+          "td_ecomap",
+          "td_ecomap_html_url",
+          "td_map_widget"
+        ]
+      }
     },
     "patrol_dashboard": {
       "additionalProperties": false,
@@ -1939,5 +2113,25 @@
       "title": "GroupedWidget",
       "type": "object"
     }
+  },
+  "uiSchema": {
+    "ui:order": [
+      "groupers",
+      "Fetch and preprocess patrol observations",
+      "Patrol trajectories map layers",
+      "Fetch and preprocess patrol events",
+      "Patrol events map layers",
+      "combined_traj_and_pe_map_layers",
+      "Combined Trajectories and Patrol Events EcoMap",
+      "Total patrols per group",
+      "Total patrol time per group",
+      "Total distance per group",
+      "Average speed per group",
+      "Max speed per group",
+      "Patrol events bar chart",
+      "Patrol events pie chart",
+      "Time Density Map",
+      "patrol_dashboard"
+    ]
   }
 }

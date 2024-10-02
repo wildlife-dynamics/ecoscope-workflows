@@ -11,12 +11,12 @@
 # ## Imports
 
 import os
-{% for t in spec.workflow -%}
+{% for t in spec.flat_workflow -%}
 {{ t.known_task.importable_reference.statement }}
 {% if loop.last %}
 {% endif -%}
 {% endfor -%}
-{%- for t in spec.workflow -%}
+{%- for t in spec.flat_workflow -%}
 # %% [markdown]
 # ## {{ t.name }}
 

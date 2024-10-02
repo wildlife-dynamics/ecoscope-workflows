@@ -178,7 +178,7 @@ def test_invalid_known_task_name_raises(task: str, valid_known_task_name: bool):
     )
     if valid_known_task_name:
         spec = Spec(**yaml.load(s))
-        assert spec.workflow[0].known_task == known_tasks[task]
+        assert spec.flat_workflow[0].known_task == known_tasks[task]
     else:
         with pytest.raises(
             ValidationError, match=f"`{task}` is not a registered known task name."
@@ -220,7 +220,7 @@ def test_partial_args_must_be_valid_id_of_another_task(
     )
     if valid_id_of_another_task:
         spec = Spec(**yaml.load(s))
-        assert spec.workflow[1].partial == {
+        assert spec.flat_workflow[1].partial == {
             "observations": [TaskIdVariable(value="obs", suffix="return")]
         }
     else:
@@ -276,7 +276,7 @@ def test_all_partial_array_members_must_be_valid_id_of_another_task(
     )
     if all_valid_ids_of_another_task:
         spec = Spec(**yaml.load(s))
-        assert spec.workflow[2].partial == {
+        assert spec.flat_workflow[2].partial == {
             "widgets": [TaskIdVariable(value=v, suffix="return") for v in arg_dep_ids]
         }
     else:

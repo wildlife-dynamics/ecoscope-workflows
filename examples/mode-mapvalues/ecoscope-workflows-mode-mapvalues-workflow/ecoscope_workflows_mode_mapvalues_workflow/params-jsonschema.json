@@ -815,5 +815,18 @@
       "title": "GroupedWidget",
       "type": "object"
     }
+  },
+  "uiSchema": {
+    "ui:order": [
+      "patrol_events",
+      "groupers",
+      "split_obs",
+      "map_layers",
+      "ecomaps",
+      "ecomaps_persist",
+      "ecomap_widgets",
+      "ecomap_widgets_merged",
+      "dashboard"
+    ]
   }
 }

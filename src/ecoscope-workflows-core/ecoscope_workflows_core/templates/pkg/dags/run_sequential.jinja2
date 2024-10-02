@@ -17,7 +17,7 @@ import warnings  # 🧪
 from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
 {% endif %}
 
-{% for t in spec.workflow -%}
+{% for t in spec.flat_workflow -%}
 {{ t.known_task.importable_reference.statement }}
 {% if loop.last %}
 {% endif -%}
@@ -31,7 +31,7 @@ def main(params: Params):
     warnings.warn("This test script should not be used in production!")  # 🧪
     {% endif %}
     params_dict = json.loads(params.model_dump_json(exclude_unset=True))
-    {% for t in spec.workflow %}
+    {% for t in spec.flat_workflow %}
     {% set validate = true %}
     {% set params = 'params_dict["' ~ t.id ~ '"]' %}
     {% set indent = '    ' %}
