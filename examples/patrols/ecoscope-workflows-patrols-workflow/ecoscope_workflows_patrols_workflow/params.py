@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "f125a6e84a7bc2e8aa6f1059f0833e75cf111d9d58b7faaf86cbdf88367c6173"
+# from-spec-sha256 = "ee0b2d2b878db6ec19497e572aaa0c169cab2c454835c3f0bcfa901573cd6bf5"
 
 
 from __future__ import annotations
@@ -190,6 +190,18 @@ class TotalPatrolsSvWidgets(BaseModel):
     title: str = Field(..., description="The title of the widget", title="Title")
 
 
+class TotalPatrolsPerGroup(BaseModel):
+    total_patrols: Optional[TotalPatrols] = Field(
+        None, title="Calculate Total Patrols Per Group"
+    )
+    total_patrols_sv_widgets: Optional[TotalPatrolsSvWidgets] = Field(
+        None, title="Create Single Value Widgets for Total Patrols Per Group"
+    )
+    total_patrols_grouped_sv_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge per group Total Patrols SV widgets"
+    )
+
+
 class TotalPatrolTime(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -226,6 +238,21 @@ class TotalPatrolTimeSvWidgets(BaseModel):
     title: str = Field(..., description="The title of the widget", title="Title")
 
 
+class TotalPatrolTimePerGroup(BaseModel):
+    total_patrol_time: Optional[TotalPatrolTime] = Field(
+        None, title="Calculate Total Patrol Time Per Group"
+    )
+    total_patrol_time_converted: Optional[TotalPatrolTimeConverted] = Field(
+        None, title="Convert total patrol time units"
+    )
+    total_patrol_time_sv_widgets: Optional[TotalPatrolTimeSvWidgets] = Field(
+        None, title="Create Single Value Widgets for Total Patrol Time Per Group"
+    )
+    patrol_time_grouped_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge per group Total Patrol Time SV widgets"
+    )
+
+
 class TotalPatrolDist(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -252,6 +279,21 @@ class TotalPatrolDistSvWidgets(BaseModel):
     title: str = Field(..., description="The title of the widget", title="Title")
 
 
+class TotalDistancePerGroup(BaseModel):
+    total_patrol_dist: Optional[TotalPatrolDist] = Field(
+        None, title="Calculate Total Distance Per Group"
+    )
+    total_patrol_dist_converted: Optional[TotalPatrolDistConverted] = Field(
+        None, title="Convert total patrol distance units"
+    )
+    total_patrol_dist_sv_widgets: Optional[TotalPatrolDistSvWidgets] = Field(
+        None, title="Create Single Value Widgets for Total Distance Per Group"
+    )
+    patrol_dist_grouped_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge per group Total Patrol Distance SV widgets"
+    )
+
+
 class AvgSpeed(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -268,6 +310,18 @@ class AvgSpeedSvWidgets(BaseModel):
     title: str = Field(..., description="The title of the widget", title="Title")
 
 
+class AverageSpeedPerGroup(BaseModel):
+    avg_speed: Optional[AvgSpeed] = Field(
+        None, title="Calculate Average Speed Per Group"
+    )
+    avg_speed_sv_widgets: Optional[AvgSpeedSvWidgets] = Field(
+        None, title="Create Single Value Widgets for Avg Speed Per Group"
+    )
+    avg_speed_grouped_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge per group Avg Speed SV widgets"
+    )
+
+
 class MaxSpeed(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -282,6 +336,16 @@ class MaxSpeedSvWidgets(BaseModel):
         extra="forbid",
     )
     title: str = Field(..., description="The title of the widget", title="Title")
+
+
+class MaxSpeedPerGroup(BaseModel):
+    max_speed: Optional[MaxSpeed] = Field(None, title="Calculate Max Speed Per Group")
+    max_speed_sv_widgets: Optional[MaxSpeedSvWidgets] = Field(
+        None, title="Create Single Value Widgets for Max Speed Per Group"
+    )
+    max_speed_grouped_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge per group Max Speed SV widgets"
+    )
 
 
 class AggFunction(str, Enum):
@@ -575,6 +639,21 @@ class PatrolReloc(BaseModel):
     relocs_columns: List[str] = Field(..., title="Relocs Columns")
 
 
+class FetchAndPreprocessPatrolObservations(BaseModel):
+    patrol_obs: Optional[PatrolObs] = Field(
+        None, title="Get Patrol Observations from EarthRanger"
+    )
+    patrol_reloc: Optional[PatrolReloc] = Field(
+        None, title="Transform Observations to Relocations"
+    )
+    patrol_traj: Optional[PatrolTraj] = Field(
+        None, title="Transform Relocations to Trajectories"
+    )
+    traj_add_temporal_index: Optional[TrajAddTemporalIndex] = Field(
+        None, title="Add temporal index to Patrol Trajectories"
+    )
+
+
 class PatrolTrajMapLayers(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -586,6 +665,15 @@ class PatrolTrajMapLayers(BaseModel):
         None,
         description="If present, includes this layer in the map legend",
         title="Legend",
+    )
+
+
+class PatrolTrajectoriesMapLayers(BaseModel):
+    split_patrol_traj_groups: Optional[Dict[str, Any]] = Field(
+        None, title="Split Patrol Trajectories by Group"
+    )
+    patrol_traj_map_layers: Optional[PatrolTrajMapLayers] = Field(
+        None, title="Create map layer for each Patrol Trajectories group"
     )
 
 
@@ -605,7 +693,19 @@ class FilterPatrolEvents(BaseModel):
     )
 
 
-class PatrolEventsMapLayers(BaseModel):
+class FetchAndPreprocessPatrolEvents(BaseModel):
+    patrol_events: Optional[PatrolEvents] = Field(
+        None, title="Get Patrol Events from EarthRanger"
+    )
+    filter_patrol_events: Optional[FilterPatrolEvents] = Field(
+        None, title="Apply Relocation Coordinate Filter"
+    )
+    pe_add_temporal_index: Optional[PeAddTemporalIndex] = Field(
+        None, title="Add temporal index to Patrol Events"
+    )
+
+
+class PatrolEventsMapLayers1(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -616,6 +716,15 @@ class PatrolEventsMapLayers(BaseModel):
         None,
         description="If present, includes this layer in the map legend",
         title="Legend",
+    )
+
+
+class PatrolEventsMapLayers(BaseModel):
+    split_pe_groups: Optional[Dict[str, Any]] = Field(
+        None, title="Split Patrol Events by Group"
+    )
+    patrol_events_map_layers: Optional[PatrolEventsMapLayers1] = Field(
+        None, title="Create map layers for each Patrols Events group"
     )
 
 
@@ -646,7 +755,22 @@ class TrajPatrolEventsEcomap(BaseModel):
     )
 
 
-class PatrolEventsPieChart(BaseModel):
+class CombinedTrajectoriesAndPatrolEventsEcoMap(BaseModel):
+    traj_patrol_events_ecomap: Optional[TrajPatrolEventsEcomap] = Field(
+        None, title="Draw Ecomaps for each combined Trajectory and Patrol Events group"
+    )
+    traj_pe_ecomap_html_urls: Optional[TrajPeEcomapHtmlUrls] = Field(
+        None, title="Persist Patrols Ecomap as Text"
+    )
+    traj_pe_map_widgets_single_views: Optional[TrajPeMapWidgetsSingleViews] = Field(
+        None, title="Create Map Widgets for Patrol Events"
+    )
+    traj_pe_grouped_map_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge EcoMap Widget Views"
+    )
+
+
+class PatrolEventsPieChart1(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -674,6 +798,21 @@ class PatrolEventsPieChart(BaseModel):
         None,
         description="Additional kwargs passed to plotly.go.Figure(layout).",
         title="Layout Style",
+    )
+
+
+class PatrolEventsPieChart(BaseModel):
+    patrol_events_pie_chart: Optional[PatrolEventsPieChart1] = Field(
+        None, title="Draw Pie Chart for Patrols Events"
+    )
+    pe_pie_chart_html_urls: Optional[PePieChartHtmlUrls] = Field(
+        None, title="Persist Patrols Pie Chart as Text"
+    )
+    patrol_events_pie_chart_widgets: Optional[PatrolEventsPieChartWidgets] = Field(
+        None, title="Create Plot Widget for Patrol Events"
+    )
+    patrol_events_pie_widget_grouped: Optional[Dict[str, Any]] = Field(
+        None, title="Merge Pie Chart Widget Views"
     )
 
 
@@ -718,12 +857,26 @@ class TdEcomap(BaseModel):
     )
 
 
+class TimeDensityMap(BaseModel):
+    td: Optional[Td] = Field(None, title="Calculate Time Density from Trajectory")
+    td_map_layer: Optional[TdMapLayer] = Field(
+        None, title="Create map layer from Time Density"
+    )
+    td_ecomap: Optional[TdEcomap] = Field(None, title="Draw Ecomap from Time Density")
+    td_ecomap_html_url: Optional[TdEcomapHtmlUrl] = Field(
+        None, title="Persist Ecomap as Text"
+    )
+    td_map_widget: Optional[TdMapWidget] = Field(
+        None, title="Create Time Density Map Widget"
+    )
+
+
 class GroupedPlotStyle(BaseModel):
     category: str = Field(..., title="Category")
     plot_style: PlotCategoryStyle
 
 
-class PatrolEventsBarChart(BaseModel):
+class PatrolEventsBarChart1(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -770,106 +923,8 @@ class PatrolEventsBarChart(BaseModel):
     )
 
 
-class Params(BaseModel):
-    groupers: Optional[Groupers] = Field(None, title="Set Groupers")
-    patrol_obs: Optional[PatrolObs] = Field(
-        None, title="Get Patrol Observations from EarthRanger"
-    )
-    patrol_reloc: Optional[PatrolReloc] = Field(
-        None, title="Transform Observations to Relocations"
-    )
-    patrol_traj: Optional[PatrolTraj] = Field(
-        None, title="Transform Relocations to Trajectories"
-    )
-    traj_add_temporal_index: Optional[TrajAddTemporalIndex] = Field(
-        None, title="Add temporal index to Patrol Trajectories"
-    )
-    split_patrol_traj_groups: Optional[Dict[str, Any]] = Field(
-        None, title="Split Patrol Trajectories by Group"
-    )
-    patrol_traj_map_layers: Optional[PatrolTrajMapLayers] = Field(
-        None, title="Create map layer for each Patrol Trajectories group"
-    )
-    patrol_events: Optional[PatrolEvents] = Field(
-        None, title="Get Patrol Events from EarthRanger"
-    )
-    filter_patrol_events: Optional[FilterPatrolEvents] = Field(
-        None, title="Apply Relocation Coordinate Filter"
-    )
-    pe_add_temporal_index: Optional[PeAddTemporalIndex] = Field(
-        None, title="Add temporal index to Patrol Events"
-    )
-    split_pe_groups: Optional[Dict[str, Any]] = Field(
-        None, title="Split Patrol Events by Group"
-    )
-    patrol_events_map_layers: Optional[PatrolEventsMapLayers] = Field(
-        None, title="Create map layers for each Patrols Events group"
-    )
-    combined_traj_and_pe_map_layers: Optional[Dict[str, Any]] = Field(
-        None, title="Combine Trajectories and Patrol Events layers"
-    )
-    traj_patrol_events_ecomap: Optional[TrajPatrolEventsEcomap] = Field(
-        None, title="Draw Ecomaps for each combined Trajectory and Patrol Events group"
-    )
-    traj_pe_ecomap_html_urls: Optional[TrajPeEcomapHtmlUrls] = Field(
-        None, title="Persist Patrols Ecomap as Text"
-    )
-    traj_pe_map_widgets_single_views: Optional[TrajPeMapWidgetsSingleViews] = Field(
-        None, title="Create Map Widgets for Patrol Events"
-    )
-    traj_pe_grouped_map_widget: Optional[Dict[str, Any]] = Field(
-        None, title="Merge EcoMap Widget Views"
-    )
-    total_patrols: Optional[TotalPatrols] = Field(
-        None, title="Calculate Total Patrols Per Group"
-    )
-    total_patrols_sv_widgets: Optional[TotalPatrolsSvWidgets] = Field(
-        None, title="Create Single Value Widgets for Total Patrols Per Group"
-    )
-    total_patrols_grouped_sv_widget: Optional[Dict[str, Any]] = Field(
-        None, title="Merge per group Total Patrols SV widgets"
-    )
-    total_patrol_time: Optional[TotalPatrolTime] = Field(
-        None, title="Calculate Total Patrol Time Per Group"
-    )
-    total_patrol_time_converted: Optional[TotalPatrolTimeConverted] = Field(
-        None, title="Convert total patrol time units"
-    )
-    total_patrol_time_sv_widgets: Optional[TotalPatrolTimeSvWidgets] = Field(
-        None, title="Create Single Value Widgets for Total Patrol Time Per Group"
-    )
-    patrol_time_grouped_widget: Optional[Dict[str, Any]] = Field(
-        None, title="Merge per group Total Patrol Time SV widgets"
-    )
-    total_patrol_dist: Optional[TotalPatrolDist] = Field(
-        None, title="Calculate Total Distance Per Group"
-    )
-    total_patrol_dist_converted: Optional[TotalPatrolDistConverted] = Field(
-        None, title="Convert total patrol distance units"
-    )
-    total_patrol_dist_sv_widgets: Optional[TotalPatrolDistSvWidgets] = Field(
-        None, title="Create Single Value Widgets for Total Distance Per Group"
-    )
-    patrol_dist_grouped_widget: Optional[Dict[str, Any]] = Field(
-        None, title="Merge per group Total Patrol Distance SV widgets"
-    )
-    avg_speed: Optional[AvgSpeed] = Field(
-        None, title="Calculate Average Speed Per Group"
-    )
-    avg_speed_sv_widgets: Optional[AvgSpeedSvWidgets] = Field(
-        None, title="Create Single Value Widgets for Avg Speed Per Group"
-    )
-    avg_speed_grouped_widget: Optional[Dict[str, Any]] = Field(
-        None, title="Merge per group Avg Speed SV widgets"
-    )
-    max_speed: Optional[MaxSpeed] = Field(None, title="Calculate Max Speed Per Group")
-    max_speed_sv_widgets: Optional[MaxSpeedSvWidgets] = Field(
-        None, title="Create Single Value Widgets for Max Speed Per Group"
-    )
-    max_speed_grouped_widget: Optional[Dict[str, Any]] = Field(
-        None, title="Merge per group Max Speed SV widgets"
-    )
-    patrol_events_bar_chart: Optional[PatrolEventsBarChart] = Field(
+class PatrolEventsBarChart(BaseModel):
+    patrol_events_bar_chart: Optional[PatrolEventsBarChart1] = Field(
         None, title="Draw Time Series Bar Chart for Patrols Events"
     )
     patrol_events_bar_chart_html_url: Optional[PatrolEventsBarChartHtmlUrl] = Field(
@@ -878,28 +933,83 @@ class Params(BaseModel):
     patrol_events_bar_chart_widget: Optional[PatrolEventsBarChartWidget] = Field(
         None, title="Create Plot Widget for Patrol Events"
     )
-    patrol_events_pie_chart: Optional[PatrolEventsPieChart] = Field(
-        None, title="Draw Pie Chart for Patrols Events"
+
+
+class Params(BaseModel):
+    groupers: Optional[Groupers] = Field(None, title="Set Groupers")
+    Fetch_and_preprocess_patrol_observations: Optional[
+        FetchAndPreprocessPatrolObservations
+    ] = Field(
+        None,
+        alias="Fetch and preprocess patrol observations",
+        description="Fetch patrol observations from EarthRanger, preprocess them into trajectories, and add a temporal index.",
     )
-    pe_pie_chart_html_urls: Optional[PePieChartHtmlUrls] = Field(
-        None, title="Persist Patrols Pie Chart as Text"
+    Patrol_trajectories_map_layers: Optional[PatrolTrajectoriesMapLayers] = Field(
+        None,
+        alias="Patrol trajectories map layers",
+        description="Create map layers for each group of patrol trajectories.",
     )
-    patrol_events_pie_chart_widgets: Optional[PatrolEventsPieChartWidgets] = Field(
-        None, title="Create Plot Widget for Patrol Events"
+    Fetch_and_preprocess_patrol_events: Optional[FetchAndPreprocessPatrolEvents] = (
+        Field(
+            None,
+            alias="Fetch and preprocess patrol events",
+            description="Fetch patrol events from EarthRanger, filter them, and add a temporal index.",
+        )
     )
-    patrol_events_pie_widget_grouped: Optional[Dict[str, Any]] = Field(
-        None, title="Merge Pie Chart Widget Views"
+    Patrol_events_map_layers: Optional[PatrolEventsMapLayers] = Field(
+        None,
+        alias="Patrol events map layers",
+        description="Create map layers for each group of patrol events.",
     )
-    td: Optional[Td] = Field(None, title="Calculate Time Density from Trajectory")
-    td_map_layer: Optional[TdMapLayer] = Field(
-        None, title="Create map layer from Time Density"
+    combined_traj_and_pe_map_layers: Optional[Dict[str, Any]] = Field(
+        None, title="Combine Trajectories and Patrol Events layers"
     )
-    td_ecomap: Optional[TdEcomap] = Field(None, title="Draw Ecomap from Time Density")
-    td_ecomap_html_url: Optional[TdEcomapHtmlUrl] = Field(
-        None, title="Persist Ecomap as Text"
+    Combined_Trajectories_and_Patrol_Events_EcoMap: Optional[
+        CombinedTrajectoriesAndPatrolEventsEcoMap
+    ] = Field(
+        None,
+        alias="Combined Trajectories and Patrol Events EcoMap",
+        description="Draw EcoMaps for each combined Trajectory and Patrol Events group.",
     )
-    td_map_widget: Optional[TdMapWidget] = Field(
-        None, title="Create Time Density Map Widget"
+    Total_patrols_per_group: Optional[TotalPatrolsPerGroup] = Field(
+        None,
+        alias="Total patrols per group",
+        description="Create a single value widget for the total patrols per group.",
+    )
+    Total_patrol_time_per_group: Optional[TotalPatrolTimePerGroup] = Field(
+        None,
+        alias="Total patrol time per group",
+        description="Create a single value widget for the total patrol time per group.",
+    )
+    Total_distance_per_group: Optional[TotalDistancePerGroup] = Field(
+        None,
+        alias="Total distance per group",
+        description="Create a single value widget for the total distance per group.",
+    )
+    Average_speed_per_group: Optional[AverageSpeedPerGroup] = Field(
+        None,
+        alias="Average speed per group",
+        description="Create a single value widget for the average speed per group.",
+    )
+    Max_speed_per_group: Optional[MaxSpeedPerGroup] = Field(
+        None,
+        alias="Max speed per group",
+        description="Create a single value widget for the max speed per group.",
+    )
+    Patrol_events_bar_chart: Optional[PatrolEventsBarChart] = Field(
+        None,
+        alias="Patrol events bar chart",
+        description="Create the patrol events bar chart.",
+    )
+    Patrol_events_pie_chart: Optional[PatrolEventsPieChart] = Field(
+        None,
+        alias="Patrol events pie chart",
+        description="Create the patrol events pie chart.",
+    )
+    Time_Density_Map: Optional[TimeDensityMap] = Field(
+        None,
+        alias="Time Density Map",
+        description="Calculate time density from patrol trajectories and display it on a map.",
     )
     patrol_dashboard: Optional[PatrolDashboard] = Field(
         None, title="Create Dashboard with Patrol Map Widgets"

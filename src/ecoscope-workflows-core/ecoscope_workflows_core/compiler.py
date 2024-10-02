@@ -816,7 +816,7 @@ class DagCompiler(BaseModel):
 
     def build_pydot_graph(self) -> dot.Dot:
         graph = dot.Dot(self.spec.id, graph_type="graph", rankdir="LR")
-        for t in self.spec.workflow:
+        for t in self.spec.flat_workflow:
             label = (
                 "<<table border='1' cellspacing='0'>"
                 f"<tr><td port='{t.id}' border='1' bgcolor='grey'>{t.id}</td></tr>"
@@ -828,7 +828,7 @@ class DagCompiler(BaseModel):
             )
             node = dot.Node(t.id, shape="none", label=label)
             graph.add_node(node)
-        for t in self.spec.workflow:
+        for t in self.spec.flat_workflow:
             for arg, dep in t.all_dependencies_dict.items():
                 for d in dep:
                     edge = dot.Edge(

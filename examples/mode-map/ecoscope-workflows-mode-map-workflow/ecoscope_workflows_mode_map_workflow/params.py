@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "1f5d74c437542ff7b0cb9d58b9d2ceac5825c66bdc6e0efad0d3534eb72e3cf0"
+# from-spec-sha256 = "f6384cd0eb4688500ebe7cdcebbd33701ed8f127959ea65f15c2d45cff6c1ac6"
 
 
 from __future__ import annotations
@@ -66,6 +66,12 @@ class ObsC(BaseModel):
         description="Whether or not to include inactive subjects",
         title="Include Inactive",
     )
+
+
+class DataSources(BaseModel):
+    obs_a: Optional[ObsA] = Field(None, title="Get Observations A")
+    obs_b: Optional[ObsB] = Field(None, title="Get Observations B")
+    obs_c: Optional[ObsC] = Field(None, title="Get Observations C")
 
 
 class TdEcomapHtmlUrl(BaseModel):
@@ -233,14 +239,22 @@ class Ecomaps(BaseModel):
     )
 
 
-class Params(BaseModel):
-    obs_a: Optional[ObsA] = Field(None, title="Get Observations A")
-    obs_b: Optional[ObsB] = Field(None, title="Get Observations B")
-    obs_c: Optional[ObsC] = Field(None, title="Get Observations C")
+class CreateMaps(BaseModel):
     map_layers: Optional[MapLayers] = Field(
         None, title="Create Map Layer For Each Group"
     )
     ecomaps: Optional[Ecomaps] = Field(None, title="Create EcoMap For Each Group")
     td_ecomap_html_url: Optional[TdEcomapHtmlUrl] = Field(
         None, title="Persist Ecomaps as Text"
+    )
+
+
+class Params(BaseModel):
+    Data_Sources: Optional[DataSources] = Field(
+        None,
+        alias="Data Sources",
+        description="Fetching observations from three independent data sources.",
+    )
+    Create_maps: Optional[CreateMaps] = Field(
+        None, alias="Create maps", description="Create maps for each group."
     )

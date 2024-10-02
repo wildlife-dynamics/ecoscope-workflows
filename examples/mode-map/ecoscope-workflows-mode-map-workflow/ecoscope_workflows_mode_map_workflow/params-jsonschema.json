@@ -1,230 +1,256 @@
 {
   "title": "Params",
   "properties": {
-    "obs_a": {
-      "additionalProperties": false,
-      "properties": {
-        "client": {
-          "description": "A named EarthRanger connection.",
-          "title": "Client",
-          "type": "string"
-        },
-        "subject_group_name": {
-          "title": "Subject Group Name",
-          "type": "string",
-          "description": "Name of EarthRanger Subject"
-        },
-        "since": {
-          "format": "date-time",
-          "title": "Since",
-          "type": "string",
-          "description": "Start date"
-        },
-        "until": {
-          "format": "date-time",
-          "title": "Until",
-          "type": "string",
-          "description": "End date"
-        },
-        "include_inactive": {
-          "default": true,
-          "title": "Include Inactive",
-          "type": "boolean",
-          "description": "Whether or not to include inactive subjects"
-        }
-      },
-      "required": [
-        "client",
-        "subject_group_name",
-        "since",
-        "until"
-      ],
+    "Data Sources": {
       "type": "object",
-      "title": "Get Observations A"
-    },
-    "obs_b": {
-      "additionalProperties": false,
+      "description": "Fetching observations from three independent data sources.",
       "properties": {
-        "client": {
-          "description": "A named EarthRanger connection.",
-          "title": "Client",
-          "type": "string"
-        },
-        "subject_group_name": {
-          "title": "Subject Group Name",
-          "type": "string",
-          "description": "Name of EarthRanger Subject"
-        },
-        "since": {
-          "format": "date-time",
-          "title": "Since",
-          "type": "string",
-          "description": "Start date"
-        },
-        "until": {
-          "format": "date-time",
-          "title": "Until",
-          "type": "string",
-          "description": "End date"
-        },
-        "include_inactive": {
-          "default": true,
-          "title": "Include Inactive",
-          "type": "boolean",
-          "description": "Whether or not to include inactive subjects"
-        }
-      },
-      "required": [
-        "client",
-        "subject_group_name",
-        "since",
-        "until"
-      ],
-      "type": "object",
-      "title": "Get Observations B"
-    },
-    "obs_c": {
-      "additionalProperties": false,
-      "properties": {
-        "client": {
-          "description": "A named EarthRanger connection.",
-          "title": "Client",
-          "type": "string"
-        },
-        "subject_group_name": {
-          "title": "Subject Group Name",
-          "type": "string",
-          "description": "Name of EarthRanger Subject"
-        },
-        "since": {
-          "format": "date-time",
-          "title": "Since",
-          "type": "string",
-          "description": "Start date"
-        },
-        "until": {
-          "format": "date-time",
-          "title": "Until",
-          "type": "string",
-          "description": "End date"
-        },
-        "include_inactive": {
-          "default": true,
-          "title": "Include Inactive",
-          "type": "boolean",
-          "description": "Whether or not to include inactive subjects"
-        }
-      },
-      "required": [
-        "client",
-        "subject_group_name",
-        "since",
-        "until"
-      ],
-      "type": "object",
-      "title": "Get Observations C"
-    },
-    "map_layers": {
-      "additionalProperties": false,
-      "properties": {
-        "layer_style": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/PolylineLayerStyle"
+        "obs_a": {
+          "additionalProperties": false,
+          "properties": {
+            "client": {
+              "description": "A named EarthRanger connection.",
+              "title": "Client",
+              "type": "string"
             },
-            {
-              "$ref": "#/$defs/PolygonLayerStyle"
+            "subject_group_name": {
+              "title": "Subject Group Name",
+              "type": "string",
+              "description": "Name of EarthRanger Subject"
             },
-            {
-              "$ref": "#/$defs/PointLayerStyle"
-            }
-          ],
-          "title": "Layer Style",
-          "description": "Style arguments for the layer."
-        },
-        "legend": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/LegendDefinition"
-            }
-          ],
-          "default": null,
-          "title": "Legend",
-          "description": "If present, includes this layer in the map legend"
-        }
-      },
-      "required": [
-        "layer_style"
-      ],
-      "type": "object",
-      "title": "Create Map Layer For Each Group"
-    },
-    "ecomaps": {
-      "additionalProperties": false,
-      "properties": {
-        "tile_layer": {
-          "default": "",
-          "title": "Tile Layer",
-          "type": "string",
-          "description": "A named tile layer, ie OpenStreetMap."
-        },
-        "static": {
-          "default": false,
-          "title": "Static",
-          "type": "boolean",
-          "description": "Set to true to disable map pan/zoom."
-        },
-        "title": {
-          "default": "",
-          "title": "Title",
-          "type": "string",
-          "description": "The map title."
-        },
-        "north_arrow_style": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/NorthArrowStyle"
-            }
-          ],
-          "default": {
-            "placement": "top-left",
-            "style": {
-              "transform": "scale(0.8)"
+            "since": {
+              "format": "date-time",
+              "title": "Since",
+              "type": "string",
+              "description": "Start date"
+            },
+            "until": {
+              "format": "date-time",
+              "title": "Until",
+              "type": "string",
+              "description": "End date"
+            },
+            "include_inactive": {
+              "default": true,
+              "title": "Include Inactive",
+              "type": "boolean",
+              "description": "Whether or not to include inactive subjects"
             }
           },
-          "title": "North Arrow Style",
-          "description": "Additional arguments for configuring the North Arrow."
-        },
-        "legend_style": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/LegendStyle"
-            }
+          "required": [
+            "client",
+            "subject_group_name",
+            "since",
+            "until"
           ],
-          "default": {
-            "placement": "bottom-right"
+          "type": "object",
+          "title": "Get Observations A"
+        },
+        "obs_b": {
+          "additionalProperties": false,
+          "properties": {
+            "client": {
+              "description": "A named EarthRanger connection.",
+              "title": "Client",
+              "type": "string"
+            },
+            "subject_group_name": {
+              "title": "Subject Group Name",
+              "type": "string",
+              "description": "Name of EarthRanger Subject"
+            },
+            "since": {
+              "format": "date-time",
+              "title": "Since",
+              "type": "string",
+              "description": "Start date"
+            },
+            "until": {
+              "format": "date-time",
+              "title": "Until",
+              "type": "string",
+              "description": "End date"
+            },
+            "include_inactive": {
+              "default": true,
+              "title": "Include Inactive",
+              "type": "boolean",
+              "description": "Whether or not to include inactive subjects"
+            }
           },
-          "title": "Legend Style",
-          "description": "Additional arguments for configuring the legend."
+          "required": [
+            "client",
+            "subject_group_name",
+            "since",
+            "until"
+          ],
+          "type": "object",
+          "title": "Get Observations B"
+        },
+        "obs_c": {
+          "additionalProperties": false,
+          "properties": {
+            "client": {
+              "description": "A named EarthRanger connection.",
+              "title": "Client",
+              "type": "string"
+            },
+            "subject_group_name": {
+              "title": "Subject Group Name",
+              "type": "string",
+              "description": "Name of EarthRanger Subject"
+            },
+            "since": {
+              "format": "date-time",
+              "title": "Since",
+              "type": "string",
+              "description": "Start date"
+            },
+            "until": {
+              "format": "date-time",
+              "title": "Until",
+              "type": "string",
+              "description": "End date"
+            },
+            "include_inactive": {
+              "default": true,
+              "title": "Include Inactive",
+              "type": "boolean",
+              "description": "Whether or not to include inactive subjects"
+            }
+          },
+          "required": [
+            "client",
+            "subject_group_name",
+            "since",
+            "until"
+          ],
+          "type": "object",
+          "title": "Get Observations C"
         }
       },
-      "required": [],
-      "type": "object",
-      "title": "Create EcoMap For Each Group"
+      "uiSchema": {
+        "ui:order": [
+          "obs_a",
+          "obs_b",
+          "obs_c"
+        ]
+      }
     },
-    "td_ecomap_html_url": {
-      "additionalProperties": false,
+    "Create maps": {
+      "type": "object",
+      "description": "Create maps for each group.",
       "properties": {
-        "filename": {
-          "default": null,
-          "title": "Filename",
-          "type": "string",
-          "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+        "map_layers": {
+          "additionalProperties": false,
+          "properties": {
+            "layer_style": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/PolylineLayerStyle"
+                },
+                {
+                  "$ref": "#/$defs/PolygonLayerStyle"
+                },
+                {
+                  "$ref": "#/$defs/PointLayerStyle"
+                }
+              ],
+              "title": "Layer Style",
+              "description": "Style arguments for the layer."
+            },
+            "legend": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/LegendDefinition"
+                }
+              ],
+              "default": null,
+              "title": "Legend",
+              "description": "If present, includes this layer in the map legend"
+            }
+          },
+          "required": [
+            "layer_style"
+          ],
+          "type": "object",
+          "title": "Create Map Layer For Each Group"
+        },
+        "ecomaps": {
+          "additionalProperties": false,
+          "properties": {
+            "tile_layer": {
+              "default": "",
+              "title": "Tile Layer",
+              "type": "string",
+              "description": "A named tile layer, ie OpenStreetMap."
+            },
+            "static": {
+              "default": false,
+              "title": "Static",
+              "type": "boolean",
+              "description": "Set to true to disable map pan/zoom."
+            },
+            "title": {
+              "default": "",
+              "title": "Title",
+              "type": "string",
+              "description": "The map title."
+            },
+            "north_arrow_style": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/NorthArrowStyle"
+                }
+              ],
+              "default": {
+                "placement": "top-left",
+                "style": {
+                  "transform": "scale(0.8)"
+                }
+              },
+              "title": "North Arrow Style",
+              "description": "Additional arguments for configuring the North Arrow."
+            },
+            "legend_style": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/LegendStyle"
+                }
+              ],
+              "default": {
+                "placement": "bottom-right"
+              },
+              "title": "Legend Style",
+              "description": "Additional arguments for configuring the legend."
+            }
+          },
+          "required": [],
+          "type": "object",
+          "title": "Create EcoMap For Each Group"
+        },
+        "td_ecomap_html_url": {
+          "additionalProperties": false,
+          "properties": {
+            "filename": {
+              "default": null,
+              "title": "Filename",
+              "type": "string",
+              "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+            }
+          },
+          "required": [],
+          "type": "object",
+          "title": "Persist Ecomaps as Text"
         }
       },
-      "required": [],
-      "type": "object",
-      "title": "Persist Ecomaps as Text"
+      "uiSchema": {
+        "ui:order": [
+          "map_layers",
+          "ecomaps",
+          "td_ecomap_html_url"
+        ]
+      }
     }
   },
   "$defs": {
@@ -671,5 +697,11 @@
       "title": "NorthArrowStyle",
       "type": "object"
     }
+  },
+  "uiSchema": {
+    "ui:order": [
+      "Data Sources",
+      "Create maps"
+    ]
   }
 }

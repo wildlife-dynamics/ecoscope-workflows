@@ -1266,5 +1266,39 @@
       "title": "GroupedWidget",
       "type": "object"
     }
+  },
+  "uiSchema": {
+    "ui:order": [
+      "groupers",
+      "subject_obs",
+      "subject_reloc",
+      "subject_traj",
+      "traj_add_temporal_index",
+      "split_subject_traj_groups",
+      "traj_map_layers",
+      "traj_ecomap",
+      "ecomap_html_urls",
+      "traj_map_widgets_single_views",
+      "traj_grouped_map_widget",
+      "mean_speed",
+      "mean_speed_sv_widgets",
+      "mean_speed_grouped_sv_widget",
+      "max_speed",
+      "max_speed_sv_widgets",
+      "max_speed_grouped_sv_widget",
+      "num_location",
+      "num_location_sv_widgets",
+      "num_location_grouped_sv_widget",
+      "daynight_ratio",
+      "daynight_ratio_sv_widgets",
+      "daynight_ratio_grouped_sv_widget",
+      "td",
+      "td_map_layer",
+      "td_ecomap",
+      "td_ecomap_html_url",
+      "td_map_widget",
+      "td_grouped_map_widget",
+      "subject_tracking_dashboard"
+    ]
   }
 }

@@ -1809,5 +1809,46 @@
       "title": "GroupedWidget",
       "type": "object"
     }
+  },
+  "uiSchema": {
+    "ui:order": [
+      "groupers",
+      "pe",
+      "filter_patrol_events",
+      "pe_add_temporal_index",
+      "pe_colormap",
+      "pe_map_layer",
+      "pe_ecomap",
+      "pe_ecomap_html_url",
+      "pe_map_widget",
+      "pe_bar_chart",
+      "pe_bar_chart_html_url",
+      "pe_bar_chart_widget",
+      "pe_meshgrid",
+      "pe_feature_density",
+      "fd_colormap",
+      "fd_map_layer",
+      "fd_ecomap",
+      "fd_ecomap_html_url",
+      "fd_map_widget",
+      "split_patrol_event_groups",
+      "grouped_pe_map_layer",
+      "grouped_pe_ecomap",
+      "grouped_pe_ecomap_html_url",
+      "grouped_pe_map_widget",
+      "grouped_pe_map_widget_merge",
+      "grouped_pe_pie_chart",
+      "grouped_pe_pie_chart_html_urls",
+      "grouped_pe_pie_chart_widgets",
+      "grouped_pe_pie_widget_merge",
+      "grouped_pe_feature_density",
+      "grouped_fd_colormap",
+      "grouped_fd_map_layer",
+      "grouped_fd_ecomap",
+      "grouped_fd_ecomap_html_url",
+      "grouped_fd_map_widget",
+      "grouped_fd_map_widget_merge",
+      "patrol_dashboard"
+    ]
   }
 }
