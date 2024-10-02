@@ -561,46 +561,58 @@ class DagCompiler(BaseModel):
             for t in self.spec.flat_workflow
         }
 
-    def get_params_jsonschema(self) -> dict[str, Any]:
-        def _props_and_defs_from_task_instance(
-            t: TaskInstance,
-            omit_args: list[str],
-        ) -> tuple[dict, dict]:
-            props = {t.id: t.known_task.parameters_jsonschema(omit_args=omit_args)}
-            defs = {}
-            for _, schema in props.items():
-                schema["title"] = t.name
-                if "$defs" in schema:
-                    defs.update(schema["$defs"])
-                    del schema["$defs"]
-            return props, defs
+    @staticmethod
+    def _props_and_defs_from_task_instance(
+        t: TaskInstance,
+        omit_args: list[str],
+    ) -> tuple[dict, dict]:
+        props = {t.id: t.known_task.parameters_jsonschema(omit_args=omit_args)}
+        defs = {}
+        for _, schema in props.items():
+            schema["title"] = t.name
+            if "$defs" in schema:
+                defs.update(schema["$defs"])
+                del schema["$defs"]
+        return props, defs
 
+    def get_params_jsonschema(self, flat: bool = True) -> dict[str, Any]:
         properties: dict[str, Any] = {}
         definitions: dict[str, Any] = {}
-        for group_or_instance in self.spec.workflow:
-            match group_or_instance:
-                case TaskGroup(
-                    title=title, description=description, tasks=task_instances
-                ):
-                    grouped_props: dict[str, str | dict] = {
-                        "type": "object",
-                        "description": description,
-                        "properties": {},
-                    }
-                    for t in task_instances:
+        if flat:
+            for t in self.spec.flat_workflow:
+                omit_args = self.per_taskinstance_omit_args.get(t.id, [])
+                props, defs = self._props_and_defs_from_task_instance(t, omit_args)
+                properties |= props
+                definitions |= defs
+        else:
+            for group_or_instance in self.spec.workflow:
+                match group_or_instance:
+                    case TaskGroup(
+                        title=title, description=description, tasks=task_instances
+                    ):
+                        grouped_props: dict[str, str | dict] = {
+                            "type": "object",
+                            "description": description,
+                            "properties": {},
+                        }
+                        for t in task_instances:
+                            omit_args = self.per_taskinstance_omit_args.get(t.id, [])
+                            props, defs = self._props_and_defs_from_task_instance(
+                                t, omit_args
+                            )
+                            grouped_props["properties"] |= props  # type: ignore[operator]
+                            definitions |= defs
+                        grouped_props["uiSchema"] = {
+                            "ui:order": [prop for prop in grouped_props["properties"]]
+                        }
+                        properties[title] = grouped_props
+                    case TaskInstance() as t:
                         omit_args = self.per_taskinstance_omit_args.get(t.id, [])
-                        props, defs = _props_and_defs_from_task_instance(t, omit_args)
-                        grouped_props["properties"] |= props  # type: ignore[operator]
+                        props, defs = self._props_and_defs_from_task_instance(
+                            t, omit_args
+                        )
+                        properties |= props
                         definitions |= defs
-                    grouped_props["uiSchema"] = {
-                        "ui:order": [prop for prop in grouped_props["properties"]]
-                    }
-                    properties[title] = grouped_props
-                case TaskInstance() as t:
-                    omit_args = self.per_taskinstance_omit_args.get(t.id, [])
-                    props, defs = _props_and_defs_from_task_instance(t, omit_args)
-                    properties |= props
-                    definitions |= defs
 
         react_json_schema_form = ReactJSONSchemaFormConfiguration(properties=properties)
         react_json_schema_form.definitions = definitions
@@ -800,16 +812,16 @@ class DagCompiler(BaseModel):
         )
 
     def get_package(self) -> PackageDirectory:
-        params_jsonschema = self.get_params_jsonschema()
         return PackageDirectory(
             dags=self.get_dags(),
             **{
                 "app.py": self.ruffrender("pkg/app.jinja2"),
                 "cli.py": self.ruffrender("pkg/cli.jinja2"),
                 "dispatch.py": self.ruffrender("pkg/dispatch.jinja2"),
-                "params-jsonschema.json": params_jsonschema,
+                "params-jsonschema.json": self.get_params_jsonschema(flat=False),
                 "params.py": self.generate_params_model(
-                    params_jsonschema, self.file_header
+                    self.get_params_jsonschema(flat=True),
+                    self.file_header,
                 ),
             },
         )
