@@ -23,31 +23,58 @@ examples
 where:
 
 - `EXAMPLE-NAME` is the workflow author's selected name for this example
-- `spec.yaml` is the specification defining
-- `test-cases.yaml` is a user
-- `ecoscope-workflows-<EXAMPLE-NAME>-workflow` is the dynamically generated package. _**Note**: All code in this subdirectory is machine-generated. It should not be manually edited._
+- `spec.yaml` is the YAML specification defining the workflow
+- `test-cases.yaml` defines 1 or more test cases that the compiled workflow, inclusive of example parameters and expected outputs, which can be used to test the workflow after it has been compiled.
+- `ecoscope-workflows-<EXAMPLE-NAME>-workflow` is the dynamically generated package. _**Note**: All code in this subdirectory is machine-generated._
 
 
 ## Development
 
+Development functions for all of packages in this repo can be run via `pixi` from the repo root. To do so:
 
+1. [Install `pixi`](https://pixi.sh/latest/#installation)
+2. From the repo root, call:
+   ```console
+   $ pixi run --manifest-path pixi.toml -e default <TASK>
+   ```
+   where `<TASK>` is one of the tasks defined in the repo root `pixi.toml`.
 
-## Why pixi?
+Tasks defined in `pixi.toml` include logic for:
+- (re)compiling example workflows
+- linting, formatting, and type checking
+- pytest
+- building and running docker containers
+- building and releasing conda packages from the packages defined in this repo (and their dependencies)
 
-| feature            | pip | poetry | conda | mamba | micromamba | pixi.sh |
-| ---------------    | --- | ------ | ----- | ----- | ---------- | ------- |
-| python deps        |  ✅ |   ✅   | ✅    | ✅    | ✅         |  ✅     |
-| conda-compatible   |  ❌ |   ❌   | ✅    | ✅    | ✅         |  ✅     |
-| native lockfiles   |  ❌ |   ✅   | ❌    | ❌    | ❌         |  ✅     |
-| performance        |  ✅ |   ✅   | ❌    | 🤷    | 🤷         |  🔥     |
+> **Note**: For the most part, these `pixi` tasks wrap logic defined in the `dev/*.sh` scripts in
+this repo. If you prefer, you may call them directly.
 
+## What environment(s) are these tasks run in?
 
-## Examples
+In every package in this repo has it's own `pixi` manifest file (either `pixi.toml` or `pyproject.
+toml`) defining dependencies, tasks, _and_ environments for the project. These docs on [environment
+vs. project](https://pixi.sh/latest/switching_from/conda/#environment-vs-project) are a useful
+refernce for those not used this project-based approach to environments.
 
-To recompile all examples in the `examples/` directory
+> **Note**: The fact that we are managing multiple projects in the same repo means that using the
+`--manifest-path` option to explicitly declare which project you are using for a particular
+invocation tends to be a good idea.
 
-1. [Install pixi](https://pixi.sh/latest/#installation)
-2. From the repo root, run:
-    ```console
-    $ pixi run --manifest-path pixi.toml recompile-all
-    ```
+## When am I running an editable install of the `src/` packages?
+
+There are two flavors for how the `ecoscope-workflows-core` and `ecoscope-workflows-ext-ecoscope`
+(collectively, the `src/` packages) are installed in the various `pixi` project environments:
+
+1. In the context of testing the `src/` packages themselves, the environments associated with
+these projects use [editable installs](https://pixi.sh/latest/reference/project_configuration/#pypi-dependencies:~:text=Set%20editable%20to%20true%20to%20install%20in%20editable%20mode%2C%20this%20is%20highly%20recommended%20as%20it%20is%20hard%20to%20reinstall%20if%20you%27re%20not%20using%20editable%20mode.%20e.g.%20editable%20%3D%20true) for the `src/` packages.
+2. For the `examples` project environments, the `src/` packages are _**not installed in editable
+mode**_ but rather from an ephemeral local "release" (i.e. conda package) built from the `src/`
+packages. This choice was made to align dependencies management in the `examples` with the way
+in which released workflows manage dependencies. The trade-off for this "realism" is an additional
+step in the development process; namely, re-building the local "release" if new changes from `src/`
+are required for testing the example workflows.
+
+> **Note**: Pixi tasks support [caching](https://pixi.sh/latest/features/advanced_tasks/#caching),
+and we currently do use caching to attempt to avoid unecessary re-builds of the local `src/` releases.
+However, please be aware that tuning this logic remains a work-in-progress and further work needs to
+be done to ensure that these cached builds are being re-built at the appropriate times.
