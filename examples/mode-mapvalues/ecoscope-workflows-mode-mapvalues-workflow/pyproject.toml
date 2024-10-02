@@ -1,7 +1,11 @@
+# [generated]
+# by = { compiler = "ecoscope-workflows-core", version = "9999" }
+# from-spec-sha256 = "7f7a2953093d602c7a7746ca4822e4f6c3498150d973f09f090ad62a8b580361"
+
 [project]
 name = "ecoscope-workflows-mode-mapvalues-workflow"
 version = "0.0.0"  # todo: versioning
 requires-python = ">=3.10"  # TODO: sync with ecoscope-workflows-core
 description = ""  # TODO: description from spec
 license = { text = "BSD-3-Clause" }
-scripts = { ecoscope-workflows-mode-mapvalues-workflow = "ecoscope_workflows_mode_mapvalues_workflow.main:main" }
+scripts = { ecoscope-workflows-mode-mapvalues-workflow = "ecoscope_workflows_mode_mapvalues_workflow.cli:main" }

@@ -62,14 +62,15 @@ jinja2 = "*"
 pandera = "*"
 pydantic = "<2.9.0"
 pydantic-settings = "*"
-py-rattler = ">=0.6.3,<0.7"
+py-rattler = ">=0.7.0,<0.8"
 "ruamel.yaml" = "*"
 ruff = "*"
 tomli-w = "*"
 # todo: split into optional package variants? (e.g. "ecoscope-workflows.core[gs,lithops]")
 # this is just a lot simpler for now, and in most cases we will want these dependencies
+datamodel-code-generator = "*"
 cloudpathlib-gs = "*"
-lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
+lithops = { version = "==3.5.1cisaacstern", channel = "https://prefix.dev/ecoscope-workflows" }
 pydot = "*"
 # additional dependencies added by this extension
 ecoscope = { version = "v1.8.3", channel = "https://prefix.dev/ecoscope-workflows" }
@@ -79,7 +80,7 @@ plugins = ["pandera.mypy", "pydantic.mypy"]
 [tool.pixi.feature.mypy]
 dependencies = { mypy = "*", pandas-stubs = "*", pandera-mypy = "*" }
 pypi-dependencies = { types-shapely = "*" }
-tasks = { mypy = "mypy --package ecoscope_workflows_ext_ecoscope --package tests" }
+tasks = { mypy = "mypy --package ecoscope_workflows_ext_ecoscope --package tests --no-incremental" }
 
 [tool.pixi.feature.py310.dependencies]
 python = "3.10.*"

@@ -1,16 +1,11 @@
 id: subject_tracking
 requirements:
-  compile:
-    - name: ecoscope-workflows-core
-      version: "*"
-      channel: file:///tmp/ecoscope-workflows/release/artifacts/
-  run:
-    - name: ecoscope-workflows-core
-      version: "*"
-      channel: file:///tmp/ecoscope-workflows/release/artifacts/
-    - name: ecoscope-workflows-ext-ecoscope
-      version: "*"
-      channel: file:///tmp/ecoscope-workflows/release/artifacts/
+  - name: ecoscope-workflows-core
+    version: "*"
+    channel: file:///tmp/ecoscope-workflows/release/artifacts/
+  - name: ecoscope-workflows-ext-ecoscope
+    version: "*"
+    channel: file:///tmp/ecoscope-workflows/release/artifacts/
 workflow:
   # set 'global' groupers
   - name: Set Groupers

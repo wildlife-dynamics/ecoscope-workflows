@@ -1,3 +1,7 @@
+# [generated]
+# by = { compiler = "ecoscope-workflows-core", version = "9999" }
+# from-spec-sha256 = "7f7a2953093d602c7a7746ca4822e4f6c3498150d973f09f090ad62a8b580361"
+
 # ruff: noqa: E402
 
 """WARNING: This file is generated in a testing context and should not be used in production.
@@ -5,6 +9,7 @@ Lines specific to the testing context are marked with a test tube emoji (🧪) t
 that they would not be included (or would be different) in the production version of this file.
 """
 
+import json
 import os
 import warnings  # 🧪
 from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
@@ -25,9 +30,13 @@ from ecoscope_workflows_core.tasks.results import create_map_widget_single_view
 from ecoscope_workflows_core.tasks.results import merge_widget_views
 from ecoscope_workflows_core.tasks.results import gather_dashboard
 
+from ..params import Params
 
-def main(params: dict):
+
+def main(params: Params):
     warnings.warn("This test script should not be used in production!")  # 🧪
+
+    params_dict = json.loads(params.model_dump_json(exclude_unset=True))
 
     dependencies = {
         "patrol_events": [],
@@ -44,12 +53,12 @@ def main(params: dict):
     nodes = {
         "patrol_events": Node(
             async_task=get_patrol_events.validate().set_executor("lithops"),
-            partial=params["patrol_events"],
+            partial=params_dict["patrol_events"],
             method="call",
         ),
         "groupers": Node(
             async_task=set_groupers.validate().set_executor("lithops"),
-            partial=params["groupers"],
+            partial=params_dict["groupers"],
             method="call",
         ),
         "split_obs": Node(
@@ -58,12 +67,12 @@ def main(params: dict):
                 "df": DependsOn("patrol_events"),
                 "groupers": DependsOn("groupers"),
             }
-            | params["split_obs"],
+            | params_dict["split_obs"],
             method="call",
         ),
         "map_layers": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
-            partial=params["map_layers"],
+            partial=params_dict["map_layers"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geodataframe"],
@@ -72,7 +81,7 @@ def main(params: dict):
         ),
         "ecomaps": Node(
             async_task=draw_ecomap.validate().set_executor("lithops"),
-            partial=params["ecomaps"],
+            partial=params_dict["ecomaps"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geo_layers"],
@@ -84,7 +93,7 @@ def main(params: dict):
             partial={
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
-            | params["ecomaps_persist"],
+            | params_dict["ecomaps_persist"],
             method="mapvalues",
             kwargs={
                 "argnames": ["text"],
@@ -93,7 +102,7 @@ def main(params: dict):
         ),
         "ecomap_widgets": Node(
             async_task=create_map_widget_single_view.validate().set_executor("lithops"),
-            partial=params["ecomap_widgets"],
+            partial=params_dict["ecomap_widgets"],
             method="map",
             kwargs={
                 "argnames": ["view", "data"],
@@ -105,7 +114,7 @@ def main(params: dict):
             partial={
                 "widgets": DependsOn("ecomap_widgets"),
             }
-            | params["ecomap_widgets_merged"],
+            | params_dict["ecomap_widgets_merged"],
             method="call",
         ),
         "dashboard": Node(
@@ -114,7 +123,7 @@ def main(params: dict):
                 "widgets": DependsOn("ecomap_widgets_merged"),
                 "groupers": DependsOn("groupers"),
             }
-            | params["dashboard"],
+            | params_dict["dashboard"],
             method="call",
         ),
     }

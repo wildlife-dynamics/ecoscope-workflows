@@ -26,8 +26,9 @@ PLATFORMS: list[Platform] = [
 ]
 
 
-# FIXME: workaround for https://github.com/conda/rattler/issues/869
-# this override can be removed once the issue is resolved.
+# Workaround for https://github.com/conda/rattler/issues/884
+# This can be removed once the issue is resolved, and the
+# associated type-ignore below can be removed as well.
 class NamelessMatchSpec(_NamelessMatchSpec):
     @property
     def channel(self):
@@ -76,21 +77,11 @@ PlatformType = Annotated[
 def _namelessmatchspec_from_dict(value: dict[str, str]) -> NamelessMatchSpec:
     assert "version" in value, f"Expected 'version' key in {value}"
     assert "channel" in value, f"Expected 'channel' key in {value}"
-    # FIXME: workaround for https://github.com/conda/rattler/issues/869
-    # this conditional block can be removed once the issue is resolved.
-    match value["channel"]:
-        case _ if value["channel"] in [
-            c.base_url for c in (LOCAL_CHANNEL, RELEASE_CHANNEL)
-        ]:
-            channel = next(c.name for c in CHANNELS if c.base_url == value["channel"])
-        case str("conda-forge"):
-            channel = value["channel"]
-        case _:
-            raise ValueError(f"Unknown channel {value['channel']}")
+    channel = next(c.name for c in CHANNELS if c.base_url == value["channel"])
     foo_pkg = "foo"  # placeholder to use from_match_spec constructor
     m = MatchSpec(f"{channel}::{foo_pkg} {value['version']}")
     # FIXME: this type error is a side effect of the override for NamelessMatchSpec
-    # and can be removed once the issue linked there is resolved.
+    # and can be removed once the override is removed.
     return NamelessMatchSpec.from_match_spec(m)  # type: ignore[return-value]
 
 
@@ -105,21 +96,7 @@ def _parse_namelessmatchspec(value: str | dict) -> NamelessMatchSpec:
 
 
 def _serialize_namelessmatchspec(value: NamelessMatchSpec) -> dict:
-    # FIXME: workaround for https://github.com/conda/rattler/issues/869
-    # this conditional block can be removed once the issue is resolved.
-    match value.channel:
-        case None:
-            channel = None
-        case c if c.base_url in [
-            channel.base_url for channel in (LOCAL_CHANNEL, RELEASE_CHANNEL)
-        ]:
-            channel = next(
-                c.base_url for c in CHANNELS if c.base_url == value.channel.base_url
-            )
-        case str("conda-forge"):
-            channel = c
-        case _:
-            raise ValueError(f"Unknown channel {value.channel}")
+    channel = value.channel.base_url if value.channel else None
     return {"version": str(value.version)} | ({"channel": channel} if channel else {})
 
 

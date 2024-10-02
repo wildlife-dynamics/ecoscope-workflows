@@ -51,14 +51,15 @@ jinja2 = "*"
 pandera = "*"
 pydantic = "<2.9.0"
 pydantic-settings = "*"
-py-rattler = ">=0.6.3,<0.7"
+py-rattler = ">=0.7.0,<0.8"
 "ruamel.yaml" = "*"
 ruff = "*"
 tomli-w = "*"
 # todo: split into optional package variants? (e.g. "ecoscope-workflows-core[gs,lithops,viz]")
 # this is just a lot simpler for now, and in most cases we will want these dependencies
+datamodel-code-generator = "*"
 cloudpathlib-gs = "*"
-lithops = { version = ">=3.4.1", channel = "https://prefix.dev/ecoscope-workflows" }
+lithops = { version = "==3.5.1cisaacstern", channel = "https://prefix.dev/ecoscope-workflows" }
 pydot = "*"
 
 [tool.pixi.feature.docs.dependencies]

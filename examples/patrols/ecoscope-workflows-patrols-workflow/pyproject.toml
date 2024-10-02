@@ -1,7 +1,11 @@
+# [generated]
+# by = { compiler = "ecoscope-workflows-core", version = "9999" }
+# from-spec-sha256 = "f125a6e84a7bc2e8aa6f1059f0833e75cf111d9d58b7faaf86cbdf88367c6173"
+
 [project]
 name = "ecoscope-workflows-patrols-workflow"
 version = "0.0.0"  # todo: versioning
 requires-python = ">=3.10"  # TODO: sync with ecoscope-workflows-core
 description = ""  # TODO: description from spec
 license = { text = "BSD-3-Clause" }
-scripts = { ecoscope-workflows-patrols-workflow = "ecoscope_workflows_patrols_workflow.main:main" }
+scripts = { ecoscope-workflows-patrols-workflow = "ecoscope_workflows_patrols_workflow.cli:main" }

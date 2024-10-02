@@ -1,3 +1,7 @@
+# [generated]
+# by = { compiler = "ecoscope-workflows-core", version = "9999" }
+# from-spec-sha256 = "dbd5d1e849d563a960b79092a76344443552af398e1130c4a4de5cd893ce91e0"
+
 [project]
 name = "ecoscope-workflows-patrol-events-workflow"
 channels = [
@@ -11,6 +15,18 @@ platforms = [
     "osx-arm64",
 ]
 
+[dependencies.fastapi]
+version = "*"
+
+[dependencies.httpx]
+version = "*"
+
+[dependencies.uvicorn]
+version = "*"
+
+[dependencies."ruamel.yaml"]
+version = "*"
+
 [dependencies.ecoscope-workflows-core]
 version = "*"
 channel = "file:///tmp/ecoscope-workflows/release/artifacts/"
@@ -23,8 +39,11 @@ channel = "file:///tmp/ecoscope-workflows/release/artifacts/"
 version = "*"
 
 [feature.test.tasks]
-test-async-mock-io = "python -m pytest tests -k 'async and mock-io'"
-test-sequential-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
+test-all = "python -m pytest -v tests"
+test-app-async-mock-io = "python -m pytest -v tests/test_app.py -k 'async and mock-io'"
+test-app-sequential-mock-io = "python -m pytest -v tests/test_app.py -k 'sequential and mock-io'"
+test-cli-async-mock-io = "python -m pytest -v tests/test_cli.py -k 'async and mock-io'"
+test-cli-sequential-mock-io = "python -m pytest -v tests/test_cli.py -k 'sequential and mock-io'"
 
 [environments.default]
 features = []
@@ -35,6 +54,9 @@ features = [
     "test",
 ]
 solve-group = "default"
+
+[tasks]
+docker-build = "mkdir -p .tmp/ecoscope-workflows/release/artifacts/\n&& cp -r /tmp/ecoscope-workflows/release/artifacts/* .tmp/ecoscope-workflows/release/artifacts/\n&& docker buildx build -t ecoscope-workflows-patrol-events-workflow .\n"
 
 [pypi-dependencies.ecoscope-workflows-patrol-events-workflow]
 path = "."

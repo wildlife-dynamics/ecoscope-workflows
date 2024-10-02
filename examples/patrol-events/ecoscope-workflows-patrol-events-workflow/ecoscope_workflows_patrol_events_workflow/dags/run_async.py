@@ -1,3 +1,7 @@
+# [generated]
+# by = { compiler = "ecoscope-workflows-core", version = "9999" }
+# from-spec-sha256 = "dbd5d1e849d563a960b79092a76344443552af398e1130c4a4de5cd893ce91e0"
+import json
 import os
 
 from ecoscope_workflows_core.graph import DependsOn, DependsOnSequence, Graph, Node
@@ -22,8 +26,12 @@ from ecoscope_workflows_core.tasks.results import merge_widget_views
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_pie_chart
 from ecoscope_workflows_core.tasks.results import gather_dashboard
 
+from ..params import Params
 
-def main(params: dict):
+
+def main(params: Params):
+    params_dict = json.loads(params.model_dump_json(exclude_unset=True))
+
     dependencies = {
         "groupers": [],
         "pe": [],
@@ -75,12 +83,12 @@ def main(params: dict):
     nodes = {
         "groupers": Node(
             async_task=set_groupers.validate().set_executor("lithops"),
-            partial=params["groupers"],
+            partial=params_dict["groupers"],
             method="call",
         ),
         "pe": Node(
             async_task=get_patrol_events.validate().set_executor("lithops"),
-            partial=params["pe"],
+            partial=params_dict["pe"],
             method="call",
         ),
         "filter_patrol_events": Node(
@@ -88,7 +96,7 @@ def main(params: dict):
             partial={
                 "df": DependsOn("pe"),
             }
-            | params["filter_patrol_events"],
+            | params_dict["filter_patrol_events"],
             method="call",
         ),
         "pe_add_temporal_index": Node(
@@ -96,7 +104,7 @@ def main(params: dict):
             partial={
                 "df": DependsOn("filter_patrol_events"),
             }
-            | params["pe_add_temporal_index"],
+            | params_dict["pe_add_temporal_index"],
             method="call",
         ),
         "pe_colormap": Node(
@@ -104,7 +112,7 @@ def main(params: dict):
             partial={
                 "df": DependsOn("pe_add_temporal_index"),
             }
-            | params["pe_colormap"],
+            | params_dict["pe_colormap"],
             method="call",
         ),
         "pe_map_layer": Node(
@@ -112,7 +120,7 @@ def main(params: dict):
             partial={
                 "geodataframe": DependsOn("pe_colormap"),
             }
-            | params["pe_map_layer"],
+            | params_dict["pe_map_layer"],
             method="call",
         ),
         "pe_ecomap": Node(
@@ -120,7 +128,7 @@ def main(params: dict):
             partial={
                 "geo_layers": DependsOn("pe_map_layer"),
             }
-            | params["pe_ecomap"],
+            | params_dict["pe_ecomap"],
             method="call",
         ),
         "pe_ecomap_html_url": Node(
@@ -129,7 +137,7 @@ def main(params: dict):
                 "text": DependsOn("pe_ecomap"),
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
-            | params["pe_ecomap_html_url"],
+            | params_dict["pe_ecomap_html_url"],
             method="call",
         ),
         "pe_map_widget": Node(
@@ -137,7 +145,7 @@ def main(params: dict):
             partial={
                 "data": DependsOn("pe_ecomap_html_url"),
             }
-            | params["pe_map_widget"],
+            | params_dict["pe_map_widget"],
             method="call",
         ),
         "pe_bar_chart": Node(
@@ -145,7 +153,7 @@ def main(params: dict):
             partial={
                 "dataframe": DependsOn("pe_colormap"),
             }
-            | params["pe_bar_chart"],
+            | params_dict["pe_bar_chart"],
             method="call",
         ),
         "pe_bar_chart_html_url": Node(
@@ -154,7 +162,7 @@ def main(params: dict):
                 "text": DependsOn("pe_bar_chart"),
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
-            | params["pe_bar_chart_html_url"],
+            | params_dict["pe_bar_chart_html_url"],
             method="call",
         ),
         "pe_bar_chart_widget": Node(
@@ -164,7 +172,7 @@ def main(params: dict):
             partial={
                 "data": DependsOn("pe_bar_chart_html_url"),
             }
-            | params["pe_bar_chart_widget"],
+            | params_dict["pe_bar_chart_widget"],
             method="call",
         ),
         "pe_meshgrid": Node(
@@ -172,7 +180,7 @@ def main(params: dict):
             partial={
                 "aoi": DependsOn("pe_add_temporal_index"),
             }
-            | params["pe_meshgrid"],
+            | params_dict["pe_meshgrid"],
             method="call",
         ),
         "pe_feature_density": Node(
@@ -181,7 +189,7 @@ def main(params: dict):
                 "geodataframe": DependsOn("pe_add_temporal_index"),
                 "meshgrid": DependsOn("pe_meshgrid"),
             }
-            | params["pe_feature_density"],
+            | params_dict["pe_feature_density"],
             method="call",
         ),
         "fd_colormap": Node(
@@ -189,7 +197,7 @@ def main(params: dict):
             partial={
                 "df": DependsOn("pe_feature_density"),
             }
-            | params["fd_colormap"],
+            | params_dict["fd_colormap"],
             method="call",
         ),
         "fd_map_layer": Node(
@@ -197,7 +205,7 @@ def main(params: dict):
             partial={
                 "geodataframe": DependsOn("fd_colormap"),
             }
-            | params["fd_map_layer"],
+            | params_dict["fd_map_layer"],
             method="call",
         ),
         "fd_ecomap": Node(
@@ -205,7 +213,7 @@ def main(params: dict):
             partial={
                 "geo_layers": DependsOn("fd_map_layer"),
             }
-            | params["fd_ecomap"],
+            | params_dict["fd_ecomap"],
             method="call",
         ),
         "fd_ecomap_html_url": Node(
@@ -214,7 +222,7 @@ def main(params: dict):
                 "text": DependsOn("fd_ecomap"),
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
-            | params["fd_ecomap_html_url"],
+            | params_dict["fd_ecomap_html_url"],
             method="call",
         ),
         "fd_map_widget": Node(
@@ -222,7 +230,7 @@ def main(params: dict):
             partial={
                 "data": DependsOn("fd_ecomap_html_url"),
             }
-            | params["fd_map_widget"],
+            | params_dict["fd_map_widget"],
             method="call",
         ),
         "split_patrol_event_groups": Node(
@@ -231,12 +239,12 @@ def main(params: dict):
                 "df": DependsOn("pe_colormap"),
                 "groupers": DependsOn("groupers"),
             }
-            | params["split_patrol_event_groups"],
+            | params_dict["split_patrol_event_groups"],
             method="call",
         ),
         "grouped_pe_map_layer": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
-            partial=params["grouped_pe_map_layer"],
+            partial=params_dict["grouped_pe_map_layer"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geodataframe"],
@@ -245,7 +253,7 @@ def main(params: dict):
         ),
         "grouped_pe_ecomap": Node(
             async_task=draw_ecomap.validate().set_executor("lithops"),
-            partial=params["grouped_pe_ecomap"],
+            partial=params_dict["grouped_pe_ecomap"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geo_layers"],
@@ -257,7 +265,7 @@ def main(params: dict):
             partial={
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
-            | params["grouped_pe_ecomap_html_url"],
+            | params_dict["grouped_pe_ecomap_html_url"],
             method="mapvalues",
             kwargs={
                 "argnames": ["text"],
@@ -266,7 +274,7 @@ def main(params: dict):
         ),
         "grouped_pe_map_widget": Node(
             async_task=create_map_widget_single_view.validate().set_executor("lithops"),
-            partial=params["grouped_pe_map_widget"],
+            partial=params_dict["grouped_pe_map_widget"],
             method="map",
             kwargs={
                 "argnames": ["view", "data"],
@@ -278,12 +286,12 @@ def main(params: dict):
             partial={
                 "widgets": DependsOn("grouped_pe_map_widget"),
             }
-            | params["grouped_pe_map_widget_merge"],
+            | params_dict["grouped_pe_map_widget_merge"],
             method="call",
         ),
         "grouped_pe_pie_chart": Node(
             async_task=draw_pie_chart.validate().set_executor("lithops"),
-            partial=params["grouped_pe_pie_chart"],
+            partial=params_dict["grouped_pe_pie_chart"],
             method="mapvalues",
             kwargs={
                 "argnames": ["dataframe"],
@@ -295,7 +303,7 @@ def main(params: dict):
             partial={
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
-            | params["grouped_pe_pie_chart_html_urls"],
+            | params_dict["grouped_pe_pie_chart_html_urls"],
             method="mapvalues",
             kwargs={
                 "argnames": ["text"],
@@ -306,7 +314,7 @@ def main(params: dict):
             async_task=create_plot_widget_single_view.validate().set_executor(
                 "lithops"
             ),
-            partial=params["grouped_pe_pie_chart_widgets"],
+            partial=params_dict["grouped_pe_pie_chart_widgets"],
             method="map",
             kwargs={
                 "argnames": ["view", "data"],
@@ -318,7 +326,7 @@ def main(params: dict):
             partial={
                 "widgets": DependsOn("grouped_pe_pie_chart_widgets"),
             }
-            | params["grouped_pe_pie_widget_merge"],
+            | params_dict["grouped_pe_pie_widget_merge"],
             method="call",
         ),
         "grouped_pe_feature_density": Node(
@@ -326,7 +334,7 @@ def main(params: dict):
             partial={
                 "meshgrid": DependsOn("pe_meshgrid"),
             }
-            | params["grouped_pe_feature_density"],
+            | params_dict["grouped_pe_feature_density"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geodataframe"],
@@ -335,7 +343,7 @@ def main(params: dict):
         ),
         "grouped_fd_colormap": Node(
             async_task=apply_color_map.validate().set_executor("lithops"),
-            partial=params["grouped_fd_colormap"],
+            partial=params_dict["grouped_fd_colormap"],
             method="mapvalues",
             kwargs={
                 "argnames": ["df"],
@@ -344,7 +352,7 @@ def main(params: dict):
         ),
         "grouped_fd_map_layer": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
-            partial=params["grouped_fd_map_layer"],
+            partial=params_dict["grouped_fd_map_layer"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geodataframe"],
@@ -353,7 +361,7 @@ def main(params: dict):
         ),
         "grouped_fd_ecomap": Node(
             async_task=draw_ecomap.validate().set_executor("lithops"),
-            partial=params["grouped_fd_ecomap"],
+            partial=params_dict["grouped_fd_ecomap"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geo_layers"],
@@ -365,7 +373,7 @@ def main(params: dict):
             partial={
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
-            | params["grouped_fd_ecomap_html_url"],
+            | params_dict["grouped_fd_ecomap_html_url"],
             method="mapvalues",
             kwargs={
                 "argnames": ["text"],
@@ -374,7 +382,7 @@ def main(params: dict):
         ),
         "grouped_fd_map_widget": Node(
             async_task=create_map_widget_single_view.validate().set_executor("lithops"),
-            partial=params["grouped_fd_map_widget"],
+            partial=params_dict["grouped_fd_map_widget"],
             method="map",
             kwargs={
                 "argnames": ["view", "data"],
@@ -386,7 +394,7 @@ def main(params: dict):
             partial={
                 "widgets": DependsOn("grouped_fd_map_widget"),
             }
-            | params["grouped_fd_map_widget_merge"],
+            | params_dict["grouped_fd_map_widget_merge"],
             method="call",
         ),
         "patrol_dashboard": Node(
@@ -404,7 +412,7 @@ def main(params: dict):
                 ),
                 "groupers": DependsOn("groupers"),
             }
-            | params["patrol_dashboard"],
+            | params_dict["patrol_dashboard"],
             method="call",
         ),
     }

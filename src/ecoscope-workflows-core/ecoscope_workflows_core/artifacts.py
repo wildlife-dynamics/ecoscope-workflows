@@ -4,7 +4,6 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from textwrap import dedent
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -12,6 +11,7 @@ else:
     import tomli as tomllib
 
 import tomli_w
+import pydot as dot  # type: ignore[import-untyped]
 from pydantic import BaseModel, Field
 
 from ecoscope_workflows_core._models import (
@@ -30,24 +30,7 @@ from ecoscope_workflows_core.requirements import (
 class Dags(BaseModel):
     """Target directory for the generated DAGs."""
 
-    init_dot_py: str = Field(
-        default=dedent(
-            """\
-            from .run_async import main as run_async
-            from .run_async_mock_io import main as run_async_mock_io
-            from .run_sequential import main as run_sequential
-            from .run_sequential_mock_io import main as run_sequential_mock_io
-
-            __all__ = [
-                "run_async",
-                "run_async_mock_io",
-                "run_sequential",
-                "run_sequential_mock_io",
-            ]
-            """
-        ),
-        alias="__init__.py",
-    )
+    init_dot_py: str = Field(..., alias="__init__.py")
     jupytext: str = Field(..., alias="jupytext.py")
     run_async_mock_io: str = Field(..., alias="run_async_mock_io.py")
     run_async: str = Field(..., alias="run_async.py")
@@ -89,9 +72,11 @@ class PixiToml(_AllowArbitraryAndValidateAssignment):
     dependencies: dict[str, NamelessMatchSpecType]
     feature: dict[FeatureName, Feature] = Field(default_factory=dict)
     environments: dict[str, Environment] = Field(default_factory=dict)
+    tasks: dict[PixiTaskName, PixiTaskCommand] = Field(default_factory=dict)
     pypi_dependencies: dict[str, dict] = Field(
         default_factory=dict, alias="pypi-dependencies"
     )
+    file_header: str = Field(default="")
 
     @classmethod
     def from_file(cls, src: str | Path) -> "PixiToml":
@@ -119,136 +104,113 @@ class PixiToml(_AllowArbitraryAndValidateAssignment):
 
     def dump(self, dst: Path):
         with dst.open("wb") as f:
-            tomli_w.dump(self.model_dump(by_alias=True), f)
-
-
-CONFTEST = """\
-import pytest
-
-
-def pytest_addoption(parser: pytest.Parser):
-    parser.addoption("--case", action="store")
-
-
-@pytest.fixture(scope="session")
-def case(pytestconfig: pytest.Config) -> str:
-    return pytestconfig.getoption("case")
-"""
+            f.write(self.file_header.encode("utf-8"))
+            f.write(b"\n")
+            tomli_w.dump(self.model_dump(by_alias=True, exclude={"file_header"}), f)
 
 
 class Tests(BaseModel):
-    test_dags: str = Field(..., alias="test_dags.py")
-    conftest: str = Field(default=CONFTEST, alias="conftest.py")
+    conftest: str = Field(..., alias="conftest.py")
+    test_app: str = Field(..., alias="test_app.py")
+    test_cli: str = Field(..., alias="test_cli.py")
 
-
-MAIN_DOT_PY = """\
-from io import TextIOWrapper
-
-import click
-import ruamel.yaml
-
-from .dags import (
-    run_async,
-    run_async_mock_io,
-    run_sequential,
-    run_sequential_mock_io,
-)
-
-
-@click.command()
-@click.option(
-    "--config-file",
-    type=click.File("r"),
-    required=True,
-    help="Configuration parameters for running the workflow.",
-)
-@click.option(
-    "--execution-mode",
-    required=True,
-    type=click.Choice(["async", "sequential"]),
-)
-@click.option(
-    "--mock-io/--no-mock-io",
-    is_flag=True,
-    default=False,
-    help="Whether or not to mock io with 3rd party services; for testing only.",
-)
-def main(
-    config_file: TextIOWrapper,
-    execution_mode: str,
-    mock_io: bool,
-) -> None:
-    yaml = ruamel.yaml.YAML(typ="safe")
-    params = yaml.load(config_file)
-    match execution_mode, mock_io:
-        case ("async", True):
-            result = run_async_mock_io(params=params)
-        case ("async", False):
-            result = run_async(params=params)
-        case ("sequential", True):
-            result = run_sequential_mock_io(params=params)
-        case ("sequential", False):
-            result = run_sequential(params=params)
-        case _:
-            raise ValueError(f"Invalid execution mode: {execution_mode}")
-
-    print(result)
-
-
-if __name__ == "__main__":
-    main()
-"""
+    def dump(self, dst: Path):
+        dst.joinpath("tests").mkdir(parents=True)
+        for fname, content in self.model_dump(by_alias=True).items():
+            dst.joinpath("tests").joinpath(fname).write_text(content)
 
 
 class PackageDirectory(BaseModel):
     dags: Dags
-    params_jsonschema: dict
-    main: str = Field(default=MAIN_DOT_PY, alias="main.py")
+    params_jsonschema: dict = Field(..., alias="params-jsonschema.json")
+    params_model: str = Field(..., alias="params.py")
+    app: str = Field(..., alias="app.py")
+    cli: str = Field(..., alias="cli.py")
+    dispatch: str = Field(..., alias="dispatch.py")
     init_dot_py: str = Field(default="", alias="__init__.py")
+
+    def dump(self, dst: Path):
+        for fname, content in self.model_dump(
+            by_alias=True, exclude={"params_jsonschema", "dags"}
+        ).items():
+            dst.joinpath(fname).write_text(content)
+        with dst.joinpath("params-jsonschema.json").open("w") as f:
+            json.dump(self.params_jsonschema, f, indent=2)
+            f.write("\n")
+        dst.joinpath("dags").mkdir(parents=True)
+        for fname, content in self.dags.model_dump(by_alias=True).items():
+            dst.joinpath("dags").joinpath(fname).write_text(content)
 
 
 class WorkflowArtifacts(_AllowArbitraryTypes):
+    spec_relpath: str
     release_name: str
     package_name: str
-    pixi_toml: PixiToml
-    pyproject_toml: str
     package: PackageDirectory
     tests: Tests
+    pixi_toml: PixiToml = Field(..., alias="pixi.toml")
+    pydot_graph: dot.Dot = Field(..., alias="graph.png")
+    pyproject_toml: str = Field(..., alias="pyproject.toml")
+    dockerfile: str = Field(..., alias="Dockerfile")
+    dockerignore: str = Field(..., alias=".dockerignore")
+    readme_md: str = Field(..., alias="README.md")
+
+    @property
+    def release_dir(self) -> Path:
+        return (
+            Path().cwd().joinpath(self.spec_relpath).parent.joinpath(self.release_name)
+        )
 
     def lock(self):
         subprocess.run(
-            f"pixi install -a --manifest-path {self.release_name}/pixi.toml".split()
+            f"pixi install -a --manifest-path {self.release_dir.joinpath('pixi.toml')}".split()
         )
 
-    def dump(self, clobber: bool = False):
-        root = Path().cwd().joinpath(self.release_name)
-        if root.exists() and not clobber:
-            raise FileExistsError(
-                f"Path '{root}' already exists. Set clobber=True to overwrite."
-            )
-        if root.exists() and clobber and not root.is_dir():
-            raise FileExistsError(f"Cannot clobber existing '{root}'; not a directory.")
-        if root.exists() and clobber:
-            shutil.rmtree(root)
+    def dump(self, clobber: bool = False, carryover_lockfile: bool = False):
+        """Dump the artifacts to disk.
 
-        root.mkdir(parents=True)
+        Args:
+            clobber (bool, optional): Whether or not to clobber an existing build directory. Defaults to False.
+            carryover_lockfile (bool, optional): In the case of combining the options `--clobber` + `--no-lock`,
+                whether or not to carryover the lockfile from the clobbered directory. If true, this option
+                allows for rebuilding the package with a (potentially!) functional lockfile, without paying
+                the cost of actually re-locking the package. Defaults to False.
+        """
+        if self.release_dir.exists() and not clobber:
+            raise FileExistsError(
+                f"Path '{self.release_dir}' already exists. Set clobber=True to overwrite."
+            )
+        if self.release_dir.exists() and clobber and not self.release_dir.is_dir():
+            raise FileExistsError(
+                f"Cannot clobber existing '{self.release_dir}'; not a directory."
+            )
+        if self.release_dir.exists() and clobber:
+            if carryover_lockfile:
+                lockfile = self.release_dir.joinpath("pixi.lock")
+                if not lockfile.exists():
+                    raise FileNotFoundError(
+                        f"Cannot carryover lockfile; '{lockfile}' does not exist."
+                    )
+                original_lockfile = lockfile.read_text()
+            shutil.rmtree(self.release_dir)
+
+        self.release_dir.mkdir(parents=True)
 
         # root artifacts
-        self.pixi_toml.dump(root.joinpath("pixi.toml"))
-        root.joinpath("pyproject.toml").write_text(self.pyproject_toml)
-        root.joinpath("tests").mkdir(parents=True)
-        for fname, content in self.tests.model_dump(by_alias=True).items():
-            root.joinpath("tests").joinpath(fname).write_text(content)
-
+        self.pixi_toml.dump(self.release_dir.joinpath("pixi.toml"))
+        self.pydot_graph.write_png(path=self.release_dir.joinpath("graph.png"))
+        if carryover_lockfile:
+            self.release_dir.joinpath("pixi.lock").write_text(original_lockfile)
+        for k, v in {
+            "pyproject.toml": self.pyproject_toml,
+            "Dockerfile": self.dockerfile,
+            ".dockerignore": self.dockerignore,
+            "README.md": self.readme_md,
+        }.items():
+            self.release_dir.joinpath(k).write_text(v)
+        # tests
+        self.tests.dump(self.release_dir)
         # package artifacts
-        pkg = root.joinpath(self.package_name)
+        pkg = self.release_dir.joinpath(self.package_name)
         pkg.mkdir(parents=True)
-        pkg.joinpath("dags").mkdir(parents=True)
-        # top level
-        pkg.joinpath("__init__.py").write_text("")
-        pkg.joinpath("main.py").write_text(self.package.main)
-        with pkg.joinpath("params-jsonschema.json").open("w") as f:
-            json.dump(self.package.params_jsonschema, f, indent=2)
-        # dags
-        for fname, content in self.package.dags.model_dump(by_alias=True).items():
-            pkg.joinpath("dags").joinpath(fname).write_text(content)
+        self.package.dump(pkg)

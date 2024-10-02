@@ -29,12 +29,13 @@ requirements:
     - pandera
     - pydantic <2.9.0
     - pydantic-settings
-    - py-rattler >=0.6.3,<0.7
+    - py-rattler >=0.7.0,<0.8
     - ruamel.yaml
     - ruff
     - tomli-w
     # optionals that we want for deployment
-    - lithops >=3.4.1
+    - datamodel-code-generator
+    - lithops ==3.5.1cisaacstern
     - cloudpathlib-gs
     - pydot
 

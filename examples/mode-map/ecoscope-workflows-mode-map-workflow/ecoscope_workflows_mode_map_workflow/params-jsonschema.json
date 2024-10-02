@@ -1,7 +1,7 @@
 {
-  "title": "Ecoscope Workflow Configurations Form",
+  "title": "Params",
   "properties": {
-    "Get Observations A": {
+    "obs_a": {
       "additionalProperties": false,
       "properties": {
         "client": {
@@ -39,9 +39,10 @@
         "since",
         "until"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Get Observations A"
     },
-    "Get Observations B": {
+    "obs_b": {
       "additionalProperties": false,
       "properties": {
         "client": {
@@ -79,9 +80,10 @@
         "since",
         "until"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Get Observations B"
     },
-    "Get Observations C": {
+    "obs_c": {
       "additionalProperties": false,
       "properties": {
         "client": {
@@ -119,9 +121,10 @@
         "since",
         "until"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Get Observations C"
     },
-    "Create Map Layer For Each Group": {
+    "map_layers": {
       "additionalProperties": false,
       "properties": {
         "layer_style": {
@@ -153,9 +156,10 @@
       "required": [
         "layer_style"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Map Layer For Each Group"
     },
-    "Create EcoMap For Each Group": {
+    "ecomaps": {
       "additionalProperties": false,
       "properties": {
         "tile_layer": {
@@ -205,9 +209,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Create EcoMap For Each Group"
     },
-    "Persist Ecomaps as Text": {
+    "td_ecomap_html_url": {
       "additionalProperties": false,
       "properties": {
         "filename": {
@@ -218,7 +223,8 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Persist Ecomaps as Text"
     }
   },
   "$defs": {

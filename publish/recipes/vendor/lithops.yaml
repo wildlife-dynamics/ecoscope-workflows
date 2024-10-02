@@ -1,14 +1,15 @@
 context:
   name: lithops
-  version: 3.4.1
+  version: "3.5.1cisaacstern"
 
 package:
   name: lithops
   version: ${{ version }}
 
 source:
-  url: https://pypi.io/packages/source/l/lithops/lithops-${{ version }}.tar.gz
-  sha256: 48c9f1672de05b019505bcd8bedcb350c2fb11cea583d4f0b06552f7bb036077
+  # url: https://pypi.io/packages/source/l/lithops/lithops-${{ version }}.tar.gz
+  url: https://github.com/cisaacstern/lithops/archive/refs/tags/${{ version }}.tar.gz
+  sha256: b343af1bf7b2b716dcfa61a212b916d66d89cfd56de030e9206bef563264ce25
 
 build:
   python:
@@ -16,7 +17,7 @@ build:
       - lithops = lithops.scripts.cli:lithops_cli
   noarch: python
   script: pip install . -v
-  number: 1
+  number: 0
 
 requirements:
   host:

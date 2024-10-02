@@ -1,7 +1,7 @@
 {
-  "title": "Ecoscope Workflow Configurations Form",
+  "title": "Params",
   "properties": {
-    "Set Groupers": {
+    "groupers": {
       "additionalProperties": false,
       "properties": {
         "groupers": {
@@ -16,9 +16,10 @@
       "required": [
         "groupers"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Set Groupers"
     },
-    "Get Subject Group Observations from EarthRanger": {
+    "subject_obs": {
       "additionalProperties": false,
       "properties": {
         "client": {
@@ -56,9 +57,10 @@
         "since",
         "until"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Get Subject Group Observations from EarthRanger"
     },
-    "Transform Observations to Relocations": {
+    "subject_reloc": {
       "additionalProperties": false,
       "properties": {
         "filter_point_coords": {
@@ -80,9 +82,10 @@
         "filter_point_coords",
         "relocs_columns"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Transform Observations to Relocations"
     },
-    "Transform Relocations to Trajectories": {
+    "subject_traj": {
       "additionalProperties": false,
       "properties": {
         "min_length_meters": {
@@ -117,9 +120,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Transform Relocations to Trajectories"
     },
-    "Add temporal index to Subject Trajectories": {
+    "traj_add_temporal_index": {
       "additionalProperties": false,
       "properties": {
         "index_name": {
@@ -180,15 +184,17 @@
         "time_col",
         "directive"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Add temporal index to Subject Trajectories"
     },
-    "Split Subject Trajectories by Group": {
+    "split_subject_traj_groups": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Split Subject Trajectories by Group"
     },
-    "Create map layer for each trajectory group": {
+    "traj_map_layers": {
       "additionalProperties": false,
       "properties": {
         "layer_style": {
@@ -220,9 +226,10 @@
       "required": [
         "layer_style"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create map layer for each trajectory group"
     },
-    "Draw Ecomaps for each trajectory group": {
+    "traj_ecomap": {
       "additionalProperties": false,
       "properties": {
         "tile_layer": {
@@ -272,9 +279,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Draw Ecomaps for each trajectory group"
     },
-    "Persist ecomap as Text": {
+    "ecomap_html_urls": {
       "additionalProperties": false,
       "properties": {
         "filename": {
@@ -285,9 +293,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Persist ecomap as Text"
     },
-    "Create Map Widgets for Trajectories": {
+    "traj_map_widgets_single_views": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -299,15 +308,17 @@
       "required": [
         "title"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Map Widgets for Trajectories"
     },
-    "Merge EcoMap Widget Views": {
+    "traj_grouped_map_widget": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Merge EcoMap Widget Views"
     },
-    "Calculate Mean Speed Per Group": {
+    "mean_speed": {
       "additionalProperties": false,
       "properties": {
         "column_name": {
@@ -319,9 +330,10 @@
       "required": [
         "column_name"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Calculate Mean Speed Per Group"
     },
-    "Create Single Value Widgets for Mean Speed Per Group": {
+    "mean_speed_sv_widgets": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -333,15 +345,17 @@
       "required": [
         "title"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Single Value Widgets for Mean Speed Per Group"
     },
-    "Merge per group Mean Speed SV widgets": {
+    "mean_speed_grouped_sv_widget": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Merge per group Mean Speed SV widgets"
     },
-    "Calculate Max Speed Per Group": {
+    "max_speed": {
       "additionalProperties": false,
       "properties": {
         "column_name": {
@@ -353,9 +367,10 @@
       "required": [
         "column_name"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Calculate Max Speed Per Group"
     },
-    "Create Single Value Widgets for Max Speed Per Group": {
+    "max_speed_sv_widgets": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -367,21 +382,24 @@
       "required": [
         "title"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Single Value Widgets for Max Speed Per Group"
     },
-    "Merge per group Max Speed SV widgets": {
+    "max_speed_grouped_sv_widget": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Merge per group Max Speed SV widgets"
     },
-    "Calculate Number of Locations Per Group": {
+    "num_location": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Calculate Number of Locations Per Group"
     },
-    "Create Single Value Widgets for Number of Location Per Group": {
+    "num_location_sv_widgets": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -393,21 +411,24 @@
       "required": [
         "title"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Single Value Widgets for Number of Location Per Group"
     },
-    "Merge per group Number of Locations SV widgets": {
+    "num_location_grouped_sv_widget": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Merge per group Number of Locations SV widgets"
     },
-    "Calculate Day/Night Ratio Per Group": {
+    "daynight_ratio": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Calculate Day/Night Ratio Per Group"
     },
-    "Create Single Value Widgets for Day/Night Ratio Per Group": {
+    "daynight_ratio_sv_widgets": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -419,15 +440,17 @@
       "required": [
         "title"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Single Value Widgets for Day/Night Ratio Per Group"
     },
-    "Merge per group Day/Night Ratio SV widgets": {
+    "daynight_ratio_grouped_sv_widget": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Merge per group Day/Night Ratio SV widgets"
     },
-    "Calculate Time Density from Trajectory": {
+    "td": {
       "additionalProperties": false,
       "properties": {
         "pixel_size": {
@@ -478,9 +501,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Calculate Time Density from Trajectory"
     },
-    "Create map layer from Time Density": {
+    "td_map_layer": {
       "additionalProperties": false,
       "properties": {
         "layer_style": {
@@ -512,9 +536,10 @@
       "required": [
         "layer_style"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create map layer from Time Density"
     },
-    "Draw Ecomap from Time Density": {
+    "td_ecomap": {
       "additionalProperties": false,
       "properties": {
         "tile_layer": {
@@ -564,9 +589,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Draw Ecomap from Time Density"
     },
-    "Persist Ecomap as Text": {
+    "td_ecomap_html_url": {
       "additionalProperties": false,
       "properties": {
         "filename": {
@@ -577,9 +603,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Persist Ecomap as Text"
     },
-    "Create Time Density Map Widget": {
+    "td_map_widget": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -591,15 +618,17 @@
       "required": [
         "title"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Time Density Map Widget"
     },
-    "Merge Time Density Map Widget Views": {
+    "td_grouped_map_widget": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Merge Time Density Map Widget Views"
     },
-    "Create Dashboard with Subject Tracking Widgets": {
+    "subject_tracking_dashboard": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -617,7 +646,8 @@
         "title",
         "description"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Dashboard with Subject Tracking Widgets"
     }
   },
   "$defs": {

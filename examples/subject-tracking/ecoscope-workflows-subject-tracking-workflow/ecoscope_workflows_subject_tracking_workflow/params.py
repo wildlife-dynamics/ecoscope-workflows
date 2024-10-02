@@ -1,0 +1,537 @@
+# [generated]
+# by = { compiler = "ecoscope-workflows-core", version = "9999" }
+# from-spec-sha256 = "5d1d6b603ad0254b5a6ce0477f76434f313cf972a29552346a9ebe0425e6ad4a"
+
+
+from __future__ import annotations
+
+from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Literal, Optional, Union
+
+from pydantic import AnyUrl, AwareDatetime, BaseModel, ConfigDict, Field
+
+
+class SubjectObs(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    client: str = Field(
+        ..., description="A named EarthRanger connection.", title="Client"
+    )
+    subject_group_name: str = Field(
+        ..., description="Name of EarthRanger Subject", title="Subject Group Name"
+    )
+    since: AwareDatetime = Field(..., description="Start date", title="Since")
+    until: AwareDatetime = Field(..., description="End date", title="Until")
+    include_inactive: Optional[bool] = Field(
+        True,
+        description="Whether or not to include inactive subjects",
+        title="Include Inactive",
+    )
+
+
+class SubjectTraj(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    min_length_meters: Optional[float] = Field(0.1, title="Min Length Meters")
+    max_length_meters: Optional[float] = Field(10000, title="Max Length Meters")
+    max_time_secs: Optional[float] = Field(3600, title="Max Time Secs")
+    min_time_secs: Optional[float] = Field(1, title="Min Time Secs")
+    max_speed_kmhr: Optional[float] = Field(120, title="Max Speed Kmhr")
+    min_speed_kmhr: Optional[float] = Field(0.0, title="Min Speed Kmhr")
+
+
+class Directive(str, Enum):
+    field_a = "%a"
+    field_A = "%A"
+    field_b = "%b"
+    field_B = "%B"
+    field_c = "%c"
+    field_d = "%d"
+    field_f = "%f"
+    field_H = "%H"
+    field_I = "%I"
+    field_j = "%j"
+    field_m = "%m"
+    field_M = "%M"
+    field_p = "%p"
+    field_S = "%S"
+    field_U = "%U"
+    field_w = "%w"
+    field_W = "%W"
+    field_x = "%x"
+    field_X = "%X"
+    field_y = "%y"
+    field_Y = "%Y"
+    field_z = "%z"
+    field__ = "%%"
+
+
+class TrajAddTemporalIndex(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    index_name: str = Field(
+        ...,
+        description="A name for the new index which will be added.",
+        title="Index Name",
+    )
+    time_col: str = Field(
+        ...,
+        description="Name of existing column containing time data.",
+        title="Time Col",
+    )
+    directive: Directive = Field(
+        ..., description="A directive for formatting the time data.", title="Directive"
+    )
+    cast_to_datetime: Optional[bool] = Field(
+        True,
+        description="Whether to attempt casting `time_col` to datetime.",
+        title="Cast To Datetime",
+    )
+    format: Optional[str] = Field(
+        "mixed",
+        description='            If `cast_to_datetime=True`, the format to pass to `pd.to_datetime`\n            when attempting to cast `time_col` to datetime. Defaults to "mixed".\n            ',
+        title="Format",
+    )
+
+
+class EcomapHtmlUrls(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    filename: Optional[str] = Field(
+        None,
+        description="            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            ",
+        title="Filename",
+    )
+
+
+class TrajMapWidgetsSingleViews(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    title: str = Field(..., description="The title of the widget", title="Title")
+
+
+class MeanSpeed(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    column_name: str = Field(
+        ..., description="Column to aggregate", title="Column Name"
+    )
+
+
+class MeanSpeedSvWidgets(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    title: str = Field(..., description="The title of the widget", title="Title")
+
+
+class MaxSpeed(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    column_name: str = Field(
+        ..., description="Column to aggregate", title="Column Name"
+    )
+
+
+class MaxSpeedSvWidgets(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    title: str = Field(..., description="The title of the widget", title="Title")
+
+
+class NumLocationSvWidgets(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    title: str = Field(..., description="The title of the widget", title="Title")
+
+
+class DaynightRatioSvWidgets(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    title: str = Field(..., description="The title of the widget", title="Title")
+
+
+class Td(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    pixel_size: Optional[float] = Field(
+        250.0, description="Pixel size for raster profile.", title="Pixel Size"
+    )
+    crs: Optional[str] = Field("ESRI:102022", title="Crs")
+    nodata_value: Optional[float] = Field("nan", title="Nodata Value")
+    band_count: Optional[int] = Field(1, title="Band Count")
+    max_speed_factor: Optional[float] = Field(1.05, title="Max Speed Factor")
+    expansion_factor: Optional[float] = Field(1.3, title="Expansion Factor")
+    percentiles: Optional[List[float]] = Field(
+        [50.0, 60.0, 70.0, 80.0, 90.0, 95.0], title="Percentiles"
+    )
+
+
+class TdEcomapHtmlUrl(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    filename: Optional[str] = Field(
+        None,
+        description="            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            ",
+        title="Filename",
+    )
+
+
+class TdMapWidget(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    title: str = Field(..., description="The title of the widget", title="Title")
+
+
+class SubjectTrackingDashboard(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    title: str = Field(..., description="The title of the dashboard", title="Title")
+    description: str = Field(
+        ..., description="The description of the dashboard", title="Description"
+    )
+
+
+class Grouper(BaseModel):
+    index_name: str = Field(..., title="Index Name")
+    display_name: Optional[str] = Field(None, title="Display Name")
+    help_text: Optional[str] = Field(None, title="Help Text")
+
+
+class Coordinate(BaseModel):
+    x: float = Field(..., title="X")
+    y: float = Field(..., title="Y")
+
+
+class LegendDefinition(BaseModel):
+    label_column: str = Field(..., title="Label Column")
+    color_column: str = Field(..., title="Color Column")
+
+
+class LineWidthUnits(str, Enum):
+    meters = "meters"
+    pixels = "pixels"
+
+
+class LayerType(str, Enum):
+    point = "point"
+
+
+class RadiusUnits(str, Enum):
+    meters = "meters"
+    pixels = "pixels"
+
+
+class PointLayerStyle(BaseModel):
+    auto_highlight: Optional[bool] = Field(False, title="Auto Highlight")
+    opacity: Optional[float] = Field(1, title="Opacity")
+    pickable: Optional[bool] = Field(True, title="Pickable")
+    filled: Optional[bool] = Field(True, title="Filled")
+    get_fill_color: Optional[Union[str, List[int], List[List[int]]]] = Field(
+        None, title="Get Fill Color"
+    )
+    get_line_color: Optional[Union[str, List[int], List[List[int]]]] = Field(
+        None, title="Get Line Color"
+    )
+    get_line_width: Optional[float] = Field(1, title="Get Line Width")
+    fill_color_column: Optional[str] = Field(None, title="Fill Color Column")
+    line_width_units: Optional[LineWidthUnits] = Field(
+        "pixels", title="Line Width Units"
+    )
+    layer_type: Literal["point"] = Field("point", title="Layer Type")
+    get_radius: Optional[float] = Field(1, title="Get Radius")
+    radius_units: Optional[RadiusUnits] = Field("pixels", title="Radius Units")
+
+
+class LayerType1(str, Enum):
+    polygon = "polygon"
+
+
+class PolygonLayerStyle(BaseModel):
+    auto_highlight: Optional[bool] = Field(False, title="Auto Highlight")
+    opacity: Optional[float] = Field(1, title="Opacity")
+    pickable: Optional[bool] = Field(True, title="Pickable")
+    filled: Optional[bool] = Field(True, title="Filled")
+    get_fill_color: Optional[Union[str, List[int], List[List[int]]]] = Field(
+        None, title="Get Fill Color"
+    )
+    get_line_color: Optional[Union[str, List[int], List[List[int]]]] = Field(
+        None, title="Get Line Color"
+    )
+    get_line_width: Optional[float] = Field(1, title="Get Line Width")
+    fill_color_column: Optional[str] = Field(None, title="Fill Color Column")
+    line_width_units: Optional[LineWidthUnits] = Field(
+        "pixels", title="Line Width Units"
+    )
+    layer_type: Literal["polygon"] = Field("polygon", title="Layer Type")
+    extruded: Optional[bool] = Field(False, title="Extruded")
+    get_elevation: Optional[float] = Field(1000, title="Get Elevation")
+
+
+class LayerType2(str, Enum):
+    polyline = "polyline"
+
+
+class WidthUnits(str, Enum):
+    meters = "meters"
+    pixels = "pixels"
+
+
+class PolylineLayerStyle(BaseModel):
+    auto_highlight: Optional[bool] = Field(False, title="Auto Highlight")
+    opacity: Optional[float] = Field(1, title="Opacity")
+    pickable: Optional[bool] = Field(True, title="Pickable")
+    layer_type: Literal["polyline"] = Field("polyline", title="Layer Type")
+    get_color: Optional[Union[str, List[int], List[List[int]]]] = Field(
+        None, title="Get Color"
+    )
+    get_width: Optional[float] = Field(1, title="Get Width")
+    color_column: Optional[str] = Field(None, title="Color Column")
+    width_units: Optional[WidthUnits] = Field("pixels", title="Width Units")
+    cap_rounded: Optional[bool] = Field(True, title="Cap Rounded")
+
+
+class LayerDefinition(BaseModel):
+    geodataframe: Any = Field(..., title="Geodataframe")
+    layer_style: Union[PolylineLayerStyle, PointLayerStyle, PolygonLayerStyle] = Field(
+        ..., discriminator="layer_type", title="Layer Style"
+    )
+    legend: LegendDefinition
+
+
+class Placement(str, Enum):
+    top_left = "top-left"
+    top_right = "top-right"
+    bottom_left = "bottom-left"
+    bottom_right = "bottom-right"
+    fill = "fill"
+
+
+class LegendStyle(BaseModel):
+    placement: Optional[Placement] = Field("bottom-right", title="Placement")
+
+
+class NorthArrowStyle(BaseModel):
+    placement: Optional[Placement] = Field("top-left", title="Placement")
+    style: Optional[Dict[str, Any]] = Field({"transform": "scale(0.8)"}, title="Style")
+
+
+class WidgetType(str, Enum):
+    plot = "plot"
+    map = "map"
+    text = "text"
+    single_value = "single_value"
+
+
+class WidgetSingleView(BaseModel):
+    widget_type: WidgetType = Field(..., title="Widget Type")
+    title: str = Field(..., title="Title")
+    data: Union[Path, AnyUrl, str, int, float] = Field(..., title="Data")
+    view: Optional[List[List]] = Field(None, title="View")
+
+
+class GroupedWidget(BaseModel):
+    widget_type: WidgetType = Field(..., title="Widget Type")
+    title: str = Field(..., title="Title")
+    views: Dict[str, Union[Path, AnyUrl, str, int, float]] = Field(..., title="Views")
+
+
+class Groupers(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    groupers: List[Grouper] = Field(
+        ...,
+        description="            Index(es) and/or column(s) to group by, along with\n            optional display names and help text.\n            ",
+        title="Groupers",
+    )
+
+
+class SubjectReloc(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    filter_point_coords: List[Coordinate] = Field(..., title="Filter Point Coords")
+    relocs_columns: List[str] = Field(..., title="Relocs Columns")
+
+
+class TrajMapLayers(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    layer_style: Union[PolylineLayerStyle, PolygonLayerStyle, PointLayerStyle] = Field(
+        ..., description="Style arguments for the layer.", title="Layer Style"
+    )
+    legend: Optional[LegendDefinition] = Field(
+        None,
+        description="If present, includes this layer in the map legend",
+        title="Legend",
+    )
+
+
+class TrajEcomap(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    tile_layer: Optional[str] = Field(
+        "", description="A named tile layer, ie OpenStreetMap.", title="Tile Layer"
+    )
+    static: Optional[bool] = Field(
+        False, description="Set to true to disable map pan/zoom.", title="Static"
+    )
+    title: Optional[str] = Field("", description="The map title.", title="Title")
+    north_arrow_style: Optional[NorthArrowStyle] = Field(
+        default_factory=lambda: NorthArrowStyle.model_validate(
+            {"placement": "top-left", "style": {"transform": "scale(0.8)"}}
+        ),
+        description="Additional arguments for configuring the North Arrow.",
+        title="North Arrow Style",
+    )
+    legend_style: Optional[LegendStyle] = Field(
+        default_factory=lambda: LegendStyle.model_validate(
+            {"placement": "bottom-right"}
+        ),
+        description="Additional arguments for configuring the legend.",
+        title="Legend Style",
+    )
+
+
+class TdMapLayer(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    layer_style: Union[PolylineLayerStyle, PolygonLayerStyle, PointLayerStyle] = Field(
+        ..., description="Style arguments for the layer.", title="Layer Style"
+    )
+    legend: Optional[LegendDefinition] = Field(
+        None,
+        description="If present, includes this layer in the map legend",
+        title="Legend",
+    )
+
+
+class TdEcomap(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    tile_layer: Optional[str] = Field(
+        "", description="A named tile layer, ie OpenStreetMap.", title="Tile Layer"
+    )
+    static: Optional[bool] = Field(
+        False, description="Set to true to disable map pan/zoom.", title="Static"
+    )
+    title: Optional[str] = Field("", description="The map title.", title="Title")
+    north_arrow_style: Optional[NorthArrowStyle] = Field(
+        default_factory=lambda: NorthArrowStyle.model_validate(
+            {"placement": "top-left", "style": {"transform": "scale(0.8)"}}
+        ),
+        description="Additional arguments for configuring the North Arrow.",
+        title="North Arrow Style",
+    )
+    legend_style: Optional[LegendStyle] = Field(
+        default_factory=lambda: LegendStyle.model_validate(
+            {"placement": "bottom-right"}
+        ),
+        description="Additional arguments for configuring the legend.",
+        title="Legend Style",
+    )
+
+
+class Params(BaseModel):
+    groupers: Optional[Groupers] = Field(None, title="Set Groupers")
+    subject_obs: Optional[SubjectObs] = Field(
+        None, title="Get Subject Group Observations from EarthRanger"
+    )
+    subject_reloc: Optional[SubjectReloc] = Field(
+        None, title="Transform Observations to Relocations"
+    )
+    subject_traj: Optional[SubjectTraj] = Field(
+        None, title="Transform Relocations to Trajectories"
+    )
+    traj_add_temporal_index: Optional[TrajAddTemporalIndex] = Field(
+        None, title="Add temporal index to Subject Trajectories"
+    )
+    split_subject_traj_groups: Optional[Dict[str, Any]] = Field(
+        None, title="Split Subject Trajectories by Group"
+    )
+    traj_map_layers: Optional[TrajMapLayers] = Field(
+        None, title="Create map layer for each trajectory group"
+    )
+    traj_ecomap: Optional[TrajEcomap] = Field(
+        None, title="Draw Ecomaps for each trajectory group"
+    )
+    ecomap_html_urls: Optional[EcomapHtmlUrls] = Field(
+        None, title="Persist ecomap as Text"
+    )
+    traj_map_widgets_single_views: Optional[TrajMapWidgetsSingleViews] = Field(
+        None, title="Create Map Widgets for Trajectories"
+    )
+    traj_grouped_map_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge EcoMap Widget Views"
+    )
+    mean_speed: Optional[MeanSpeed] = Field(
+        None, title="Calculate Mean Speed Per Group"
+    )
+    mean_speed_sv_widgets: Optional[MeanSpeedSvWidgets] = Field(
+        None, title="Create Single Value Widgets for Mean Speed Per Group"
+    )
+    mean_speed_grouped_sv_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge per group Mean Speed SV widgets"
+    )
+    max_speed: Optional[MaxSpeed] = Field(None, title="Calculate Max Speed Per Group")
+    max_speed_sv_widgets: Optional[MaxSpeedSvWidgets] = Field(
+        None, title="Create Single Value Widgets for Max Speed Per Group"
+    )
+    max_speed_grouped_sv_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge per group Max Speed SV widgets"
+    )
+    num_location: Optional[Dict[str, Any]] = Field(
+        None, title="Calculate Number of Locations Per Group"
+    )
+    num_location_sv_widgets: Optional[NumLocationSvWidgets] = Field(
+        None, title="Create Single Value Widgets for Number of Location Per Group"
+    )
+    num_location_grouped_sv_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge per group Number of Locations SV widgets"
+    )
+    daynight_ratio: Optional[Dict[str, Any]] = Field(
+        None, title="Calculate Day/Night Ratio Per Group"
+    )
+    daynight_ratio_sv_widgets: Optional[DaynightRatioSvWidgets] = Field(
+        None, title="Create Single Value Widgets for Day/Night Ratio Per Group"
+    )
+    daynight_ratio_grouped_sv_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge per group Day/Night Ratio SV widgets"
+    )
+    td: Optional[Td] = Field(None, title="Calculate Time Density from Trajectory")
+    td_map_layer: Optional[TdMapLayer] = Field(
+        None, title="Create map layer from Time Density"
+    )
+    td_ecomap: Optional[TdEcomap] = Field(None, title="Draw Ecomap from Time Density")
+    td_ecomap_html_url: Optional[TdEcomapHtmlUrl] = Field(
+        None, title="Persist Ecomap as Text"
+    )
+    td_map_widget: Optional[TdMapWidget] = Field(
+        None, title="Create Time Density Map Widget"
+    )
+    td_grouped_map_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge Time Density Map Widget Views"
+    )
+    subject_tracking_dashboard: Optional[SubjectTrackingDashboard] = Field(
+        None, title="Create Dashboard with Subject Tracking Widgets"
+    )

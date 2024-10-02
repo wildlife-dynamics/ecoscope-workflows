@@ -1,20 +1,136 @@
 [project]
-name = "ecoscope-workflows-manage"
-channels = [
-    "https://prefix.dev/ecoscope-workflows",
-    "conda-forge",
-]
+name = "ecoscope-workflows-dev"
+channels = ["conda-forge"]
 platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
 
-[feature.conda-dist]
-dependencies = { rattler-build = "*" }
-# tasks to:
-#  - manually build the vendor packages from the recipes; and then
-#  - manually push built packages to the channel (requires prefix api key env var)
-# these are not run in ci. if `vendor-version-check check` fails, use these to update the vendor packages.
-# note: in this case, the recipes themselves likely need to be manually updated before build/push.
-tasks = { build-release = "publish/build.sh release"}
+[dependencies]
+curl = "*"
+rattler-build = "*"
+yq = "*"
 
-[environments]
-default = { solve-group = "default" }
-conda-dist = { features = ["conda-dist"], solve-group = "conda-dist", no-default-feature = true }
+[tasks]
+
+# build ----------------------------------------------------------------------------------------
+
+build-vendor = { cmd = "./publish/build.sh vendor", inputs = ["publish/recipes/vendor/*.yaml"] }
+build-release = { cmd = "./publish/build.sh release", inputs = ["publish/recipes/release/*.yaml", "src/**/*.py", "src/**/pyproject.toml"] }
+
+# examples ---------------------------------------------------------------------------------
+
+recompile-mode-map = { cmd = "./dev/recompile.sh mode-map --lock", depends-on = ["build-release"] }
+recompile-mode-mapvalues = { cmd = "./dev/recompile.sh mode-mapvalues --lock", depends-on = ["build-release"] }
+recompile-patrol-events = { cmd = "./dev/recompile.sh patrol-events --lock", depends-on = ["build-release"] }
+recompile-patrols = { cmd = "./dev/recompile.sh patrols --lock", depends-on = ["build-release"] }
+recompile-subject-tracking = { cmd = "./dev/recompile.sh subject-tracking --lock", depends-on = ["build-release"] }
+recompile-all = { cmd ="echo 'recompile-all' complete", depends-on = [
+    "recompile-mode-map",
+    "recompile-mode-mapvalues",
+    "recompile-patrol-events",
+    "recompile-patrols",
+    "recompile-subject-tracking",
+]}
+recompile-mode-map-carryover-lockfile = { cmd = "./dev/recompile.sh mode-map --no-lock --carryover-lockfile" }
+recompile-mode-mapvalues-carryover-lockfile = { cmd = "./dev/recompile.sh mode-mapvalues --no-lock --carryover-lockfile" }
+recompile-patrol-events-carryover-lockfile = { cmd = "./dev/recompile.sh patrol-events --no-lock --carryover-lockfile" }
+recompile-patrols-carryover-lockfile = { cmd = "./dev/recompile.sh patrols --no-lock --carryover-lockfile" }
+recompile-subject-tracking-carryover-lockfile = { cmd = "./dev/recompile.sh subject-tracking --no-lock --carryover-lockfile" }
+recompile-all-carryover-lockfile = { cmd ="echo 'recompile-all-carryover-lockfile' complete", depends-on = [
+    "recompile-mode-map-carryover-lockfile",
+    "recompile-mode-mapvalues-carryover-lockfile",
+    "recompile-patrol-events-carryover-lockfile",
+    "recompile-patrols-carryover-lockfile",
+    "recompile-subject-tracking-carryover-lockfile",
+]}
+
+pytest-mode-map-app = { cmd = "./dev/pytest-examples.sh mode-map 'app'" }
+pytest-mode-mapvalues-app = { cmd = "./dev/pytest-examples.sh mode-mapvalues 'app'" }
+pytest-patrol-events-app = { cmd = "./dev/pytest-examples.sh patrol-events 'app'" }
+pytest-patrols-app = { cmd = "./dev/pytest-examples.sh patrols 'app'" }
+pytest-subject-tracking-app = { cmd = "./dev/pytest-examples.sh subject-tracking 'app'" }
+
+pytest-mode-map-cli = { cmd = "./dev/pytest-examples.sh mode-map 'cli'" }
+pytest-mode-mapvalues-cli = { cmd = "./dev/pytest-examples.sh mode-mapvalues 'cli'" }
+pytest-patrol-events-cli = { cmd = "./dev/pytest-examples.sh patrol-events 'cli'" }
+pytest-patrols-cli = { cmd = "./dev/pytest-examples.sh patrols 'cli'" }
+pytest-subject-tracking-cli = { cmd = "./dev/pytest-examples.sh subject-tracking 'cli'" }
+
+docker-build-mode-map = { cmd = "./dev/docker-build.sh mode-map" }
+docker-build-mode-mapvalues = { cmd = "./dev/docker-build.sh mode-mapvalues" }
+docker-build-patrol-events = { cmd = "./dev/docker-build.sh patrol-events" }
+docker-build-patrols = { cmd = "./dev/docker-build.sh patrols" }
+docker-build-subject-tracking = { cmd = "./dev/docker-build.sh subject-tracking" }
+
+docker-run-mode-map = { cmd = "./dev/docker-run.sh mode-map" }
+docker-run-mode-mapvalues = { cmd = "./dev/docker-run.sh mode-mapvalues" }
+docker-run-patrol-events = { cmd = "./dev/docker-run.sh patrol-events" }
+docker-run-patrols = { cmd = "./dev/docker-run.sh patrols" }
+docker-run-subject-tracking = { cmd = "./dev/docker-run.sh subject-tracking" }
+
+curl-invoke-mode-map = { cmd = "./dev/curl-invoke-docker.sh mode-map" }
+curl-invoke-mode-mapvalues = { cmd = "./dev/curl-invoke-docker.sh mode-mapvalues" }
+curl-invoke-patrol-events = { cmd = "./dev/curl-invoke-docker.sh patrol-events" }
+curl-invoke-patrols = { cmd = "./dev/curl-invoke-docker.sh patrols" }
+curl-invoke-subject-tracking = { cmd = "./dev/curl-invoke-docker.sh subject-tracking" }
+
+# lock ---------------------------------------------------------------------------------------------------
+
+lock-core = { cmd = "pixi install -a --manifest-path pyproject.toml", cwd = "src/ecoscope-workflows-core" }
+lock-ext-ecoscope = { cmd = "pixi install -a --manifest-path pyproject.toml", cwd = "src/ecoscope-workflows-ext-ecoscope" }
+
+# core ----------------------------------------------------------------------
+
+mypy-core-310 = { cmd = "./dev/mypy.sh core 310", depends-on = ["lock-core"]}
+mypy-core-311 = { cmd = "./dev/mypy.sh core 311", depends-on = ["lock-core"]}
+mypy-core-312 = { cmd = "./dev/mypy.sh core 312", depends-on = ["lock-core"]}
+mypy-core-all = { cmd = "echo 'pytest-core-all' complete", depends-on = [
+    "mypy-core-310",
+    "mypy-core-311",
+    "mypy-core-312",
+]}
+
+doctest-core-310 = { cmd = "./dev/doctest.sh core 310", depends-on = ["lock-core"]}
+doctest-core-311 = { cmd = "./dev/doctest.sh core 311", depends-on = ["lock-core"]}
+doctest-core-312 = { cmd = "./dev/doctest.sh core 312", depends-on = ["lock-core"]}
+doctest-core-all = { cmd = "echo 'doctest-core-all' complete", depends-on = [
+    "doctest-core-310",
+    "doctest-core-311",
+    "doctest-core-312",
+]}
+
+pytest-core-310 = { cmd = "./dev/pytest-src.sh core 310", depends-on = ["lock-core"]}
+pytest-core-311 = { cmd = "./dev/pytest-src.sh core 311", depends-on = ["lock-core"]}
+pytest-core-312 = { cmd = "./dev/pytest-src.sh core 312", depends-on = ["lock-core"]}
+pytest-core-all = { cmd = "echo 'pytest-core-all' complete", depends-on = [
+    "pytest-core-310",
+    "pytest-core-311",
+    "pytest-core-312",
+]}
+
+# ext-ecoscope -------------------------------------------------------------------------------------
+
+mypy-ext-ecoscope-310 = { cmd = "./dev/mypy.sh ext-ecoscope 310", depends-on = ["lock-ext-ecoscope"]}
+mypy-ext-ecoscope-311 = { cmd = "./dev/mypy.sh ext-ecoscope 311", depends-on = ["lock-ext-ecoscope"]}
+mypy-ext-ecoscope-312 = { cmd = "./dev/mypy.sh ext-ecoscope 312", depends-on = ["lock-ext-ecoscope"]}
+mypy-ext-ecoscope-all = { cmd = "echo 'mypy-ext-ecoscope-all' complete", depends-on = [
+    "mypy-ext-ecoscope-310",
+    "mypy-ext-ecoscope-311",
+    "mypy-ext-ecoscope-312",
+]}
+
+pytest-ext-ecoscope-310-not-io = { cmd = "./dev/pytest-src.sh ext-ecoscope 310 'not io'", depends-on = ["lock-ext-ecoscope"]}
+pytest-ext-ecoscope-311-not-io = { cmd = "./dev/pytest-src.sh ext-ecoscope 311 'not io'", depends-on = ["lock-ext-ecoscope"]}
+pytest-ext-ecoscope-312-not-io = { cmd = "./dev/pytest-src.sh ext-ecoscope 312 'not io'", depends-on = ["lock-ext-ecoscope"]}
+pytest-ext-ecoscope-all-not-io = { cmd = "echo 'pytest-ext-ecoscope-all-not-io' complete", depends-on = [
+    "pytest-ext-ecoscope-310-not-io",
+    "pytest-ext-ecoscope-311-not-io",
+    "pytest-ext-ecoscope-312-not-io",
+]}
+
+pytest-ext-ecoscope-310-io = { cmd = "./dev/pytest-src.sh ext-ecoscope 310 'io'", depends-on = ["lock-ext-ecoscope"]}
+pytest-ext-ecoscope-311-io = { cmd = "./dev/pytest-src.sh ext-ecoscope 311 'io'", depends-on = ["lock-ext-ecoscope"]}
+pytest-ext-ecoscope-312-io = { cmd = "./dev/pytest-src.sh ext-ecoscope 312 'io'", depends-on = ["lock-ext-ecoscope"]}
+pytest-ext-ecoscope-all-io = { cmd = "echo 'pytest-ext-ecoscope-all-io' complete", depends-on = [
+    "pytest-ext-ecoscope-310-io",
+    "pytest-ext-ecoscope-311-io",
+    "pytest-ext-ecoscope-312-io",
+]}

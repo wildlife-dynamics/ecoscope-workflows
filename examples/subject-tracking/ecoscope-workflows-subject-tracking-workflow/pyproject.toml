@@ -1,7 +1,11 @@
+# [generated]
+# by = { compiler = "ecoscope-workflows-core", version = "9999" }
+# from-spec-sha256 = "5d1d6b603ad0254b5a6ce0477f76434f313cf972a29552346a9ebe0425e6ad4a"
+
 [project]
 name = "ecoscope-workflows-subject-tracking-workflow"
 version = "0.0.0"  # todo: versioning
 requires-python = ">=3.10"  # TODO: sync with ecoscope-workflows-core
 description = ""  # TODO: description from spec
 license = { text = "BSD-3-Clause" }
-scripts = { ecoscope-workflows-subject-tracking-workflow = "ecoscope_workflows_subject_tracking_workflow.main:main" }
+scripts = { ecoscope-workflows-subject-tracking-workflow = "ecoscope_workflows_subject_tracking_workflow.cli:main" }

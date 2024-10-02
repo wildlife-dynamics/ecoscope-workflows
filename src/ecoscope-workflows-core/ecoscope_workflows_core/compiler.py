@@ -1,17 +1,21 @@
 import builtins
-import functools
+import hashlib
+import json
 import keyword
 import pathlib
-import subprocess
 import sys
+from pathlib import Path
+import tempfile
+from importlib.metadata import version
 from textwrap import dedent
-from typing import Annotated, Any, Callable, Literal, TypeAlias, TypeVar, TYPE_CHECKING
+from typing import Annotated, Any, Literal, TypeAlias, TypeVar, TYPE_CHECKING
 
 if sys.version_info >= (3, 11):
     import tomllib
 else:
     import tomli as tomllib
-
+import datamodel_code_generator as dcg
+import pydot as dot  # type: ignore[import-untyped]
 from jinja2 import Environment, FileSystemLoader
 from pydantic import (
     BaseModel,
@@ -25,7 +29,14 @@ from pydantic import (
 from pydantic.functional_validators import AfterValidator, BeforeValidator
 
 from ecoscope_workflows_core._models import _AllowArbitraryAndForbidExtra, _ForbidExtra
-from ecoscope_workflows_core.artifacts import PixiToml
+from ecoscope_workflows_core.artifacts import (
+    Dags,
+    PackageDirectory,
+    PixiToml,
+    Tests,
+    WorkflowArtifacts,
+)
+from ecoscope_workflows_core.formatting import ruff_formatted
 from ecoscope_workflows_core.jsonschema import ReactJSONSchemaFormConfiguration
 from ecoscope_workflows_core.registry import KnownTask, known_tasks
 from ecoscope_workflows_core.requirements import (
@@ -366,39 +377,10 @@ class TaskInstance(_ForbidExtra):
         )
 
 
-def ruff_formatted(returns_str_func: Callable[..., str]) -> Callable:
-    """Decorator to format the output of a function that returns a string with ruff."""
-
-    @functools.wraps(returns_str_func)
-    def wrapper(*args, **kwargs):
-        unformatted = returns_str_func(*args, **kwargs)
-        # https://github.com/astral-sh/ruff/issues/8401#issuecomment-1788806462
-        formatted = subprocess.check_output(
-            [sys.executable, "-m", "ruff", "format", "-s", "-"],
-            input=unformatted,
-            encoding="utf-8",
-        )
-        linted = subprocess.check_output(
-            [sys.executable, "-m", "ruff", "check", "--fix", "--exit-zero", "-s", "-"],
-            input=formatted,
-            encoding="utf-8",
-        )
-        return linted
-
-    return wrapper
-
-
 class SpecRequirement(_AllowArbitraryAndForbidExtra):
     name: str
     version: NamelessMatchSpecType
     channel: ChannelType
-
-
-class Requirements(_ForbidExtra):
-    """Requirements for a workflow."""
-
-    compile: list[SpecRequirement]
-    run: list[SpecRequirement]
 
 
 class Spec(_ForbidExtra):
@@ -409,10 +391,14 @@ class Spec(_ForbidExtra):
         Python keywords, or Python builtins. The maximum length is 64 chars.
         """
     )
-    requirements: Requirements
+    requirements: list[SpecRequirement]
     workflow: list[TaskInstance] = Field(
         description="A list of task instances that define the workflow.",
     )
+
+    @property
+    def sha256(self) -> str:
+        return hashlib.sha256(self.model_dump_json().encode()).hexdigest()
 
     @property
     def all_task_ids(self) -> dict[str, str]:
@@ -527,18 +513,27 @@ class DagCompiler(BaseModel):
         }
 
     def get_params_jsonschema(self) -> dict[str, Any]:
-        properties = {
-            t.name: t.known_task.parameters_jsonschema(
-                omit_args=self.per_taskinstance_omit_args.get(t.id, []),
-            )
-            for t in self.spec.workflow
-        }
+        def _props_and_defs_from_task_instance(
+            t: TaskInstance,
+            omit_args: list[str],
+        ) -> tuple[dict, dict]:
+            props = {t.id: t.known_task.parameters_jsonschema(omit_args=omit_args)}
+            defs = {}
+            for _, schema in props.items():
+                schema["title"] = t.name
+                if "$defs" in schema:
+                    defs.update(schema["$defs"])
+                    del schema["$defs"]
+            return props, defs
 
-        definitions = {}
-        for _, schema in properties.items():
-            if "$defs" in schema:
-                definitions.update(schema["$defs"])
-                del schema["$defs"]
+        properties: dict[str, Any] = {}
+        definitions: dict[str, Any] = {}
+        for t in self.spec.workflow:
+            props, defs = _props_and_defs_from_task_instance(
+                t, self.per_taskinstance_omit_args.get(t.id, [])
+            )
+            properties |= props
+            definitions |= defs
 
         react_json_schema_form = ReactJSONSchemaFormConfiguration(properties=properties)
         react_json_schema_form.definitions = definitions
@@ -572,16 +567,27 @@ class DagCompiler(BaseModel):
             platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
             """
         )
-        dependencies = "[dependencies]\n"
-        for r in self.spec.requirements.run:
+        dependencies = dedent(
+            """\
+            [dependencies]
+            fastapi = "*"
+            httpx = "*"
+            uvicorn = "*"
+            "ruamel.yaml" = "*"
+            """
+        )
+        for r in self.spec.requirements:
             dependencies += f'{r.name} = {{ version = "{r.version}", channel = "{r.channel.base_url}" }}\n'
         feature = dedent(
             """\
             [feature.test.dependencies]
             pytest = "*"
             [feature.test.tasks]
-            test-async-mock-io = "python -m pytest tests -k 'async and mock-io'"
-            test-sequential-mock-io = "python -m pytest tests -k 'sequential and mock-io'"
+            test-all = "python -m pytest -v tests"
+            test-app-async-mock-io = "python -m pytest -v tests/test_app.py -k 'async and mock-io'"
+            test-app-sequential-mock-io = "python -m pytest -v tests/test_app.py -k 'sequential and mock-io'"
+            test-cli-async-mock-io = "python -m pytest -v tests/test_cli.py -k 'async and mock-io'"
+            test-cli-sequential-mock-io = "python -m pytest -v tests/test_cli.py -k 'sequential and mock-io'"
             """
             # todo: support build; push; deploy; run; test; etc. tasks
             # [feature.docker.tasks]
@@ -596,10 +602,22 @@ class DagCompiler(BaseModel):
             test = { features = ["test"], solve-group = "default" }
             """
         )
+        tasks = dedent(
+            f"""\
+            [tasks]
+            docker-build = '''
+            mkdir -p .tmp/ecoscope-workflows/release/artifacts/
+            && cp -r /tmp/ecoscope-workflows/release/artifacts/* .tmp/ecoscope-workflows/release/artifacts/
+            && docker buildx build -t {self.release_name} .
+            '''
+            """
+        )
         return PixiToml(
+            file_header=self.file_header,
             project=tomllib.loads(project)["project"],
             dependencies=tomllib.loads(dependencies)["dependencies"],
             feature=tomllib.loads(feature)["feature"],
+            tasks=tomllib.loads(tasks)["tasks"],
             environments=tomllib.loads(environments)["environments"],
             **{
                 "pypi-dependencies": {
@@ -620,51 +638,158 @@ class DagCompiler(BaseModel):
     def package_name(self) -> str:
         return self.release_name.replace("-", "_")
 
-    def get_pyproject_toml(self) -> str:
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def file_header(self) -> str:
         return dedent(
             f"""\
+            # [generated]
+            # by = {{ compiler = "ecoscope-workflows-core", version = "{version('ecoscope-workflows-core')}" }}
+            # from-spec-sha256 = "{self.spec.sha256}"
+            """
+        )
+
+    def get_pyproject_toml(self) -> str:
+        return self.file_header + dedent(
+            f"""
             [project]
             name = "{self.release_name}"
             version = "0.0.0"  # todo: versioning
             requires-python = ">=3.10"  # TODO: sync with ecoscope-workflows-core
             description = ""  # TODO: description from spec
             license = {{ text = "BSD-3-Clause" }}
-            scripts = {{ {self.release_name} = "{self.package_name}.main:main" }}
+            scripts = {{ {self.release_name} = "{self.package_name}.cli:main" }}
             """
         )
-
-    def get_test_dags(self) -> str:
-        return dedent(
-            f"""\
-            from pathlib import Path
-
-            import pytest
-
-            from ecoscope_workflows_core.testing import test_case
-
-
-            ARTIFACTS = Path(__file__).parent.parent
-            TEST_CASES_YAML = ARTIFACTS.parent / "test-cases.yaml"
-            ENTRYPOINT = "{self.release_name}"
-
-
-            @pytest.mark.parametrize("execution_mode", ["async", "sequential"])
-            @pytest.mark.parametrize("mock_io", [True], ids=["mock-io"])
-            def test_end_to_end(execution_mode: str, mock_io: bool, case: str, tmp_path: Path):
-                test_case(ENTRYPOINT, execution_mode, mock_io, case, TEST_CASES_YAML, tmp_path)
-            """
-        )
-
-    @property
-    def _jinja_env(self) -> Environment:
-        return Environment(loader=FileSystemLoader(self.jinja_templates_dir))
 
     @ruff_formatted
-    def generate_dag(self, dag_type: DagTypes, mock_io: bool = False) -> str:
-        template = self._jinja_env.get_template(
-            f"run-{dag_type}.jinja2" if dag_type != "jupytext" else "jupytext.jinja2"
+    def render_dag(self, dag_type: DagTypes, mock_io: bool = False) -> str:
+        loader = FileSystemLoader(self.jinja_templates_dir / "pkg" / "dags")
+        env = Environment(loader=loader)
+        template = env.get_template(
+            f"run_{dag_type}.jinja2" if dag_type != "jupytext" else "jupytext.jinja2"
         )
         testing = True if mock_io else False
         return template.render(
             self.get_dag_config(dag_type, mock_io=mock_io) | {"testing": testing}
+        )
+
+    @ruff_formatted
+    def generate_params_model(self, params_jsonschema: dict, file_header: str) -> str:
+        with tempfile.NamedTemporaryFile(suffix=".py") as tmp:
+            output = Path(tmp.name)
+            dcg.generate(
+                json.dumps(params_jsonschema),
+                input_file_type=dcg.InputFileType.JsonSchema,
+                input_filename="params-jsonschema.json",
+                output=output,
+                output_model_type=dcg.DataModelType.PydanticV2BaseModel,
+                use_subclass_enum=True,
+                custom_file_header=file_header,
+            )
+            model: str = output.read_text()
+        return model
+
+    @ruff_formatted
+    def ruffrender(self, template: str, **kws) -> str:
+        env = Environment(
+            loader=FileSystemLoader(self.jinja_templates_dir),
+            keep_trailing_newline=True,
+        )
+        return env.get_template(template).render(file_header=self.file_header, **kws)
+
+    def plainrender(self, template: str, **kws) -> str:
+        env = Environment(
+            loader=FileSystemLoader(self.jinja_templates_dir),
+            keep_trailing_newline=True,
+        )
+        return env.get_template(template).render(file_header=self.file_header, **kws)
+
+    def get_dags(self) -> Dags:
+        return Dags(
+            **{
+                "__init__.py": self.ruffrender("pkg/dags/init.jinja2"),
+                "jupytext.py": self.render_dag("jupytext"),
+                "run_async_mock_io.py": self.render_dag("async", mock_io=True),
+                "run_async.py": self.render_dag("async"),
+                "run_sequential_mock_io.py": self.render_dag(
+                    "sequential", mock_io=True
+                ),
+                "run_sequential.py": self.render_dag("sequential"),
+            }
+        )
+
+    def get_tests(self) -> Tests:
+        return Tests(
+            **{
+                "conftest.py": self.ruffrender(
+                    "tests/conftest.jinja2",
+                    package_name=self.package_name,
+                    release_name=self.release_name,
+                ),
+                "test_app.py": self.ruffrender("tests/test_app.jinja2"),
+                "test_cli.py": self.ruffrender("tests/test_cli.jinja2"),
+            },
+        )
+
+    def get_package(self) -> PackageDirectory:
+        params_jsonschema = self.get_params_jsonschema()
+        return PackageDirectory(
+            dags=self.get_dags(),
+            **{
+                "app.py": self.ruffrender("pkg/app.jinja2"),
+                "cli.py": self.ruffrender("pkg/cli.jinja2"),
+                "dispatch.py": self.ruffrender("pkg/dispatch.jinja2"),
+                "params-jsonschema.json": params_jsonschema,
+                "params.py": self.generate_params_model(
+                    params_jsonschema, self.file_header
+                ),
+            },
+        )
+
+    def build_pydot_graph(self) -> dot.Dot:
+        graph = dot.Dot(self.spec.id, graph_type="graph", rankdir="LR")
+        for t in self.spec.workflow:
+            label = (
+                "<<table border='1' cellspacing='0'>"
+                f"<tr><td port='{t.id}' border='1' bgcolor='grey'>{t.id}</td></tr>"
+            )
+            for arg in t.all_dependencies_dict:
+                label += f"<tr><td port='{arg}' border='1'>{arg}</td></tr>"
+            label += (
+                "<tr><td port='return' border='1'><i>return</i></td></tr>" "</table>>"
+            )
+            node = dot.Node(t.id, shape="none", label=label)
+            graph.add_node(node)
+        for t in self.spec.workflow:
+            for arg, dep in t.all_dependencies_dict.items():
+                for d in dep:
+                    edge = dot.Edge(
+                        f"{d}:return",
+                        f"{t.id}:{arg}",
+                        dir="forward",
+                        arrowhead="normal",
+                    )
+                    graph.add_edge(edge)
+        return graph
+
+    def generate_artifacts(self, spec_relpath: str) -> WorkflowArtifacts:
+        return WorkflowArtifacts(
+            spec_relpath=spec_relpath,
+            package_name=self.package_name,
+            release_name=self.release_name,
+            package=self.get_package(),
+            tests=self.get_tests(),
+            **{
+                "pixi.toml": self.get_pixi_toml(),
+                "graph.png": self.build_pydot_graph(),
+                "pyproject.toml": self.get_pyproject_toml(),
+                "Dockerfile": self.plainrender(
+                    "Dockerfile.jinja2", package_name=self.package_name
+                ),
+                ".dockerignore": self.plainrender("dockerignore.jinja2"),
+                "README.md": self.plainrender(
+                    "README.jinja2", release_name=self.release_name
+                ),
+            },
         )

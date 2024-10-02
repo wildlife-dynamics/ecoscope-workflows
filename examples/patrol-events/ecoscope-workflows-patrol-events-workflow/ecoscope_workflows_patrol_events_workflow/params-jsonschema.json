@@ -1,7 +1,7 @@
 {
-  "title": "Ecoscope Workflow Configurations Form",
+  "title": "Params",
   "properties": {
-    "Set Groupers": {
+    "groupers": {
       "additionalProperties": false,
       "properties": {
         "groupers": {
@@ -16,9 +16,10 @@
       "required": [
         "groupers"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Set Groupers"
     },
-    "Get Patrol Events from EarthRanger": {
+    "pe": {
       "additionalProperties": false,
       "properties": {
         "client": {
@@ -60,9 +61,10 @@
         "patrol_type",
         "status"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Get Patrol Events from EarthRanger"
     },
-    "Apply Relocation Coordinate Filter": {
+    "filter_patrol_events": {
       "additionalProperties": false,
       "properties": {
         "min_x": {
@@ -100,9 +102,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Apply Relocation Coordinate Filter"
     },
-    "Add temporal index to Patrol Events": {
+    "pe_add_temporal_index": {
       "additionalProperties": false,
       "properties": {
         "index_name": {
@@ -163,9 +166,10 @@
         "time_col",
         "directive"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Add temporal index to Patrol Events"
     },
-    "Patrol Events Colormap": {
+    "pe_colormap": {
       "additionalProperties": false,
       "properties": {
         "input_column_name": {
@@ -199,9 +203,10 @@
       "required": [
         "input_column_name"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Patrol Events Colormap"
     },
-    "Create map layer from Patrol Events": {
+    "pe_map_layer": {
       "additionalProperties": false,
       "properties": {
         "layer_style": {
@@ -233,9 +238,10 @@
       "required": [
         "layer_style"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create map layer from Patrol Events"
     },
-    "Draw Ecomap from Time Density": {
+    "pe_ecomap": {
       "additionalProperties": false,
       "properties": {
         "tile_layer": {
@@ -285,9 +291,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Draw Ecomap from Time Density"
     },
-    "Persist Ecomap as Text": {
+    "pe_ecomap_html_url": {
       "additionalProperties": false,
       "properties": {
         "filename": {
@@ -298,9 +305,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Persist Ecomap as Text"
     },
-    "Create Time Density Map Widget": {
+    "pe_map_widget": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -312,9 +320,10 @@
       "required": [
         "title"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Time Density Map Widget"
     },
-    "Draw Time Series Bar Chart for Patrols Events": {
+    "pe_bar_chart": {
       "additionalProperties": false,
       "properties": {
         "x_axis": {
@@ -399,9 +408,10 @@
         "agg_function",
         "time_interval"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Draw Time Series Bar Chart for Patrols Events"
     },
-    "Persist Patrols Bar Chart as Text": {
+    "pe_bar_chart_html_url": {
       "additionalProperties": false,
       "properties": {
         "filename": {
@@ -412,9 +422,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Persist Patrols Bar Chart as Text"
     },
-    "Create Plot Widget for Patrol Events": {
+    "pe_bar_chart_widget": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -426,9 +437,10 @@
       "required": [
         "title"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Plot Widget for Patrol Events"
     },
-    "Create Patrol Events Meshgrid": {
+    "pe_meshgrid": {
       "additionalProperties": false,
       "properties": {
         "cell_width": {
@@ -451,9 +463,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Create Patrol Events Meshgrid"
     },
-    "Patrol Events Feature Density": {
+    "pe_feature_density": {
       "additionalProperties": false,
       "properties": {
         "geometry_type": {
@@ -469,9 +482,10 @@
       "required": [
         "geometry_type"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Patrol Events Feature Density"
     },
-    "Feature Density Colormap": {
+    "fd_colormap": {
       "additionalProperties": false,
       "properties": {
         "input_column_name": {
@@ -505,9 +519,10 @@
       "required": [
         "input_column_name"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Feature Density Colormap"
     },
-    "Create map layer from Feature Density": {
+    "fd_map_layer": {
       "additionalProperties": false,
       "properties": {
         "layer_style": {
@@ -539,9 +554,10 @@
       "required": [
         "layer_style"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create map layer from Feature Density"
     },
-    "Draw Ecomap from Feature Density": {
+    "fd_ecomap": {
       "additionalProperties": false,
       "properties": {
         "tile_layer": {
@@ -591,9 +607,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Draw Ecomap from Feature Density"
     },
-    "Persist Feature Density Ecomap as Text": {
+    "fd_ecomap_html_url": {
       "additionalProperties": false,
       "properties": {
         "filename": {
@@ -604,9 +621,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Persist Feature Density Ecomap as Text"
     },
-    "Create Feature Density Map Widget": {
+    "fd_map_widget": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -618,15 +636,17 @@
       "required": [
         "title"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Feature Density Map Widget"
     },
-    "Split Patrol Events by Group": {
+    "split_patrol_event_groups": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Split Patrol Events by Group"
     },
-    "Create map layer from grouped Patrol Events": {
+    "grouped_pe_map_layer": {
       "additionalProperties": false,
       "properties": {
         "layer_style": {
@@ -658,9 +678,10 @@
       "required": [
         "layer_style"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create map layer from grouped Patrol Events"
     },
-    "Draw Ecomap from grouped Patrol Events": {
+    "grouped_pe_ecomap": {
       "additionalProperties": false,
       "properties": {
         "tile_layer": {
@@ -710,9 +731,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Draw Ecomap from grouped Patrol Events"
     },
-    "Persist grouped Patrol Events Ecomap as Text": {
+    "grouped_pe_ecomap_html_url": {
       "additionalProperties": false,
       "properties": {
         "filename": {
@@ -723,9 +745,10 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Persist grouped Patrol Events Ecomap as Text"
     },
-    "Create grouped Patrol Events Map Widget": {
+    "grouped_pe_map_widget": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -737,15 +760,17 @@
       "required": [
         "title"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create grouped Patrol Events Map Widget"
     },
-    "Merge Patrol Events Map Widget Views": {
+    "grouped_pe_map_widget_merge": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Merge Patrol Events Map Widget Views"
     },
-    "Draw Pie Chart for Patrols Events": {
+    "grouped_pe_pie_chart": {
       "additionalProperties": false,
       "properties": {
         "value_column": {
@@ -789,9 +814,10 @@
       "required": [
         "value_column"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Draw Pie Chart for Patrols Events"
     },
-    "Persist Patrols Pie Chart as Text": {
+    "grouped_pe_pie_chart_html_urls": {
       "additionalProperties": false,
       "properties": {
         "filename": {
@@ -802,15 +828,32 @@
         }
       },
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Persist Patrols Pie Chart as Text"
     },
-    "Merge Pie Chart Widget Views": {
+    "grouped_pe_pie_chart_widgets": {
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title",
+          "type": "string",
+          "description": "The title of the widget"
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "type": "object",
+      "title": "Create Plot Widget for Patrol Events"
+    },
+    "grouped_pe_pie_widget_merge": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Merge Pie Chart Widget Views"
     },
-    "Grouped Patrol Events Feature Density": {
+    "grouped_pe_feature_density": {
       "additionalProperties": false,
       "properties": {
         "geometry_type": {
@@ -826,9 +869,10 @@
       "required": [
         "geometry_type"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Grouped Patrol Events Feature Density"
     },
-    "Grouped Feature Density Colormap": {
+    "grouped_fd_colormap": {
       "additionalProperties": false,
       "properties": {
         "input_column_name": {
@@ -862,15 +906,134 @@
       "required": [
         "input_column_name"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Grouped Feature Density Colormap"
     },
-    "Merge Feature Density Widget Views": {
+    "grouped_fd_map_layer": {
+      "additionalProperties": false,
+      "properties": {
+        "layer_style": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PolylineLayerStyle"
+            },
+            {
+              "$ref": "#/$defs/PolygonLayerStyle"
+            },
+            {
+              "$ref": "#/$defs/PointLayerStyle"
+            }
+          ],
+          "title": "Layer Style",
+          "description": "Style arguments for the layer."
+        },
+        "legend": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/LegendDefinition"
+            }
+          ],
+          "default": null,
+          "title": "Legend",
+          "description": "If present, includes this layer in the map legend"
+        }
+      },
+      "required": [
+        "layer_style"
+      ],
+      "type": "object",
+      "title": "Create map layer from Feature Density"
+    },
+    "grouped_fd_ecomap": {
+      "additionalProperties": false,
+      "properties": {
+        "tile_layer": {
+          "default": "",
+          "title": "Tile Layer",
+          "type": "string",
+          "description": "A named tile layer, ie OpenStreetMap."
+        },
+        "static": {
+          "default": false,
+          "title": "Static",
+          "type": "boolean",
+          "description": "Set to true to disable map pan/zoom."
+        },
+        "title": {
+          "default": "",
+          "title": "Title",
+          "type": "string",
+          "description": "The map title."
+        },
+        "north_arrow_style": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/NorthArrowStyle"
+            }
+          ],
+          "default": {
+            "placement": "top-left",
+            "style": {
+              "transform": "scale(0.8)"
+            }
+          },
+          "title": "North Arrow Style",
+          "description": "Additional arguments for configuring the North Arrow."
+        },
+        "legend_style": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/LegendStyle"
+            }
+          ],
+          "default": {
+            "placement": "bottom-right"
+          },
+          "title": "Legend Style",
+          "description": "Additional arguments for configuring the legend."
+        }
+      },
+      "required": [],
+      "type": "object",
+      "title": "Draw Ecomap from Feature Density"
+    },
+    "grouped_fd_ecomap_html_url": {
+      "additionalProperties": false,
+      "properties": {
+        "filename": {
+          "default": null,
+          "title": "Filename",
+          "type": "string",
+          "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+        }
+      },
+      "required": [],
+      "type": "object",
+      "title": "Persist Feature Density Ecomap as Text"
+    },
+    "grouped_fd_map_widget": {
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title",
+          "type": "string",
+          "description": "The title of the widget"
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "type": "object",
+      "title": "Create Feature Density Map Widget"
+    },
+    "grouped_fd_map_widget_merge": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
-      "type": "object"
+      "type": "object",
+      "title": "Merge Feature Density Widget Views"
     },
-    "Create Dashboard with Patrol Map Widgets": {
+    "patrol_dashboard": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -888,7 +1051,8 @@
         "title",
         "description"
       ],
-      "type": "object"
+      "type": "object",
+      "title": "Create Dashboard with Patrol Map Widgets"
     }
   },
   "$defs": {
