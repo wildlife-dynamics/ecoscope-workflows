@@ -51,10 +51,10 @@ this repo. If you prefer, you may call them directly.
 
 ## What environment(s) are these tasks run in?
 
-In every package in this repo has it's own `pixi` manifest file (either `pixi.toml` or `pyproject.
-toml`) defining dependencies, tasks, _and_ environments for the project. These docs on [environment
+Every package in this repo has it's own `pixi` manifest file (either `pixi.toml` or `pyproject.toml`),
+that defines dependencies, tasks, _and_ environments for the project. These docs on [environment
 vs. project](https://pixi.sh/latest/switching_from/conda/#environment-vs-project) are a useful
-refernce for those not used this project-based approach to environments.
+reference for those not used this project-based approach to environments.
 
 > **Note**: The fact that we are managing multiple projects in the same repo means that using the
 `--manifest-path` option to explicitly declare which project you are using for a particular
@@ -72,9 +72,11 @@ mode**_ but rather from an ephemeral local "release" (i.e. conda package) built 
 packages. This choice was made to align dependencies management in the `examples` with the way
 in which released workflows manage dependencies. The trade-off for this "realism" is an additional
 step in the development process; namely, re-building the local "release" if new changes from `src/`
-are required for testing the example workflows.
+are required for testing the example workflows. This is done automatically in the CI testing of the
+examples, so you can be confident that the CI is always being run with the latest changes.
 
 > **Note**: Pixi tasks support [caching](https://pixi.sh/latest/features/advanced_tasks/#caching),
-and we currently do use caching to attempt to avoid unecessary re-builds of the local `src/` releases.
+and we currently do use caching to attempt to avoid unecessary re-builds of the local `src/` releases
+(in the context of local development, _not_ CI).
 However, please be aware that tuning this logic remains a work-in-progress and further work needs to
 be done to ensure that these cached builds are being re-built at the appropriate times.
