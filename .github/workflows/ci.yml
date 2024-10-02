@@ -2,12 +2,10 @@ name: CI
 
 on:
   push:
-    branches: ["main", "cs/vipingo", "containerize-click"]
-  # pull_request:
-  #   branches: ["*"]
-  #   types: [ opened, reopened, synchronize, labeled ]
-  # schedule:
-  #   - cron: '0 4 * * *' # run once a day at 4 AM
+    branches: ["main"]
+  pull_request:
+    branches: ["*"]
+    types: [ opened, reopened, synchronize, labeled ]
 
 jobs:
   mypy:
@@ -61,7 +59,6 @@ jobs:
   test-ext-ecoscope-io:
     # run if:
     #  - all pushes to main
-    #  - schedule defined above
     #  - a PR was just labeled 'test-io'
     #  - a PR with labeled 'test-io' label was opened, reopened, or synchronized
     if: |
