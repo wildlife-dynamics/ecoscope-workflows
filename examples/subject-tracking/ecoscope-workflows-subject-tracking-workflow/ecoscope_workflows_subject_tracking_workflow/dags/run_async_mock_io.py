@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "0fb6bf0ed734d0f08cd45d68e3de0ca4d3c29c9852c8feb2061b84ce293059ca"
+# from-spec-sha256 = "030474a8999b732797c67f96a4e84066b843fa1b916296fe83f432ffa7d08480"
 
 # ruff: noqa: E402
 
@@ -35,6 +35,7 @@ from ecoscope_workflows_core.tasks.io import persist_text
 from ecoscope_workflows_core.tasks.results import create_map_widget_single_view
 from ecoscope_workflows_core.tasks.results import merge_widget_views
 from ecoscope_workflows_core.tasks.analysis import dataframe_column_mean
+from ecoscope_workflows_core.tasks.transformation import with_unit
 from ecoscope_workflows_core.tasks.results import create_single_value_widget_single_view
 from ecoscope_workflows_core.tasks.analysis import dataframe_column_max
 from ecoscope_workflows_core.tasks.analysis import dataframe_count
@@ -63,10 +64,12 @@ def main(params: Params):
         "traj_map_widgets_single_views": ["ecomap_html_urls"],
         "traj_grouped_map_widget": ["traj_map_widgets_single_views"],
         "mean_speed": ["split_subject_traj_groups"],
-        "mean_speed_sv_widgets": ["mean_speed"],
+        "average_speed_converted": ["mean_speed"],
+        "mean_speed_sv_widgets": ["average_speed_converted"],
         "mean_speed_grouped_sv_widget": ["mean_speed_sv_widgets"],
         "max_speed": ["split_subject_traj_groups"],
-        "max_speed_sv_widgets": ["max_speed"],
+        "max_speed_converted": ["max_speed"],
+        "max_speed_sv_widgets": ["max_speed_converted"],
         "max_speed_grouped_sv_widget": ["max_speed_sv_widgets"],
         "num_location": ["split_subject_traj_groups"],
         "num_location_sv_widgets": ["num_location"],
@@ -191,6 +194,15 @@ def main(params: Params):
                 "argvalues": DependsOn("split_subject_traj_groups"),
             },
         ),
+        "average_speed_converted": Node(
+            async_task=with_unit.validate().set_executor("lithops"),
+            partial=params_dict["average_speed_converted"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["value"],
+                "argvalues": DependsOn("mean_speed"),
+            },
+        ),
         "mean_speed_sv_widgets": Node(
             async_task=create_single_value_widget_single_view.validate().set_executor(
                 "lithops"
@@ -199,7 +211,7 @@ def main(params: Params):
             method="map",
             kwargs={
                 "argnames": ["view", "data"],
-                "argvalues": DependsOn("mean_speed"),
+                "argvalues": DependsOn("average_speed_converted"),
             },
         ),
         "mean_speed_grouped_sv_widget": Node(
@@ -219,6 +231,15 @@ def main(params: Params):
                 "argvalues": DependsOn("split_subject_traj_groups"),
             },
         ),
+        "max_speed_converted": Node(
+            async_task=with_unit.validate().set_executor("lithops"),
+            partial=params_dict["max_speed_converted"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["value"],
+                "argvalues": DependsOn("max_speed"),
+            },
+        ),
         "max_speed_sv_widgets": Node(
             async_task=create_single_value_widget_single_view.validate().set_executor(
                 "lithops"
@@ -227,7 +248,7 @@ def main(params: Params):
             method="map",
             kwargs={
                 "argnames": ["view", "data"],
-                "argvalues": DependsOn("max_speed"),
+                "argvalues": DependsOn("max_speed_converted"),
             },
         ),
         "max_speed_grouped_sv_widget": Node(

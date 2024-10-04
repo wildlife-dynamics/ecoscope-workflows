@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "0fb6bf0ed734d0f08cd45d68e3de0ca4d3c29c9852c8feb2061b84ce293059ca"
+# from-spec-sha256 = "030474a8999b732797c67f96a4e84066b843fa1b916296fe83f432ffa7d08480"
 
 # ruff: noqa: E402
 
@@ -33,6 +33,7 @@ from ecoscope_workflows_core.tasks.io import persist_text
 from ecoscope_workflows_core.tasks.results import create_map_widget_single_view
 from ecoscope_workflows_core.tasks.results import merge_widget_views
 from ecoscope_workflows_core.tasks.analysis import dataframe_column_mean
+from ecoscope_workflows_core.tasks.transformation import with_unit
 from ecoscope_workflows_core.tasks.results import create_single_value_widget_single_view
 from ecoscope_workflows_core.tasks.analysis import dataframe_column_max
 from ecoscope_workflows_core.tasks.analysis import dataframe_count
@@ -126,10 +127,16 @@ def main(params: Params):
         .mapvalues(argnames=["df"], argvalues=split_subject_traj_groups)
     )
 
+    average_speed_converted = (
+        with_unit.validate()
+        .partial(**params_dict["average_speed_converted"])
+        .mapvalues(argnames=["value"], argvalues=mean_speed)
+    )
+
     mean_speed_sv_widgets = (
         create_single_value_widget_single_view.validate()
         .partial(**params_dict["mean_speed_sv_widgets"])
-        .map(argnames=["view", "data"], argvalues=mean_speed)
+        .map(argnames=["view", "data"], argvalues=average_speed_converted)
     )
 
     mean_speed_grouped_sv_widget = (
@@ -146,10 +153,16 @@ def main(params: Params):
         .mapvalues(argnames=["df"], argvalues=split_subject_traj_groups)
     )
 
+    max_speed_converted = (
+        with_unit.validate()
+        .partial(**params_dict["max_speed_converted"])
+        .mapvalues(argnames=["value"], argvalues=max_speed)
+    )
+
     max_speed_sv_widgets = (
         create_single_value_widget_single_view.validate()
         .partial(**params_dict["max_speed_sv_widgets"])
-        .map(argnames=["view", "data"], argvalues=max_speed)
+        .map(argnames=["view", "data"], argvalues=max_speed_converted)
     )
 
     max_speed_grouped_sv_widget = (

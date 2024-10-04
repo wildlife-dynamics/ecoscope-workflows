@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "0fb6bf0ed734d0f08cd45d68e3de0ca4d3c29c9852c8feb2061b84ce293059ca"
+# from-spec-sha256 = "030474a8999b732797c67f96a4e84066b843fa1b916296fe83f432ffa7d08480"
 
 
 from __future__ import annotations
@@ -130,6 +130,11 @@ class MeanSpeedSvWidgets(BaseModel):
         extra="forbid",
     )
     title: str = Field(..., description="The title of the widget", title="Title")
+    decimal_places: Optional[int] = Field(
+        1,
+        description="The number of decimal places to display.",
+        title="Decimal Places",
+    )
 
 
 class MaxSpeed(BaseModel):
@@ -146,6 +151,11 @@ class MaxSpeedSvWidgets(BaseModel):
         extra="forbid",
     )
     title: str = Field(..., description="The title of the widget", title="Title")
+    decimal_places: Optional[int] = Field(
+        1,
+        description="The number of decimal places to display.",
+        title="Decimal Places",
+    )
 
 
 class NumLocationSvWidgets(BaseModel):
@@ -153,6 +163,11 @@ class NumLocationSvWidgets(BaseModel):
         extra="forbid",
     )
     title: str = Field(..., description="The title of the widget", title="Title")
+    decimal_places: Optional[int] = Field(
+        1,
+        description="The number of decimal places to display.",
+        title="Decimal Places",
+    )
 
 
 class DaynightRatioSvWidgets(BaseModel):
@@ -160,6 +175,11 @@ class DaynightRatioSvWidgets(BaseModel):
         extra="forbid",
     )
     title: str = Field(..., description="The title of the widget", title="Title")
+    decimal_places: Optional[int] = Field(
+        1,
+        description="The number of decimal places to display.",
+        title="Decimal Places",
+    )
 
 
 class Td(BaseModel):
@@ -341,14 +361,29 @@ class WidgetType(str, Enum):
 class WidgetSingleView(BaseModel):
     widget_type: WidgetType = Field(..., title="Widget Type")
     title: str = Field(..., title="Title")
-    data: Union[Path, AnyUrl, str, int, float] = Field(..., title="Data")
+    data: Union[Path, AnyUrl, str] = Field(..., title="Data")
     view: Optional[List[List]] = Field(None, title="View")
+
+
+class Unit(str, Enum):
+    m = "m"
+    km = "km"
+    s = "s"
+    h = "h"
+    d = "d"
+    m_s = "m/s"
+    km_h = "km/h"
+
+
+class Quantity(BaseModel):
+    value: Union[int, float] = Field(..., title="Value")
+    unit: Optional[Unit] = None
 
 
 class GroupedWidget(BaseModel):
     widget_type: WidgetType = Field(..., title="Widget Type")
     title: str = Field(..., title="Title")
-    views: Dict[str, Union[Path, AnyUrl, str, int, float]] = Field(..., title="Views")
+    views: Dict[str, Union[Path, AnyUrl, str]] = Field(..., title="Views")
 
 
 class Groupers(BaseModel):
@@ -408,6 +443,30 @@ class TrajEcomap(BaseModel):
         ),
         description="Additional arguments for configuring the legend.",
         title="Legend Style",
+    )
+
+
+class AverageSpeedConverted(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    original_unit: Optional[Unit] = Field(
+        None, description="The original unit of measurement.", title="Original Unit"
+    )
+    new_unit: Optional[Unit] = Field(
+        None, description="The unit to convert to.", title="New Unit"
+    )
+
+
+class MaxSpeedConverted(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    original_unit: Optional[Unit] = Field(
+        None, description="The original unit of measurement.", title="Original Unit"
+    )
+    new_unit: Optional[Unit] = Field(
+        None, description="The unit to convert to.", title="New Unit"
     )
 
 
@@ -487,6 +546,9 @@ class Params(BaseModel):
     mean_speed: Optional[MeanSpeed] = Field(
         None, title="Calculate Mean Speed Per Group"
     )
+    average_speed_converted: Optional[AverageSpeedConverted] = Field(
+        None, title="Convert Average Speed units"
+    )
     mean_speed_sv_widgets: Optional[MeanSpeedSvWidgets] = Field(
         None, title="Create Single Value Widgets for Mean Speed Per Group"
     )
@@ -494,6 +556,9 @@ class Params(BaseModel):
         None, title="Merge per group Mean Speed SV widgets"
     )
     max_speed: Optional[MaxSpeed] = Field(None, title="Calculate Max Speed Per Group")
+    max_speed_converted: Optional[MaxSpeedConverted] = Field(
+        None, title="Convert Max Speed units"
+    )
     max_speed_sv_widgets: Optional[MaxSpeedSvWidgets] = Field(
         None, title="Create Single Value Widgets for Max Speed Per Group"
     )
