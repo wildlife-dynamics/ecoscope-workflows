@@ -7395,7 +7395,7 @@ packages:
   name: ecoscope-workflows-core
   version: '9999'
   path: .
-  sha256: 2953bc1b96b1d6b801914062a67be5ab752e0e809f1803d81c93fd2ffa941e00
+  sha256: fe5fe33d9fddf43186595ecccbf251d0240e4d0c1b9e9e8bcb4c2f08c521dcaf
   requires_python: '>=3.10'
   editable: true
 - kind: conda

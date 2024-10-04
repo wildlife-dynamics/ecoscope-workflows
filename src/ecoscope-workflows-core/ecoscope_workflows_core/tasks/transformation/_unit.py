@@ -2,9 +2,10 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Annotated
 
-from ecoscope_workflows_core.decorators import task
 from pydantic import Field
 from pydantic.json_schema import SkipJsonSchema
+
+from ecoscope_workflows_core.decorators import task
 
 
 class Unit(Enum):
@@ -44,7 +45,7 @@ def with_unit(
     if not new_unit:
         return Quantity(value=value, unit=original_unit)
 
-    import astropy.units as u
+    import astropy.units as u  # type: ignore[import-untyped]
 
     original = value * u.Unit(original_unit.value)
     new_quantity = original.to(u.Unit(new_unit.value))
