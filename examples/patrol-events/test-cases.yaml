@@ -35,12 +35,12 @@ test1:
       directive: "%B" # (typing.Literal['%a', '%A', '%b', '%B', '%c', '%d', '%f', '%H', '%I', '%j', '%m', '%M', '%p', '%S', '%U', '%w', '%W', '%x', '%X', '%y', '%Y', '%z', '%%'], FieldInfo(annotation=NoneType, required=True, description='A directive for formatting the time data.'))
     # Parameters for 'Patrol Events Colormap' using task `apply_color_map`.
     pe_colormap:
-      input_column_name: "event_type"   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
-      colormap: "tab20b"  # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
+      input_column_name: "event_type" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
+      colormap: "tab20b" # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
       output_column_name: "event_type_colormap"
     # Parameters for 'Create map layer from Patrol Events' using task `create_map_layer`.
     pe_map_layer:
-      layer_style:   # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
+      layer_style: # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
         layer_type: "point"
         fill_color_column: "event_type_colormap"
         get_radius: 5
@@ -73,19 +73,19 @@ test1:
       title: "Patrol Events Bar Chart" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
     # Parameters for 'Create Patrol Events Meshgrid' using task `create_meshgrid`.
     pe_meshgrid:
-      cell_width: 10000  # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='The width of a grid cell in meters.'))
-      cell_height: 10000  # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='The height of a grid cell in meters.'))
+      cell_width: 10000 # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='The width of a grid cell in meters.'))
+      cell_height: 10000 # (<class 'int'>, FieldInfo(annotation=NoneType, required=True, description='The height of a grid cell in meters.'))
     # Parameters for 'Patrol Events Feature Density' using task `calculate_feature_density`.
     pe_feature_density:
-      geometry_type: "point"  # (typing.Literal['point', 'line'], FieldInfo(annotation=NoneType, required=True, description='The geometry type of the provided geodataframe'))
+      geometry_type: "point" # (typing.Literal['point', 'line'], FieldInfo(annotation=NoneType, required=True, description='The geometry type of the provided geodataframe'))
     # Parameters for 'Feature Density Colormap' using task `apply_color_map`.
     fd_colormap:
-      input_column_name: "density"   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
-      colormap: "YlOrRd"  # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
+      input_column_name: "density" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
+      colormap: "YlOrRd" # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
       output_column_name: "density_colormap"
     # Parameters for 'Create map layer from Feature Density' using task `create_map_layer`.
     fd_map_layer:
-      layer_style:  # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
+      layer_style: # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
         layer_type: "polygon"
         fill_color_column: "density_colormap"
         opacity: 0.4
@@ -102,12 +102,12 @@ test1:
     split_patrol_event_groups: {}
     # Parameters for 'Grouped Patrol Events Colormap' using task `apply_color_map`.
     grouped_pe_colormap:
-      input_column_name: "event_type"   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
-      colormap: "tab20b"  # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
+      input_column_name: "event_type" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
+      colormap: "tab20b" # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
       output_column_name: "event_type_colormap"
     # Parameters for 'Create map layer from grouped Patrol Events' using task `create_map_layer`.
     grouped_pe_map_layer:
-      layer_style:   # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
+      layer_style: # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
         layer_type: "point"
         fill_color_column: "event_type_colormap"
         get_radius: 5
@@ -136,15 +136,15 @@ test1:
     grouped_pe_pie_widget_merge: {}
     # Parameters for 'Grouped Patrol Events Feature Density' using task `calculate_feature_density`.
     grouped_pe_feature_density:
-      geometry_type: "point"  # (typing.Literal['point', 'line'], FieldInfo(annotation=NoneType, required=True, description='The geometry type of the provided geodataframe'))
+      geometry_type: "point" # (typing.Literal['point', 'line'], FieldInfo(annotation=NoneType, required=True, description='The geometry type of the provided geodataframe'))
     # Parameters for 'Grouped Feature Density Colormap' using task `apply_color_map`.
     grouped_fd_colormap:
-      input_column_name: "density"   # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
-      colormap: "YlOrRd"  # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
+      input_column_name: "density" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
+      colormap: "YlOrRd" # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
       output_column_name: "density_colormap"
     # Parameters for 'Create map layer from Feature Density' using task `create_map_layer`.
     grouped_fd_map_layer:
-      layer_style:  # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
+      layer_style: # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
         layer_type: "polygon"
         fill_color_column: "density_colormap"
         opacity: 0.4
@@ -170,5 +170,5 @@ test1:
       - "widget_type='map', title='Density Map'"
       - "widget_type='map', title='Grouped Patrol Events Map'"
       - "widget_type='map', title='Grouped Density Map'"
-      - "widget_type='plot', title='Patrol Events Bar Chart'"
-      - "widget_type='plot', title='Patrol Events Pie Chart'"
+      - "widget_type='graph', title='Patrol Events Bar Chart'"
+      - "widget_type='graph', title='Patrol Events Pie Chart'"

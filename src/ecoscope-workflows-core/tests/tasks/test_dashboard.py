@@ -35,7 +35,7 @@ def single_filter_dashboard() -> DashboardFixture:
         },
     )
     cool_plot = GroupedWidget(
-        widget_type="plot",
+        widget_type="graph",
         title="A Cool Plot",
         views={
             (("month", "=", "january"),): "/path/to/precomputed/jan/plot.html",
@@ -76,7 +76,7 @@ def test__get_view(single_filter_dashboard: DashboardFixture):
         ),
         EmumeratedWidgetSingleView(
             id=1,
-            widget_type="plot",
+            widget_type="graph",
             title="A Cool Plot",
             data="/path/to/precomputed/jan/plot.html",
         ),
@@ -90,7 +90,7 @@ def test__get_view(single_filter_dashboard: DashboardFixture):
         ),
         EmumeratedWidgetSingleView(
             id=1,
-            widget_type="plot",
+            widget_type="graph",
             title="A Cool Plot",
             data="/path/to/precomputed/feb/plot.html",
         ),
@@ -109,7 +109,7 @@ def test_model_dump_views(single_filter_dashboard: DashboardFixture):
             },
             {
                 "id": 1,
-                "widget_type": "plot",
+                "widget_type": "graph",
                 "title": "A Cool Plot",
                 "data": "/path/to/precomputed/jan/plot.html",
             },
@@ -123,7 +123,7 @@ def test_model_dump_views(single_filter_dashboard: DashboardFixture):
             },
             {
                 "id": 1,
-                "widget_type": "plot",
+                "widget_type": "graph",
                 "title": "A Cool Plot",
                 "data": "/path/to/precomputed/feb/plot.html",
             },
@@ -431,7 +431,7 @@ def dashboard_with_none_views() -> DashboardFixture:
         },
     )
     none_view_plot = GroupedWidget(
-        widget_type="plot",
+        widget_type="graph",
         title="A plot with only one view and no groupers",
         views={
             None: "/path/to/precomputed/single/plot.html",
@@ -471,7 +471,7 @@ def test__get_view_with_none_views(dashboard_with_none_views: DashboardFixture):
         ),
         EmumeratedWidgetSingleView(
             id=1,
-            widget_type="plot",
+            widget_type="graph",
             title="A plot with only one view and no groupers",
             data="/path/to/precomputed/single/plot.html",
         ),
@@ -485,7 +485,7 @@ def test__get_view_with_none_views(dashboard_with_none_views: DashboardFixture):
         ),
         EmumeratedWidgetSingleView(
             id=1,
-            widget_type="plot",
+            widget_type="graph",
             title="A plot with only one view and no groupers",
             data="/path/to/precomputed/single/plot.html",
         ),
@@ -504,7 +504,7 @@ def test_model_dump_views_with_none_views(dashboard_with_none_views: DashboardFi
             },
             {
                 "id": 1,
-                "widget_type": "plot",
+                "widget_type": "graph",
                 "title": "A plot with only one view and no groupers",
                 "data": "/path/to/precomputed/single/plot.html",
             },
@@ -518,7 +518,7 @@ def test_model_dump_views_with_none_views(dashboard_with_none_views: DashboardFi
             },
             {
                 "id": 1,
-                "widget_type": "plot",
+                "widget_type": "graph",
                 "title": "A plot with only one view and no groupers",
                 "data": "/path/to/precomputed/single/plot.html",
             },
@@ -563,7 +563,7 @@ def dashboard_with_all_none_views() -> DashboardFixture:
         },
     )
     none_view_plot = GroupedWidget(
-        widget_type="plot",
+        widget_type="graph",
         title="A plot with only one view and no groupers",
         views={
             None: "/path/to/precomputed/single/plot.html",
@@ -600,7 +600,7 @@ def test__get_view_with_all_none_views(dashboard_with_all_none_views: DashboardF
         ),
         EmumeratedWidgetSingleView(
             id=1,
-            widget_type="plot",
+            widget_type="graph",
             title="A plot with only one view and no groupers",
             data="/path/to/precomputed/single/plot.html",
         ),
@@ -621,7 +621,7 @@ def test_model_dump_views_with_all_none_views(
             },
             {
                 "id": 1,
-                "widget_type": "plot",
+                "widget_type": "graph",
                 "title": "A plot with only one view and no groupers",
                 "data": "/path/to/precomputed/single/plot.html",
             },

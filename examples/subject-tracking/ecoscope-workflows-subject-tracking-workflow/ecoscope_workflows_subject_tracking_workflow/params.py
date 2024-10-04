@@ -332,10 +332,10 @@ class NorthArrowStyle(BaseModel):
 
 
 class WidgetType(str, Enum):
-    plot = "plot"
+    graph = "graph"
     map = "map"
     text = "text"
-    single_value = "single_value"
+    stat = "stat"
 
 
 class WidgetSingleView(BaseModel):
