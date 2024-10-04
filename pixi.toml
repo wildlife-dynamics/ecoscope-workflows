@@ -14,6 +14,7 @@ yq = "*"
 
 build-vendor = { cmd = "./publish/build.sh vendor", inputs = ["publish/recipes/vendor/*.yaml"] }
 build-release = { cmd = "./publish/build.sh release", inputs = ["publish/recipes/release/*.yaml", "src/**/*.py", "src/**/pyproject.toml"] }
+# build-release = { cmd = "./publish/build.sh release" }
 
 # examples ---------------------------------------------------------------------------------
 
