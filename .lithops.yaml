@@ -1,0 +1,5 @@
+lithops:
+  backend: "localhost"
+  storage: "localhost"
+  log_level: "INFO"
+  data_limit: 16
