@@ -61,6 +61,7 @@ datamodel-code-generator = "*"
 cloudpathlib-gs = "*"
 lithops = { version = "==3.5.1cisaacstern", channel = "https://prefix.dev/ecoscope-workflows" }
 pydot = "*"
+astropy = "*"
 
 [tool.pixi.feature.docs.dependencies]
 pdoc3 = "*"
