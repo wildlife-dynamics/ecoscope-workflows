@@ -80,27 +80,3 @@ and we currently do use caching to attempt to avoid unecessary re-builds of the 
 (in the context of local development, _not_ CI).
 However, please be aware that tuning this logic remains a work-in-progress and further work needs to
 be done to ensure that these cached builds are being re-built at the appropriate times.
-
-
- × error Error building package: failed to setup test environment: Cannot solve the request because of: The following packages are incompatible
- × error └─ ecoscope ==v1.8.3 pyh4616a5c_5 cannot be installed because there are no viable options:
- × error    ├─ ecoscope v1.8.3 would require
- × error    │  └─ lonboard ==0.0.2, which cannot be installed because there are no viable options:
- × error    │     └─ lonboard 0.0.2 is excluded because due to strict channel priority not using this option from: 'https://prefix.dev/ecoscope-workflows/'
- × error    ├─ ecoscope v1.8.3 is excluded because due to strict channel priority not using this option from: 'file:///private/tmp/ecoscope-workflows/release/artifacts/'
- × error    └─ ecoscope v1.8.3 is excluded because due to strict channel priority not using this option from: 'https://prefix.dev/ecoscope-workflows/'
-Error:   × failed to setup test environment: Cannot solve the request because of: The following packages are incompatible
-  │ └─ ecoscope ==v1.8.3 pyh4616a5c_5 cannot be installed because there are no viable options:
-  │    ├─ ecoscope v1.8.3 would require
-  │    │  └─ lonboard ==0.0.2, which cannot be installed because there are no viable options:
-  │    │     └─ lonboard 0.0.2 is excluded because due to strict channel priority not using this option from: 'https://prefix.dev/ecoscope-workflows/'
-  │    ├─ ecoscope v1.8.3 is excluded because due to strict channel priority not using this option from: 'file:///private/tmp/ecoscope-workflows/release/artifacts/'
-  │    └─ ecoscope v1.8.3 is excluded because due to strict channel priority not using this option from: 'https://prefix.dev/ecoscope-workflows/'
-  │
-  ╰─▶ Cannot solve the request because of: The following packages are incompatible
-      └─ ecoscope ==v1.8.3 pyh4616a5c_5 cannot be installed because there are no viable options:
-         ├─ ecoscope v1.8.3 would require
-         │  └─ lonboard ==0.0.2, which cannot be installed because there are no viable options:
-         │     └─ lonboard 0.0.2 is excluded because due to strict channel priority not using this option from: 'https://prefix.dev/ecoscope-workflows/'
-         ├─ ecoscope v1.8.3 is excluded because due to strict channel priority not using this option from: 'file:///private/tmp/ecoscope-workflows/release/artifacts/'
-         └─ ecoscope v1.8.3 is excluded because due to strict channel priority not using this option from: 'https://prefix.dev/ecoscope-workflows/'
