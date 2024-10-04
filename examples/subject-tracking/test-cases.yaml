@@ -144,12 +144,11 @@ test1:
       title: "Subject Tracking Dashboard" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the dashboard'))
       description: "A dashboard for visualizing subject trajectories and home range." # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The description of the dashboard'))
 
-
   assertions:
     result_stdout_contains:
       - "A dashboard for visualizing subject trajectories and home range."
       - "widget_type='map', title='Subject Group Trajectory Map'"
-      - "widget_type='single_value', title='Mean Speed'"
-      - "widget_type='single_value', title='Max Speed',"
-      - "widget_type='single_value', title='Number of Locations'"
+      - "widget_type='stat', title='Mean Speed'"
+      - "widget_type='stat', title='Max Speed',"
+      - "widget_type='stat', title='Number of Locations'"
       - "widget_type='map', title='Home Range Map'"

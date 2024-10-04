@@ -272,16 +272,15 @@ test1:
       title: "Patrols Dashboard"
       description: "A dashboard for visualizing patrol trajectories, patrols events, and time density."
 
-
   assertions:
     result_stdout_contains:
       - "A dashboard for visualizing patrol trajectories, patrols events, and time density."
       - "widget_type='map', title='Trajectories & Patrol Events Map'"
       - "widget_type='map', title='Time Density Map'"
-      - "widget_type='plot', title='Patrol Events Bar Chart'"
-      - "widget_type='plot', title='Patrol Events Pie Chart'"
-      - "widget_type='single_value', title='Total Patrols'"
-      - "widget_type='single_value', title='Total Time'"
-      - "widget_type='single_value', title='Total Distance'"
-      - "widget_type='single_value', title='Average Speed'"
-      - "widget_type='single_value', title='Max Speed'"
+      - "widget_type='graph', title='Patrol Events Bar Chart'"
+      - "widget_type='graph', title='Patrol Events Pie Chart'"
+      - "widget_type='stat', title='Total Patrols'"
+      - "widget_type='stat', title='Total Time'"
+      - "widget_type='stat', title='Total Distance'"
+      - "widget_type='stat', title='Average Speed'"
+      - "widget_type='stat', title='Max Speed'"
