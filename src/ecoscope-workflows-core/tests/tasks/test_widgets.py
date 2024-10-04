@@ -64,7 +64,7 @@ def test_create_single_value_widget_single_view():
 
     widget = create_single_value_widget_single_view(title, data, view)
     assert widget == WidgetSingleView(
-        widget_type="single_value",
+        widget_type="stat",
         title=title,
         data="123.5",
         view=view,
@@ -92,7 +92,7 @@ def test_create_single_value_widget_single_view_int():
 
     widget = create_single_value_widget_single_view(title, data, view)
     assert widget == WidgetSingleView(
-        widget_type="single_value",
+        widget_type="stat",
         title=title,
         data="123",
         view=view,
@@ -106,7 +106,7 @@ def test_create_single_value_widget_single_view_unit():
 
     widget = create_single_value_widget_single_view(title, data, view)
     assert widget == WidgetSingleView(
-        widget_type="single_value",
+        widget_type="stat",
         title=title,
         data="123.5 h",
         view=view,
@@ -120,7 +120,7 @@ def test_create_single_value_widget_single_view_decimal_places():
 
     widget = create_single_value_widget_single_view(title, data, view, decimal_places=3)
     assert widget == WidgetSingleView(
-        widget_type="single_value",
+        widget_type="stat",
         title=title,
         data="123.450 h",
         view=view,
