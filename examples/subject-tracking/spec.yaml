@@ -38,13 +38,25 @@ workflow:
       df: ${{ workflow.traj_add_temporal_index.return }}
       groupers: ${{ workflow.groupers.return }}
 
-  # subject group trajectories map
+  # subject group trajectories speed map
+  - name: Classify Trajectories By Speed
+    id: classify_traj_speed
+    task: apply_classification
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.split_subject_traj_groups.return }}
+  - name: Apply Color to Trajectories By Speed
+    id: colormap_traj_speed
+    task: apply_color_map
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.classify_traj_speed.return }}
   - name: Create map layer for each trajectory group
     id: traj_map_layers
     task: create_map_layer
     mapvalues:
       argnames: geodataframe
-      argvalues: ${{ workflow.split_subject_traj_groups.return }}
+      argvalues: ${{ workflow.colormap_traj_speed.return }}
   - name: Draw Ecomaps for each trajectory group
     id: traj_ecomap
     task: draw_ecomap

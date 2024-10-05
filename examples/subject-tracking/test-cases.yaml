@@ -45,10 +45,27 @@ test1:
     # Parameters for 'Split Subject Trajectories by Group' using task `split_groups`.
     split_subject_traj_groups: {}
 
+    classify_traj_speed:
+      input_column_name: "speed_kmhr"
+      output_column_name: "speed_bins"
+      scheme: "equal_interval"
+      classification_options:
+        k: 6
+
+    colormap_traj_speed:
+      input_column_name: "speed_bins"
+      colormap:
+        ["#1a9850", "#91cf60", "#d9ef8b", "#fee08b", "#fc8d59", "#d73027"]
+      output_column_name: "speed_bins_colormap"
+
     # Parameters for 'Create map layer for each trajectory group' using task `create_map_layer`.
     traj_map_layers:
       layer_style:
         layer_type: "polyline"
+        color_column: "speed_bins_colormap"
+      legend:
+        label_column: "speed_bins"
+        color_column: "speed_bins_colormap"
 
     # Parameters for 'Draw Ecomaps for each trajectory group' using task `draw_ecomap`.
     traj_ecomap:
