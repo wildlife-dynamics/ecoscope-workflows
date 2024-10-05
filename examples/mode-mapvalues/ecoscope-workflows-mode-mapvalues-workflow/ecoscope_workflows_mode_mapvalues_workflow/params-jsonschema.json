@@ -713,12 +713,6 @@
             },
             {
               "type": "string"
-            },
-            {
-              "type": "integer"
-            },
-            {
-              "type": "number"
             }
           ],
           "title": "Data"
@@ -794,12 +788,6 @@
               },
               {
                 "type": "string"
-              },
-              {
-                "type": "integer"
-              },
-              {
-                "type": "number"
               }
             ]
           },

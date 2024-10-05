@@ -624,6 +624,12 @@
               "title": "Title",
               "type": "string",
               "description": "The title of the widget"
+            },
+            "decimal_places": {
+              "default": 1,
+              "title": "Decimal Places",
+              "type": "integer",
+              "description": "The number of decimal places to display."
             }
           },
           "required": [
@@ -670,37 +676,28 @@
         "total_patrol_time_converted": {
           "additionalProperties": false,
           "properties": {
-            "b": {
-              "anyOf": [
+            "original_unit": {
+              "allOf": [
                 {
-                  "type": "number"
-                },
-                {
-                  "type": "integer"
+                  "$ref": "#/$defs/Unit"
                 }
               ],
-              "title": "B",
-              "description": "The second number"
+              "default": null,
+              "title": "Original Unit",
+              "description": "The original unit of measurement."
             },
-            "operation": {
-              "enum": [
-                "add",
-                "subtract",
-                "multiply",
-                "divide",
-                "floor_divide",
-                "modulo",
-                "power"
+            "new_unit": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Unit"
+                }
               ],
-              "title": "Operation",
-              "type": "string",
-              "description": "The arithmetic operation to apply"
+              "default": null,
+              "title": "New Unit",
+              "description": "The unit to convert to."
             }
           },
-          "required": [
-            "b",
-            "operation"
-          ],
+          "required": [],
           "type": "object",
           "title": "Convert total patrol time units"
         },
@@ -711,6 +708,12 @@
               "title": "Title",
               "type": "string",
               "description": "The title of the widget"
+            },
+            "decimal_places": {
+              "default": 1,
+              "title": "Decimal Places",
+              "type": "integer",
+              "description": "The number of decimal places to display."
             }
           },
           "required": [
@@ -758,37 +761,28 @@
         "total_patrol_dist_converted": {
           "additionalProperties": false,
           "properties": {
-            "b": {
-              "anyOf": [
+            "original_unit": {
+              "allOf": [
                 {
-                  "type": "number"
-                },
-                {
-                  "type": "integer"
+                  "$ref": "#/$defs/Unit"
                 }
               ],
-              "title": "B",
-              "description": "The second number"
+              "default": null,
+              "title": "Original Unit",
+              "description": "The original unit of measurement."
             },
-            "operation": {
-              "enum": [
-                "add",
-                "subtract",
-                "multiply",
-                "divide",
-                "floor_divide",
-                "modulo",
-                "power"
+            "new_unit": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Unit"
+                }
               ],
-              "title": "Operation",
-              "type": "string",
-              "description": "The arithmetic operation to apply"
+              "default": null,
+              "title": "New Unit",
+              "description": "The unit to convert to."
             }
           },
-          "required": [
-            "b",
-            "operation"
-          ],
+          "required": [],
           "type": "object",
           "title": "Convert total patrol distance units"
         },
@@ -799,6 +793,12 @@
               "title": "Title",
               "type": "string",
               "description": "The title of the widget"
+            },
+            "decimal_places": {
+              "default": 1,
+              "title": "Decimal Places",
+              "type": "integer",
+              "description": "The number of decimal places to display."
             }
           },
           "required": [
@@ -843,6 +843,34 @@
           "type": "object",
           "title": "Calculate Average Speed Per Group"
         },
+        "average_speed_converted": {
+          "additionalProperties": false,
+          "properties": {
+            "original_unit": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Unit"
+                }
+              ],
+              "default": null,
+              "title": "Original Unit",
+              "description": "The original unit of measurement."
+            },
+            "new_unit": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Unit"
+                }
+              ],
+              "default": null,
+              "title": "New Unit",
+              "description": "The unit to convert to."
+            }
+          },
+          "required": [],
+          "type": "object",
+          "title": "Convert Average Speed units"
+        },
         "avg_speed_sv_widgets": {
           "additionalProperties": false,
           "properties": {
@@ -850,6 +878,12 @@
               "title": "Title",
               "type": "string",
               "description": "The title of the widget"
+            },
+            "decimal_places": {
+              "default": 1,
+              "title": "Decimal Places",
+              "type": "integer",
+              "description": "The number of decimal places to display."
             }
           },
           "required": [
@@ -869,6 +903,7 @@
       "uiSchema": {
         "ui:order": [
           "avg_speed",
+          "average_speed_converted",
           "avg_speed_sv_widgets",
           "avg_speed_grouped_widget"
         ]
@@ -893,6 +928,34 @@
           "type": "object",
           "title": "Calculate Max Speed Per Group"
         },
+        "max_speed_converted": {
+          "additionalProperties": false,
+          "properties": {
+            "original_unit": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Unit"
+                }
+              ],
+              "default": null,
+              "title": "Original Unit",
+              "description": "The original unit of measurement."
+            },
+            "new_unit": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Unit"
+                }
+              ],
+              "default": null,
+              "title": "New Unit",
+              "description": "The unit to convert to."
+            }
+          },
+          "required": [],
+          "type": "object",
+          "title": "Convert Max Speed units"
+        },
         "max_speed_sv_widgets": {
           "additionalProperties": false,
           "properties": {
@@ -900,6 +963,12 @@
               "title": "Title",
               "type": "string",
               "description": "The title of the widget"
+            },
+            "decimal_places": {
+              "default": 1,
+              "title": "Decimal Places",
+              "type": "integer",
+              "description": "The number of decimal places to display."
             }
           },
           "required": [
@@ -919,6 +988,7 @@
       "uiSchema": {
         "ui:order": [
           "max_speed",
+          "max_speed_converted",
           "max_speed_sv_widgets",
           "max_speed_grouped_widget"
         ]
@@ -1873,12 +1943,6 @@
             },
             {
               "type": "string"
-            },
-            {
-              "type": "integer"
-            },
-            {
-              "type": "number"
             }
           ],
           "title": "Data"
@@ -1923,6 +1987,50 @@
       ],
       "title": "WidgetSingleView",
       "type": "object"
+    },
+    "Quantity": {
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Value"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Unit"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "title": "Quantity",
+      "type": "object"
+    },
+    "Unit": {
+      "enum": [
+        "m",
+        "km",
+        "s",
+        "h",
+        "d",
+        "m/s",
+        "km/h"
+      ],
+      "title": "Unit",
+      "type": "string"
     },
     "BarLayoutStyle": {
       "properties": {
@@ -2092,12 +2200,6 @@
               },
               {
                 "type": "string"
-              },
-              {
-                "type": "integer"
-              },
-              {
-                "type": "number"
               }
             ]
           },

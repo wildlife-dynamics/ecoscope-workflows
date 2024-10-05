@@ -188,14 +188,14 @@ class WidgetType(str, Enum):
 class WidgetSingleView(BaseModel):
     widget_type: WidgetType = Field(..., title="Widget Type")
     title: str = Field(..., title="Title")
-    data: Union[Path, AnyUrl, str, int, float] = Field(..., title="Data")
+    data: Union[Path, AnyUrl, str] = Field(..., title="Data")
     view: Optional[List[List]] = Field(None, title="View")
 
 
 class GroupedWidget(BaseModel):
     widget_type: WidgetType = Field(..., title="Widget Type")
     title: str = Field(..., title="Title")
-    views: Dict[str, Union[Path, AnyUrl, str, int, float]] = Field(..., title="Views")
+    views: Dict[str, Union[Path, AnyUrl, str]] = Field(..., title="Views")
 
 
 class Groupers(BaseModel):

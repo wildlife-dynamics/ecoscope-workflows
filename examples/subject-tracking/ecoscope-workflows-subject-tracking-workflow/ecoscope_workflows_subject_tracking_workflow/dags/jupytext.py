@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "0fb6bf0ed734d0f08cd45d68e3de0ca4d3c29c9852c8feb2061b84ce293059ca"
+# from-spec-sha256 = "030474a8999b732797c67f96a4e84066b843fa1b916296fe83f432ffa7d08480"
 
 
 # ruff: noqa: E402
@@ -27,6 +27,7 @@ from ecoscope_workflows_core.tasks.io import persist_text
 from ecoscope_workflows_core.tasks.results import create_map_widget_single_view
 from ecoscope_workflows_core.tasks.results import merge_widget_views
 from ecoscope_workflows_core.tasks.analysis import dataframe_column_mean
+from ecoscope_workflows_core.tasks.transformation import with_unit
 from ecoscope_workflows_core.tasks.results import create_single_value_widget_single_view
 from ecoscope_workflows_core.tasks.analysis import dataframe_column_max
 from ecoscope_workflows_core.tasks.analysis import dataframe_count
@@ -274,6 +275,26 @@ mean_speed = dataframe_column_mean.partial(**mean_speed_params).mapvalues(
 
 
 # %% [markdown]
+# ## Convert Average Speed units
+
+# %%
+# parameters
+
+average_speed_converted_params = dict(
+    original_unit=...,
+    new_unit=...,
+)
+
+# %%
+# call the task
+
+
+average_speed_converted = with_unit.partial(**average_speed_converted_params).mapvalues(
+    argnames=["value"], argvalues=mean_speed
+)
+
+
+# %% [markdown]
 # ## Create Single Value Widgets for Mean Speed Per Group
 
 # %%
@@ -281,6 +302,7 @@ mean_speed = dataframe_column_mean.partial(**mean_speed_params).mapvalues(
 
 mean_speed_sv_widgets_params = dict(
     title=...,
+    decimal_places=...,
 )
 
 # %%
@@ -289,7 +311,7 @@ mean_speed_sv_widgets_params = dict(
 
 mean_speed_sv_widgets = create_single_value_widget_single_view.partial(
     **mean_speed_sv_widgets_params
-).map(argnames=["view", "data"], argvalues=mean_speed)
+).map(argnames=["view", "data"], argvalues=average_speed_converted)
 
 
 # %% [markdown]
@@ -329,6 +351,26 @@ max_speed = dataframe_column_max.partial(**max_speed_params).mapvalues(
 
 
 # %% [markdown]
+# ## Convert Max Speed units
+
+# %%
+# parameters
+
+max_speed_converted_params = dict(
+    original_unit=...,
+    new_unit=...,
+)
+
+# %%
+# call the task
+
+
+max_speed_converted = with_unit.partial(**max_speed_converted_params).mapvalues(
+    argnames=["value"], argvalues=max_speed
+)
+
+
+# %% [markdown]
 # ## Create Single Value Widgets for Max Speed Per Group
 
 # %%
@@ -336,6 +378,7 @@ max_speed = dataframe_column_max.partial(**max_speed_params).mapvalues(
 
 max_speed_sv_widgets_params = dict(
     title=...,
+    decimal_places=...,
 )
 
 # %%
@@ -344,7 +387,7 @@ max_speed_sv_widgets_params = dict(
 
 max_speed_sv_widgets = create_single_value_widget_single_view.partial(
     **max_speed_sv_widgets_params
-).map(argnames=["view", "data"], argvalues=max_speed)
+).map(argnames=["view", "data"], argvalues=max_speed_converted)
 
 
 # %% [markdown]
@@ -389,6 +432,7 @@ num_location = dataframe_count.partial(**num_location_params).mapvalues(
 
 num_location_sv_widgets_params = dict(
     title=...,
+    decimal_places=...,
 )
 
 # %%
@@ -442,6 +486,7 @@ daynight_ratio = get_day_night_ratio.partial(**daynight_ratio_params).mapvalues(
 
 daynight_ratio_sv_widgets_params = dict(
     title=...,
+    decimal_places=...,
 )
 
 # %%

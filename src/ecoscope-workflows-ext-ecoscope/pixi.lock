@@ -12751,7 +12751,7 @@ packages:
   name: ecoscope-workflows-core
   version: '9999'
   path: ./vendor/ecoscope-workflows-core
-  sha256: d2b8d888923fdd9d0e0b9f3a6dbd9c5331334db548d155fcf3ca67cf277dd521
+  sha256: fe5fe33d9fddf43186595ecccbf251d0240e4d0c1b9e9e8bcb4c2f08c521dcaf
   requires_python: '>=3.10'
   editable: true
 - kind: pypi
