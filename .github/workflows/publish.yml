@@ -28,9 +28,21 @@ jobs:
           if-no-files-found: error
           compression-level: 0
 
+  verify-build-tag:
+    if: startsWith(github.ref, 'refs/tags/')
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pixi
+        run: curl -fsSL https://pixi.sh/install.sh | bash && echo "$HOME/.pixi/bin" >> $GITHUB_PATH
+      - name: Verify
+        run: pixi run --manifest-path pixi.toml are-release-recipes-tagged-with ${{ github.ref_name }}
+
   github-release:
     needs:
       - build-release
+      - verify-build-tag
     if: startsWith(github.ref, 'refs/tags/')
 
     permissions:
@@ -66,6 +78,7 @@ jobs:
   publish-to-prefix:
     needs:
       - build-release
+      - verify-build-tag
     if: startsWith(github.ref, 'refs/tags/')
 
     runs-on: ubuntu-latest
