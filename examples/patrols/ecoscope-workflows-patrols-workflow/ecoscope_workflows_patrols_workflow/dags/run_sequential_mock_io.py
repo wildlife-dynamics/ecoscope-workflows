@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "ee0b2d2b878db6ec19497e572aaa0c169cab2c454835c3f0bcfa901573cd6bf5"
+# from-spec-sha256 = "748252e8fb420e7edc39e0b05c8793c569ddb0fed5f92830889f0dcebdb72be1"
 
 # ruff: noqa: E402
 
@@ -44,7 +44,7 @@ from ecoscope_workflows_core.tasks.results import merge_widget_views
 from ecoscope_workflows_core.tasks.analysis import dataframe_column_nunique
 from ecoscope_workflows_core.tasks.results import create_single_value_widget_single_view
 from ecoscope_workflows_core.tasks.analysis import dataframe_column_sum
-from ecoscope_workflows_core.tasks.analysis import apply_arithmetic_operation
+from ecoscope_workflows_core.tasks.transformation import with_unit
 from ecoscope_workflows_core.tasks.analysis import dataframe_column_mean
 from ecoscope_workflows_core.tasks.analysis import dataframe_column_max
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_time_series_bar_chart
@@ -200,9 +200,9 @@ def main(params: Params):
     )
 
     total_patrol_time_converted = (
-        apply_arithmetic_operation.validate()
+        with_unit.validate()
         .partial(**params_dict["total_patrol_time_converted"])
-        .mapvalues(argnames=["a"], argvalues=total_patrol_time)
+        .mapvalues(argnames=["value"], argvalues=total_patrol_time)
     )
 
     total_patrol_time_sv_widgets = (
@@ -227,9 +227,9 @@ def main(params: Params):
     )
 
     total_patrol_dist_converted = (
-        apply_arithmetic_operation.validate()
+        with_unit.validate()
         .partial(**params_dict["total_patrol_dist_converted"])
-        .mapvalues(argnames=["a"], argvalues=total_patrol_dist)
+        .mapvalues(argnames=["value"], argvalues=total_patrol_dist)
     )
 
     total_patrol_dist_sv_widgets = (
@@ -253,10 +253,16 @@ def main(params: Params):
         .mapvalues(argnames=["df"], argvalues=split_patrol_traj_groups)
     )
 
+    average_speed_converted = (
+        with_unit.validate()
+        .partial(**params_dict["average_speed_converted"])
+        .mapvalues(argnames=["value"], argvalues=avg_speed)
+    )
+
     avg_speed_sv_widgets = (
         create_single_value_widget_single_view.validate()
         .partial(**params_dict["avg_speed_sv_widgets"])
-        .map(argnames=["view", "data"], argvalues=avg_speed)
+        .map(argnames=["view", "data"], argvalues=average_speed_converted)
     )
 
     avg_speed_grouped_widget = (
@@ -273,10 +279,16 @@ def main(params: Params):
         .mapvalues(argnames=["df"], argvalues=split_patrol_traj_groups)
     )
 
+    max_speed_converted = (
+        with_unit.validate()
+        .partial(**params_dict["max_speed_converted"])
+        .mapvalues(argnames=["value"], argvalues=max_speed)
+    )
+
     max_speed_sv_widgets = (
         create_single_value_widget_single_view.validate()
         .partial(**params_dict["max_speed_sv_widgets"])
-        .map(argnames=["view", "data"], argvalues=max_speed)
+        .map(argnames=["view", "data"], argvalues=max_speed_converted)
     )
 
     max_speed_grouped_widget = (

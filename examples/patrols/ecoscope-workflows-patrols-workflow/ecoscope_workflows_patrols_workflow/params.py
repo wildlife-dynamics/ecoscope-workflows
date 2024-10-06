@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "ee0b2d2b878db6ec19497e572aaa0c169cab2c454835c3f0bcfa901573cd6bf5"
+# from-spec-sha256 = "748252e8fb420e7edc39e0b05c8793c569ddb0fed5f92830889f0dcebdb72be1"
 
 
 from __future__ import annotations
@@ -188,6 +188,11 @@ class TotalPatrolsSvWidgets(BaseModel):
         extra="forbid",
     )
     title: str = Field(..., description="The title of the widget", title="Title")
+    decimal_places: Optional[int] = Field(
+        1,
+        description="The number of decimal places to display.",
+        title="Decimal Places",
+    )
 
 
 class TotalPatrolTime(BaseModel):
@@ -199,31 +204,16 @@ class TotalPatrolTime(BaseModel):
     )
 
 
-class Operation(str, Enum):
-    add = "add"
-    subtract = "subtract"
-    multiply = "multiply"
-    divide = "divide"
-    floor_divide = "floor_divide"
-    modulo = "modulo"
-    power = "power"
-
-
-class TotalPatrolTimeConverted(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    b: Union[float, int] = Field(..., description="The second number", title="B")
-    operation: Operation = Field(
-        ..., description="The arithmetic operation to apply", title="Operation"
-    )
-
-
 class TotalPatrolTimeSvWidgets(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
     title: str = Field(..., description="The title of the widget", title="Title")
+    decimal_places: Optional[int] = Field(
+        1,
+        description="The number of decimal places to display.",
+        title="Decimal Places",
+    )
 
 
 class TotalPatrolDist(BaseModel):
@@ -235,21 +225,16 @@ class TotalPatrolDist(BaseModel):
     )
 
 
-class TotalPatrolDistConverted(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    b: Union[float, int] = Field(..., description="The second number", title="B")
-    operation: Operation = Field(
-        ..., description="The arithmetic operation to apply", title="Operation"
-    )
-
-
 class TotalPatrolDistSvWidgets(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
     title: str = Field(..., description="The title of the widget", title="Title")
+    decimal_places: Optional[int] = Field(
+        1,
+        description="The number of decimal places to display.",
+        title="Decimal Places",
+    )
 
 
 class AvgSpeed(BaseModel):
@@ -266,6 +251,11 @@ class AvgSpeedSvWidgets(BaseModel):
         extra="forbid",
     )
     title: str = Field(..., description="The title of the widget", title="Title")
+    decimal_places: Optional[int] = Field(
+        1,
+        description="The number of decimal places to display.",
+        title="Decimal Places",
+    )
 
 
 class MaxSpeed(BaseModel):
@@ -282,6 +272,11 @@ class MaxSpeedSvWidgets(BaseModel):
         extra="forbid",
     )
     title: str = Field(..., description="The title of the widget", title="Title")
+    decimal_places: Optional[int] = Field(
+        1,
+        description="The number of decimal places to display.",
+        title="Decimal Places",
+    )
 
 
 class AggFunction(str, Enum):
@@ -515,8 +510,18 @@ class WidgetType(str, Enum):
 class WidgetSingleView(BaseModel):
     widget_type: WidgetType = Field(..., title="Widget Type")
     title: str = Field(..., title="Title")
-    data: Union[Path, AnyUrl, str, int, float] = Field(..., title="Data")
+    data: Union[Path, AnyUrl, str] = Field(..., title="Data")
     view: Optional[List[List]] = Field(None, title="View")
+
+
+class Unit(str, Enum):
+    m = "m"
+    km = "km"
+    s = "s"
+    h = "h"
+    d = "d"
+    m_s = "m/s"
+    km_h = "km/h"
 
 
 class BarLayoutStyle(BaseModel):
@@ -553,7 +558,7 @@ class LayoutStyle(BaseModel):
 class GroupedWidget(BaseModel):
     widget_type: WidgetType = Field(..., title="Widget Type")
     title: str = Field(..., title="Title")
-    views: Dict[str, Union[Path, AnyUrl, str, int, float]] = Field(..., title="Views")
+    views: Dict[str, Union[Path, AnyUrl, str]] = Field(..., title="Views")
 
 
 class Groupers(BaseModel):
@@ -646,6 +651,54 @@ class TrajPatrolEventsEcomap(BaseModel):
     )
 
 
+class TotalPatrolTimeConverted(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    original_unit: Optional[Unit] = Field(
+        None, description="The original unit of measurement.", title="Original Unit"
+    )
+    new_unit: Optional[Unit] = Field(
+        None, description="The unit to convert to.", title="New Unit"
+    )
+
+
+class TotalPatrolDistConverted(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    original_unit: Optional[Unit] = Field(
+        None, description="The original unit of measurement.", title="Original Unit"
+    )
+    new_unit: Optional[Unit] = Field(
+        None, description="The unit to convert to.", title="New Unit"
+    )
+
+
+class AverageSpeedConverted(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    original_unit: Optional[Unit] = Field(
+        None, description="The original unit of measurement.", title="Original Unit"
+    )
+    new_unit: Optional[Unit] = Field(
+        None, description="The unit to convert to.", title="New Unit"
+    )
+
+
+class MaxSpeedConverted(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    original_unit: Optional[Unit] = Field(
+        None, description="The original unit of measurement.", title="Original Unit"
+    )
+    new_unit: Optional[Unit] = Field(
+        None, description="The unit to convert to.", title="New Unit"
+    )
+
+
 class PatrolEventsPieChart(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -716,6 +769,11 @@ class TdEcomap(BaseModel):
         description="Additional arguments for configuring the legend.",
         title="Legend Style",
     )
+
+
+class Quantity(BaseModel):
+    value: Union[int, float] = Field(..., title="Value")
+    unit: Optional[Unit] = None
 
 
 class GroupedPlotStyle(BaseModel):
@@ -856,6 +914,9 @@ class Params(BaseModel):
     avg_speed: Optional[AvgSpeed] = Field(
         None, title="Calculate Average Speed Per Group"
     )
+    average_speed_converted: Optional[AverageSpeedConverted] = Field(
+        None, title="Convert Average Speed units"
+    )
     avg_speed_sv_widgets: Optional[AvgSpeedSvWidgets] = Field(
         None, title="Create Single Value Widgets for Avg Speed Per Group"
     )
@@ -863,6 +924,9 @@ class Params(BaseModel):
         None, title="Merge per group Avg Speed SV widgets"
     )
     max_speed: Optional[MaxSpeed] = Field(None, title="Calculate Max Speed Per Group")
+    max_speed_converted: Optional[MaxSpeedConverted] = Field(
+        None, title="Convert Max Speed units"
+    )
     max_speed_sv_widgets: Optional[MaxSpeedSvWidgets] = Field(
         None, title="Create Single Value Widgets for Max Speed Per Group"
     )

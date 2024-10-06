@@ -78,12 +78,18 @@ workflow:
     mapvalues:
       argnames: df
       argvalues: ${{ workflow.split_subject_traj_groups.return }}
+  - name: Convert Average Speed units
+    id: average_speed_converted
+    task: with_unit
+    mapvalues:
+      argnames: value
+      argvalues: ${{ workflow.mean_speed.return }}
   - name: Create Single Value Widgets for Mean Speed Per Group
     id: mean_speed_sv_widgets
     task: create_single_value_widget_single_view
     map:
       argnames: [view, data]
-      argvalues: ${{ workflow.mean_speed.return }}
+      argvalues: ${{ workflow.average_speed_converted.return }}
   - name: Merge per group Mean Speed SV widgets
     id: mean_speed_grouped_sv_widget
     task: merge_widget_views
@@ -97,12 +103,18 @@ workflow:
     mapvalues:
       argnames: df
       argvalues: ${{ workflow.split_subject_traj_groups.return }}
+  - name: Convert Max Speed units
+    id: max_speed_converted
+    task: with_unit
+    mapvalues:
+      argnames: value
+      argvalues: ${{ workflow.max_speed.return }}
   - name: Create Single Value Widgets for Max Speed Per Group
     id: max_speed_sv_widgets
     task: create_single_value_widget_single_view
     map:
       argnames: [view, data]
-      argvalues: ${{ workflow.max_speed.return }}
+      argvalues: ${{ workflow.max_speed_converted.return }}
   - name: Merge per group Max Speed SV widgets
     id: max_speed_grouped_sv_widget
     task: merge_widget_views
