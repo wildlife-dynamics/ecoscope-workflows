@@ -641,12 +641,16 @@ class DagCompiler(BaseModel):
         }
 
     def get_pixi_toml(self) -> PixiToml:
+        channels = (
+            [f"{LOCAL_CHANNEL.base_url}", f"{RELEASE_CHANNEL.base_url}", "conda-forge"]
+            if self.spec.requires_local_release_artifacts
+            else [f"{RELEASE_CHANNEL.base_url}", "conda-forge"]
+        )
         project = dedent(
-            # TODO: allow removing the LOCAL_CHANNEL for production releases
             f"""\
             [project]
             name = "{self.release_name}"
-            channels = ["{LOCAL_CHANNEL.base_url}", "{RELEASE_CHANNEL.base_url}", "conda-forge"]
+            channels = {channels}
             platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
             """
         )
