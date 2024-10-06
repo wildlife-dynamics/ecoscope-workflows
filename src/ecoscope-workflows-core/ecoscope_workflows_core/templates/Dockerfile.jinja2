@@ -7,10 +7,16 @@ RUN curl -fsSL https://pixi.sh/install.sh | bash
 FROM bitnami/minideb:bullseye as install
 COPY --from=fetch /root/.pixi /root/.pixi
 ENV PATH="/root/.pixi/bin:$PATH"
+{% if requires_local_release_artifacts %}
+# if local release artifacts are required by the spec, then we expect them to
+# have been copied into the build context at .tmp, and we copy them into the
+# container here, to the aboslute path /tmp, for compatibility with the pixi
+# requirement that local release artifacts reside within an absolute path.
 COPY .tmp /tmp
+RUN rm -rf .tmp
+{% endif %}
 WORKDIR /app
 COPY . .
-RUN rm -rf .tmp
 RUN pixi install -e default --locked
 
 FROM install as app

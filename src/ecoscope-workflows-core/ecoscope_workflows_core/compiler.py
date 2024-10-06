@@ -430,6 +430,10 @@ class Spec(_ForbidExtra):
     def sha256(self) -> str:
         return hashlib.sha256(self.model_dump_json().encode()).hexdigest()
 
+    @property
+    def requires_local_release_artifacts(self) -> bool:
+        return any(r.channel.base_url.startswith("file://") for r in self.requirements)
+
     @computed_field  # type: ignore[misc]
     @property
     def flat_workflow(self) -> list[TaskInstance]:
@@ -864,7 +868,9 @@ class DagCompiler(BaseModel):
                 "graph.png": self.build_pydot_graph(),
                 "pyproject.toml": self.get_pyproject_toml(),
                 "Dockerfile": self.plainrender(
-                    "Dockerfile.jinja2", package_name=self.package_name
+                    "Dockerfile.jinja2",
+                    package_name=self.package_name,
+                    requires_local_release_artifacts=self.spec.requires_local_release_artifacts,
                 ),
                 ".dockerignore": self.plainrender("dockerignore.jinja2"),
                 "README.md": self.plainrender(
