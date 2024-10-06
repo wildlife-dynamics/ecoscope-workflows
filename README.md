@@ -80,3 +80,23 @@ and we currently do use caching to attempt to avoid unecessary re-builds of the 
 (in the context of local development, _not_ CI).
 However, please be aware that tuning this logic remains a work-in-progress and further work needs to
 be done to ensure that these cached builds are being re-built at the appropriate times.
+
+
+## Release
+
+To release conda packages for `ecoscope-workflows-core` and `ecoscope-workflows-ext-ecoscope`:
+
+1. Open and merge a PR that bumps the context version for both recipes in `publish/recipes/release/*.yaml`
+to the desired release tag
+    > **Note**: To get examples CI tests to pass, you will also need to build a release locally with the
+    `build-release` pixi task, and then recompile all examples to get the new release tag reflected in
+    the lockfiles for all examples. We may be able to remove this requirement eventually, as we improve
+    our release flow, but for now this is required.
+2. Rebase your local clone to be equal with `main` (following the merge of the context version bump PR),
+and then push a new tag to the remote, e.g.:
+   ```console
+   $ git tag v0.0.2
+   $ git push origin --tags
+   ```
+3. The `publish.yml` github workflow will then build and push a new release to both GitHub Releases and
+https://prefix.dev/channels/ecoscope-workflows
