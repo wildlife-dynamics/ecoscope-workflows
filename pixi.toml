@@ -15,6 +15,11 @@ yq = "*"
 build-vendor = { cmd = "./publish/build.sh vendor", inputs = ["publish/recipes/vendor/*.yaml"] }
 build-release = { cmd = "./publish/build.sh release", inputs = ["publish/recipes/release/*.yaml", "src/**/*.py", "src/**/pyproject.toml"] }
 
+# release ----------------------------------------------------------------------------------
+
+verify-build-tag = { cmd = "./publish/verify.sh" }
+push-all = { cmd = "./publish/push.sh" }
+
 # examples ---------------------------------------------------------------------------------
 
 recompile-mode-map = { cmd = "./dev/recompile.sh mode-map --lock", depends-on = ["build-release"] }
