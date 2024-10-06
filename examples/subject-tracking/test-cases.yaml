@@ -48,8 +48,8 @@ test1:
     classify_traj_speed:
       input_column_name: "speed_kmhr"
       output_column_name: "speed_bins"
-      scheme: "equal_interval"
       classification_options:
+        scheme: "equal_interval"
         k: 6
 
     colormap_traj_speed:

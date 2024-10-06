@@ -1,12 +1,10 @@
 from dataclasses import dataclass
 from typing import Annotated, Literal, Union
 
-from pydantic import BaseModel, Field
-from pydantic.json_schema import SkipJsonSchema
-
 from ecoscope_workflows_core.annotations import AnyGeoDataFrame
 from ecoscope_workflows_core.decorators import task
-
+from pydantic import BaseModel, Field
+from pydantic.json_schema import SkipJsonSchema
 
 UnitType = Literal["meters", "pixels"]
 WidgetPlacement = Literal[
