@@ -92,9 +92,9 @@ jobs:
         run: ls -lR /tmp/ecoscope-workflows/release/artifacts
 
       - uses: actions/checkout@v4
+      - name: Install pixi
+        run: curl -fsSL https://pixi.sh/install.sh | bash && echo "$HOME/.pixi/bin" >> $GITHUB_PATH
       - name: Publish to prefix.dev
         env:
           PREFIX_API_KEY: ${{ secrets.PREFIX_API_KEY }}
-        run: |
-          chmod +x ./publish/push.sh
-          ./publish/push.sh
+        run: pixi run --manifest-path pixi.toml -e default push-all
