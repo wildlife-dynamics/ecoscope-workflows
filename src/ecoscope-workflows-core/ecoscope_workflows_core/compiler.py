@@ -697,14 +697,14 @@ class DagCompiler(BaseModel):
         )
         docker_build_cmd = f"docker buildx build -t {self.release_name} ."
         docker_build = (
-            copy_local_artifacts + "&& " + docker_build_cmd
+            f"{copy_local_artifacts}&& {docker_build_cmd}\n"
             if self.spec.requires_local_release_artifacts
             else docker_build_cmd
         )
         tasks = dedent(
             f"""\
             [tasks]
-            docker-build = {docker_build}
+            docker-build = '''{docker_build}'''
             """
         )
         return PixiToml(
