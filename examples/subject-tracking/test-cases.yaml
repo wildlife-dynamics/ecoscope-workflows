@@ -69,7 +69,10 @@ test1:
 
     # Parameters for 'Draw Ecomaps for each trajectory group' using task `draw_ecomap`.
     traj_ecomap:
-      tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
+      tile_layers:
+        - name: "SATELLITE"
+        - name: "TERRAIN"
+          opacity: 0.5
       static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
       title: "Subject Group Trajectory Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
 
@@ -150,9 +153,11 @@ test1:
 
     # Parameters for 'Draw Ecomap from Time Density' using task `draw_ecomap`.
     td_ecomap:
-      tile_layer: OpenStreetMap # (str, FieldInfo(annotation=NoneType, required=False))
+      tile_layers:
+        - name: "SATELLITE"
+        - name: "TERRAIN"
+          opacity: 0.5
       static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
-      title: "Great Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
 
     # Parameters for 'Persist Ecomap as Text' using task `persist_text`.
     td_ecomap_html_url: {}

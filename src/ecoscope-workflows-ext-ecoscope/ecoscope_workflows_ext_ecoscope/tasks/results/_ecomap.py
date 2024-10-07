@@ -76,6 +76,12 @@ class LayerDefinition:
     legend: LegendDefinition
 
 
+@dataclass
+class TileLayer:
+    name: str
+    opacity: float = 1
+
+
 @task
 def create_map_layer(
     geodataframe: Annotated[
@@ -115,8 +121,8 @@ def draw_ecomap(
         LayerDefinition | list[LayerDefinition],
         Field(description="A list of map layers to add to the map.", exclude=True),
     ],
-    tile_layer: Annotated[
-        str, Field(description="A named tile layer, ie OpenStreetMap.")
+    tile_layers: Annotated[
+        list[TileLayer], Field(description="A named tile layer, ie OpenStreetMap.")
     ] = "",
     static: Annotated[
         bool, Field(description="Set to true to disable map pan/zoom.")
@@ -159,8 +165,10 @@ def draw_ecomap(
     m.add_scale_bar()
     m.add_north_arrow(**(north_arrow_style.model_dump(exclude_none=True)))  # type: ignore[union-attr]
 
-    if tile_layer:
-        m.add_layer(EcoMap.get_named_tile_layer(tile_layer))
+    for tile_layer in tile_layers:
+        layer = EcoMap.get_named_tile_layer(tile_layer.name)
+        layer.opacity = tile_layer.opacity
+        m.add_layer(layer)
 
     geo_layers = [geo_layers] if not isinstance(geo_layers, list) else geo_layers
     for layer_def in geo_layers:
