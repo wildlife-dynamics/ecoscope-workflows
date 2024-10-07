@@ -430,6 +430,10 @@ class Spec(_ForbidExtra):
     def sha256(self) -> str:
         return hashlib.sha256(self.model_dump_json().encode()).hexdigest()
 
+    @property
+    def requires_local_release_artifacts(self) -> bool:
+        return any(r.channel.base_url.startswith("file://") for r in self.requirements)
+
     @computed_field  # type: ignore[misc]
     @property
     def flat_workflow(self) -> list[TaskInstance]:
@@ -637,12 +641,16 @@ class DagCompiler(BaseModel):
         }
 
     def get_pixi_toml(self) -> PixiToml:
+        channels = (
+            [f"{LOCAL_CHANNEL.base_url}", f"{RELEASE_CHANNEL.base_url}", "conda-forge"]
+            if self.spec.requires_local_release_artifacts
+            else [f"{RELEASE_CHANNEL.base_url}", "conda-forge"]
+        )
         project = dedent(
-            # TODO: allow removing the LOCAL_CHANNEL for production releases
             f"""\
             [project]
             name = "{self.release_name}"
-            channels = ["{LOCAL_CHANNEL.base_url}", "{RELEASE_CHANNEL.base_url}", "conda-forge"]
+            channels = {channels}
             platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
             """
         )
@@ -681,14 +689,22 @@ class DagCompiler(BaseModel):
             test = { features = ["test"], solve-group = "default" }
             """
         )
+        copy_local_artifacts = dedent(
+            """
+            mkdir -p .tmp/ecoscope-workflows/release/artifacts/
+            && cp -r /tmp/ecoscope-workflows/release/artifacts/* .tmp/ecoscope-workflows/release/artifacts/
+            """
+        )
+        docker_build_cmd = f"docker buildx build -t {self.release_name} ."
+        docker_build = (
+            f"{copy_local_artifacts}&& {docker_build_cmd}\n"
+            if self.spec.requires_local_release_artifacts
+            else docker_build_cmd
+        )
         tasks = dedent(
             f"""\
             [tasks]
-            docker-build = '''
-            mkdir -p .tmp/ecoscope-workflows/release/artifacts/
-            && cp -r /tmp/ecoscope-workflows/release/artifacts/* .tmp/ecoscope-workflows/release/artifacts/
-            && docker buildx build -t {self.release_name} .
-            '''
+            docker-build = '''{docker_build}'''
             """
         )
         return PixiToml(
@@ -864,7 +880,9 @@ class DagCompiler(BaseModel):
                 "graph.png": self.build_pydot_graph(),
                 "pyproject.toml": self.get_pyproject_toml(),
                 "Dockerfile": self.plainrender(
-                    "Dockerfile.jinja2", package_name=self.package_name
+                    "Dockerfile.jinja2",
+                    package_name=self.package_name,
+                    requires_local_release_artifacts=self.spec.requires_local_release_artifacts,
                 ),
                 ".dockerignore": self.plainrender("dockerignore.jinja2"),
                 "README.md": self.plainrender(
