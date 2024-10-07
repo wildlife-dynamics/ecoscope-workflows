@@ -689,14 +689,22 @@ class DagCompiler(BaseModel):
             test = { features = ["test"], solve-group = "default" }
             """
         )
+        copy_local_artifacts = dedent(
+            """
+            mkdir -p .tmp/ecoscope-workflows/release/artifacts/
+            && cp -r /tmp/ecoscope-workflows/release/artifacts/* .tmp/ecoscope-workflows/release/artifacts/
+            """
+        )
+        docker_build_cmd = f"docker buildx build -t {self.release_name} ."
+        docker_build = (
+            copy_local_artifacts + "&& " + docker_build_cmd
+            if self.spec.requires_local_release_artifacts
+            else docker_build_cmd
+        )
         tasks = dedent(
             f"""\
             [tasks]
-            docker-build = '''
-            mkdir -p .tmp/ecoscope-workflows/release/artifacts/
-            && cp -r /tmp/ecoscope-workflows/release/artifacts/* .tmp/ecoscope-workflows/release/artifacts/
-            && docker buildx build -t {self.release_name} .
-            '''
+            docker-build = {docker_build}
             """
         )
         return PixiToml(
