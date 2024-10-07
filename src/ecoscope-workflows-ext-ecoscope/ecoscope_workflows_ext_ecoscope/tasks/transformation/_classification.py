@@ -72,7 +72,6 @@ def apply_classification(
             description="Labels of classification bins, uses bin edges if not provied."
         ),
     ] = None,
-    scheme: Annotated[str, Field()] = None,  # TODO: remove
     classification_options: Annotated[
         ClassificationArgs,
         Field(description="Classification scheme and its arguments."),
