@@ -27,12 +27,18 @@ jobs:
             const { owner, repo } = context.repo;
 
             try {
-              await github.rest.issues.get({
+              const issue = await github.rest.issues.get({
                 owner,
                 repo,
                 issue_number: issueNumber
               });
-              console.log(`Linked issue #${issueNumber} found and verified.`);
+              const minLength = 30; // Minimum description length
+
+              if (!issue.data.body || issue.data.body.trim().length < minLength) {
+                core.setFailed(`Linked issue #${issueNumber} does not have a sufficient description (at least ${minLength} characters required).`);
+              } else {
+                console.log(`Linked issue #${issueNumber} has a sufficient description.`);
+              }
             } catch (error) {
               core.setFailed(`Issue #${issueNumber} not found or inaccessible.`);
             }
