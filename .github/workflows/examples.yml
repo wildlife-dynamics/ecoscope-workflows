@@ -33,8 +33,6 @@ jobs:
       fail-fast: false
       matrix:
         example: [
-          "mode-map",
-          "mode-mapvalues",
           "patrol-events",
           "patrols",
           "subject-tracking",
