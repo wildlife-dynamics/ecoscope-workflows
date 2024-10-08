@@ -1,6 +1,6 @@
 # ecoscope-workflows
 
-This repository contains 7 distinct Python packages. Of those, the two contained under `src/` represent the core logic developed in this repo:
+This repository contains 5 distinct Python packages. Of those, the two contained under `src/` represent the core logic developed in this repo:
 
 ```
 src
