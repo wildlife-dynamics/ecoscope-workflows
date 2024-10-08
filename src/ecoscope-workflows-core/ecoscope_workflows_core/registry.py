@@ -21,9 +21,6 @@ from pydantic import (
 )
 from pydantic.functional_validators import AfterValidator
 
-from ecoscope_workflows_core.annotations import (
-    JsonSerializableDataFrameModel,
-)
 from ecoscope_workflows_core.decorators import SyncTask
 from ecoscope_workflows_core.jsonschema import SurfacesDescriptionSchema
 from ecoscope_workflows_core.util import (
@@ -55,10 +52,8 @@ def recurse_into_tasks(
             )
         elif ismodule(obj):
             yield from recurse_into_tasks(obj)
-        elif issubclass(obj, JsonSerializableDataFrameModel):
-            continue
         else:
-            raise ValueError(f"Unexpected member {obj} in module {module}")
+            continue
 
 
 def collect_task_entries() -> dict[str, "KnownTask"]:
