@@ -3,7 +3,6 @@
 # from-spec-sha256 = "748252e8fb420e7edc39e0b05c8793c569ddb0fed5f92830889f0dcebdb72be1"
 import json
 import os
-from ecoscope_workflows_core.tasks.results import DashboardJson
 
 from ecoscope_workflows_core.tasks.groupby import set_groupers
 from ecoscope_workflows_ext_ecoscope.tasks.io import get_patrol_observations
@@ -38,7 +37,7 @@ from ecoscope_workflows_core.tasks.results import gather_dashboard
 from ..params import Params
 
 
-def main(params: Params) -> DashboardJson:
+def main(params: Params):
     params_dict = json.loads(params.model_dump_json(exclude_unset=True))
 
     groupers = set_groupers.validate().partial(**params_dict["groupers"]).call()
@@ -390,4 +389,4 @@ def main(params: Params) -> DashboardJson:
         .call()
     )
 
-    return patrol_dashboard.model_dump()
+    return patrol_dashboard
