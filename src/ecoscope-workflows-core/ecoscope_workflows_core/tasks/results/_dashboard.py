@@ -53,6 +53,15 @@ class Metadata:
     description: str = ""
 
 
+class DashboardJson(BaseModel):
+    """A JSON-serialized representation of a dashboard."""
+
+    filters: dict | None
+    views: dict[str, list[EmumeratedWidgetSingleView]]
+    metadata: Metadata
+    layout: list  # this is a placeholder for future use by server
+
+
 class Dashboard(BaseModel):
     """A dashboard composed of grouped widgets. Widgets without groupers are
     represented by a single view with a `None` key. See `GroupedWidget` for more.
@@ -153,12 +162,14 @@ class Dashboard(BaseModel):
     @model_serializer
     def ser_model(self) -> dict[str, Any]:
         """The method called by `.model_dump()` to serialize the model to a dictionary."""
-        return {
-            "filters": self.rjsf_filters_json,
-            "views": self.views_json,
-            "metadata": self.metadata,
-            "layout": [],  # this is a placeholder for future use by server
-        }
+        return DashboardJson(
+            **{
+                "filters": self.rjsf_filters_json,
+                "views": self.views_json,
+                "metadata": self.metadata,
+                "layout": [],  # this is a placeholder for future use by server
+            }
+        ).model_dump()
 
 
 def composite_filters_to_grouper_choices_dict(
