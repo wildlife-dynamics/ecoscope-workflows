@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass, field
 from graphlib import TopologicalSorter
-from typing import Any, Literal
+from typing import Any, Literal, Sequence
 
 from ecoscope_workflows_core.decorators import AsyncTask
 from ecoscope_workflows_core.executors import Future, FutureSequence
@@ -74,7 +74,7 @@ class Graph:
 
     # TODO: __post_init__ to validate that all dependencies are in nodes
 
-    def execute(self) -> dict[str, Any]:
+    def execute(self) -> Any | Sequence[Any]:
         ts = TopologicalSorter(self.dependencies)
         ts.prepare()
         futures: FuturesDict = {}
