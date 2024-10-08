@@ -102,4 +102,7 @@ class Graph:
                 ts.done(name)
 
         # here, all nodes in ready are terminal nodes
-        return {n: futures[n].gather() for n in ready}
+        terminal_node_result = [futures[n].gather() for n in ready]
+        if len(terminal_node_result) > 1:
+            raise NotImplementedError("Multiple terminal nodes are not yet supported")
+        return terminal_node_result.pop(0)
