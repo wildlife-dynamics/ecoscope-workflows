@@ -13,6 +13,7 @@ from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel, Field, SecretStr
+from ecoscope_workflows_core.tasks.results import DashboardJson
 
 from .dispatch import dispatch
 from .params import Params
@@ -59,7 +60,13 @@ class LithopsConfig(BaseModel):
     gcp_cloudrun: GCPCloudRun | None = None
 
 
-@app.post("/", status_code=200)
+class ResponseModel(BaseModel):
+    result: DashboardJson | None = None
+    error: str | None = None
+    traceback: list[str] | None = None
+
+
+@app.post("/", status_code=200, response_model=ResponseModel)
 def run(
     # service response
     response: Response,
@@ -70,7 +77,6 @@ def run(
     results_url: str,
     data_connections_env_vars: dict[str, SecretStr] | None = None,
     lithops_config: LithopsConfig | None = None,
-    callback_url: str | None = None,  # TODO: authentication (hmac)
 ):
     yaml = ruamel.yaml.YAML(typ="safe")
     update_env = {"ECOSCOPE_WORKFLOWS_RESULTS": results_url}
@@ -91,8 +97,6 @@ def run(
     os.environ.update(update_env)
     try:
         result = dispatch(execution_mode, mock_io, params)
-        if callback_url:
-            raise NotImplementedError("Callbacks are not yet implemented.")
     except Exception as e:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         trace = traceback.format_exc().splitlines()
@@ -101,4 +105,4 @@ def run(
         for k in update_env:
             del os.environ[k]
 
-    return result
+    return {"result": result}
