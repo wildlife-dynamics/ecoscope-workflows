@@ -2,8 +2,7 @@
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
 # from-spec-sha256 = "748252e8fb420e7edc39e0b05c8793c569ddb0fed5f92830889f0dcebdb72be1"
 
-
-from typing import Any
+from ecoscope_workflows_core.tasks.results import DashboardJson
 
 from .dags import (
     run_async,
@@ -18,7 +17,7 @@ def dispatch(
     execution_mode: str,  # TODO: literal type
     mock_io: bool,
     params: Params,
-) -> Any:  # TODO: Dynamically define the return type
+) -> DashboardJson:
     match execution_mode, mock_io:
         case ("async", True):
             result = run_async_mock_io(params=params)
