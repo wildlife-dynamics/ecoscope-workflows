@@ -105,4 +105,4 @@ def run(
         for k in update_env:
             del os.environ[k]
 
-    return {"result": result}
+    return {"result": result.model_dump()}
