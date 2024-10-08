@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass, field
 from graphlib import TopologicalSorter
-from typing import Any, Literal
+from typing import Any, Literal, Sequence
 
 from ecoscope_workflows_core.decorators import AsyncTask
 from ecoscope_workflows_core.executors import Future, FutureSequence
@@ -74,7 +74,7 @@ class Graph:
 
     # TODO: __post_init__ to validate that all dependencies are in nodes
 
-    def execute(self) -> dict[str, Any]:
+    def execute(self) -> Any | Sequence[Any]:
         ts = TopologicalSorter(self.dependencies)
         ts.prepare()
         futures: FuturesDict = {}
@@ -102,4 +102,7 @@ class Graph:
                 ts.done(name)
 
         # here, all nodes in ready are terminal nodes
-        return {n: futures[n].gather() for n in ready}
+        terminal_node_result = [futures[n].gather() for n in ready]
+        if len(terminal_node_result) > 1:
+            raise NotImplementedError("Multiple terminal nodes are not yet supported")
+        return terminal_node_result.pop(0)

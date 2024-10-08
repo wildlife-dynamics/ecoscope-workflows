@@ -49,7 +49,7 @@ def test_graph_basic_tasks():
     }
     graph = Graph(dependencies, nodes)
     results = graph.execute()
-    assert results == {"D": 4}
+    assert results == 4
 
 
 def test_graph_basic_tasks_lithops():
@@ -76,7 +76,7 @@ def test_graph_basic_tasks_lithops():
     }
     graph = Graph(dependencies, nodes)
     results = graph.execute()
-    assert results == {"D": 4}
+    assert results == 4
 
 
 def test_graph_basic_tasks_lithops_same_executor_instance():
@@ -103,7 +103,7 @@ def test_graph_basic_tasks_lithops_same_executor_instance():
     }
     graph = Graph(dependencies, nodes)
     results = graph.execute()
-    assert results == {"D": 4}
+    assert results == 4
 
 
 def test_graph_tasks_lithops_map():
@@ -137,7 +137,7 @@ def test_graph_tasks_lithops_map():
     }
     graph = Graph(dependencies, nodes)
     results = graph.execute()
-    assert set(results["D"]) == {1, 2, 3}  # order is not guaranteed
+    assert set(results) == {1, 2, 3}  # order is not guaranteed
 
 
 def test_graph_tasks_lithops_map_same_executor_instance():
@@ -173,7 +173,7 @@ def test_graph_tasks_lithops_map_same_executor_instance():
     }
     graph = Graph(dependencies, nodes)
     results = graph.execute()
-    assert set(results["D"]) == {1, 2, 3}  # order is not guaranteed
+    assert set(results) == {1, 2, 3}  # order is not guaranteed
 
 
 def test_graph_tasks_lithops_partial_map():
@@ -207,7 +207,7 @@ def test_graph_tasks_lithops_partial_map():
     }
     graph = Graph(dependencies, nodes)
     results = graph.execute()
-    assert set(results["D"]) == {0, 1, 2}  # order is not guaranteed
+    assert set(results) == {0, 1, 2}  # order is not guaranteed
 
 
 def test_graph_tasks_lithops_partial_map_same_executor_instance():
@@ -243,4 +243,4 @@ def test_graph_tasks_lithops_partial_map_same_executor_instance():
     }
     graph = Graph(dependencies, nodes)
     results = graph.execute()
-    assert set(results["D"]) == {0, 1, 2}  # order is not guaranteed
+    assert set(results) == {0, 1, 2}  # order is not guaranteed
