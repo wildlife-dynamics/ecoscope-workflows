@@ -49,7 +49,10 @@ test1:
         color_column: "event_type_colormap"
     # Parameters for 'Draw Ecomap from Time Density' using task `draw_ecomap`.
     pe_ecomap:
-      tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
+      tile_layers:
+        - name: "SATELLITE"
+        - name: "TERRAIN"
+          opacity: 0.5
       static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
     # Parameters for 'Persist Ecomap as Text' using task `persist_text`.
     pe_ecomap_html_url: {}
@@ -91,7 +94,10 @@ test1:
         opacity: 0.4
     # Parameters for 'Draw Ecomap from Feature Density' using task `draw_ecomap`.
     fd_ecomap:
-      tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
+      tile_layers:
+        - name: "SATELLITE"
+        - name: "TERRAIN"
+          opacity: 0.5
       static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
     # Parameters for 'Persist Feature Density Ecomap as Text' using task `persist_text`.
     fd_ecomap_html_url: {}
@@ -113,7 +119,10 @@ test1:
         get_radius: 5
     # Parameters for 'Draw Ecomap from grouped Patrol Events' using task `draw_ecomap`.
     grouped_pe_ecomap:
-      tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
+      tile_layers:
+        - name: "SATELLITE"
+        - name: "TERRAIN"
+          opacity: 0.5
       static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
     # Parameters for 'Persist grouped Patrol Events Ecomap as Text' using task `persist_text`.
     grouped_pe_ecomap_html_url: {}
@@ -150,7 +159,10 @@ test1:
         opacity: 0.4
     # Parameters for 'Draw Ecomap from Feature Density' using task `draw_ecomap`.
     grouped_fd_ecomap:
-      tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
+      tile_layers:
+        - name: "SATELLITE"
+        - name: "TERRAIN"
+          opacity: 0.5
       static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
     # Parameters for 'Persist Feature Density Ecomap as Text' using task `persist_text`.
     grouped_fd_ecomap_html_url: {}
