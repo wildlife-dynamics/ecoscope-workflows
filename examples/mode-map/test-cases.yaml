@@ -28,7 +28,6 @@ test1:
       tile_layers:
         - name: "OpenStreetMap"
       static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
-      title: "Great Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
       north_arrow_style:
         placement: "top-right"
     td_ecomap_html_url: {}  # Parameters for 'Persist Ecomaps as Text' using task `persist_text`.

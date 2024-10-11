@@ -5670,9 +5670,14 @@ packages:
   md5: c85de84606f418dcc1dc7644ea9fe1f2
 =======
   url: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-core-0.0.0-pyh4616a5c_0.conda
+<<<<<<< HEAD
   sha256: b32a41ef8cb540d84a6205898add1135bdc944fdeb2c12c01c335614e96ec210
   md5: c2c5442766fac0ad68137f4e75c5e974
 >>>>>>> 35cfc6e (recompile)
+=======
+  sha256: 0066fc83b6e84490f6eb95380b685a724a43f2b63654deb78151b85c117b21fd
+  md5: d6ac1b469fdef3ce0ad457090fe78508
+>>>>>>> fd6cf5e (fix time_density calculation)
   depends:
   - python
   - jinja2
@@ -5690,12 +5695,17 @@ packages:
   - python
   license: BSD-3-Clause
 <<<<<<< HEAD
+<<<<<<< HEAD
   size: 47923
   timestamp: 1728361202345
 =======
   size: 47730
   timestamp: 1728635839635
 >>>>>>> 35cfc6e (recompile)
+=======
+  size: 47721
+  timestamp: 1728647199439
+>>>>>>> fd6cf5e (fix time_density calculation)
 - kind: conda
   name: ecoscope-workflows-ext-ecoscope
   version: v0.0.4
@@ -5708,9 +5718,14 @@ packages:
   md5: a2395e8637d9acd73bb793d7264fa1cd
 =======
   url: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-ext-ecoscope-0.0.0-pyh4616a5c_0.conda
+<<<<<<< HEAD
   sha256: dc6f86367510530323ce16570f7b938c19d02661b687d4c75ad701ebd3a7e71a
   md5: 3ab8623b2ee483a9f80821f38e628c43
 >>>>>>> 35cfc6e (recompile)
+=======
+  sha256: eccaa24647e051c8d7b5d274caa3589ed20a6cc9be7e6e6c0171b5646292a2ea
+  md5: bb3b3a070abce5e53f0182f9ff062340
+>>>>>>> fd6cf5e (fix time_density calculation)
   depends:
   - python
   - ecoscope-workflows-core ==v0.0.4
@@ -5718,12 +5733,17 @@ packages:
   - python
   license: BSD-3-Clause
 <<<<<<< HEAD
+<<<<<<< HEAD
   size: 416316
   timestamp: 1728361255021
 =======
   size: 1088274
   timestamp: 1728635912522
 >>>>>>> 35cfc6e (recompile)
+=======
+  size: 1088302
+  timestamp: 1728647295404
+>>>>>>> fd6cf5e (fix time_density calculation)
 - kind: pypi
   name: ecoscope-workflows-patrols-workflow
   version: 0.0.0

@@ -360,7 +360,7 @@ class Td(BaseModel):
         250.0, description="Pixel size for raster profile.", title="Pixel Size"
     )
     crs: Optional[str] = Field("ESRI:102022", title="Crs")
-    nodata_value: Optional[float] = Field("nan", title="Nodata Value")
+    nodata_value: Optional[Union[float, str]] = Field("nan", title="Nodata Value")
     band_count: Optional[int] = Field(1, title="Band Count")
     max_speed_factor: Optional[float] = Field(1.05, title="Max Speed Factor")
     expansion_factor: Optional[float] = Field(1.3, title="Expansion Factor")

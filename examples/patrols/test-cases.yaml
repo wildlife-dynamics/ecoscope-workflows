@@ -283,7 +283,6 @@ test1:
         - name: "TERRAIN"
           opacity: 0.5
       static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
-      title: "Great Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
 
     # Parameters for 'Persist Ecomap as Text' using task `persist_text`.
     td_ecomap_html_url: {}

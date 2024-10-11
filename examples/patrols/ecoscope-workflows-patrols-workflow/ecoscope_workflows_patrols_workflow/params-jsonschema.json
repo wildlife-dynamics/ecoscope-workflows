@@ -1281,9 +1281,16 @@
               "type": "string"
             },
             "nodata_value": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "default": "nan",
-              "title": "Nodata Value",
-              "type": "number"
+              "title": "Nodata Value"
             },
             "band_count": {
               "default": 1,
