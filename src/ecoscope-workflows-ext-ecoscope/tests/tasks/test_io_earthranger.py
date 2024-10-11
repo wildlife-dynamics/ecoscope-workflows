@@ -17,10 +17,11 @@ pytestmark = pytest.mark.io
 def client():
     return EarthRangerConnection(
         server=os.environ["EARTHRANGER_SERVER"],
-        username=os.environ["EARTHRANGER_USERNAME"],
-        password=os.environ["EARTHRANGER_PASSWORD"],
+        # username=os.environ["EARTHRANGER_USERNAME"],
+        # password=os.environ["EARTHRANGER_PASSWORD"],
         tcp_limit="5",
         sub_page_size="4000",
+        jwt=os.environ["EARTHRANGER_JWT"],
     ).get_client()
 
 
