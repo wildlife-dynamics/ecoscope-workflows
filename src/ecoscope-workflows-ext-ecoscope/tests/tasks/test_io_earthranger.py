@@ -21,7 +21,7 @@ def client():
         # password=os.environ["EARTHRANGER_PASSWORD"],
         tcp_limit="5",
         sub_page_size="4000",
-        jwt=os.environ["EARTHRANGER_JWT"],
+        token=os.environ["EARTHRANGER_TOKEN"],
     ).get_client()
 
 

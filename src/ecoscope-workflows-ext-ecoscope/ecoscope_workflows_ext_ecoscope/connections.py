@@ -45,20 +45,20 @@ class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
     password: Annotated[SecretStr, Field(description="EarthRanger password")] = ""
     tcp_limit: Annotated[int, Field(description="TCP limit for API requests")]
     sub_page_size: Annotated[int, Field(description="Sub page size for API requests")]
-    jwt: Annotated[SecretStr, Field(description="EarthRanger password")] = ""
+    token: Annotated[SecretStr, Field(description="EarthRanger password")] = ""
 
-    @field_validator("jwt")
-    def jwt_or_password(cls, v, values):
+    @field_validator("token")
+    def token_or_password(cls, v, values):
         if not v and not (values["username"] and values["password"]):
             raise ValueError("EarthRanger username and password must be provided")
 
     def get_client(self) -> EarthRangerClientProtocol:
         from ecoscope.io import EarthRangerIO  # type: ignore[import-untyped]
 
-        if self.jwt:
+        if self.token:
             return EarthRangerIO(
                 server=self.server,
-                existing_session=self.jwt.get_secret_value(),
+                existing_session=self.token.get_secret_value(),
                 tcp_limit=self.tcp_limit,
                 sub_page_size=self.sub_page_size,
             )
