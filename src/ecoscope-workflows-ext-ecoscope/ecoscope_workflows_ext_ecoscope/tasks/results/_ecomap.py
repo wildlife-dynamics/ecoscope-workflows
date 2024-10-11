@@ -190,9 +190,9 @@ def draw_ecomap(
     if len(legend_labels) > 0:
         m.add_legend(
             labels=legend_labels,
-            colors=[str(lc) for lc in legend_colors],
+            colors=legend_colors,
             **(legend_style.model_dump(exclude_none=True)),  # type: ignore[union-attr]
         )
 
     m.zoom_to_bounds(m.layers)
-    return m.to_html(title=title if title is not None else "Map Export")
+    return m.to_html()
