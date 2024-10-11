@@ -232,11 +232,14 @@
     "traj_ecomap": {
       "additionalProperties": false,
       "properties": {
-        "tile_layer": {
+        "tile_layers": {
           "default": "",
-          "title": "Tile Layer",
-          "type": "string",
-          "description": "A named tile layer, ie OpenStreetMap."
+          "items": {
+            "$ref": "#/$defs/TileLayer"
+          },
+          "title": "Tile Layers",
+          "type": "array",
+          "description": "A list of named tile layer with opacity, ie OpenStreetMap."
         },
         "static": {
           "default": false,
@@ -622,11 +625,14 @@
     "td_ecomap": {
       "additionalProperties": false,
       "properties": {
-        "tile_layer": {
+        "tile_layers": {
           "default": "",
-          "title": "Tile Layer",
-          "type": "string",
-          "description": "A named tile layer, ie OpenStreetMap."
+          "items": {
+            "$ref": "#/$defs/TileLayer"
+          },
+          "title": "Tile Layers",
+          "type": "array",
+          "description": "A list of named tile layer with opacity, ie OpenStreetMap."
         },
         "static": {
           "default": false,
@@ -1213,6 +1219,24 @@
         }
       },
       "title": "NorthArrowStyle",
+      "type": "object"
+    },
+    "TileLayer": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "opacity": {
+          "default": 1,
+          "title": "Opacity",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "TileLayer",
       "type": "object"
     },
     "WidgetSingleView": {

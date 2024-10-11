@@ -1,6 +1,10 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
+<<<<<<< HEAD
 # from-spec-sha256 = "030474a8999b732797c67f96a4e84066b843fa1b916296fe83f432ffa7d08480"
+=======
+# from-spec-sha256 = "a45a987fc5f35a6d3f9e1ac858aa050ef6afeca2bb96c8deda154a804dc69253"
+>>>>>>> d90c2c5 (recompile)
 
 
 # ruff: noqa: E402
@@ -184,7 +188,7 @@ traj_map_layers = create_map_layer.partial(**traj_map_layers_params).mapvalues(
 # parameters
 
 traj_ecomap_params = dict(
-    tile_layer=...,
+    tile_layers=...,
     static=...,
     title=...,
     north_arrow_style=...,
@@ -567,7 +571,7 @@ td_map_layer = create_map_layer.partial(**td_map_layer_params).mapvalues(
 # parameters
 
 td_ecomap_params = dict(
-    tile_layer=...,
+    tile_layers=...,
     static=...,
     title=...,
     north_arrow_style=...,

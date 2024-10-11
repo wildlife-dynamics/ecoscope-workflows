@@ -122,7 +122,8 @@ def draw_ecomap(
         Field(description="A list of map layers to add to the map.", exclude=True),
     ],
     tile_layers: Annotated[
-        list[TileLayer], Field(description="A named tile layer, ie OpenStreetMap.")
+        list[TileLayer],
+        Field(description="A list of named tile layer with opacity, ie OpenStreetMap."),
     ] = "",
     static: Annotated[
         bool, Field(description="Set to true to disable map pan/zoom.")
@@ -142,7 +143,7 @@ def draw_ecomap(
 
     Args:
     geo_layers (LayerDefinition | list[LayerDefinition]): A list of map layers to add to the map.
-    tile_layer (str): A named tile layer, ie OpenStreetMap.
+    tile_layers (list): A named tile layer, ie OpenStreetMap.
     static (bool): Set to true to disable map pan/zoom.
     title (str): The map title.
     north_arrow_style (NorthArrowStyle): Additional arguments for configuring the North Arrow.
@@ -157,7 +158,7 @@ def draw_ecomap(
     legend_labels: list = []
     legend_colors: list = []
 
-    m = EcoMap(static=static, default_widgets=False)
+    m = EcoMap(static=static)
 
     if title:
         m.add_title(title)
