@@ -108,7 +108,10 @@ test1:
 
     # Parameters for 'Draw Ecomaps for each combined Trajectory and Patrol Events group' using task `draw_ecomap`.
     traj_patrol_events_ecomap:
-      tile_layer: "OpenStreetMap" # (str, FieldInfo(annotation=NoneType, required=False))
+      tile_layers:
+        - name: "SATELLITE"
+        - name: "TERRAIN"
+          opacity: 0.5
       static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
       title: "Trajectories & Patrol Events" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
 
@@ -264,7 +267,10 @@ test1:
 
     # Parameters for 'Draw Ecomap from Time Density' using task `draw_ecomap`.
     td_ecomap:
-      tile_layer: OpenStreetMap # (str, FieldInfo(annotation=NoneType, required=False))
+      tile_layers:
+        - name: "SATELLITE"
+        - name: "TERRAIN"
+          opacity: 0.5
       static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
       title: "Great Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=False))
 

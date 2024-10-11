@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "748252e8fb420e7edc39e0b05c8793c569ddb0fed5f92830889f0dcebdb72be1"
+# from-spec-sha256 = "16f756386e14612d875d95d9640b778f31eb33ad9db3f241ab4ce1fe3aecc4b6"
 
 
 from __future__ import annotations
@@ -153,6 +153,27 @@ class PeAddTemporalIndex(BaseModel):
         "mixed",
         description='            If `cast_to_datetime=True`, the format to pass to `pd.to_datetime`\n            when attempting to cast `time_col` to datetime. Defaults to "mixed".\n            ',
         title="Format",
+    )
+
+
+class PeColormap(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    input_column_name: str = Field(
+        ...,
+        description="The name of the column with categorical values.",
+        title="Input Column Name",
+    )
+    colormap: Optional[Union[str, List[str]]] = Field(
+        "viridis",
+        description="Either a named mpl.colormap or a list of string hex values.",
+        title="Colormap",
+    )
+    output_column_name: Optional[str] = Field(
+        None,
+        description="The dataframe column that will contain the color values.",
+        title="Output Column Name",
     )
 
 
@@ -348,6 +369,27 @@ class Td(BaseModel):
     )
 
 
+class TdColormap(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    input_column_name: str = Field(
+        ...,
+        description="The name of the column with categorical values.",
+        title="Input Column Name",
+    )
+    colormap: Optional[Union[str, List[str]]] = Field(
+        "viridis",
+        description="Either a named mpl.colormap or a list of string hex values.",
+        title="Colormap",
+    )
+    output_column_name: Optional[str] = Field(
+        None,
+        description="The dataframe column that will contain the color values.",
+        title="Output Column Name",
+    )
+
+
 class TdEcomapHtmlUrl(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -423,7 +465,7 @@ class PointLayerStyle(BaseModel):
         "pixels", title="Line Width Units"
     )
     layer_type: Literal["point"] = Field("point", title="Layer Type")
-    get_radius: Optional[float] = Field(1, title="Get Radius")
+    get_radius: Optional[float] = Field(5, title="Get Radius")
     radius_units: Optional[RadiusUnits] = Field("pixels", title="Radius Units")
 
 
@@ -469,7 +511,7 @@ class PolylineLayerStyle(BaseModel):
     get_color: Optional[Union[str, List[int], List[List[int]]]] = Field(
         None, title="Get Color"
     )
-    get_width: Optional[float] = Field(1, title="Get Width")
+    get_width: Optional[float] = Field(3, title="Get Width")
     color_column: Optional[str] = Field(None, title="Color Column")
     width_units: Optional[WidthUnits] = Field("pixels", title="Width Units")
     cap_rounded: Optional[bool] = Field(True, title="Cap Rounded")
@@ -498,6 +540,11 @@ class LegendStyle(BaseModel):
 class NorthArrowStyle(BaseModel):
     placement: Optional[Placement] = Field("top-left", title="Placement")
     style: Optional[Dict[str, Any]] = Field({"transform": "scale(0.8)"}, title="Style")
+
+
+class TileLayer(BaseModel):
+    name: str = Field(..., title="Name")
+    opacity: Optional[float] = Field(1, title="Opacity")
 
 
 class WidgetType(str, Enum):
@@ -628,8 +675,10 @@ class TrajPatrolEventsEcomap(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    tile_layer: Optional[str] = Field(
-        "", description="A named tile layer, ie OpenStreetMap.", title="Tile Layer"
+    tile_layers: Optional[List[TileLayer]] = Field(
+        "",
+        description="A list of named tile layer with opacity, ie OpenStreetMap.",
+        title="Tile Layers",
     )
     static: Optional[bool] = Field(
         False, description="Set to true to disable map pan/zoom.", title="Static"
@@ -748,8 +797,10 @@ class TdEcomap(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    tile_layer: Optional[str] = Field(
-        "", description="A named tile layer, ie OpenStreetMap.", title="Tile Layer"
+    tile_layers: Optional[List[TileLayer]] = Field(
+        "",
+        description="A list of named tile layer with opacity, ie OpenStreetMap.",
+        title="Tile Layers",
     )
     static: Optional[bool] = Field(
         False, description="Set to true to disable map pan/zoom.", title="Static"
@@ -857,6 +908,7 @@ class Params(BaseModel):
     pe_add_temporal_index: Optional[PeAddTemporalIndex] = Field(
         None, title="Add temporal index to Patrol Events"
     )
+    pe_colormap: Optional[PeColormap] = Field(None, title="Patrol Events Colormap")
     split_pe_groups: Optional[Dict[str, Any]] = Field(
         None, title="Split Patrol Events by Group"
     )
@@ -955,6 +1007,7 @@ class Params(BaseModel):
         None, title="Merge Pie Chart Widget Views"
     )
     td: Optional[Td] = Field(None, title="Calculate Time Density from Trajectory")
+    td_colormap: Optional[TdColormap] = Field(None, title="Time Density Colormap")
     td_map_layer: Optional[TdMapLayer] = Field(
         None, title="Create map layer from Time Density"
     )
