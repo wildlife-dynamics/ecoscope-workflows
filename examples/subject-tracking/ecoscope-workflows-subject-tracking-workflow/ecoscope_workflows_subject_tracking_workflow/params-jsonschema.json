@@ -548,9 +548,16 @@
           "type": "string"
         },
         "nodata_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
           "default": "nan",
-          "title": "Nodata Value",
-          "type": "number"
+          "title": "Nodata Value"
         },
         "band_count": {
           "default": 1,
@@ -908,7 +915,7 @@
           "type": "string"
         },
         "get_radius": {
-          "default": 1,
+          "default": 5,
           "title": "Get Radius",
           "type": "number"
         },
@@ -1104,7 +1111,7 @@
           "title": "Get Color"
         },
         "get_width": {
-          "default": 1,
+          "default": 3,
           "title": "Get Width",
           "type": "number"
         },

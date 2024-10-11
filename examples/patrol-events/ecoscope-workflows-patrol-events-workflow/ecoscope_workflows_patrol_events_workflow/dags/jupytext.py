@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "5f829d8715e0d1d99e9bd17ffdbd4cdf3add65c43661fae0725e495fc4d20c66"
+# from-spec-sha256 = "a14c0deb652592fad3edfb3b99b76dc2ed865482e7948f3915215fe3626119e9"
 
 
 # ruff: noqa: E402
@@ -165,7 +165,7 @@ pe_map_layer = create_map_layer.partial(
 # parameters
 
 pe_ecomap_params = dict(
-    tile_layer=...,
+    tile_layers=...,
     static=...,
     title=...,
     north_arrow_style=...,
@@ -378,7 +378,7 @@ fd_map_layer = create_map_layer.partial(
 # parameters
 
 fd_ecomap_params = dict(
-    tile_layer=...,
+    tile_layers=...,
     static=...,
     title=...,
     north_arrow_style=...,
@@ -477,7 +477,7 @@ grouped_pe_map_layer = create_map_layer.partial(
 # parameters
 
 grouped_pe_ecomap_params = dict(
-    tile_layer=...,
+    tile_layers=...,
     static=...,
     title=...,
     north_arrow_style=...,
@@ -695,7 +695,7 @@ grouped_fd_map_layer = create_map_layer.partial(
 # parameters
 
 grouped_fd_ecomap_params = dict(
-    tile_layer=...,
+    tile_layers=...,
     static=...,
     title=...,
     north_arrow_style=...,

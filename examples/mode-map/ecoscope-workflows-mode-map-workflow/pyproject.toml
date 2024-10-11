@@ -1,0 +1,11 @@
+# [generated]
+# by = { compiler = "ecoscope-workflows-core", version = "9999" }
+# from-spec-sha256 = "7499002c5919185decf06aa9ae9368076cf2d0628e3e175f80865e05ec9162b5"
+
+[project]
+name = "ecoscope-workflows-mode-map-workflow"
+version = "0.0.0"  # todo: versioning
+requires-python = ">=3.10"  # TODO: sync with ecoscope-workflows-core
+description = ""  # TODO: description from spec
+license = { text = "BSD-3-Clause" }
+scripts = { ecoscope-workflows-mode-map-workflow = "ecoscope_workflows_mode_map_workflow.cli:main" }
