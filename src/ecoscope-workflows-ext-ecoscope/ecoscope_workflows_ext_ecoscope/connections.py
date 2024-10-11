@@ -1,6 +1,6 @@
 from typing import Annotated, ClassVar, Protocol, runtime_checkable
 
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, field_validator
 from pydantic.functional_validators import BeforeValidator
 from pydantic.json_schema import WithJsonSchema
 
@@ -41,22 +41,35 @@ class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
     __ecoscope_connection_type__: ClassVar[str] = "earthranger"
 
     server: Annotated[str, Field(description="EarthRanger API URL")]
-    username: Annotated[str, Field(description="EarthRanger username")]
-    password: Annotated[SecretStr, Field(description="EarthRanger password")]
+    username: Annotated[str, Field(description="EarthRanger username")] = ""
+    password: Annotated[SecretStr, Field(description="EarthRanger password")] = ""
     tcp_limit: Annotated[int, Field(description="TCP limit for API requests")]
     sub_page_size: Annotated[int, Field(description="Sub page size for API requests")]
+    jwt: Annotated[SecretStr, Field(description="EarthRanger password")] = ""
+
+    @field_validator("jwt")
+    def jwt_or_password(cls, v, values):
+        if not v and not (values["username"] and values["password"]):
+            raise ValueError("EarthRanger username and password must be provided")
 
     def get_client(self) -> EarthRangerClientProtocol:
         from ecoscope.io import EarthRangerIO  # type: ignore[import-untyped]
 
-        return EarthRangerIO(
-            server=self.server,
-            # TODO: token-based authentication
-            username=self.username,
-            password=self.password.get_secret_value(),
-            tcp_limit=self.tcp_limit,
-            sub_page_size=self.sub_page_size,
-        )
+        if self.jwt:
+            return EarthRangerIO(
+                server=self.server,
+                existing_session=self.jwt.get_secret_value(),
+                tcp_limit=self.tcp_limit,
+                sub_page_size=self.sub_page_size,
+            )
+        else:
+            return EarthRangerIO(
+                server=self.server,
+                username=self.username,
+                password=self.password.get_secret_value(),
+                tcp_limit=self.tcp_limit,
+                sub_page_size=self.sub_page_size,
+            )
 
 
 EarthRangerClient = Annotated[
