@@ -21,7 +21,7 @@ class LayerStyleBase(BaseModel):
 class PolylineLayerStyle(LayerStyleBase):
     layer_type: Literal["polyline"] = Field("polyline", exclude=True)
     get_color: str | list[int] | list[list[int]] | None = None
-    get_width: float = 1
+    get_width: float = 3
     color_column: str | None = None
     width_units: UnitType = "pixels"
     cap_rounded: bool = True
@@ -38,7 +38,7 @@ class ShapeLayerStyle(LayerStyleBase):
 
 class PointLayerStyle(ShapeLayerStyle):
     layer_type: Literal["point"] = Field("point", exclude=True)
-    get_radius: float = 1
+    get_radius: float = 5
     radius_units: UnitType = "pixels"
 
 
