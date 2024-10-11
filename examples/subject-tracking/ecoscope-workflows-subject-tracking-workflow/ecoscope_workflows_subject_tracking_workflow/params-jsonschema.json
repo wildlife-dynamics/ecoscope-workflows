@@ -194,6 +194,97 @@
       "type": "object",
       "title": "Split Subject Trajectories by Group"
     },
+    "classify_traj_speed": {
+      "additionalProperties": false,
+      "properties": {
+        "input_column_name": {
+          "title": "Input Column Name",
+          "type": "string",
+          "description": "The dataframe column to classify."
+        },
+        "output_column_name": {
+          "default": null,
+          "title": "Output Column Name",
+          "type": "string",
+          "description": "The dataframe column that will contain the classification values."
+        },
+        "labels": {
+          "default": null,
+          "items": {
+            "type": "string"
+          },
+          "title": "Labels",
+          "type": "array",
+          "description": "Labels of classification bins, uses bin edges if not provied."
+        },
+        "classification_options": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SharedArgs"
+            },
+            {
+              "$ref": "#/$defs/StdMeanArgs"
+            },
+            {
+              "$ref": "#/$defs/MaxBreaksArgs"
+            },
+            {
+              "$ref": "#/$defs/NaturalBreaksArgs"
+            },
+            {
+              "$ref": "#/$defs/QuantileArgs"
+            },
+            {
+              "$ref": "#/$defs/FisherJenksArgs"
+            }
+          ],
+          "default": null,
+          "title": "Classification Options"
+        }
+      },
+      "required": [
+        "input_column_name"
+      ],
+      "type": "object",
+      "title": "Classify Trajectories By Speed"
+    },
+    "colormap_traj_speed": {
+      "additionalProperties": false,
+      "properties": {
+        "input_column_name": {
+          "title": "Input Column Name",
+          "type": "string",
+          "description": "The name of the column with categorical values."
+        },
+        "colormap": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "default": "viridis",
+          "title": "Colormap",
+          "description": "Either a named mpl.colormap or a list of string hex values."
+        },
+        "output_column_name": {
+          "default": null,
+          "title": "Output Column Name",
+          "type": "string",
+          "description": "The dataframe column that will contain the color values."
+        }
+      },
+      "required": [
+        "input_column_name"
+      ],
+      "type": "object",
+      "title": "Apply Color to Trajectories By Speed"
+    },
     "traj_map_layers": {
       "additionalProperties": false,
       "properties": {
@@ -783,6 +874,149 @@
         "y"
       ],
       "title": "Coordinate",
+      "type": "object"
+    },
+    "FisherJenksArgs": {
+      "properties": {
+        "scheme": {
+          "const": "fisher_jenks",
+          "default": "fisher_jenks",
+          "enum": [
+            "fisher_jenks"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "k": {
+          "default": 5,
+          "title": "K",
+          "type": "integer"
+        }
+      },
+      "title": "FisherJenksArgs",
+      "type": "object"
+    },
+    "MaxBreaksArgs": {
+      "properties": {
+        "scheme": {
+          "const": "max_breaks",
+          "default": "max_breaks",
+          "enum": [
+            "max_breaks"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "k": {
+          "default": 5,
+          "title": "K",
+          "type": "integer"
+        },
+        "mindiff": {
+          "default": 0,
+          "title": "Mindiff",
+          "type": "number"
+        }
+      },
+      "title": "MaxBreaksArgs",
+      "type": "object"
+    },
+    "NaturalBreaksArgs": {
+      "properties": {
+        "scheme": {
+          "const": "natural_breaks",
+          "default": "natural_breaks",
+          "enum": [
+            "natural_breaks"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "k": {
+          "default": 5,
+          "title": "K",
+          "type": "integer"
+        },
+        "initial": {
+          "default": 10,
+          "title": "Initial",
+          "type": "integer"
+        }
+      },
+      "title": "NaturalBreaksArgs",
+      "type": "object"
+    },
+    "QuantileArgs": {
+      "properties": {
+        "scheme": {
+          "const": "quantile",
+          "default": "quantile",
+          "enum": [
+            "quantile"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "k": {
+          "default": 5,
+          "title": "K",
+          "type": "integer"
+        }
+      },
+      "title": "QuantileArgs",
+      "type": "object"
+    },
+    "SharedArgs": {
+      "properties": {
+        "scheme": {
+          "const": "equal_interval",
+          "default": "equal_interval",
+          "enum": [
+            "equal_interval"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "k": {
+          "default": 5,
+          "title": "K",
+          "type": "integer"
+        }
+      },
+      "title": "SharedArgs",
+      "type": "object"
+    },
+    "StdMeanArgs": {
+      "properties": {
+        "scheme": {
+          "const": "std_mean",
+          "default": "std_mean",
+          "enum": [
+            "std_mean"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "multiples": {
+          "default": [
+            -2,
+            -1,
+            1,
+            2
+          ],
+          "items": {
+            "type": "integer"
+          },
+          "title": "Multiples",
+          "type": "array"
+        },
+        "anchor": {
+          "default": false,
+          "title": "Anchor",
+          "type": "boolean"
+        }
+      },
+      "title": "StdMeanArgs",
       "type": "object"
     },
     "LegendDefinition": {
@@ -1418,6 +1652,8 @@
       "subject_traj",
       "traj_add_temporal_index",
       "split_subject_traj_groups",
+      "classify_traj_speed",
+      "colormap_traj_speed",
       "traj_map_layers",
       "traj_ecomap",
       "ecomap_html_urls",

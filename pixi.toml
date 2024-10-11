@@ -15,14 +15,10 @@ yq = "*"
 build-vendor = { cmd = "./publish/build.sh vendor", inputs = ["publish/recipes/vendor/*.yaml"] }
 build-release = { cmd = "./publish/build.sh release", inputs = ["publish/recipes/release/*.yaml", "src/**/*.py", "src/**/pyproject.toml"] }
 
-<<<<<<< HEAD
 # release ----------------------------------------------------------------------------------
 
 verify-build-tag = { cmd = "./publish/verify.sh" }
 push-all = { cmd = "./publish/push.sh" }
-=======
-# build-release = { cmd = "./publish/build.sh release", inputs = [] } #command to skip cache
->>>>>>> 7d25a5b (pixi)
 
 # examples ---------------------------------------------------------------------------------
 

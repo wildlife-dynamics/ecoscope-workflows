@@ -1,10 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-<<<<<<< HEAD
-# from-spec-sha256 = "030474a8999b732797c67f96a4e84066b843fa1b916296fe83f432ffa7d08480"
-=======
 # from-spec-sha256 = "a45a987fc5f35a6d3f9e1ac858aa050ef6afeca2bb96c8deda154a804dc69253"
->>>>>>> d90c2c5 (recompile)
 
 
 from __future__ import annotations
@@ -99,6 +95,27 @@ class TrajAddTemporalIndex(BaseModel):
         "mixed",
         description='            If `cast_to_datetime=True`, the format to pass to `pd.to_datetime`\n            when attempting to cast `time_col` to datetime. Defaults to "mixed".\n            ',
         title="Format",
+    )
+
+
+class ColormapTrajSpeed(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    input_column_name: str = Field(
+        ...,
+        description="The name of the column with categorical values.",
+        title="Input Column Name",
+    )
+    colormap: Optional[Union[str, List[str]]] = Field(
+        "viridis",
+        description="Either a named mpl.colormap or a list of string hex values.",
+        title="Colormap",
+    )
+    output_column_name: Optional[str] = Field(
+        None,
+        description="The dataframe column that will contain the color values.",
+        title="Output Column Name",
     )
 
 
@@ -240,6 +257,63 @@ class Grouper(BaseModel):
 class Coordinate(BaseModel):
     x: float = Field(..., title="X")
     y: float = Field(..., title="Y")
+
+
+class Scheme(str, Enum):
+    fisher_jenks = "fisher_jenks"
+
+
+class FisherJenksArgs(BaseModel):
+    scheme: Literal["fisher_jenks"] = Field("fisher_jenks", title="Scheme")
+    k: Optional[int] = Field(5, title="K")
+
+
+class Scheme1(str, Enum):
+    max_breaks = "max_breaks"
+
+
+class MaxBreaksArgs(BaseModel):
+    scheme: Literal["max_breaks"] = Field("max_breaks", title="Scheme")
+    k: Optional[int] = Field(5, title="K")
+    mindiff: Optional[float] = Field(0, title="Mindiff")
+
+
+class Scheme2(str, Enum):
+    natural_breaks = "natural_breaks"
+
+
+class NaturalBreaksArgs(BaseModel):
+    scheme: Literal["natural_breaks"] = Field("natural_breaks", title="Scheme")
+    k: Optional[int] = Field(5, title="K")
+    initial: Optional[int] = Field(10, title="Initial")
+
+
+class Scheme3(str, Enum):
+    quantile = "quantile"
+
+
+class QuantileArgs(BaseModel):
+    scheme: Literal["quantile"] = Field("quantile", title="Scheme")
+    k: Optional[int] = Field(5, title="K")
+
+
+class Scheme4(str, Enum):
+    equal_interval = "equal_interval"
+
+
+class SharedArgs(BaseModel):
+    scheme: Literal["equal_interval"] = Field("equal_interval", title="Scheme")
+    k: Optional[int] = Field(5, title="K")
+
+
+class Scheme5(str, Enum):
+    std_mean = "std_mean"
+
+
+class StdMeanArgs(BaseModel):
+    scheme: Literal["std_mean"] = Field("std_mean", title="Scheme")
+    multiples: Optional[List[int]] = Field([-2, -1, 1, 2], title="Multiples")
+    anchor: Optional[bool] = Field(False, title="Anchor")
 
 
 class LegendDefinition(BaseModel):
@@ -414,6 +488,35 @@ class SubjectReloc(BaseModel):
     relocs_columns: List[str] = Field(..., title="Relocs Columns")
 
 
+class ClassifyTrajSpeed(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    input_column_name: str = Field(
+        ..., description="The dataframe column to classify.", title="Input Column Name"
+    )
+    output_column_name: Optional[str] = Field(
+        None,
+        description="The dataframe column that will contain the classification values.",
+        title="Output Column Name",
+    )
+    labels: Optional[List[str]] = Field(
+        None,
+        description="Labels of classification bins, uses bin edges if not provied.",
+        title="Labels",
+    )
+    classification_options: Optional[
+        Union[
+            SharedArgs,
+            StdMeanArgs,
+            MaxBreaksArgs,
+            NaturalBreaksArgs,
+            QuantileArgs,
+            FisherJenksArgs,
+        ]
+    ] = Field(None, title="Classification Options")
+
+
 class TrajMapLayers(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -540,6 +643,12 @@ class Params(BaseModel):
     )
     split_subject_traj_groups: Optional[Dict[str, Any]] = Field(
         None, title="Split Subject Trajectories by Group"
+    )
+    classify_traj_speed: Optional[ClassifyTrajSpeed] = Field(
+        None, title="Classify Trajectories By Speed"
+    )
+    colormap_traj_speed: Optional[ColormapTrajSpeed] = Field(
+        None, title="Apply Color to Trajectories By Speed"
     )
     traj_map_layers: Optional[TrajMapLayers] = Field(
         None, title="Create map layer for each trajectory group"

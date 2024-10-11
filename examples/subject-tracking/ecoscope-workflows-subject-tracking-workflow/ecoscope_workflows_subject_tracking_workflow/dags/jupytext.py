@@ -1,10 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-<<<<<<< HEAD
-# from-spec-sha256 = "030474a8999b732797c67f96a4e84066b843fa1b916296fe83f432ffa7d08480"
-=======
 # from-spec-sha256 = "a45a987fc5f35a6d3f9e1ac858aa050ef6afeca2bb96c8deda154a804dc69253"
->>>>>>> d90c2c5 (recompile)
 
 
 # ruff: noqa: E402
@@ -25,6 +21,8 @@ from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import (
 )
 from ecoscope_workflows_core.tasks.transformation import add_temporal_index
 from ecoscope_workflows_core.tasks.groupby import split_groups
+from ecoscope_workflows_ext_ecoscope.tasks.transformation import apply_classification
+from ecoscope_workflows_ext_ecoscope.tasks.transformation import apply_color_map
 from ecoscope_workflows_ext_ecoscope.tasks.results import create_map_layer
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecomap
 from ecoscope_workflows_core.tasks.io import persist_text
@@ -162,6 +160,49 @@ split_subject_traj_groups = split_groups.partial(
 
 
 # %% [markdown]
+# ## Classify Trajectories By Speed
+
+# %%
+# parameters
+
+classify_traj_speed_params = dict(
+    input_column_name=...,
+    output_column_name=...,
+    labels=...,
+    classification_options=...,
+)
+
+# %%
+# call the task
+
+
+classify_traj_speed = apply_classification.partial(
+    **classify_traj_speed_params
+).mapvalues(argnames=["df"], argvalues=split_subject_traj_groups)
+
+
+# %% [markdown]
+# ## Apply Color to Trajectories By Speed
+
+# %%
+# parameters
+
+colormap_traj_speed_params = dict(
+    input_column_name=...,
+    colormap=...,
+    output_column_name=...,
+)
+
+# %%
+# call the task
+
+
+colormap_traj_speed = apply_color_map.partial(**colormap_traj_speed_params).mapvalues(
+    argnames=["df"], argvalues=classify_traj_speed
+)
+
+
+# %% [markdown]
 # ## Create map layer for each trajectory group
 
 # %%
@@ -177,7 +218,7 @@ traj_map_layers_params = dict(
 
 
 traj_map_layers = create_map_layer.partial(**traj_map_layers_params).mapvalues(
-    argnames=["geodataframe"], argvalues=split_subject_traj_groups
+    argnames=["geodataframe"], argvalues=colormap_traj_speed
 )
 
 
