@@ -1,9 +1,0 @@
-```
-# [generated]
-# by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "2a6d7c0b56f026fd964a75de3d6de8bc8e5934cbeaccc791bedcf87db90ddda3"
-
-```
-# ecoscope-workflows-mode-mapvalues-workflow
-
-![](graph.png)
