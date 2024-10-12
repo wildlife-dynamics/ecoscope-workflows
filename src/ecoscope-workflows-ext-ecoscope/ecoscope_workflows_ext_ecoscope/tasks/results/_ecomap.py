@@ -192,7 +192,11 @@ def draw_ecomap(
 
         if layer_def.legend:
             legend_labels.extend(layer_def.geodataframe[layer_def.legend.label_column])
-            legend_colors.extend(layer_def.geodataframe[layer_def.legend.color_column])
+            legend_colors.extend(
+                layer_def.geodataframe[layer_def.legend.color_column].apply(
+                    color_to_hex
+                )
+            )
 
         m.add_layer(layer)
 
@@ -205,3 +209,26 @@ def draw_ecomap(
 
     m.zoom_to_bounds(m.layers)
     return m.to_html()
+
+
+def color_to_hex(color):
+    if isinstance(color, str) and color.startswith("#"):
+        return color  # Already in hex format
+    elif isinstance(color, (tuple, list)) and len(color) in (3, 4):
+        if len(color) == 3:
+            r, g, b = color
+            a = 255
+        else:
+            r, g, b, a = color
+
+        # Ensure all values are in 0-255 range
+        r, g, b = (
+            int(r * 255 if r <= 1 else r),
+            int(g * 255 if g <= 1 else g),
+            int(b * 255 if b <= 1 else b),
+        )
+        a = int(a * 255 if a <= 1 else a)
+
+        return f"#{r:02x}{g:02x}{b:02x}{a:02x}"
+    else:
+        return str(color)  # Return as string if it's neither hex nor valid tuple
