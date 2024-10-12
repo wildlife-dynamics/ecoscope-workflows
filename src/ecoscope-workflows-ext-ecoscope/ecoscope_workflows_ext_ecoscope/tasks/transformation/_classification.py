@@ -84,7 +84,7 @@ def apply_classification(
     classification_options: Annotated[
         ClassificationArgs,
         Field(description="Classification scheme and its arguments."),
-    ] = None,
+    ] = SharedArgs(),
 ) -> AnyDataFrame:
     """
     Classifies a dataframe column using specified classification scheme.
