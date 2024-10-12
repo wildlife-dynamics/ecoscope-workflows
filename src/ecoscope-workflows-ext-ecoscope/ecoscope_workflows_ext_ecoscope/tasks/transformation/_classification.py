@@ -8,33 +8,42 @@ from pydantic.json_schema import SkipJsonSchema
 
 logger = logging.getLogger(__name__)
 
+ClassificationMethod = Literal[
+    "equal_interval",
+    "quantile",
+    "fisher_jenks",
+    "std_mean",
+    "max_breaks",
+    "natural_breaks",
+]
+
 
 class SharedArgs(BaseModel):
-    scheme: Literal["equal_interval"] = Field("equal_interval", exclude=True)
+    scheme: ClassificationMethod = Field("equal_interval", exclude=True)
     k: int = 5
 
 
 class QuantileArgs(SharedArgs):
-    scheme: Literal["quantile"] = Field("quantile", exclude=True)
+    scheme: ClassificationMethod = Field("quantile", exclude=True)
 
 
 class FisherJenksArgs(SharedArgs):
-    scheme: Literal["fisher_jenks"] = Field("fisher_jenks", exclude=True)
+    scheme: ClassificationMethod = Field("fisher_jenks", exclude=True)
 
 
 class StdMeanArgs(BaseModel):
-    scheme: Literal["std_mean"] = Field("std_mean", exclude=True)
+    scheme: ClassificationMethod = Field("std_mean", exclude=True)
     multiples: list[int] = [-2, -1, 1, 2]
     anchor: bool = False
 
 
 class MaxBreaksArgs(SharedArgs):
-    scheme: Literal["max_breaks"] = Field("max_breaks", exclude=True)
+    scheme: ClassificationMethod = Field("max_breaks", exclude=True)
     mindiff: float = 0
 
 
 class NaturalBreaksArgs(SharedArgs):
-    scheme: Literal["natural_breaks"] = Field("natural_breaks", exclude=True)
+    scheme: ClassificationMethod = Field("natural_breaks", exclude=True)
     initial: int = 10
 
 
@@ -111,9 +120,7 @@ def apply_classification(
     Returns:
         The input dataframe with a classification column appended.
     """
-    from ecoscope.analysis.classifier import (
-        apply_classification,  # type: ignore[import-untyped]
-    )
+    from ecoscope.analysis.classifier import apply_classification  # type: ignore[import-untyped]
 
     return apply_classification(
         df,
@@ -158,9 +165,7 @@ def apply_color_map(
     Returns:
     pd.DataFrame: The dataframe with an additional color column.
     """
-    from ecoscope.analysis.classifier import (
-        apply_color_map,  # type: ignore[import-untyped]
-    )
+    from ecoscope.analysis.classifier import apply_color_map  # type: ignore[import-untyped]
 
     return apply_color_map(
         dataframe=df,

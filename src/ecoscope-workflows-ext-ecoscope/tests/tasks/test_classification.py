@@ -1,14 +1,13 @@
 import numpy as np
 import pandas as pd
 import pytest
-
 from ecoscope_workflows_ext_ecoscope.tasks.transformation._classification import (
+    MaxBreaksArgs,
+    NaturalBreaksArgs,
+    SharedArgs,
+    StdMeanArgs,
     apply_classification,
     apply_color_map,
-    SharedArgs,
-    MaxBreaksArgs,
-    StdMeanArgs,
-    NaturalBreaksArgs,
 )
 
 
@@ -38,17 +37,16 @@ def test_color_map():
 @pytest.mark.parametrize(
     "scheme, args",
     [
-        ("equal_interval", SharedArgs(k=3)),
-        ("max_breaks", MaxBreaksArgs(k=4, min_diff=20)),
-        ("natural_breaks", NaturalBreaksArgs(k=4, initial=3)),
-        ("std_mean", StdMeanArgs(multiples=[-1, 1], anchor=False)),
+        ("equal_interval", SharedArgs(scheme="equal_interval", k=3)),
+        ("max_breaks", MaxBreaksArgs(scheme="max_breaks", k=4, min_diff=20)),
+        ("natural_breaks", NaturalBreaksArgs(scheme="natural_breaks", k=4, initial=3)),
+        ("std_mean", StdMeanArgs(scheme="std_mean", multiples=[-1, 1], anchor=False)),
     ],
 )
 def test_apply_classification_equal_interval(test_df, scheme, args):
     result = apply_classification(
         df=test_df,
         input_column_name="column_name",
-        scheme=scheme,
         output_column_name="classified",
         classification_options=args,
     )

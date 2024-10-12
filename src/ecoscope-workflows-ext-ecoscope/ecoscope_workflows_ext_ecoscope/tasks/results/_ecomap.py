@@ -124,7 +124,7 @@ def draw_ecomap(
     tile_layers: Annotated[
         list[TileLayer],
         Field(description="A list of named tile layer with opacity, ie OpenStreetMap."),
-    ] = "",
+    ] = [],
     static: Annotated[
         bool, Field(description="Set to true to disable map pan/zoom.")
     ] = False,
