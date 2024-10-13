@@ -38,7 +38,7 @@ class Lithops(BaseModel):
     backend: Literal["localhost", "gcp_cloudrun"] = "localhost"
     storage: Literal["localhost", "gcp_storage"] = "localhost"
     log_level: str = "DEBUG"
-    data_limit: int = 16
+    data_limit: int = 256
 
 
 class GCP(BaseModel):
