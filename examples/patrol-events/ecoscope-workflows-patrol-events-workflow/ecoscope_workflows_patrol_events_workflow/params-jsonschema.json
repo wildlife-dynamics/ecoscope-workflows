@@ -245,7 +245,7 @@
       "additionalProperties": false,
       "properties": {
         "tile_layers": {
-          "default": "",
+          "default": [],
           "items": {
             "$ref": "#/$defs/TileLayer"
           },
@@ -564,7 +564,7 @@
       "additionalProperties": false,
       "properties": {
         "tile_layers": {
-          "default": "",
+          "default": [],
           "items": {
             "$ref": "#/$defs/TileLayer"
           },
@@ -691,7 +691,7 @@
       "additionalProperties": false,
       "properties": {
         "tile_layers": {
-          "default": "",
+          "default": [],
           "items": {
             "$ref": "#/$defs/TileLayer"
           },
@@ -957,7 +957,7 @@
       "additionalProperties": false,
       "properties": {
         "tile_layers": {
-          "default": "",
+          "default": [],
           "items": {
             "$ref": "#/$defs/TileLayer"
           },

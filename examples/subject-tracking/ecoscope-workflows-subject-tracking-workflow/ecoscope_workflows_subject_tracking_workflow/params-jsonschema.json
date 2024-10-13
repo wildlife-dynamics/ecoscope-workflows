@@ -238,7 +238,9 @@
               "$ref": "#/$defs/FisherJenksArgs"
             }
           ],
-          "default": null,
+          "default": {
+            "k": 5
+          },
           "title": "Classification Options"
         }
       },
@@ -324,7 +326,7 @@
       "additionalProperties": false,
       "properties": {
         "tile_layers": {
-          "default": "",
+          "default": [],
           "items": {
             "$ref": "#/$defs/TileLayer"
           },
@@ -724,7 +726,7 @@
       "additionalProperties": false,
       "properties": {
         "tile_layers": {
-          "default": "",
+          "default": [],
           "items": {
             "$ref": "#/$defs/TileLayer"
           },
@@ -879,10 +881,14 @@
     "FisherJenksArgs": {
       "properties": {
         "scheme": {
-          "const": "fisher_jenks",
           "default": "fisher_jenks",
           "enum": [
-            "fisher_jenks"
+            "equal_interval",
+            "quantile",
+            "fisher_jenks",
+            "std_mean",
+            "max_breaks",
+            "natural_breaks"
           ],
           "title": "Scheme",
           "type": "string"
@@ -899,10 +905,14 @@
     "MaxBreaksArgs": {
       "properties": {
         "scheme": {
-          "const": "max_breaks",
           "default": "max_breaks",
           "enum": [
-            "max_breaks"
+            "equal_interval",
+            "quantile",
+            "fisher_jenks",
+            "std_mean",
+            "max_breaks",
+            "natural_breaks"
           ],
           "title": "Scheme",
           "type": "string"
@@ -924,9 +934,13 @@
     "NaturalBreaksArgs": {
       "properties": {
         "scheme": {
-          "const": "natural_breaks",
           "default": "natural_breaks",
           "enum": [
+            "equal_interval",
+            "quantile",
+            "fisher_jenks",
+            "std_mean",
+            "max_breaks",
             "natural_breaks"
           ],
           "title": "Scheme",
@@ -949,10 +963,14 @@
     "QuantileArgs": {
       "properties": {
         "scheme": {
-          "const": "quantile",
           "default": "quantile",
           "enum": [
-            "quantile"
+            "equal_interval",
+            "quantile",
+            "fisher_jenks",
+            "std_mean",
+            "max_breaks",
+            "natural_breaks"
           ],
           "title": "Scheme",
           "type": "string"
@@ -969,10 +987,14 @@
     "SharedArgs": {
       "properties": {
         "scheme": {
-          "const": "equal_interval",
           "default": "equal_interval",
           "enum": [
-            "equal_interval"
+            "equal_interval",
+            "quantile",
+            "fisher_jenks",
+            "std_mean",
+            "max_breaks",
+            "natural_breaks"
           ],
           "title": "Scheme",
           "type": "string"
@@ -989,10 +1011,14 @@
     "StdMeanArgs": {
       "properties": {
         "scheme": {
-          "const": "std_mean",
           "default": "std_mean",
           "enum": [
-            "std_mean"
+            "equal_interval",
+            "quantile",
+            "fisher_jenks",
+            "std_mean",
+            "max_breaks",
+            "natural_breaks"
           ],
           "title": "Scheme",
           "type": "string"

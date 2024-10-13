@@ -260,58 +260,43 @@ class Coordinate(BaseModel):
 
 
 class Scheme(str, Enum):
+    equal_interval = "equal_interval"
+    quantile = "quantile"
     fisher_jenks = "fisher_jenks"
+    std_mean = "std_mean"
+    max_breaks = "max_breaks"
+    natural_breaks = "natural_breaks"
 
 
 class FisherJenksArgs(BaseModel):
-    scheme: Literal["fisher_jenks"] = Field("fisher_jenks", title="Scheme")
+    scheme: Optional[Scheme] = Field("fisher_jenks", title="Scheme")
     k: Optional[int] = Field(5, title="K")
 
 
-class Scheme1(str, Enum):
-    max_breaks = "max_breaks"
-
-
 class MaxBreaksArgs(BaseModel):
-    scheme: Literal["max_breaks"] = Field("max_breaks", title="Scheme")
+    scheme: Optional[Scheme] = Field("max_breaks", title="Scheme")
     k: Optional[int] = Field(5, title="K")
     mindiff: Optional[float] = Field(0, title="Mindiff")
 
 
-class Scheme2(str, Enum):
-    natural_breaks = "natural_breaks"
-
-
 class NaturalBreaksArgs(BaseModel):
-    scheme: Literal["natural_breaks"] = Field("natural_breaks", title="Scheme")
+    scheme: Optional[Scheme] = Field("natural_breaks", title="Scheme")
     k: Optional[int] = Field(5, title="K")
     initial: Optional[int] = Field(10, title="Initial")
 
 
-class Scheme3(str, Enum):
-    quantile = "quantile"
-
-
 class QuantileArgs(BaseModel):
-    scheme: Literal["quantile"] = Field("quantile", title="Scheme")
+    scheme: Optional[Scheme] = Field("quantile", title="Scheme")
     k: Optional[int] = Field(5, title="K")
-
-
-class Scheme4(str, Enum):
-    equal_interval = "equal_interval"
 
 
 class SharedArgs(BaseModel):
-    scheme: Literal["equal_interval"] = Field("equal_interval", title="Scheme")
+    scheme: Optional[Scheme] = Field("equal_interval", title="Scheme")
     k: Optional[int] = Field(5, title="K")
 
 
-class Scheme5(str, Enum):
-    std_mean = "std_mean"
-
-
 class StdMeanArgs(BaseModel):
-    scheme: Literal["std_mean"] = Field("std_mean", title="Scheme")
+    scheme: Optional[Scheme] = Field("std_mean", title="Scheme")
     multiples: Optional[List[int]] = Field([-2, -1, 1, 2], title="Multiples")
     anchor: Optional[bool] = Field(False, title="Anchor")
 
@@ -514,7 +499,7 @@ class ClassifyTrajSpeed(BaseModel):
             QuantileArgs,
             FisherJenksArgs,
         ]
-    ] = Field(None, title="Classification Options")
+    ] = Field({"k": 5}, title="Classification Options")
 
 
 class TrajMapLayers(BaseModel):
@@ -536,7 +521,7 @@ class TrajEcomap(BaseModel):
         extra="forbid",
     )
     tile_layers: Optional[List[TileLayer]] = Field(
-        "",
+        [],
         description="A list of named tile layer with opacity, ie OpenStreetMap.",
         title="Tile Layers",
     )
@@ -603,7 +588,7 @@ class TdEcomap(BaseModel):
         extra="forbid",
     )
     tile_layers: Optional[List[TileLayer]] = Field(
-        "",
+        [],
         description="A list of named tile layer with opacity, ie OpenStreetMap.",
         title="Tile Layers",
     )

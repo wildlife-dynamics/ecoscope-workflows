@@ -553,7 +553,7 @@ class PeEcomap(BaseModel):
         extra="forbid",
     )
     tile_layers: Optional[List[TileLayer]] = Field(
-        "",
+        [],
         description="A list of named tile layer with opacity, ie OpenStreetMap.",
         title="Tile Layers",
     )
@@ -596,7 +596,7 @@ class FdEcomap(BaseModel):
         extra="forbid",
     )
     tile_layers: Optional[List[TileLayer]] = Field(
-        "",
+        [],
         description="A list of named tile layer with opacity, ie OpenStreetMap.",
         title="Tile Layers",
     )
@@ -639,7 +639,7 @@ class GroupedPeEcomap(BaseModel):
         extra="forbid",
     )
     tile_layers: Optional[List[TileLayer]] = Field(
-        "",
+        [],
         description="A list of named tile layer with opacity, ie OpenStreetMap.",
         title="Tile Layers",
     )
@@ -713,7 +713,7 @@ class GroupedFdEcomap(BaseModel):
         extra="forbid",
     )
     tile_layers: Optional[List[TileLayer]] = Field(
-        "",
+        [],
         description="A list of named tile layer with opacity, ie OpenStreetMap.",
         title="Tile Layers",
     )
