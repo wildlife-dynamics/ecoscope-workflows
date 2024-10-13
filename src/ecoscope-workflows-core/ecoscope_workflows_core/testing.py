@@ -85,7 +85,7 @@ def run_cli_test_case(
                 "backend": "localhost",
                 "storage": "localhost",
                 "log_level": "INFO",
-                "data_limit": 16,
+                "data_limit": 256,
             },
             "localhost": {"runtime": sys.executable},
         }
