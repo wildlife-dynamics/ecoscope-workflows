@@ -202,7 +202,7 @@ def draw_ecomap(
 
     if len(legend_labels) > 0:
         m.add_legend(
-            labels=legend_labels,
+            labels=[str(ll) for ll in legend_labels],
             colors=legend_colors,
             **(legend_style.model_dump(exclude_none=True)),  # type: ignore[union-attr]
         )
