@@ -14,7 +14,7 @@ test1:
     patrol_obs:
       client: "mep_dev" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
       since: "2015-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
-      until: "2015-12-31" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
+      until: "2015-01-10" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
       patrol_type: ["05ad114e-1aff-4602-bc83-efd333cdd8a2"] # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default=None, description='Comma-separated list of type of patrol UUID'))
       include_patrol_details: True # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False, default=False, description='Include patrol details'))
       status: ["done"]
@@ -72,7 +72,7 @@ test1:
     patrol_events:
       client: "mep_dev" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
       since: "2015-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
-      until: "2015-12-31" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
+      until: "2015-01-10" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
       patrol_type: ["05ad114e-1aff-4602-bc83-efd333cdd8a2"] # (<class 'str'>, FieldInfo(annotation=NoneType, required=False, default=None, description='Comma-separated list of type of patrol UUID'))
       status: ["active", "done"]
 
