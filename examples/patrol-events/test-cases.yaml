@@ -69,7 +69,7 @@ test1:
       title: "Patrol Trajectory Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
 
     # Parameters for 'Get Patrol Events from EarthRanger' using task `get_patrol_events`.
-    patrol_events:
+    pe:
       client: "mep_dev" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
       since: "2015-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
       until: "2015-12-31" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
