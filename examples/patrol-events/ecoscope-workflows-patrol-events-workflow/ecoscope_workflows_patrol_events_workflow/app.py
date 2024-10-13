@@ -9,14 +9,15 @@ import traceback
 from typing import Literal
 
 import ruamel.yaml
-from ecoscope_workflows_core.tasks.results import DashboardJson
 from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel, Field, SecretStr
+from ecoscope_workflows_core.tasks.results import DashboardJson
 
 from .dispatch import dispatch
 from .params import Params
+
 
 app = FastAPI(
     title="Ecoscope Workflows Runner",
