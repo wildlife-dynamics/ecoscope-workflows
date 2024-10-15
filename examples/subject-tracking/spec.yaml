@@ -178,12 +178,18 @@ workflow:
     mapvalues:
       argnames: trajectory_gdf
       argvalues: ${{ workflow.split_subject_traj_groups.return }}
+  # Colormap time density
+  - name: Time Density Colormap
+    id: td_colormap
+    task: apply_color_map
+    partial:
+      df: ${{ workflow.td.return }}
   - name: Create map layer from Time Density
     id: td_map_layer
     task: create_map_layer
     mapvalues:
       argnames: geodataframe
-      argvalues: ${{ workflow.td.return }}
+      argvalues: ${{ workflow.td_colormap.return }}
   - name: Draw Ecomap from Time Density
     id: td_ecomap
     task: draw_ecomap
