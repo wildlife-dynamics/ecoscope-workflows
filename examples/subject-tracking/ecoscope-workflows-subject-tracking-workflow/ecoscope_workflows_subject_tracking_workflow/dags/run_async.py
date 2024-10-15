@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "a45a987fc5f35a6d3f9e1ac858aa050ef6afeca2bb96c8deda154a804dc69253"
+# from-spec-sha256 = "50f359556fbd8f158f948814f353000d9e6e0f4c5486dc8fb21d37936fec9069"
 import json
 import os
 
@@ -65,7 +65,8 @@ def main(params: Params):
         "daynight_ratio_sv_widgets": ["daynight_ratio"],
         "daynight_ratio_grouped_sv_widget": ["daynight_ratio_sv_widgets"],
         "td": ["split_subject_traj_groups"],
-        "td_map_layer": ["td"],
+        "td_colormap": ["td"],
+        "td_map_layer": ["td_colormap"],
         "td_ecomap": ["td_map_layer"],
         "td_ecomap_html_url": ["td_ecomap"],
         "td_map_widget": ["td_ecomap_html_url"],
@@ -329,13 +330,21 @@ def main(params: Params):
                 "argvalues": DependsOn("split_subject_traj_groups"),
             },
         ),
+        "td_colormap": Node(
+            async_task=apply_color_map.validate().set_executor("lithops"),
+            partial={
+                "df": DependsOn("td"),
+            }
+            | params_dict["td_colormap"],
+            method="call",
+        ),
         "td_map_layer": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
             partial=params_dict["td_map_layer"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geodataframe"],
-                "argvalues": DependsOn("td"),
+                "argvalues": DependsOn("td_colormap"),
             },
         ),
         "td_ecomap": Node(

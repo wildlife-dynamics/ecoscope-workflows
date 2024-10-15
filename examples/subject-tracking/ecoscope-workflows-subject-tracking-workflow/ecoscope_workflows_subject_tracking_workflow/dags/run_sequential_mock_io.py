@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "a45a987fc5f35a6d3f9e1ac858aa050ef6afeca2bb96c8deda154a804dc69253"
+# from-spec-sha256 = "50f359556fbd8f158f948814f353000d9e6e0f4c5486dc8fb21d37936fec9069"
 
 # ruff: noqa: E402
 
@@ -235,10 +235,14 @@ def main(params: Params):
         .mapvalues(argnames=["trajectory_gdf"], argvalues=split_subject_traj_groups)
     )
 
+    td_colormap = (
+        apply_color_map.validate().partial(df=td, **params_dict["td_colormap"]).call()
+    )
+
     td_map_layer = (
         create_map_layer.validate()
         .partial(**params_dict["td_map_layer"])
-        .mapvalues(argnames=["geodataframe"], argvalues=td)
+        .mapvalues(argnames=["geodataframe"], argvalues=td_colormap)
     )
 
     td_ecomap = (

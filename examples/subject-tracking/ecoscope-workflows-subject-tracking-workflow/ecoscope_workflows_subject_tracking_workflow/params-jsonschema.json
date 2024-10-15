@@ -687,6 +687,43 @@
       "type": "object",
       "title": "Calculate Time Density from Trajectory"
     },
+    "td_colormap": {
+      "additionalProperties": false,
+      "properties": {
+        "input_column_name": {
+          "title": "Input Column Name",
+          "type": "string",
+          "description": "The name of the column with categorical values."
+        },
+        "colormap": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "default": "viridis",
+          "title": "Colormap",
+          "description": "Either a named mpl.colormap or a list of string hex values."
+        },
+        "output_column_name": {
+          "default": null,
+          "title": "Output Column Name",
+          "type": "string",
+          "description": "The dataframe column that will contain the color values."
+        }
+      },
+      "required": [
+        "input_column_name"
+      ],
+      "type": "object",
+      "title": "Time Density Colormap"
+    },
     "td_map_layer": {
       "additionalProperties": false,
       "properties": {
@@ -1700,6 +1737,7 @@
       "daynight_ratio_sv_widgets",
       "daynight_ratio_grouped_sv_widget",
       "td",
+      "td_colormap",
       "td_map_layer",
       "td_ecomap",
       "td_ecomap_html_url",
