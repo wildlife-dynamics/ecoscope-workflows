@@ -1,6 +1,6 @@
 from typing import Annotated, ClassVar, Protocol, runtime_checkable
 
-from pydantic import Field, SecretStr, field_validator
+from pydantic import Field, SecretStr, field_validator, ValidationInfo
 from pydantic.functional_validators import BeforeValidator
 from pydantic.json_schema import WithJsonSchema
 
@@ -48,8 +48,8 @@ class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
     token: Annotated[SecretStr, Field(description="EarthRanger password")] = ""
 
     @field_validator("token")
-    def token_or_password(cls, v, values):
-        if not v and not (values["username"] and values["password"]):
+    def token_or_password(cls, v: str, info: ValidationInfo):
+        if not v and not (info.data["username"] and info.data["password"]):
             raise ValueError("EarthRanger username and password must be provided")
 
     def get_client(self) -> EarthRangerClientProtocol:
