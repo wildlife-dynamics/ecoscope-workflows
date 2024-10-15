@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "50f359556fbd8f158f948814f353000d9e6e0f4c5486dc8fb21d37936fec9069"
+# from-spec-sha256 = "1bba0e65ec660ba6386aa5c8a7c29109ccb34607bd2f62e3aed4d8f3b2a9ef10"
 
 [project]
 name = "ecoscope-workflows-subject-tracking-workflow"

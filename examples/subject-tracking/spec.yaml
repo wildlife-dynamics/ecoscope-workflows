@@ -182,8 +182,9 @@ workflow:
   - name: Time Density Colormap
     id: td_colormap
     task: apply_color_map
-    partial:
-      df: ${{ workflow.td.return }}
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.td.return }}
   - name: Create map layer from Time Density
     id: td_map_layer
     task: create_map_layer

@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "50f359556fbd8f158f948814f353000d9e6e0f4c5486dc8fb21d37936fec9069"
+# from-spec-sha256 = "1bba0e65ec660ba6386aa5c8a7c29109ccb34607bd2f62e3aed4d8f3b2a9ef10"
 
 # ruff: noqa: E402
 
@@ -349,11 +349,12 @@ def main(params: Params):
         ),
         "td_colormap": Node(
             async_task=apply_color_map.validate().set_executor("lithops"),
-            partial={
-                "df": DependsOn("td"),
-            }
-            | params_dict["td_colormap"],
-            method="call",
+            partial=params_dict["td_colormap"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["df"],
+                "argvalues": DependsOn("td"),
+            },
         ),
         "td_map_layer": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
