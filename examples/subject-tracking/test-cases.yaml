@@ -6,8 +6,8 @@ test1:
     # Parameters for 'Set Groupers' using task `set_groupers`.
     groupers:
       groupers: # (list[ecoscope_workflows.tasks.groupby._groupby.Grouper], FieldInfo(annotation=NoneType, required=True, description='            Index(es) and/or column(s) to group by, along with\n            optional display names and help text.\n            '))
-        - index_name: "month"
-          display_name: "Month"
+        - index_name: "year"
+          display_name: "Year"
 
     # Parameters for 'Get Subject Group Observations from EarthRanger' using task `get_subjectgroup_observations`.
     subject_obs:
@@ -37,9 +37,9 @@ test1:
 
     # Parameters for 'Add temporal index to Subject Trajectories' using task `add_temporal_index`.
     traj_add_temporal_index:
-      index_name: "month" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A name for the new index which will be added.'))
+      index_name: "year" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A name for the new index which will be added.'))
       time_col: "segment_start" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of existing column containing time data.'))
-      directive: "%B" # (typing.Literal['%a', '%A', '%b', '%B', '%c', '%d', '%f', '%H', '%I', '%j', '%m', '%M', '%p', '%S', '%U', '%w', '%W', '%x', '%X', '%y', '%Y', '%z', '%%'], FieldInfo(annotation=NoneType, required=True, description='A directive for formatting the time data.'))
+      directive: "%Y" # (typing.Literal['%a', '%A', '%b', '%B', '%c', '%d', '%f', '%H', '%I', '%j', '%m', '%M', '%p', '%S', '%U', '%w', '%W', '%x', '%X', '%y', '%Y', '%z', '%%'], FieldInfo(annotation=NoneType, required=True, description='A directive for formatting the time data.'))
 
     # Parameters for 'Split Subject Trajectories by Group' using task `split_groups`.
     split_subject_traj_groups: {}
@@ -53,7 +53,8 @@ test1:
 
     colormap_traj_speed:
       input_column_name: "speed_bins"
-      colormap: ["#1a9850", "#91cf60", "#d9ef8b", "#fee08b", "#fc8d59", "#d73027"]
+      colormap:
+        ["#1a9850", "#91cf60", "#d9ef8b", "#fee08b", "#fc8d59", "#d73027"]
       output_column_name: "speed_bins_colormap"
 
     # Parameters for 'Create map layer for each trajectory group' using task `create_map_layer`.
