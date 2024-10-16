@@ -158,13 +158,14 @@ def draw_ecomap(
     legend_labels: list = []
     legend_colors: list = []
 
-    m = EcoMap(static=static)
+    m = EcoMap(static=static, default_widgets=False)
 
     if title:
         m.add_title(title)
 
     m.add_scale_bar()
     m.add_north_arrow(**(north_arrow_style.model_dump(exclude_none=True)))  # type: ignore[union-attr]
+    m.add_save_image()
 
     for tile_layer in tile_layers:
         layer = EcoMap.get_named_tile_layer(tile_layer.name)
