@@ -1,30 +1,63 @@
 import logging
-from typing import Annotated, Literal
-
-from pydantic import BaseModel, Field
-from pydantic.json_schema import SkipJsonSchema
+from typing import Annotated, Literal, Union
 
 from ecoscope_workflows_core.annotations import AnyDataFrame
 from ecoscope_workflows_core.decorators import task
+from pydantic import BaseModel, Field
+from pydantic.json_schema import SkipJsonSchema
 
 logger = logging.getLogger(__name__)
 
+ClassificationMethod = Literal[
+    "equal_interval",
+    "quantile",
+    "fisher_jenks",
+    "std_mean",
+    "max_breaks",
+    "natural_breaks",
+]
+
 
 class SharedArgs(BaseModel):
+    scheme: ClassificationMethod = Field("equal_interval", exclude=True)
     k: int = 5
 
 
+class QuantileArgs(SharedArgs):
+    scheme: ClassificationMethod = Field("quantile", exclude=True)
+
+
+class FisherJenksArgs(SharedArgs):
+    scheme: ClassificationMethod = Field("fisher_jenks", exclude=True)
+
+
 class StdMeanArgs(BaseModel):
+    scheme: ClassificationMethod = Field("std_mean", exclude=True)
     multiples: list[int] = [-2, -1, 1, 2]
     anchor: bool = False
 
 
 class MaxBreaksArgs(SharedArgs):
+    scheme: ClassificationMethod = Field("max_breaks", exclude=True)
     mindiff: float = 0
 
 
 class NaturalBreaksArgs(SharedArgs):
+    scheme: ClassificationMethod = Field("natural_breaks", exclude=True)
     initial: int = 10
+
+
+ClassificationArgs = Annotated[
+    Union[
+        SharedArgs,
+        StdMeanArgs,
+        MaxBreaksArgs,
+        NaturalBreaksArgs,
+        QuantileArgs,
+        FisherJenksArgs,
+    ],
+    Field(discriminator="scheme"),
+]
 
 
 @task
@@ -48,25 +81,10 @@ def apply_classification(
             description="Labels of classification bins, uses bin edges if not provied."
         ),
     ] = None,
-    scheme: Annotated[
-        Literal[
-            "equal_interval",
-            "natural_breaks",
-            "quantile",
-            "std_mean",
-            "max_breaks",
-            "fisher_jenks",
-        ],
-        Field(description="The classification scheme to use."),
-    ] = "equal_interval",
     classification_options: Annotated[
-        NaturalBreaksArgs
-        | MaxBreaksArgs
-        | StdMeanArgs
-        | SharedArgs
-        | SkipJsonSchema[None],
-        Field(description="Additional options specific to the classification scheme."),
-    ] = None,
+        ClassificationArgs,
+        Field(description="Classification scheme and its arguments."),
+    ] = SharedArgs(),
 ) -> AnyDataFrame:
     """
     Classifies a dataframe column using specified classification scheme.
@@ -77,11 +95,9 @@ def apply_classification(
         output_column_name (str): The dataframe column that will contain the classification.
             Defaults to "<input_column_name>_classified"
         labels (list[str]): labels of bins, use bin edges if labels==None.
-        scheme (str): Classification scheme to use [equal_interval, natural_breaks, quantile, std_mean, max_breaks,
-        fisher_jenks]
 
         classification_options:
-            Additional keyword arguments specific to the classification scheme, passed to mapclassify.
+            Classification scheme and its arguments.
             See below:
 
             Applicable to equal_interval, natural_breaks, quantile, max_breaks & fisher_jenks:
@@ -111,7 +127,7 @@ def apply_classification(
         input_column_name=input_column_name,
         output_column_name=output_column_name,
         labels=labels,
-        scheme=scheme,
+        scheme=classification_options.scheme,
         **classification_options.model_dump(exclude_none=True),  # type: ignore[union-attr]
     )
 

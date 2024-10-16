@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "748252e8fb420e7edc39e0b05c8793c569ddb0fed5f92830889f0dcebdb72be1"
+# from-spec-sha256 = "16f756386e14612d875d95d9640b778f31eb33ad9db3f241ab4ce1fe3aecc4b6"
 import json
 import os
 
@@ -17,6 +17,7 @@ from ecoscope_workflows_ext_ecoscope.tasks.io import get_patrol_events
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import (
     apply_reloc_coord_filter,
 )
+from ecoscope_workflows_ext_ecoscope.tasks.transformation import apply_color_map
 from ecoscope_workflows_core.tasks.groupby import groupbykey
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecomap
 from ecoscope_workflows_core.tasks.io import persist_text
@@ -96,13 +97,15 @@ def main(params: Params):
         .call()
     )
 
+    pe_colormap = (
+        apply_color_map.validate()
+        .partial(df=pe_add_temporal_index, **params_dict["pe_colormap"])
+        .call()
+    )
+
     split_pe_groups = (
         split_groups.validate()
-        .partial(
-            df=pe_add_temporal_index,
-            groupers=groupers,
-            **params_dict["split_pe_groups"],
-        )
+        .partial(df=pe_colormap, groupers=groupers, **params_dict["split_pe_groups"])
         .call()
     )
 
@@ -341,9 +344,13 @@ def main(params: Params):
         .call()
     )
 
+    td_colormap = (
+        apply_color_map.validate().partial(df=td, **params_dict["td_colormap"]).call()
+    )
+
     td_map_layer = (
         create_map_layer.validate()
-        .partial(geodataframe=td, **params_dict["td_map_layer"])
+        .partial(geodataframe=td_colormap, **params_dict["td_map_layer"])
         .call()
     )
 

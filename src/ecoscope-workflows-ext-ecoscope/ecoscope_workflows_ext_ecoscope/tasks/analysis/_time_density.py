@@ -2,14 +2,13 @@ from typing import Annotated, Any
 
 import pandera as pa
 import pandera.typing as pa_typing
-from pydantic import Field
-
 from ecoscope_workflows_core.annotations import (
     AnyGeoDataFrame,
     DataFrame,
     JsonSerializableDataFrameModel,
 )
 from ecoscope_workflows_core.decorators import task
+from pydantic import Field
 
 
 class TimeDensityReturnGDFSchema(JsonSerializableDataFrameModel):
@@ -29,15 +28,15 @@ def calculate_time_density(
         float,
         Field(default=250.0, description="Pixel size for raster profile."),
     ],
-    crs: Annotated[str, Field(default="ESRI:102022")],
-    nodata_value: Annotated[float, Field(default="nan", allow_inf_nan=True)],
-    band_count: Annotated[int, Field(default=1)],
+    crs: Annotated[str, Field(default="ESRI:102022")] = "ESRI:102022",
+    nodata_value: Annotated[float | str, Field(default="nan")] = "nan",
+    band_count: Annotated[int, Field(default=1)] = 1,
     # time density
-    max_speed_factor: Annotated[float, Field(default=1.05)],
-    expansion_factor: Annotated[float, Field(default=1.3)],
+    max_speed_factor: Annotated[float, Field(default=1.05)] = 1.05,
+    expansion_factor: Annotated[float, Field(default=1.3)] = 1.3,
     percentiles: Annotated[
         list[float], Field(default=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0])
-    ],
+    ] = [50.0, 60.0, 70.0, 80.0, 90.0, 95.0],
 ) -> DataFrame[TimeDensityReturnGDFSchema]:
     import tempfile
 

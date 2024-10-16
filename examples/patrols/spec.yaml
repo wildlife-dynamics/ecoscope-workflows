@@ -83,11 +83,16 @@ workflow:
     description: >-
       Create map layers for each group of patrol events.
     tasks:
+      - name: Patrol Events Colormap
+        id: pe_colormap
+        task: apply_color_map
+        partial:
+          df: ${{ workflow.pe_add_temporal_index.return }}
       - name: Split Patrol Events by Group
         id: split_pe_groups
         task: split_groups
         partial:
-          df: ${{ workflow.pe_add_temporal_index.return }}
+          df: ${{ workflow.pe_colormap.return }}
           groupers: ${{ workflow.groupers.return }}
       - name: Create map layers for each Patrols Events group
         id: patrol_events_map_layers
@@ -347,11 +352,17 @@ workflow:
         task: calculate_time_density
         partial:
           trajectory_gdf: ${{ workflow.patrol_traj.return }}
+      # Colormap time density
+      - name: Time Density Colormap
+        id: td_colormap
+        task: apply_color_map
+        partial:
+          df: ${{ workflow.td.return }}
       - name: Create map layer from Time Density
         id: td_map_layer
         task: create_map_layer
         partial:
-          geodataframe: ${{ workflow.td.return }}
+          geodataframe: ${{ workflow.td_colormap.return }}
       - name: Draw Ecomap from Time Density
         id: td_ecomap
         task: draw_ecomap

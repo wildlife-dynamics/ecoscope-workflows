@@ -1,7 +1,6 @@
 from importlib.resources import files
 
 import pytest
-
 from ecoscope_workflows_core.serde import gpd_from_parquet_uri
 from ecoscope_workflows_ext_ecoscope.tasks.results._ecomap import (
     LegendDefinition,
@@ -9,6 +8,7 @@ from ecoscope_workflows_ext_ecoscope.tasks.results._ecomap import (
     NorthArrowStyle,
     PointLayerStyle,
     PolylineLayerStyle,
+    TileLayer,
     create_map_layer,
     draw_ecomap,
 )
@@ -54,7 +54,7 @@ def test_draw_ecomap_points(relocations):
     )
     map_html = draw_ecomap(
         geo_layers=[geo_layer],
-        tile_layer="OpenStreetMap",
+        tile_layers=[TileLayer("OpenStreetMap")],
         title="Relocations",
     )
     assert isinstance(map_html, str)
@@ -68,7 +68,7 @@ def test_draw_ecomap_lines(trajectories):
 
     map_html = draw_ecomap(
         geo_layers=[geo_layer],
-        tile_layer="OpenStreetMap",
+        tile_layers=[TileLayer("OpenStreetMap")],
         title="Trajectories",
     )
     assert isinstance(map_html, str)
@@ -86,13 +86,13 @@ def test_draw_ecomap_combined(relocations, trajectories):
 
     map_html = draw_ecomap(
         geo_layers=[relocs, traj],
-        tile_layer="OpenStreetMap",
+        tile_layers=[TileLayer("OpenStreetMap")],
         title="Relocations and Trajectories",
     )
     assert isinstance(map_html, str)
     map_html = draw_ecomap(
         geo_layers=[relocs, traj],
-        tile_layer="OpenStreetMap",
+        tile_layers=[TileLayer("OpenStreetMap")],
         title="Relocations and Trajectories",
     )
     assert isinstance(map_html, str)
@@ -107,7 +107,7 @@ def test_draw_ecomap_with_colormap(trajectories_colored):
 
     map_html = draw_ecomap(
         geo_layers=[geo_layer],
-        tile_layer="OpenStreetMap",
+        tile_layers=[TileLayer("OpenStreetMap")],
         title="Trajectories",
     )
     assert isinstance(map_html, str)
@@ -122,7 +122,7 @@ def test_draw_ecomap_with_legend(trajectories_colored):
 
     map_html = draw_ecomap(
         geo_layers=[geo_layer],
-        tile_layer="OpenStreetMap",
+        tile_layers=[TileLayer("OpenStreetMap")],
     )
     assert isinstance(map_html, str)
 
@@ -149,7 +149,7 @@ def test_draw_ecomap_with_legend_multiple_layers(relocations, trajectories_color
 
     map_html = draw_ecomap(
         geo_layers=[layer1, layer2],
-        tile_layer="OpenStreetMap",
+        tile_layers=[TileLayer("OpenStreetMap")],
     )
     assert isinstance(map_html, str)
 
@@ -163,7 +163,7 @@ def test_draw_ecomap_widget_styles(trajectories_colored):
 
     map_html = draw_ecomap(
         geo_layers=[geo_layer],
-        tile_layer="OpenStreetMap",
+        tile_layers=[TileLayer("OpenStreetMap")],
         title="Test",
         north_arrow_style=NorthArrowStyle(placement="top-left"),
         legend_style=LegendStyle(placement="top-right"),

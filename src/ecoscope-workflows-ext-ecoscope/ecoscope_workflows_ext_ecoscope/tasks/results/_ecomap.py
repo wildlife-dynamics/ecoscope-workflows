@@ -1,12 +1,10 @@
 from dataclasses import dataclass
 from typing import Annotated, Literal, Union
 
-from pydantic import BaseModel, Field
-from pydantic.json_schema import SkipJsonSchema
-
 from ecoscope_workflows_core.annotations import AnyGeoDataFrame
 from ecoscope_workflows_core.decorators import task
-
+from pydantic import BaseModel, Field
+from pydantic.json_schema import SkipJsonSchema
 
 UnitType = Literal["meters", "pixels"]
 WidgetPlacement = Literal[
@@ -23,7 +21,7 @@ class LayerStyleBase(BaseModel):
 class PolylineLayerStyle(LayerStyleBase):
     layer_type: Literal["polyline"] = Field("polyline", exclude=True)
     get_color: str | list[int] | list[list[int]] | None = None
-    get_width: float = 1
+    get_width: float = 3
     color_column: str | None = None
     width_units: UnitType = "pixels"
     cap_rounded: bool = True
@@ -40,7 +38,7 @@ class ShapeLayerStyle(LayerStyleBase):
 
 class PointLayerStyle(ShapeLayerStyle):
     layer_type: Literal["point"] = Field("point", exclude=True)
-    get_radius: float = 1
+    get_radius: float = 5
     radius_units: UnitType = "pixels"
 
 
@@ -76,6 +74,12 @@ class LayerDefinition:
     geodataframe: AnyGeoDataFrame
     layer_style: LayerStyle
     legend: LegendDefinition
+
+
+@dataclass
+class TileLayer:
+    name: str
+    opacity: float = 1
 
 
 @task
@@ -117,9 +121,10 @@ def draw_ecomap(
         LayerDefinition | list[LayerDefinition],
         Field(description="A list of map layers to add to the map.", exclude=True),
     ],
-    tile_layer: Annotated[
-        str, Field(description="A named tile layer, ie OpenStreetMap.")
-    ] = "",
+    tile_layers: Annotated[
+        list[TileLayer],
+        Field(description="A list of named tile layer with opacity, ie OpenStreetMap."),
+    ] = [],
     static: Annotated[
         bool, Field(description="Set to true to disable map pan/zoom.")
     ] = False,
@@ -138,7 +143,7 @@ def draw_ecomap(
 
     Args:
     geo_layers (LayerDefinition | list[LayerDefinition]): A list of map layers to add to the map.
-    tile_layer (str): A named tile layer, ie OpenStreetMap.
+    tile_layers (list): A named tile layer, ie OpenStreetMap.
     static (bool): Set to true to disable map pan/zoom.
     title (str): The map title.
     north_arrow_style (NorthArrowStyle): Additional arguments for configuring the North Arrow.
@@ -153,7 +158,7 @@ def draw_ecomap(
     legend_labels: list = []
     legend_colors: list = []
 
-    m = EcoMap(static=static, default_widgets=False)
+    m = EcoMap(static=static)
 
     if title:
         m.add_title(title)
@@ -161,8 +166,10 @@ def draw_ecomap(
     m.add_scale_bar()
     m.add_north_arrow(**(north_arrow_style.model_dump(exclude_none=True)))  # type: ignore[union-attr]
 
-    if tile_layer:
-        m.add_layer(EcoMap.get_named_tile_layer(tile_layer))
+    for tile_layer in tile_layers:
+        layer = EcoMap.get_named_tile_layer(tile_layer.name)
+        layer.opacity = tile_layer.opacity
+        m.add_layer(layer)
 
     geo_layers = [geo_layers] if not isinstance(geo_layers, list) else geo_layers
     for layer_def in geo_layers:
@@ -185,16 +192,43 @@ def draw_ecomap(
 
         if layer_def.legend:
             legend_labels.extend(layer_def.geodataframe[layer_def.legend.label_column])
-            legend_colors.extend(layer_def.geodataframe[layer_def.legend.color_column])
+            legend_colors.extend(
+                layer_def.geodataframe[layer_def.legend.color_column].apply(
+                    color_to_hex
+                )
+            )
 
         m.add_layer(layer)
 
     if len(legend_labels) > 0:
         m.add_legend(
-            labels=legend_labels,
-            colors=[str(lc) for lc in legend_colors],
+            labels=[str(ll) for ll in legend_labels],
+            colors=legend_colors,
             **(legend_style.model_dump(exclude_none=True)),  # type: ignore[union-attr]
         )
 
     m.zoom_to_bounds(m.layers)
-    return m.to_html(title=title if title is not None else "Map Export")
+    return m.to_html()
+
+
+def color_to_hex(color):
+    if isinstance(color, str) and color.startswith("#"):
+        return color  # Already in hex format
+    elif isinstance(color, (tuple, list)) and len(color) in (3, 4):
+        if len(color) == 3:
+            r, g, b = color
+            a = 255
+        else:
+            r, g, b, a = color
+
+        # Ensure all values are in 0-255 range
+        r, g, b = (
+            int(r * 255 if r <= 1 else r),
+            int(g * 255 if g <= 1 else g),
+            int(b * 255 if b <= 1 else b),
+        )
+        a = int(a * 255 if a <= 1 else a)
+
+        return f"#{r:02x}{g:02x}{b:02x}{a:02x}"
+    else:
+        return str(color)  # Return as string if it's neither hex nor valid tuple

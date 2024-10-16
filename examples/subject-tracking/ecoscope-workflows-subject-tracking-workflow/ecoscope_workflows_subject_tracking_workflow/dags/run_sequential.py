@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "030474a8999b732797c67f96a4e84066b843fa1b916296fe83f432ffa7d08480"
+# from-spec-sha256 = "1bba0e65ec660ba6386aa5c8a7c29109ccb34607bd2f62e3aed4d8f3b2a9ef10"
 import json
 import os
 
@@ -12,6 +12,8 @@ from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import (
 )
 from ecoscope_workflows_core.tasks.transformation import add_temporal_index
 from ecoscope_workflows_core.tasks.groupby import split_groups
+from ecoscope_workflows_ext_ecoscope.tasks.transformation import apply_classification
+from ecoscope_workflows_ext_ecoscope.tasks.transformation import apply_color_map
 from ecoscope_workflows_ext_ecoscope.tasks.results import create_map_layer
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecomap
 from ecoscope_workflows_core.tasks.io import persist_text
@@ -68,10 +70,22 @@ def main(params: Params):
         .call()
     )
 
+    classify_traj_speed = (
+        apply_classification.validate()
+        .partial(**params_dict["classify_traj_speed"])
+        .mapvalues(argnames=["df"], argvalues=split_subject_traj_groups)
+    )
+
+    colormap_traj_speed = (
+        apply_color_map.validate()
+        .partial(**params_dict["colormap_traj_speed"])
+        .mapvalues(argnames=["df"], argvalues=classify_traj_speed)
+    )
+
     traj_map_layers = (
         create_map_layer.validate()
         .partial(**params_dict["traj_map_layers"])
-        .mapvalues(argnames=["geodataframe"], argvalues=split_subject_traj_groups)
+        .mapvalues(argnames=["geodataframe"], argvalues=colormap_traj_speed)
     )
 
     traj_ecomap = (
@@ -204,10 +218,16 @@ def main(params: Params):
         .mapvalues(argnames=["trajectory_gdf"], argvalues=split_subject_traj_groups)
     )
 
+    td_colormap = (
+        apply_color_map.validate()
+        .partial(**params_dict["td_colormap"])
+        .mapvalues(argnames=["df"], argvalues=td)
+    )
+
     td_map_layer = (
         create_map_layer.validate()
         .partial(**params_dict["td_map_layer"])
-        .mapvalues(argnames=["geodataframe"], argvalues=td)
+        .mapvalues(argnames=["geodataframe"], argvalues=td_colormap)
     )
 
     td_ecomap = (

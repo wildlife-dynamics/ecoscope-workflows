@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "030474a8999b732797c67f96a4e84066b843fa1b916296fe83f432ffa7d08480"
+# from-spec-sha256 = "1bba0e65ec660ba6386aa5c8a7c29109ccb34607bd2f62e3aed4d8f3b2a9ef10"
 import json
 import os
 
@@ -14,6 +14,8 @@ from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import (
 )
 from ecoscope_workflows_core.tasks.transformation import add_temporal_index
 from ecoscope_workflows_core.tasks.groupby import split_groups
+from ecoscope_workflows_ext_ecoscope.tasks.transformation import apply_classification
+from ecoscope_workflows_ext_ecoscope.tasks.transformation import apply_color_map
 from ecoscope_workflows_ext_ecoscope.tasks.results import create_map_layer
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecomap
 from ecoscope_workflows_core.tasks.io import persist_text
@@ -41,7 +43,9 @@ def main(params: Params):
         "subject_traj": ["subject_reloc"],
         "traj_add_temporal_index": ["subject_traj"],
         "split_subject_traj_groups": ["traj_add_temporal_index", "groupers"],
-        "traj_map_layers": ["split_subject_traj_groups"],
+        "classify_traj_speed": ["split_subject_traj_groups"],
+        "colormap_traj_speed": ["classify_traj_speed"],
+        "traj_map_layers": ["colormap_traj_speed"],
         "traj_ecomap": ["traj_map_layers"],
         "ecomap_html_urls": ["traj_ecomap"],
         "traj_map_widgets_single_views": ["ecomap_html_urls"],
@@ -61,7 +65,8 @@ def main(params: Params):
         "daynight_ratio_sv_widgets": ["daynight_ratio"],
         "daynight_ratio_grouped_sv_widget": ["daynight_ratio_sv_widgets"],
         "td": ["split_subject_traj_groups"],
-        "td_map_layer": ["td"],
+        "td_colormap": ["td"],
+        "td_map_layer": ["td_colormap"],
         "td_ecomap": ["td_map_layer"],
         "td_ecomap_html_url": ["td_ecomap"],
         "td_map_widget": ["td_ecomap_html_url"],
@@ -121,13 +126,31 @@ def main(params: Params):
             | params_dict["split_subject_traj_groups"],
             method="call",
         ),
+        "classify_traj_speed": Node(
+            async_task=apply_classification.validate().set_executor("lithops"),
+            partial=params_dict["classify_traj_speed"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["df"],
+                "argvalues": DependsOn("split_subject_traj_groups"),
+            },
+        ),
+        "colormap_traj_speed": Node(
+            async_task=apply_color_map.validate().set_executor("lithops"),
+            partial=params_dict["colormap_traj_speed"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["df"],
+                "argvalues": DependsOn("classify_traj_speed"),
+            },
+        ),
         "traj_map_layers": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
             partial=params_dict["traj_map_layers"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geodataframe"],
-                "argvalues": DependsOn("split_subject_traj_groups"),
+                "argvalues": DependsOn("colormap_traj_speed"),
             },
         ),
         "traj_ecomap": Node(
@@ -307,13 +330,22 @@ def main(params: Params):
                 "argvalues": DependsOn("split_subject_traj_groups"),
             },
         ),
+        "td_colormap": Node(
+            async_task=apply_color_map.validate().set_executor("lithops"),
+            partial=params_dict["td_colormap"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["df"],
+                "argvalues": DependsOn("td"),
+            },
+        ),
         "td_map_layer": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
             partial=params_dict["td_map_layer"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geodataframe"],
-                "argvalues": DependsOn("td"),
+                "argvalues": DependsOn("td_colormap"),
             },
         ),
         "td_ecomap": Node(

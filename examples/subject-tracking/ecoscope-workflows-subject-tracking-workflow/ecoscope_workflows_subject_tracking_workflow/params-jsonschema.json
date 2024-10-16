@@ -194,6 +194,99 @@
       "type": "object",
       "title": "Split Subject Trajectories by Group"
     },
+    "classify_traj_speed": {
+      "additionalProperties": false,
+      "properties": {
+        "input_column_name": {
+          "title": "Input Column Name",
+          "type": "string",
+          "description": "The dataframe column to classify."
+        },
+        "output_column_name": {
+          "default": null,
+          "title": "Output Column Name",
+          "type": "string",
+          "description": "The dataframe column that will contain the classification values."
+        },
+        "labels": {
+          "default": null,
+          "items": {
+            "type": "string"
+          },
+          "title": "Labels",
+          "type": "array",
+          "description": "Labels of classification bins, uses bin edges if not provied."
+        },
+        "classification_options": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SharedArgs"
+            },
+            {
+              "$ref": "#/$defs/StdMeanArgs"
+            },
+            {
+              "$ref": "#/$defs/MaxBreaksArgs"
+            },
+            {
+              "$ref": "#/$defs/NaturalBreaksArgs"
+            },
+            {
+              "$ref": "#/$defs/QuantileArgs"
+            },
+            {
+              "$ref": "#/$defs/FisherJenksArgs"
+            }
+          ],
+          "default": {
+            "k": 5
+          },
+          "title": "Classification Options"
+        }
+      },
+      "required": [
+        "input_column_name"
+      ],
+      "type": "object",
+      "title": "Classify Trajectories By Speed"
+    },
+    "colormap_traj_speed": {
+      "additionalProperties": false,
+      "properties": {
+        "input_column_name": {
+          "title": "Input Column Name",
+          "type": "string",
+          "description": "The name of the column with categorical values."
+        },
+        "colormap": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "default": "viridis",
+          "title": "Colormap",
+          "description": "Either a named mpl.colormap or a list of string hex values."
+        },
+        "output_column_name": {
+          "default": null,
+          "title": "Output Column Name",
+          "type": "string",
+          "description": "The dataframe column that will contain the color values."
+        }
+      },
+      "required": [
+        "input_column_name"
+      ],
+      "type": "object",
+      "title": "Apply Color to Trajectories By Speed"
+    },
     "traj_map_layers": {
       "additionalProperties": false,
       "properties": {
@@ -232,11 +325,14 @@
     "traj_ecomap": {
       "additionalProperties": false,
       "properties": {
-        "tile_layer": {
-          "default": "",
-          "title": "Tile Layer",
-          "type": "string",
-          "description": "A named tile layer, ie OpenStreetMap."
+        "tile_layers": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/TileLayer"
+          },
+          "title": "Tile Layers",
+          "type": "array",
+          "description": "A list of named tile layer with opacity, ie OpenStreetMap."
         },
         "static": {
           "default": false,
@@ -545,9 +641,16 @@
           "type": "string"
         },
         "nodata_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
           "default": "nan",
-          "title": "Nodata Value",
-          "type": "number"
+          "title": "Nodata Value"
         },
         "band_count": {
           "default": 1,
@@ -583,6 +686,43 @@
       "required": [],
       "type": "object",
       "title": "Calculate Time Density from Trajectory"
+    },
+    "td_colormap": {
+      "additionalProperties": false,
+      "properties": {
+        "input_column_name": {
+          "title": "Input Column Name",
+          "type": "string",
+          "description": "The name of the column with categorical values."
+        },
+        "colormap": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "default": "viridis",
+          "title": "Colormap",
+          "description": "Either a named mpl.colormap or a list of string hex values."
+        },
+        "output_column_name": {
+          "default": null,
+          "title": "Output Column Name",
+          "type": "string",
+          "description": "The dataframe column that will contain the color values."
+        }
+      },
+      "required": [
+        "input_column_name"
+      ],
+      "type": "object",
+      "title": "Time Density Colormap"
     },
     "td_map_layer": {
       "additionalProperties": false,
@@ -622,11 +762,14 @@
     "td_ecomap": {
       "additionalProperties": false,
       "properties": {
-        "tile_layer": {
-          "default": "",
-          "title": "Tile Layer",
-          "type": "string",
-          "description": "A named tile layer, ie OpenStreetMap."
+        "tile_layers": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/TileLayer"
+          },
+          "title": "Tile Layers",
+          "type": "array",
+          "description": "A list of named tile layer with opacity, ie OpenStreetMap."
         },
         "static": {
           "default": false,
@@ -772,6 +915,173 @@
       "title": "Coordinate",
       "type": "object"
     },
+    "FisherJenksArgs": {
+      "properties": {
+        "scheme": {
+          "default": "fisher_jenks",
+          "enum": [
+            "equal_interval",
+            "quantile",
+            "fisher_jenks",
+            "std_mean",
+            "max_breaks",
+            "natural_breaks"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "k": {
+          "default": 5,
+          "title": "K",
+          "type": "integer"
+        }
+      },
+      "title": "FisherJenksArgs",
+      "type": "object"
+    },
+    "MaxBreaksArgs": {
+      "properties": {
+        "scheme": {
+          "default": "max_breaks",
+          "enum": [
+            "equal_interval",
+            "quantile",
+            "fisher_jenks",
+            "std_mean",
+            "max_breaks",
+            "natural_breaks"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "k": {
+          "default": 5,
+          "title": "K",
+          "type": "integer"
+        },
+        "mindiff": {
+          "default": 0,
+          "title": "Mindiff",
+          "type": "number"
+        }
+      },
+      "title": "MaxBreaksArgs",
+      "type": "object"
+    },
+    "NaturalBreaksArgs": {
+      "properties": {
+        "scheme": {
+          "default": "natural_breaks",
+          "enum": [
+            "equal_interval",
+            "quantile",
+            "fisher_jenks",
+            "std_mean",
+            "max_breaks",
+            "natural_breaks"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "k": {
+          "default": 5,
+          "title": "K",
+          "type": "integer"
+        },
+        "initial": {
+          "default": 10,
+          "title": "Initial",
+          "type": "integer"
+        }
+      },
+      "title": "NaturalBreaksArgs",
+      "type": "object"
+    },
+    "QuantileArgs": {
+      "properties": {
+        "scheme": {
+          "default": "quantile",
+          "enum": [
+            "equal_interval",
+            "quantile",
+            "fisher_jenks",
+            "std_mean",
+            "max_breaks",
+            "natural_breaks"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "k": {
+          "default": 5,
+          "title": "K",
+          "type": "integer"
+        }
+      },
+      "title": "QuantileArgs",
+      "type": "object"
+    },
+    "SharedArgs": {
+      "properties": {
+        "scheme": {
+          "default": "equal_interval",
+          "enum": [
+            "equal_interval",
+            "quantile",
+            "fisher_jenks",
+            "std_mean",
+            "max_breaks",
+            "natural_breaks"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "k": {
+          "default": 5,
+          "title": "K",
+          "type": "integer"
+        }
+      },
+      "title": "SharedArgs",
+      "type": "object"
+    },
+    "StdMeanArgs": {
+      "properties": {
+        "scheme": {
+          "default": "std_mean",
+          "enum": [
+            "equal_interval",
+            "quantile",
+            "fisher_jenks",
+            "std_mean",
+            "max_breaks",
+            "natural_breaks"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "multiples": {
+          "default": [
+            -2,
+            -1,
+            1,
+            2
+          ],
+          "items": {
+            "type": "integer"
+          },
+          "title": "Multiples",
+          "type": "array"
+        },
+        "anchor": {
+          "default": false,
+          "title": "Anchor",
+          "type": "boolean"
+        }
+      },
+      "title": "StdMeanArgs",
+      "type": "object"
+    },
     "LegendDefinition": {
       "properties": {
         "label_column": {
@@ -902,7 +1212,7 @@
           "type": "string"
         },
         "get_radius": {
-          "default": 1,
+          "default": 5,
           "title": "Get Radius",
           "type": "number"
         },
@@ -1098,7 +1408,7 @@
           "title": "Get Color"
         },
         "get_width": {
-          "default": 1,
+          "default": 3,
           "title": "Get Width",
           "type": "number"
         },
@@ -1213,6 +1523,24 @@
         }
       },
       "title": "NorthArrowStyle",
+      "type": "object"
+    },
+    "TileLayer": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "opacity": {
+          "default": 1,
+          "title": "Opacity",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "TileLayer",
       "type": "object"
     },
     "WidgetSingleView": {
@@ -1387,6 +1715,8 @@
       "subject_traj",
       "traj_add_temporal_index",
       "split_subject_traj_groups",
+      "classify_traj_speed",
+      "colormap_traj_speed",
       "traj_map_layers",
       "traj_ecomap",
       "ecomap_html_urls",
@@ -1407,6 +1737,7 @@
       "daynight_ratio_sv_widgets",
       "daynight_ratio_grouped_sv_widget",
       "td",
+      "td_colormap",
       "td_map_layer",
       "td_ecomap",
       "td_ecomap_html_url",

@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "748252e8fb420e7edc39e0b05c8793c569ddb0fed5f92830889f0dcebdb72be1"
+# from-spec-sha256 = "16f756386e14612d875d95d9640b778f31eb33ad9db3f241ab4ce1fe3aecc4b6"
 import json
 import os
 
@@ -19,6 +19,7 @@ from ecoscope_workflows_ext_ecoscope.tasks.io import get_patrol_events
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import (
     apply_reloc_coord_filter,
 )
+from ecoscope_workflows_ext_ecoscope.tasks.transformation import apply_color_map
 from ecoscope_workflows_core.tasks.groupby import groupbykey
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecomap
 from ecoscope_workflows_core.tasks.io import persist_text
@@ -53,7 +54,8 @@ def main(params: Params):
         "patrol_events": [],
         "filter_patrol_events": ["patrol_events"],
         "pe_add_temporal_index": ["filter_patrol_events"],
-        "split_pe_groups": ["pe_add_temporal_index", "groupers"],
+        "pe_colormap": ["pe_add_temporal_index"],
+        "split_pe_groups": ["pe_colormap", "groupers"],
         "patrol_events_map_layers": ["split_pe_groups"],
         "combined_traj_and_pe_map_layers": [
             "patrol_traj_map_layers",
@@ -90,7 +92,8 @@ def main(params: Params):
         "patrol_events_pie_chart_widgets": ["pe_pie_chart_html_urls"],
         "patrol_events_pie_widget_grouped": ["patrol_events_pie_chart_widgets"],
         "td": ["patrol_traj"],
-        "td_map_layer": ["td"],
+        "td_colormap": ["td"],
+        "td_map_layer": ["td_colormap"],
         "td_ecomap": ["td_map_layer"],
         "td_ecomap_html_url": ["td_ecomap"],
         "td_map_widget": ["td_ecomap_html_url"],
@@ -182,10 +185,18 @@ def main(params: Params):
             | params_dict["pe_add_temporal_index"],
             method="call",
         ),
+        "pe_colormap": Node(
+            async_task=apply_color_map.validate().set_executor("lithops"),
+            partial={
+                "df": DependsOn("pe_add_temporal_index"),
+            }
+            | params_dict["pe_colormap"],
+            method="call",
+        ),
         "split_pe_groups": Node(
             async_task=split_groups.validate().set_executor("lithops"),
             partial={
-                "df": DependsOn("pe_add_temporal_index"),
+                "df": DependsOn("pe_colormap"),
                 "groupers": DependsOn("groupers"),
             }
             | params_dict["split_pe_groups"],
@@ -502,10 +513,18 @@ def main(params: Params):
             | params_dict["td"],
             method="call",
         ),
+        "td_colormap": Node(
+            async_task=apply_color_map.validate().set_executor("lithops"),
+            partial={
+                "df": DependsOn("td"),
+            }
+            | params_dict["td_colormap"],
+            method="call",
+        ),
         "td_map_layer": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
             partial={
-                "geodataframe": DependsOn("td"),
+                "geodataframe": DependsOn("td_colormap"),
             }
             | params_dict["td_map_layer"],
             method="call",

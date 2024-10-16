@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "030474a8999b732797c67f96a4e84066b843fa1b916296fe83f432ffa7d08480"
+# from-spec-sha256 = "1bba0e65ec660ba6386aa5c8a7c29109ccb34607bd2f62e3aed4d8f3b2a9ef10"
 
 
 # ruff: noqa: E402
@@ -21,6 +21,8 @@ from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import (
 )
 from ecoscope_workflows_core.tasks.transformation import add_temporal_index
 from ecoscope_workflows_core.tasks.groupby import split_groups
+from ecoscope_workflows_ext_ecoscope.tasks.transformation import apply_classification
+from ecoscope_workflows_ext_ecoscope.tasks.transformation import apply_color_map
 from ecoscope_workflows_ext_ecoscope.tasks.results import create_map_layer
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecomap
 from ecoscope_workflows_core.tasks.io import persist_text
@@ -158,6 +160,49 @@ split_subject_traj_groups = split_groups.partial(
 
 
 # %% [markdown]
+# ## Classify Trajectories By Speed
+
+# %%
+# parameters
+
+classify_traj_speed_params = dict(
+    input_column_name=...,
+    output_column_name=...,
+    labels=...,
+    classification_options=...,
+)
+
+# %%
+# call the task
+
+
+classify_traj_speed = apply_classification.partial(
+    **classify_traj_speed_params
+).mapvalues(argnames=["df"], argvalues=split_subject_traj_groups)
+
+
+# %% [markdown]
+# ## Apply Color to Trajectories By Speed
+
+# %%
+# parameters
+
+colormap_traj_speed_params = dict(
+    input_column_name=...,
+    colormap=...,
+    output_column_name=...,
+)
+
+# %%
+# call the task
+
+
+colormap_traj_speed = apply_color_map.partial(**colormap_traj_speed_params).mapvalues(
+    argnames=["df"], argvalues=classify_traj_speed
+)
+
+
+# %% [markdown]
 # ## Create map layer for each trajectory group
 
 # %%
@@ -173,7 +218,7 @@ traj_map_layers_params = dict(
 
 
 traj_map_layers = create_map_layer.partial(**traj_map_layers_params).mapvalues(
-    argnames=["geodataframe"], argvalues=split_subject_traj_groups
+    argnames=["geodataframe"], argvalues=colormap_traj_speed
 )
 
 
@@ -184,7 +229,7 @@ traj_map_layers = create_map_layer.partial(**traj_map_layers_params).mapvalues(
 # parameters
 
 traj_ecomap_params = dict(
-    tile_layer=...,
+    tile_layers=...,
     static=...,
     title=...,
     north_arrow_style=...,
@@ -541,6 +586,27 @@ td = calculate_time_density.partial(**td_params).mapvalues(
 
 
 # %% [markdown]
+# ## Time Density Colormap
+
+# %%
+# parameters
+
+td_colormap_params = dict(
+    input_column_name=...,
+    colormap=...,
+    output_column_name=...,
+)
+
+# %%
+# call the task
+
+
+td_colormap = apply_color_map.partial(**td_colormap_params).mapvalues(
+    argnames=["df"], argvalues=td
+)
+
+
+# %% [markdown]
 # ## Create map layer from Time Density
 
 # %%
@@ -556,7 +622,7 @@ td_map_layer_params = dict(
 
 
 td_map_layer = create_map_layer.partial(**td_map_layer_params).mapvalues(
-    argnames=["geodataframe"], argvalues=td
+    argnames=["geodataframe"], argvalues=td_colormap
 )
 
 
@@ -567,7 +633,7 @@ td_map_layer = create_map_layer.partial(**td_map_layer_params).mapvalues(
 # parameters
 
 td_ecomap_params = dict(
-    tile_layer=...,
+    tile_layers=...,
     static=...,
     title=...,
     north_arrow_style=...,

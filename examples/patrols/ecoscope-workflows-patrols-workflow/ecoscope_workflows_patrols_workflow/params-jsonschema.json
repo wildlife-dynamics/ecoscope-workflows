@@ -438,6 +438,43 @@
       "type": "object",
       "description": "Create map layers for each group of patrol events.",
       "properties": {
+        "pe_colormap": {
+          "additionalProperties": false,
+          "properties": {
+            "input_column_name": {
+              "title": "Input Column Name",
+              "type": "string",
+              "description": "The name of the column with categorical values."
+            },
+            "colormap": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              ],
+              "default": "viridis",
+              "title": "Colormap",
+              "description": "Either a named mpl.colormap or a list of string hex values."
+            },
+            "output_column_name": {
+              "default": null,
+              "title": "Output Column Name",
+              "type": "string",
+              "description": "The dataframe column that will contain the color values."
+            }
+          },
+          "required": [
+            "input_column_name"
+          ],
+          "type": "object",
+          "title": "Patrol Events Colormap"
+        },
         "split_pe_groups": {
           "additionalProperties": false,
           "properties": {},
@@ -483,6 +520,7 @@
       },
       "uiSchema": {
         "ui:order": [
+          "pe_colormap",
           "split_pe_groups",
           "patrol_events_map_layers"
         ]
@@ -502,11 +540,14 @@
         "traj_patrol_events_ecomap": {
           "additionalProperties": false,
           "properties": {
-            "tile_layer": {
-              "default": "",
-              "title": "Tile Layer",
-              "type": "string",
-              "description": "A named tile layer, ie OpenStreetMap."
+            "tile_layers": {
+              "default": [],
+              "items": {
+                "$ref": "#/$defs/TileLayer"
+              },
+              "title": "Tile Layers",
+              "type": "array",
+              "description": "A list of named tile layer with opacity, ie OpenStreetMap."
             },
             "static": {
               "default": false,
@@ -1240,9 +1281,16 @@
               "type": "string"
             },
             "nodata_value": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "default": "nan",
-              "title": "Nodata Value",
-              "type": "number"
+              "title": "Nodata Value"
             },
             "band_count": {
               "default": 1,
@@ -1278,6 +1326,43 @@
           "required": [],
           "type": "object",
           "title": "Calculate Time Density from Trajectory"
+        },
+        "td_colormap": {
+          "additionalProperties": false,
+          "properties": {
+            "input_column_name": {
+              "title": "Input Column Name",
+              "type": "string",
+              "description": "The name of the column with categorical values."
+            },
+            "colormap": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              ],
+              "default": "viridis",
+              "title": "Colormap",
+              "description": "Either a named mpl.colormap or a list of string hex values."
+            },
+            "output_column_name": {
+              "default": null,
+              "title": "Output Column Name",
+              "type": "string",
+              "description": "The dataframe column that will contain the color values."
+            }
+          },
+          "required": [
+            "input_column_name"
+          ],
+          "type": "object",
+          "title": "Time Density Colormap"
         },
         "td_map_layer": {
           "additionalProperties": false,
@@ -1317,11 +1402,14 @@
         "td_ecomap": {
           "additionalProperties": false,
           "properties": {
-            "tile_layer": {
-              "default": "",
-              "title": "Tile Layer",
-              "type": "string",
-              "description": "A named tile layer, ie OpenStreetMap."
+            "tile_layers": {
+              "default": [],
+              "items": {
+                "$ref": "#/$defs/TileLayer"
+              },
+              "title": "Tile Layers",
+              "type": "array",
+              "description": "A list of named tile layer with opacity, ie OpenStreetMap."
             },
             "static": {
               "default": false,
@@ -1400,6 +1488,7 @@
       "uiSchema": {
         "ui:order": [
           "td",
+          "td_colormap",
           "td_map_layer",
           "td_ecomap",
           "td_ecomap_html_url",
@@ -1601,7 +1690,7 @@
           "type": "string"
         },
         "get_radius": {
-          "default": 1,
+          "default": 5,
           "title": "Get Radius",
           "type": "number"
         },
@@ -1797,7 +1886,7 @@
           "title": "Get Color"
         },
         "get_width": {
-          "default": 1,
+          "default": 3,
           "title": "Get Width",
           "type": "number"
         },
@@ -1912,6 +2001,24 @@
         }
       },
       "title": "NorthArrowStyle",
+      "type": "object"
+    },
+    "TileLayer": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "opacity": {
+          "default": 1,
+          "title": "Opacity",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "TileLayer",
       "type": "object"
     },
     "WidgetSingleView": {
