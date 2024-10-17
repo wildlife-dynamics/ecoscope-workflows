@@ -43,10 +43,10 @@ def test_get_subject_group_observations(client):
 def test_get_patrol_observations(client):
     result = get_patrol_observations(
         client=client,
-        since="2011-01-01",
-        until="2023-01-01",
-        # MEP_Distance_Survey_Patrol
-        patrol_type="0ef3bf48-b44c-4a4e-a145-7ab2e38c9a57",
+        since="2017-01-01",
+        until="2017-04-01",
+        # Ecoscope patrol
+        patrol_type="05ad114e-1aff-4602-bc83-efd333cdd8a2",
         status=None,
         include_patrol_details=True,
     )
@@ -61,8 +61,8 @@ def test_get_patrol_observations(client):
 def test_get_patrol_events(client):
     result = get_patrol_events(
         client=client,
-        since="2011-01-01",
-        until="2025-01-01",
+        since="2017-01-01",
+        until="2017-04-01",
         patrol_type=None,
         status=None,
     )
@@ -71,3 +71,13 @@ def test_get_patrol_events(client):
     assert "id" in result
     assert "event_type" in result
     assert "geometry" in result
+
+
+def test_bad_token_fails():
+    with pytest.raises(Exception, match="Authorization token is invalid or expired."):
+        EarthRangerConnection(
+            server=os.environ["EARTHRANGER_SERVER"],
+            token="abc123",
+            tcp_limit="5",
+            sub_page_size="4000",
+        ).get_client()
