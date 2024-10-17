@@ -53,28 +53,33 @@ class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
 
     @field_validator("token")
     def token_or_password(cls, v: SecretStr, info: ValidationInfo):
+        if v and (info.data["username"] or info.data["password"]):
+            raise ValueError(
+                "Only a token, or an EarthRanger username and password can be provided, not both"
+            )
         if not v and not (info.data["username"] and info.data["password"]):
-            raise ValueError("EarthRanger username and password must be provided")
+            raise ValueError(
+                "If token is empty, EarthRanger username and password must be provided"
+            )
         return v
 
     def get_client(self) -> EarthRangerClientProtocol:
         from ecoscope.io import EarthRangerIO  # type: ignore[import-untyped]
 
-        if self.token:
-            return EarthRangerIO(
-                server=self.server,
-                token=self.token.get_secret_value(),
-                tcp_limit=self.tcp_limit,
-                sub_page_size=self.sub_page_size,
-            )
-        else:
-            return EarthRangerIO(
-                server=self.server,
-                username=self.username,
-                password=self.password.get_secret_value(),
-                tcp_limit=self.tcp_limit,
-                sub_page_size=self.sub_page_size,
-            )
+        auth_kws = (
+            {"token": self.token.get_secret_value()}
+            if self.token
+            else {
+                "username": self.username,
+                "password": self.password.get_secret_value(),
+            }
+        )
+        return EarthRangerIO(
+            server=self.server,
+            tcp_limit=self.tcp_limit,
+            sub_page_size=self.sub_page_size,
+            **auth_kws,
+        )
 
 
 EarthRangerClient = Annotated[

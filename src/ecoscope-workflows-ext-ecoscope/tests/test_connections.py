@@ -102,11 +102,29 @@ def test_connection_named_from_env_with_token(named_mock_env_with_token):
         assert conn.sub_page_size == 4000
 
 
-def test_connection_field_validator():
-    with pytest.raises(ValueError, match="username and password must be provided"):
+def test_connection_field_validator_no_token():
+    with pytest.raises(
+        ValueError,
+        match="If token is empty, EarthRanger username and password must be provided",
+    ):
         EarthRangerConnection(
             server="https://test.com",
             username="username",
+            tcp_limit="5",
+            sub_page_size="4000",
+        )
+
+
+def test_connection_field_validator_token_and_creds():
+    with pytest.raises(
+        ValueError,
+        match="Only a token, or an EarthRanger username and password can be provided, not both",
+    ):
+        EarthRangerConnection(
+            server="https://test.com",
+            username="username",
+            password="password",
+            token="123456",
             tcp_limit="5",
             sub_page_size="4000",
         )
