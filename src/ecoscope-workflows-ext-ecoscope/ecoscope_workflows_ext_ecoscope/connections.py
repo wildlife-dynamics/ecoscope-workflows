@@ -42,10 +42,14 @@ class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
 
     server: Annotated[str, Field(description="EarthRanger API URL")]
     username: Annotated[str, Field(description="EarthRanger username")] = ""
-    password: Annotated[SecretStr, Field(description="EarthRanger password")] = ""
+    password: Annotated[SecretStr, Field(description="EarthRanger password")] = (
+        SecretStr("")
+    )
     tcp_limit: Annotated[int, Field(description="TCP limit for API requests")]
     sub_page_size: Annotated[int, Field(description="Sub page size for API requests")]
-    token: Annotated[SecretStr, Field(description="EarthRanger password")] = ""
+    token: Annotated[SecretStr, Field(description="EarthRanger access token")] = (
+        SecretStr("")
+    )
 
     @field_validator("token")
     def token_or_password(cls, v: SecretStr, info: ValidationInfo):
