@@ -73,11 +73,11 @@ def test_get_patrol_events(client):
     assert "geometry" in result
 
 
-def test_client_field_validator():
-    with pytest.raises(ValueError, match="username and password must be provided"):
+def test_bad_token_fails():
+    with pytest.raises(Exception, match="Authorization token is invalid or expired."):
         EarthRangerConnection(
-            server="https://test.com",
-            username="username",
+            server=os.environ["EARTHRANGER_SERVER"],
+            token="abc123",
             tcp_limit="5",
             sub_page_size="4000",
         ).get_client()

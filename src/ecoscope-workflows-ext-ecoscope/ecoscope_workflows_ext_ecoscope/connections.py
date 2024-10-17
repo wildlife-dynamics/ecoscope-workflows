@@ -63,7 +63,7 @@ class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
         if self.token:
             return EarthRangerIO(
                 server=self.server,
-                existing_session=self.token.get_secret_value(),
+                token=self.token.get_secret_value(),
                 tcp_limit=self.tcp_limit,
                 sub_page_size=self.sub_page_size,
             )

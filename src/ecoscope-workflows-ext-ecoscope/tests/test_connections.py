@@ -83,7 +83,7 @@ def named_mock_env_with_token():
         "ECOSCOPE_WORKFLOWS__CONNECTIONS__EARTHRANGER__MEP_DEV__SERVER": (
             "https://mep-dev.pamdas.org"
         ),
-        "ECOSCOPE_WORKFLOWS__CONNECTIONS__EARTHRANGER__MEP_DEV__TOKEN": '{"token": "123456789"}',
+        "ECOSCOPE_WORKFLOWS__CONNECTIONS__EARTHRANGER__MEP_DEV__TOKEN": "123456789",
         "ECOSCOPE_WORKFLOWS__CONNECTIONS__EARTHRANGER__MEP_DEV__TCP_LIMIT": "5",
         "ECOSCOPE_WORKFLOWS__CONNECTIONS__EARTHRANGER__MEP_DEV__SUB_PAGE_SIZE": "4000",
     }
@@ -96,7 +96,17 @@ def test_connection_named_from_env_with_token(named_mock_env_with_token):
 
         assert isinstance(conn.token, SecretStr)
         assert str(conn.token) == "**********"
-        assert conn.token.get_secret_value() == '{"token": "123456789"}'
+        assert conn.token.get_secret_value() == "123456789"
 
         assert conn.tcp_limit == 5
         assert conn.sub_page_size == 4000
+
+
+def test_connection_field_validator():
+    with pytest.raises(ValueError, match="username and password must be provided"):
+        EarthRangerConnection(
+            server="https://test.com",
+            username="username",
+            tcp_limit="5",
+            sub_page_size="4000",
+        )
