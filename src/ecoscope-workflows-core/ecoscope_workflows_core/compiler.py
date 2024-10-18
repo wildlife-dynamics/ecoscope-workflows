@@ -838,6 +838,10 @@ class DagCompiler(BaseModel):
                 ),
                 "cli.py": self.ruffrender("pkg/cli.jinja2"),
                 "dispatch.py": self.ruffrender("pkg/dispatch.jinja2"),
+                "formdata.py": self.generate_params_model(
+                    self.get_params_jsonschema(flat=False),
+                    self.file_header,
+                ),
                 "params-jsonschema.json": self.get_params_jsonschema(flat=False),
                 "params.py": self.generate_params_model(
                     self.get_params_jsonschema(flat=True),
