@@ -3,9 +3,11 @@
 # from-spec-sha256 = "16f756386e14612d875d95d9640b778f31eb33ad9db3f241ab4ce1fe3aecc4b6"
 
 
+import json
 import os
 import tempfile
 import traceback
+from pathlib import Path
 from typing import Literal
 
 import ruamel.yaml
@@ -106,3 +108,9 @@ def run(
             del os.environ[k]
 
     return {"result": result.model_dump()}
+
+
+@app.get("/params/jsonschema", status_code=200)
+def params_jsonschema():
+    with Path(__file__).parent.joinpath("params-jsonschema.json").open() as f:
+        return json.load(f)
