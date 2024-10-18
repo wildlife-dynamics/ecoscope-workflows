@@ -1,8 +1,10 @@
 {{ file_header}}
 
+import json
 import os
 import tempfile
 import traceback
+from pathlib import Path
 from typing import Literal
 
 import ruamel.yaml
@@ -103,3 +105,9 @@ def run(
             del os.environ[k]
 
     return {"result": result.model_dump()}
+
+
+@app.get("/params/jsonschema", status_code=200)
+def params_jsonschema():
+    with Path(__file__).parent.joinpath("params-jsonschema.json").open() as f:
+        return json.load(f)
