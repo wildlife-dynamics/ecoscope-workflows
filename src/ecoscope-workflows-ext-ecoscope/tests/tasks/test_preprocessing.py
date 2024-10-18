@@ -43,9 +43,9 @@ def test_relocations_to_trajectory():
         min_length_meters=0.001,
         max_length_meters=10000,
         min_time_secs=1,
-        max_time_secs=3600,
+        max_time_secs=21600,
         min_speed_kmhr=0.0,
-        max_speed_kmhr=120,
+        max_speed_kmhr=10,
     )
     result = relocations_to_trajectory(input_df, **kws)
 
