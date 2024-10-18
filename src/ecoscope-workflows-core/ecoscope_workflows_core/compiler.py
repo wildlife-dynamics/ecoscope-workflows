@@ -579,7 +579,9 @@ class DagCompiler(BaseModel):
                 del schema["$defs"]
         return props, defs
 
-    def get_params_jsonschema(self, flat: bool = True) -> dict[str, Any]:
+    def get_params_jsonschema(
+        self, title: str = "Params", flat: bool = True
+    ) -> dict[str, Any]:
         properties: dict[str, Any] = {}
         definitions: dict[str, Any] = {}
         if flat:
@@ -618,7 +620,10 @@ class DagCompiler(BaseModel):
                         properties |= props
                         definitions |= defs
 
-        react_json_schema_form = ReactJSONSchemaFormConfiguration(properties=properties)
+        react_json_schema_form = ReactJSONSchemaFormConfiguration(
+            title=title,
+            properties=properties,
+        )
         react_json_schema_form.definitions = definitions
         return react_json_schema_form.model_dump(by_alias=True)
 
@@ -839,12 +844,12 @@ class DagCompiler(BaseModel):
                 "cli.py": self.ruffrender("pkg/cli.jinja2"),
                 "dispatch.py": self.ruffrender("pkg/dispatch.jinja2"),
                 "formdata.py": self.generate_params_model(
-                    self.get_params_jsonschema(flat=False),
+                    self.get_params_jsonschema(title="FormData", flat=False),
                     self.file_header,
                 ),
                 "params-jsonschema.json": self.get_params_jsonschema(flat=False),
                 "params.py": self.generate_params_model(
-                    self.get_params_jsonschema(flat=True),
+                    self.get_params_jsonschema(title="Params", flat=True),
                     self.file_header,
                 ),
             },
