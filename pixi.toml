@@ -39,13 +39,18 @@ recompile-all-carryover-lockfile = { cmd ="echo 'recompile-all-carryover-lockfil
     "recompile-subject-tracking-carryover-lockfile",
 ]}
 
-pytest-patrol-events-app = { cmd = "./dev/pytest-examples.sh patrol-events 'app'" }
-pytest-patrols-app = { cmd = "./dev/pytest-examples.sh patrols 'app'" }
-pytest-subject-tracking-app = { cmd = "./dev/pytest-examples.sh subject-tracking 'app'" }
 
-pytest-patrol-events-cli = { cmd = "./dev/pytest-examples.sh patrol-events 'cli'" }
-pytest-patrols-cli = { cmd = "./dev/pytest-examples.sh patrols 'cli'" }
-pytest-subject-tracking-cli = { cmd = "./dev/pytest-examples.sh subject-tracking 'cli'" }
+pytest-patrol-events-params = { cmd = "./dev/pytest-examples-params.sh patrol-events" }
+pytest-patrols-params = { cmd = "./dev/pytest-examples-params.sh patrols" }
+pytest-subject-tracking-params = { cmd = "./dev/pytest-examples-params.sh subject-tracking" }
+
+pytest-patrol-events-app = { cmd = "./dev/pytest-examples-run.sh patrol-events 'app'" }
+pytest-patrols-app = { cmd = "./dev/pytest-examples-run.sh patrols 'app'" }
+pytest-subject-tracking-app = { cmd = "./dev/pytest-examples-run.sh subject-tracking 'app'" }
+
+pytest-patrol-events-cli = { cmd = "./dev/pytest-examples-run.sh patrol-events 'cli'" }
+pytest-patrols-cli = { cmd = "./dev/pytest-examples-run.sh patrols 'cli'" }
+pytest-subject-tracking-cli = { cmd = "./dev/pytest-examples-run.sh subject-tracking 'cli'" }
 
 docker-build-patrol-events = { cmd = "./dev/docker-build.sh patrol-events" }
 docker-build-patrols = { cmd = "./dev/docker-build.sh patrols" }
