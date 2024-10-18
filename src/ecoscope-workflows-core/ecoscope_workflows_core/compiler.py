@@ -579,7 +579,9 @@ class DagCompiler(BaseModel):
                 del schema["$defs"]
         return props, defs
 
-    def get_params_jsonschema(self, flat: bool = True) -> dict[str, Any]:
+    def get_params_jsonschema(
+        self, model_title: str = "Params", flat: bool = True
+    ) -> dict[str, Any]:
         properties: dict[str, Any] = {}
         definitions: dict[str, Any] = {}
         if flat:
@@ -618,7 +620,10 @@ class DagCompiler(BaseModel):
                         properties |= props
                         definitions |= defs
 
-        react_json_schema_form = ReactJSONSchemaFormConfiguration(properties=properties)
+        react_json_schema_form = ReactJSONSchemaFormConfiguration(
+            title=model_title,
+            properties=properties,
+        )
         react_json_schema_form.definitions = definitions
         return react_json_schema_form.model_dump(by_alias=True)
 
@@ -671,6 +676,7 @@ class DagCompiler(BaseModel):
             pytest = "*"
             [feature.test.tasks]
             test-all = "python -m pytest -v tests"
+            test-app-params = "python -m pytest -v tests/test_app.py -k 'params or formdata'"
             test-app-async-mock-io = "python -m pytest -v tests/test_app.py -k 'async and mock-io'"
             test-app-sequential-mock-io = "python -m pytest -v tests/test_app.py -k 'sequential and mock-io'"
             test-cli-async-mock-io = "python -m pytest -v tests/test_cli.py -k 'async and mock-io'"
@@ -822,7 +828,10 @@ class DagCompiler(BaseModel):
                     package_name=self.package_name,
                     release_name=self.release_name,
                 ),
-                "test_app.py": self.ruffrender("tests/test_app.jinja2"),
+                "test_app.py": self.ruffrender(
+                    "tests/test_app.jinja2",
+                    package_name=self.package_name,
+                ),
                 "test_cli.py": self.ruffrender("tests/test_cli.jinja2"),
             },
         )
@@ -831,12 +840,20 @@ class DagCompiler(BaseModel):
         return PackageDirectory(
             dags=self.get_dags(),
             **{
-                "app.py": self.ruffrender("pkg/app.jinja2"),
+                "app.py": self.ruffrender(
+                    "pkg/app.jinja2",
+                    title=self.spec.id,
+                    version=self.spec.sha256[:7],
+                ),
                 "cli.py": self.ruffrender("pkg/cli.jinja2"),
                 "dispatch.py": self.ruffrender("pkg/dispatch.jinja2"),
+                "formdata.py": self.generate_params_model(
+                    self.get_params_jsonschema(model_title="FormData", flat=False),
+                    self.file_header,
+                ),
                 "params-jsonschema.json": self.get_params_jsonschema(flat=False),
                 "params.py": self.generate_params_model(
-                    self.get_params_jsonschema(flat=True),
+                    self.get_params_jsonschema(model_title="Params", flat=True),
                     self.file_header,
                 ),
             },

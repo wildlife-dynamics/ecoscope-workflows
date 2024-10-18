@@ -3,10 +3,12 @@
 # from-spec-sha256 = "a14c0deb652592fad3edfb3b99b76dc2ed865482e7948f3915215fe3626119e9"
 
 
+import json
 import os
 import tempfile
 import traceback
-from typing import Literal
+from pathlib import Path
+from typing import Any, Literal
 
 import ruamel.yaml
 from fastapi import FastAPI, Response, status
@@ -16,13 +18,14 @@ from pydantic import BaseModel, Field, SecretStr
 from ecoscope_workflows_core.tasks.results import DashboardJson
 
 from .dispatch import dispatch
+from .formdata import FormData
 from .params import Params
 
 
 app = FastAPI(
-    title="Ecoscope Workflows Runner",
+    title="patrol_events",
     debug=True,
-    version="0.0.0",
+    version="a14c0de",
 )
 app.add_middleware(
     CORSMiddleware,
@@ -106,3 +109,23 @@ def run(
             del os.environ[k]
 
     return {"result": result.model_dump()}
+
+
+@app.get("/params", status_code=200)
+def params_jsonschema():
+    with Path(__file__).parent.joinpath("params-jsonschema.json").open() as f:
+        return json.load(f)
+
+
+@app.post("/params", response_model=Params, status_code=200)
+def validate_formdata(formdata: FormData):
+    formdata_asdict: dict[str, dict | Any] = formdata.model_dump()
+    params_fieldnames = Params.model_fields.keys()
+    params_kws = {}
+    for k, v in formdata_asdict.items():
+        if k in params_fieldnames:
+            params_kws[k] = v
+        else:
+            for inner_k, inner_v in v.items():
+                params_kws[inner_k] = inner_v
+    return Params(**params_kws)

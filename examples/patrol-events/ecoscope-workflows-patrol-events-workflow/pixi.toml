@@ -40,6 +40,7 @@ version = "*"
 
 [feature.test.tasks]
 test-all = "python -m pytest -v tests"
+test-app-params = "python -m pytest -v tests/test_app.py -k 'params or formdata'"
 test-app-async-mock-io = "python -m pytest -v tests/test_app.py -k 'async and mock-io'"
 test-app-sequential-mock-io = "python -m pytest -v tests/test_app.py -k 'sequential and mock-io'"
 test-cli-async-mock-io = "python -m pytest -v tests/test_cli.py -k 'async and mock-io'"

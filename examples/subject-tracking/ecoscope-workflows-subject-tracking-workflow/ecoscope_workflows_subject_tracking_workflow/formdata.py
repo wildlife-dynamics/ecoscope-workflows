@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "16f756386e14612d875d95d9640b778f31eb33ad9db3f241ab4ce1fe3aecc4b6"
+# from-spec-sha256 = "1bba0e65ec660ba6386aa5c8a7c29109ccb34607bd2f62e3aed4d8f3b2a9ef10"
 
 
 from __future__ import annotations
@@ -9,39 +9,29 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
-from pydantic import AnyUrl, BaseModel, ConfigDict, Field, confloat
+from pydantic import AnyUrl, AwareDatetime, BaseModel, ConfigDict, Field
 
 
-class StatusEnum(str, Enum):
-    active = "active"
-    overdue = "overdue"
-    done = "done"
-    cancelled = "cancelled"
-
-
-class PatrolObs(BaseModel):
+class SubjectObs(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
     client: str = Field(
         ..., description="A named EarthRanger connection.", title="Client"
     )
-    since: str = Field(..., description="Start date", title="Since")
-    until: str = Field(..., description="End date", title="Until")
-    patrol_type: List[str] = Field(
-        ..., description="list of UUID of patrol types", title="Patrol Type"
+    subject_group_name: str = Field(
+        ..., description="Name of EarthRanger Subject", title="Subject Group Name"
     )
-    status: List[StatusEnum] = Field(
-        ...,
-        description="list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'",
-        title="Status",
-    )
-    include_patrol_details: Optional[bool] = Field(
-        False, description="Include patrol details", title="Include Patrol Details"
+    since: AwareDatetime = Field(..., description="Start date", title="Since")
+    until: AwareDatetime = Field(..., description="End date", title="Until")
+    include_inactive: Optional[bool] = Field(
+        True,
+        description="Whether or not to include inactive subjects",
+        title="Include Inactive",
     )
 
 
-class PatrolTraj(BaseModel):
+class SubjectTraj(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -108,55 +98,7 @@ class TrajAddTemporalIndex(BaseModel):
     )
 
 
-class PatrolEvents(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    client: str = Field(
-        ..., description="A named EarthRanger connection.", title="Client"
-    )
-    since: str = Field(..., description="Start date", title="Since")
-    until: str = Field(..., description="End date", title="Until")
-    patrol_type: List[str] = Field(
-        ..., description="list of UUID of patrol types", title="Patrol Type"
-    )
-    status: List[str] = Field(
-        ...,
-        description="list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'",
-        title="Status",
-    )
-
-
-class PeAddTemporalIndex(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    index_name: str = Field(
-        ...,
-        description="A name for the new index which will be added.",
-        title="Index Name",
-    )
-    time_col: str = Field(
-        ...,
-        description="Name of existing column containing time data.",
-        title="Time Col",
-    )
-    directive: Directive = Field(
-        ..., description="A directive for formatting the time data.", title="Directive"
-    )
-    cast_to_datetime: Optional[bool] = Field(
-        True,
-        description="Whether to attempt casting `time_col` to datetime.",
-        title="Cast To Datetime",
-    )
-    format: Optional[str] = Field(
-        "mixed",
-        description='            If `cast_to_datetime=True`, the format to pass to `pd.to_datetime`\n            when attempting to cast `time_col` to datetime. Defaults to "mixed".\n            ',
-        title="Format",
-    )
-
-
-class PeColormap(BaseModel):
+class ColormapTrajSpeed(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -177,7 +119,7 @@ class PeColormap(BaseModel):
     )
 
 
-class TrajPeEcomapHtmlUrls(BaseModel):
+class EcomapHtmlUrls(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -188,14 +130,14 @@ class TrajPeEcomapHtmlUrls(BaseModel):
     )
 
 
-class TrajPeMapWidgetsSingleViews(BaseModel):
+class TrajMapWidgetsSingleViews(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
     title: str = Field(..., description="The title of the widget", title="Title")
 
 
-class TotalPatrols(BaseModel):
+class MeanSpeed(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -204,70 +146,7 @@ class TotalPatrols(BaseModel):
     )
 
 
-class TotalPatrolsSvWidgets(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    title: str = Field(..., description="The title of the widget", title="Title")
-    decimal_places: Optional[int] = Field(
-        1,
-        description="The number of decimal places to display.",
-        title="Decimal Places",
-    )
-
-
-class TotalPatrolTime(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    column_name: str = Field(
-        ..., description="Column to aggregate", title="Column Name"
-    )
-
-
-class TotalPatrolTimeSvWidgets(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    title: str = Field(..., description="The title of the widget", title="Title")
-    decimal_places: Optional[int] = Field(
-        1,
-        description="The number of decimal places to display.",
-        title="Decimal Places",
-    )
-
-
-class TotalPatrolDist(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    column_name: str = Field(
-        ..., description="Column to aggregate", title="Column Name"
-    )
-
-
-class TotalPatrolDistSvWidgets(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    title: str = Field(..., description="The title of the widget", title="Title")
-    decimal_places: Optional[int] = Field(
-        1,
-        description="The number of decimal places to display.",
-        title="Decimal Places",
-    )
-
-
-class AvgSpeed(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    column_name: str = Field(
-        ..., description="Column to aggregate", title="Column Name"
-    )
-
-
-class AvgSpeedSvWidgets(BaseModel):
+class MeanSpeedSvWidgets(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -300,56 +179,28 @@ class MaxSpeedSvWidgets(BaseModel):
     )
 
 
-class AggFunction(str, Enum):
-    count = "count"
-    mean = "mean"
-    sum = "sum"
-    min = "min"
-    max = "max"
-
-
-class TimeInterval(str, Enum):
-    year = "year"
-    month = "month"
-    week = "week"
-    day = "day"
-    hour = "hour"
-
-
-class PatrolEventsBarChartHtmlUrl(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    filename: Optional[str] = Field(
-        None,
-        description="            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            ",
-        title="Filename",
-    )
-
-
-class PatrolEventsBarChartWidget(BaseModel):
+class NumLocationSvWidgets(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
     title: str = Field(..., description="The title of the widget", title="Title")
-
-
-class PePieChartHtmlUrls(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    filename: Optional[str] = Field(
-        None,
-        description="            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            ",
-        title="Filename",
+    decimal_places: Optional[int] = Field(
+        1,
+        description="The number of decimal places to display.",
+        title="Decimal Places",
     )
 
 
-class PatrolEventsPieChartWidgets(BaseModel):
+class DaynightRatioSvWidgets(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
     title: str = Field(..., description="The title of the widget", title="Title")
+    decimal_places: Optional[int] = Field(
+        1,
+        description="The number of decimal places to display.",
+        title="Decimal Places",
+    )
 
 
 class Td(BaseModel):
@@ -408,7 +259,7 @@ class TdMapWidget(BaseModel):
     title: str = Field(..., description="The title of the widget", title="Title")
 
 
-class PatrolDashboard(BaseModel):
+class SubjectTrackingDashboard(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -427,6 +278,48 @@ class Grouper(BaseModel):
 class Coordinate(BaseModel):
     x: float = Field(..., title="X")
     y: float = Field(..., title="Y")
+
+
+class Scheme(str, Enum):
+    equal_interval = "equal_interval"
+    quantile = "quantile"
+    fisher_jenks = "fisher_jenks"
+    std_mean = "std_mean"
+    max_breaks = "max_breaks"
+    natural_breaks = "natural_breaks"
+
+
+class FisherJenksArgs(BaseModel):
+    scheme: Optional[Scheme] = Field("fisher_jenks", title="Scheme")
+    k: Optional[int] = Field(5, title="K")
+
+
+class MaxBreaksArgs(BaseModel):
+    scheme: Optional[Scheme] = Field("max_breaks", title="Scheme")
+    k: Optional[int] = Field(5, title="K")
+    mindiff: Optional[float] = Field(0, title="Mindiff")
+
+
+class NaturalBreaksArgs(BaseModel):
+    scheme: Optional[Scheme] = Field("natural_breaks", title="Scheme")
+    k: Optional[int] = Field(5, title="K")
+    initial: Optional[int] = Field(10, title="Initial")
+
+
+class QuantileArgs(BaseModel):
+    scheme: Optional[Scheme] = Field("quantile", title="Scheme")
+    k: Optional[int] = Field(5, title="K")
+
+
+class SharedArgs(BaseModel):
+    scheme: Optional[Scheme] = Field("equal_interval", title="Scheme")
+    k: Optional[int] = Field(5, title="K")
+
+
+class StdMeanArgs(BaseModel):
+    scheme: Optional[Scheme] = Field("std_mean", title="Scheme")
+    multiples: Optional[List[int]] = Field([-2, -1, 1, 2], title="Multiples")
+    anchor: Optional[bool] = Field(False, title="Anchor")
 
 
 class LegendDefinition(BaseModel):
@@ -571,35 +464,9 @@ class Unit(str, Enum):
     km_h = "km/h"
 
 
-class BarLayoutStyle(BaseModel):
-    font_color: Optional[str] = Field(None, title="Font Color")
-    font_style: Optional[str] = Field(None, title="Font Style")
-    plot_bgcolor: Optional[str] = Field(None, title="Plot Bgcolor")
-    showlegend: Optional[bool] = Field(None, title="Showlegend")
-    bargap: Optional[confloat(ge=0.0, le=1.0)] = Field(None, title="Bargap")
-    bargroupgap: Optional[confloat(ge=0.0, le=1.0)] = Field(None, title="Bargroupgap")
-
-
-class LineStyle(BaseModel):
-    color: Optional[str] = Field(None, title="Color")
-
-
-class PlotCategoryStyle(BaseModel):
-    marker_color: Optional[str] = Field(None, title="Marker Color")
-
-
-class PlotStyle(BaseModel):
-    xperiodalignment: Optional[str] = Field(None, title="Xperiodalignment")
-    marker_colors: Optional[List[str]] = Field(None, title="Marker Colors")
-    textinfo: Optional[str] = Field(None, title="Textinfo")
-    line: Optional[LineStyle] = Field(None, title="Line")
-
-
-class LayoutStyle(BaseModel):
-    font_color: Optional[str] = Field(None, title="Font Color")
-    font_style: Optional[str] = Field(None, title="Font Style")
-    plot_bgcolor: Optional[str] = Field(None, title="Plot Bgcolor")
-    showlegend: Optional[bool] = Field(None, title="Showlegend")
+class Quantity(BaseModel):
+    value: Union[int, float] = Field(..., title="Value")
+    unit: Optional[Unit] = None
 
 
 class GroupedWidget(BaseModel):
@@ -619,7 +486,7 @@ class Groupers(BaseModel):
     )
 
 
-class PatrolReloc(BaseModel):
+class SubjectReloc(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -627,7 +494,36 @@ class PatrolReloc(BaseModel):
     relocs_columns: List[str] = Field(..., title="Relocs Columns")
 
 
-class PatrolTrajMapLayers(BaseModel):
+class ClassifyTrajSpeed(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    input_column_name: str = Field(
+        ..., description="The dataframe column to classify.", title="Input Column Name"
+    )
+    output_column_name: Optional[str] = Field(
+        None,
+        description="The dataframe column that will contain the classification values.",
+        title="Output Column Name",
+    )
+    labels: Optional[List[str]] = Field(
+        None,
+        description="Labels of classification bins, uses bin edges if not provied.",
+        title="Labels",
+    )
+    classification_options: Optional[
+        Union[
+            SharedArgs,
+            StdMeanArgs,
+            MaxBreaksArgs,
+            NaturalBreaksArgs,
+            QuantileArgs,
+            FisherJenksArgs,
+        ]
+    ] = Field({"k": 5}, title="Classification Options")
+
+
+class TrajMapLayers(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -641,37 +537,7 @@ class PatrolTrajMapLayers(BaseModel):
     )
 
 
-class FilterPatrolEvents(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    min_x: Optional[float] = Field(-180.0, title="Min X")
-    max_x: Optional[float] = Field(180.0, title="Max X")
-    min_y: Optional[float] = Field(-90.0, title="Min Y")
-    max_y: Optional[float] = Field(90.0, title="Max Y")
-    filter_point_coords: Optional[List[Coordinate]] = Field(
-        default_factory=lambda: [
-            Coordinate.model_validate(v) for v in [{"x": 0.0, "y": 0.0}]
-        ],
-        title="Filter Point Coords",
-    )
-
-
-class PatrolEventsMapLayers(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    layer_style: Union[PolylineLayerStyle, PolygonLayerStyle, PointLayerStyle] = Field(
-        ..., description="Style arguments for the layer.", title="Layer Style"
-    )
-    legend: Optional[LegendDefinition] = Field(
-        None,
-        description="If present, includes this layer in the map legend",
-        title="Legend",
-    )
-
-
-class TrajPatrolEventsEcomap(BaseModel):
+class TrajEcomap(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -700,30 +566,6 @@ class TrajPatrolEventsEcomap(BaseModel):
     )
 
 
-class TotalPatrolTimeConverted(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    original_unit: Optional[Unit] = Field(
-        None, description="The original unit of measurement.", title="Original Unit"
-    )
-    new_unit: Optional[Unit] = Field(
-        None, description="The unit to convert to.", title="New Unit"
-    )
-
-
-class TotalPatrolDistConverted(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    original_unit: Optional[Unit] = Field(
-        None, description="The original unit of measurement.", title="Original Unit"
-    )
-    new_unit: Optional[Unit] = Field(
-        None, description="The unit to convert to.", title="New Unit"
-    )
-
-
 class AverageSpeedConverted(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -745,37 +587,6 @@ class MaxSpeedConverted(BaseModel):
     )
     new_unit: Optional[Unit] = Field(
         None, description="The unit to convert to.", title="New Unit"
-    )
-
-
-class PatrolEventsPieChart(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    value_column: str = Field(
-        ...,
-        description="The name of the dataframe column to pull slice values from.",
-        title="Value Column",
-    )
-    label_column: Optional[str] = Field(
-        None,
-        description="The name of the dataframe column to label slices with, required if the data in value_column is numeric.",
-        title="Label Column",
-    )
-    color_column: Optional[str] = Field(
-        None,
-        description="The name of the dataframe column to color slices with.",
-        title="Color Column",
-    )
-    plot_style: Optional[PlotStyle] = Field(
-        None,
-        description="Additional style kwargs passed to go.Pie().",
-        title="Plot Style",
-    )
-    layout_style: Optional[LayoutStyle] = Field(
-        None,
-        description="Additional kwargs passed to plotly.go.Figure(layout).",
-        title="Layout Style",
     )
 
 
@@ -822,161 +633,58 @@ class TdEcomap(BaseModel):
     )
 
 
-class Quantity(BaseModel):
-    value: Union[int, float] = Field(..., title="Value")
-    unit: Optional[Unit] = None
-
-
-class GroupedPlotStyle(BaseModel):
-    category: str = Field(..., title="Category")
-    plot_style: PlotCategoryStyle
-
-
-class PatrolEventsBarChart(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    x_axis: str = Field(
-        ...,
-        description="The dataframe column to plot in the x/time axis.",
-        title="X Axis",
-    )
-    y_axis: str = Field(
-        ..., description="The dataframe column to plot in the y axis.", title="Y Axis"
-    )
-    category: str = Field(
-        ...,
-        description="The dataframe column to stack in the y axis.",
-        title="Category",
-    )
-    agg_function: AggFunction = Field(
-        ...,
-        description="The aggregate function to apply to the group.",
-        title="Agg Function",
-    )
-    time_interval: TimeInterval = Field(
-        ..., description="Sets the time interval of the x axis.", title="Time Interval"
-    )
-    color_column: Optional[str] = Field(
-        None,
-        description="The name of the dataframe column to color bars with.",
-        title="Color Column",
-    )
-    grouped_styles: Optional[List[GroupedPlotStyle]] = Field(
-        [],
-        description="Style arguments passed to plotly.graph_objects.Bar and applied to individual groups.",
-        title="Grouped Styles",
-    )
-    plot_style: Optional[PlotStyle] = Field(
-        None,
-        description="Additional style kwargs passed to go.Bar().",
-        title="Plot Style",
-    )
-    layout_style: Optional[BarLayoutStyle] = Field(
-        None,
-        description="Additional kwargs passed to plotly.go.Figure(layout).",
-        title="Layout Style",
-    )
-
-
-class Params(BaseModel):
+class FormData(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
     groupers: Optional[Groupers] = Field(None, title="Set Groupers")
-    patrol_obs: Optional[PatrolObs] = Field(
-        None, title="Get Patrol Observations from EarthRanger"
+    subject_obs: Optional[SubjectObs] = Field(
+        None, title="Get Subject Group Observations from EarthRanger"
     )
-    patrol_reloc: Optional[PatrolReloc] = Field(
+    subject_reloc: Optional[SubjectReloc] = Field(
         None, title="Transform Observations to Relocations"
     )
-    patrol_traj: Optional[PatrolTraj] = Field(
+    subject_traj: Optional[SubjectTraj] = Field(
         None, title="Transform Relocations to Trajectories"
     )
     traj_add_temporal_index: Optional[TrajAddTemporalIndex] = Field(
-        None, title="Add temporal index to Patrol Trajectories"
+        None, title="Add temporal index to Subject Trajectories"
     )
-    split_patrol_traj_groups: Optional[Dict[str, Any]] = Field(
-        None, title="Split Patrol Trajectories by Group"
+    split_subject_traj_groups: Optional[Dict[str, Any]] = Field(
+        None, title="Split Subject Trajectories by Group"
     )
-    patrol_traj_map_layers: Optional[PatrolTrajMapLayers] = Field(
-        None, title="Create map layer for each Patrol Trajectories group"
+    classify_traj_speed: Optional[ClassifyTrajSpeed] = Field(
+        None, title="Classify Trajectories By Speed"
     )
-    patrol_events: Optional[PatrolEvents] = Field(
-        None, title="Get Patrol Events from EarthRanger"
+    colormap_traj_speed: Optional[ColormapTrajSpeed] = Field(
+        None, title="Apply Color to Trajectories By Speed"
     )
-    filter_patrol_events: Optional[FilterPatrolEvents] = Field(
-        None, title="Apply Relocation Coordinate Filter"
+    traj_map_layers: Optional[TrajMapLayers] = Field(
+        None, title="Create map layer for each trajectory group"
     )
-    pe_add_temporal_index: Optional[PeAddTemporalIndex] = Field(
-        None, title="Add temporal index to Patrol Events"
+    traj_ecomap: Optional[TrajEcomap] = Field(
+        None, title="Draw Ecomaps for each trajectory group"
     )
-    pe_colormap: Optional[PeColormap] = Field(None, title="Patrol Events Colormap")
-    split_pe_groups: Optional[Dict[str, Any]] = Field(
-        None, title="Split Patrol Events by Group"
+    ecomap_html_urls: Optional[EcomapHtmlUrls] = Field(
+        None, title="Persist ecomap as Text"
     )
-    patrol_events_map_layers: Optional[PatrolEventsMapLayers] = Field(
-        None, title="Create map layers for each Patrols Events group"
+    traj_map_widgets_single_views: Optional[TrajMapWidgetsSingleViews] = Field(
+        None, title="Create Map Widgets for Trajectories"
     )
-    combined_traj_and_pe_map_layers: Optional[Dict[str, Any]] = Field(
-        None, title="Combine Trajectories and Patrol Events layers"
-    )
-    traj_patrol_events_ecomap: Optional[TrajPatrolEventsEcomap] = Field(
-        None, title="Draw Ecomaps for each combined Trajectory and Patrol Events group"
-    )
-    traj_pe_ecomap_html_urls: Optional[TrajPeEcomapHtmlUrls] = Field(
-        None, title="Persist Patrols Ecomap as Text"
-    )
-    traj_pe_map_widgets_single_views: Optional[TrajPeMapWidgetsSingleViews] = Field(
-        None, title="Create Map Widgets for Patrol Events"
-    )
-    traj_pe_grouped_map_widget: Optional[Dict[str, Any]] = Field(
+    traj_grouped_map_widget: Optional[Dict[str, Any]] = Field(
         None, title="Merge EcoMap Widget Views"
     )
-    total_patrols: Optional[TotalPatrols] = Field(
-        None, title="Calculate Total Patrols Per Group"
-    )
-    total_patrols_sv_widgets: Optional[TotalPatrolsSvWidgets] = Field(
-        None, title="Create Single Value Widgets for Total Patrols Per Group"
-    )
-    total_patrols_grouped_sv_widget: Optional[Dict[str, Any]] = Field(
-        None, title="Merge per group Total Patrols SV widgets"
-    )
-    total_patrol_time: Optional[TotalPatrolTime] = Field(
-        None, title="Calculate Total Patrol Time Per Group"
-    )
-    total_patrol_time_converted: Optional[TotalPatrolTimeConverted] = Field(
-        None, title="Convert total patrol time units"
-    )
-    total_patrol_time_sv_widgets: Optional[TotalPatrolTimeSvWidgets] = Field(
-        None, title="Create Single Value Widgets for Total Patrol Time Per Group"
-    )
-    patrol_time_grouped_widget: Optional[Dict[str, Any]] = Field(
-        None, title="Merge per group Total Patrol Time SV widgets"
-    )
-    total_patrol_dist: Optional[TotalPatrolDist] = Field(
-        None, title="Calculate Total Distance Per Group"
-    )
-    total_patrol_dist_converted: Optional[TotalPatrolDistConverted] = Field(
-        None, title="Convert total patrol distance units"
-    )
-    total_patrol_dist_sv_widgets: Optional[TotalPatrolDistSvWidgets] = Field(
-        None, title="Create Single Value Widgets for Total Distance Per Group"
-    )
-    patrol_dist_grouped_widget: Optional[Dict[str, Any]] = Field(
-        None, title="Merge per group Total Patrol Distance SV widgets"
-    )
-    avg_speed: Optional[AvgSpeed] = Field(
-        None, title="Calculate Average Speed Per Group"
+    mean_speed: Optional[MeanSpeed] = Field(
+        None, title="Calculate Mean Speed Per Group"
     )
     average_speed_converted: Optional[AverageSpeedConverted] = Field(
         None, title="Convert Average Speed units"
     )
-    avg_speed_sv_widgets: Optional[AvgSpeedSvWidgets] = Field(
-        None, title="Create Single Value Widgets for Avg Speed Per Group"
+    mean_speed_sv_widgets: Optional[MeanSpeedSvWidgets] = Field(
+        None, title="Create Single Value Widgets for Mean Speed Per Group"
     )
-    avg_speed_grouped_widget: Optional[Dict[str, Any]] = Field(
-        None, title="Merge per group Avg Speed SV widgets"
+    mean_speed_grouped_sv_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge per group Mean Speed SV widgets"
     )
     max_speed: Optional[MaxSpeed] = Field(None, title="Calculate Max Speed Per Group")
     max_speed_converted: Optional[MaxSpeedConverted] = Field(
@@ -985,29 +693,26 @@ class Params(BaseModel):
     max_speed_sv_widgets: Optional[MaxSpeedSvWidgets] = Field(
         None, title="Create Single Value Widgets for Max Speed Per Group"
     )
-    max_speed_grouped_widget: Optional[Dict[str, Any]] = Field(
+    max_speed_grouped_sv_widget: Optional[Dict[str, Any]] = Field(
         None, title="Merge per group Max Speed SV widgets"
     )
-    patrol_events_bar_chart: Optional[PatrolEventsBarChart] = Field(
-        None, title="Draw Time Series Bar Chart for Patrols Events"
+    num_location: Optional[Dict[str, Any]] = Field(
+        None, title="Calculate Number of Locations Per Group"
     )
-    patrol_events_bar_chart_html_url: Optional[PatrolEventsBarChartHtmlUrl] = Field(
-        None, title="Persist Patrols Bar Chart as Text"
+    num_location_sv_widgets: Optional[NumLocationSvWidgets] = Field(
+        None, title="Create Single Value Widgets for Number of Location Per Group"
     )
-    patrol_events_bar_chart_widget: Optional[PatrolEventsBarChartWidget] = Field(
-        None, title="Create Plot Widget for Patrol Events"
+    num_location_grouped_sv_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge per group Number of Locations SV widgets"
     )
-    patrol_events_pie_chart: Optional[PatrolEventsPieChart] = Field(
-        None, title="Draw Pie Chart for Patrols Events"
+    daynight_ratio: Optional[Dict[str, Any]] = Field(
+        None, title="Calculate Day/Night Ratio Per Group"
     )
-    pe_pie_chart_html_urls: Optional[PePieChartHtmlUrls] = Field(
-        None, title="Persist Patrols Pie Chart as Text"
+    daynight_ratio_sv_widgets: Optional[DaynightRatioSvWidgets] = Field(
+        None, title="Create Single Value Widgets for Day/Night Ratio Per Group"
     )
-    patrol_events_pie_chart_widgets: Optional[PatrolEventsPieChartWidgets] = Field(
-        None, title="Create Plot Widget for Patrol Events"
-    )
-    patrol_events_pie_widget_grouped: Optional[Dict[str, Any]] = Field(
-        None, title="Merge Pie Chart Widget Views"
+    daynight_ratio_grouped_sv_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge per group Day/Night Ratio SV widgets"
     )
     td: Optional[Td] = Field(None, title="Calculate Time Density from Trajectory")
     td_colormap: Optional[TdColormap] = Field(None, title="Time Density Colormap")
@@ -1021,6 +726,9 @@ class Params(BaseModel):
     td_map_widget: Optional[TdMapWidget] = Field(
         None, title="Create Time Density Map Widget"
     )
-    patrol_dashboard: Optional[PatrolDashboard] = Field(
-        None, title="Create Dashboard with Patrol Map Widgets"
+    td_grouped_map_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge Time Density Map Widget Views"
+    )
+    subject_tracking_dashboard: Optional[SubjectTrackingDashboard] = Field(
+        None, title="Create Dashboard with Subject Tracking Widgets"
     )

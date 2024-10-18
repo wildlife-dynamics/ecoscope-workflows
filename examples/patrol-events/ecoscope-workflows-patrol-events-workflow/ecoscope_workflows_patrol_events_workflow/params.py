@@ -790,6 +790,9 @@ class PeBarChart(BaseModel):
 
 
 class Params(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
     groupers: Optional[Groupers] = Field(None, title="Set Groupers")
     pe: Optional[Pe] = Field(None, title="Get Patrol Events from EarthRanger")
     filter_patrol_events: Optional[FilterPatrolEvents] = Field(

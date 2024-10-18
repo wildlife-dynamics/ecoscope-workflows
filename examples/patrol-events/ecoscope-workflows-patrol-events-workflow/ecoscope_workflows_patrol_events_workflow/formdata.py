@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "16f756386e14612d875d95d9640b778f31eb33ad9db3f241ab4ce1fe3aecc4b6"
+# from-spec-sha256 = "a14c0deb652592fad3edfb3b99b76dc2ed865482e7948f3915215fe3626119e9"
 
 
 from __future__ import annotations
@@ -12,14 +12,7 @@ from typing import Any, Dict, List, Literal, Optional, Union
 from pydantic import AnyUrl, BaseModel, ConfigDict, Field, confloat
 
 
-class StatusEnum(str, Enum):
-    active = "active"
-    overdue = "overdue"
-    done = "done"
-    cancelled = "cancelled"
-
-
-class PatrolObs(BaseModel):
+class Pe(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -31,26 +24,11 @@ class PatrolObs(BaseModel):
     patrol_type: List[str] = Field(
         ..., description="list of UUID of patrol types", title="Patrol Type"
     )
-    status: List[StatusEnum] = Field(
+    status: List[str] = Field(
         ...,
         description="list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'",
         title="Status",
     )
-    include_patrol_details: Optional[bool] = Field(
-        False, description="Include patrol details", title="Include Patrol Details"
-    )
-
-
-class PatrolTraj(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    min_length_meters: Optional[float] = Field(0.1, title="Min Length Meters")
-    max_length_meters: Optional[float] = Field(10000, title="Max Length Meters")
-    max_time_secs: Optional[float] = Field(3600, title="Max Time Secs")
-    min_time_secs: Optional[float] = Field(1, title="Min Time Secs")
-    max_speed_kmhr: Optional[float] = Field(120, title="Max Speed Kmhr")
-    min_speed_kmhr: Optional[float] = Field(0.0, title="Min Speed Kmhr")
 
 
 class Directive(str, Enum):
@@ -77,54 +55,6 @@ class Directive(str, Enum):
     field_Y = "%Y"
     field_z = "%z"
     field__ = "%%"
-
-
-class TrajAddTemporalIndex(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    index_name: str = Field(
-        ...,
-        description="A name for the new index which will be added.",
-        title="Index Name",
-    )
-    time_col: str = Field(
-        ...,
-        description="Name of existing column containing time data.",
-        title="Time Col",
-    )
-    directive: Directive = Field(
-        ..., description="A directive for formatting the time data.", title="Directive"
-    )
-    cast_to_datetime: Optional[bool] = Field(
-        True,
-        description="Whether to attempt casting `time_col` to datetime.",
-        title="Cast To Datetime",
-    )
-    format: Optional[str] = Field(
-        "mixed",
-        description='            If `cast_to_datetime=True`, the format to pass to `pd.to_datetime`\n            when attempting to cast `time_col` to datetime. Defaults to "mixed".\n            ',
-        title="Format",
-    )
-
-
-class PatrolEvents(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    client: str = Field(
-        ..., description="A named EarthRanger connection.", title="Client"
-    )
-    since: str = Field(..., description="Start date", title="Since")
-    until: str = Field(..., description="End date", title="Until")
-    patrol_type: List[str] = Field(
-        ..., description="list of UUID of patrol types", title="Patrol Type"
-    )
-    status: List[str] = Field(
-        ...,
-        description="list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'",
-        title="Status",
-    )
 
 
 class PeAddTemporalIndex(BaseModel):
@@ -177,7 +107,7 @@ class PeColormap(BaseModel):
     )
 
 
-class TrajPeEcomapHtmlUrls(BaseModel):
+class PeEcomapHtmlUrl(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -188,116 +118,11 @@ class TrajPeEcomapHtmlUrls(BaseModel):
     )
 
 
-class TrajPeMapWidgetsSingleViews(BaseModel):
+class PeMapWidget(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
     title: str = Field(..., description="The title of the widget", title="Title")
-
-
-class TotalPatrols(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    column_name: str = Field(
-        ..., description="Column to aggregate", title="Column Name"
-    )
-
-
-class TotalPatrolsSvWidgets(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    title: str = Field(..., description="The title of the widget", title="Title")
-    decimal_places: Optional[int] = Field(
-        1,
-        description="The number of decimal places to display.",
-        title="Decimal Places",
-    )
-
-
-class TotalPatrolTime(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    column_name: str = Field(
-        ..., description="Column to aggregate", title="Column Name"
-    )
-
-
-class TotalPatrolTimeSvWidgets(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    title: str = Field(..., description="The title of the widget", title="Title")
-    decimal_places: Optional[int] = Field(
-        1,
-        description="The number of decimal places to display.",
-        title="Decimal Places",
-    )
-
-
-class TotalPatrolDist(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    column_name: str = Field(
-        ..., description="Column to aggregate", title="Column Name"
-    )
-
-
-class TotalPatrolDistSvWidgets(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    title: str = Field(..., description="The title of the widget", title="Title")
-    decimal_places: Optional[int] = Field(
-        1,
-        description="The number of decimal places to display.",
-        title="Decimal Places",
-    )
-
-
-class AvgSpeed(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    column_name: str = Field(
-        ..., description="Column to aggregate", title="Column Name"
-    )
-
-
-class AvgSpeedSvWidgets(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    title: str = Field(..., description="The title of the widget", title="Title")
-    decimal_places: Optional[int] = Field(
-        1,
-        description="The number of decimal places to display.",
-        title="Decimal Places",
-    )
-
-
-class MaxSpeed(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    column_name: str = Field(
-        ..., description="Column to aggregate", title="Column Name"
-    )
-
-
-class MaxSpeedSvWidgets(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    title: str = Field(..., description="The title of the widget", title="Title")
-    decimal_places: Optional[int] = Field(
-        1,
-        description="The number of decimal places to display.",
-        title="Decimal Places",
-    )
 
 
 class AggFunction(str, Enum):
@@ -316,7 +141,7 @@ class TimeInterval(str, Enum):
     hour = "hour"
 
 
-class PatrolEventsBarChartHtmlUrl(BaseModel):
+class PeBarChartHtmlUrl(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -327,49 +152,47 @@ class PatrolEventsBarChartHtmlUrl(BaseModel):
     )
 
 
-class PatrolEventsBarChartWidget(BaseModel):
+class PeBarChartWidget(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
     title: str = Field(..., description="The title of the widget", title="Title")
 
 
-class PePieChartHtmlUrls(BaseModel):
+class PeMeshgrid(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    filename: Optional[str] = Field(
-        None,
-        description="            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            ",
-        title="Filename",
+    cell_width: Optional[int] = Field(
+        5000, description="The width of a grid cell in meters.", title="Cell Width"
+    )
+    cell_height: Optional[int] = Field(
+        5000, description="The height of a grid cell in meters.", title="Cell Height"
+    )
+    intersecting_only: Optional[bool] = Field(
+        False,
+        description="Whether to return only grid cells intersecting with the aoi.",
+        title="Intersecting Only",
     )
 
 
-class PatrolEventsPieChartWidgets(BaseModel):
+class GeometryType(str, Enum):
+    point = "point"
+    line = "line"
+
+
+class PeFeatureDensity(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    title: str = Field(..., description="The title of the widget", title="Title")
-
-
-class Td(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    pixel_size: Optional[float] = Field(
-        250.0, description="Pixel size for raster profile.", title="Pixel Size"
-    )
-    crs: Optional[str] = Field("ESRI:102022", title="Crs")
-    nodata_value: Optional[Union[float, str]] = Field("nan", title="Nodata Value")
-    band_count: Optional[int] = Field(1, title="Band Count")
-    max_speed_factor: Optional[float] = Field(1.05, title="Max Speed Factor")
-    expansion_factor: Optional[float] = Field(1.3, title="Expansion Factor")
-    percentiles: Optional[List[float]] = Field(
-        [50.0, 60.0, 70.0, 80.0, 90.0, 95.0], title="Percentiles"
+    geometry_type: GeometryType = Field(
+        ...,
+        description="The geometry type of the provided geodataframe",
+        title="Geometry Type",
     )
 
 
-class TdColormap(BaseModel):
+class FdColormap(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -390,7 +213,7 @@ class TdColormap(BaseModel):
     )
 
 
-class TdEcomapHtmlUrl(BaseModel):
+class FdEcomapHtmlUrl(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -401,7 +224,93 @@ class TdEcomapHtmlUrl(BaseModel):
     )
 
 
-class TdMapWidget(BaseModel):
+class FdMapWidget(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    title: str = Field(..., description="The title of the widget", title="Title")
+
+
+class GroupedPeEcomapHtmlUrl(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    filename: Optional[str] = Field(
+        None,
+        description="            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            ",
+        title="Filename",
+    )
+
+
+class GroupedPeMapWidget(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    title: str = Field(..., description="The title of the widget", title="Title")
+
+
+class GroupedPePieChartHtmlUrls(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    filename: Optional[str] = Field(
+        None,
+        description="            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            ",
+        title="Filename",
+    )
+
+
+class GroupedPePieChartWidgets(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    title: str = Field(..., description="The title of the widget", title="Title")
+
+
+class GroupedPeFeatureDensity(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    geometry_type: GeometryType = Field(
+        ...,
+        description="The geometry type of the provided geodataframe",
+        title="Geometry Type",
+    )
+
+
+class GroupedFdColormap(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    input_column_name: str = Field(
+        ...,
+        description="The name of the column with categorical values.",
+        title="Input Column Name",
+    )
+    colormap: Optional[Union[str, List[str]]] = Field(
+        "viridis",
+        description="Either a named mpl.colormap or a list of string hex values.",
+        title="Colormap",
+    )
+    output_column_name: Optional[str] = Field(
+        None,
+        description="The dataframe column that will contain the color values.",
+        title="Output Column Name",
+    )
+
+
+class GroupedFdEcomapHtmlUrl(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    filename: Optional[str] = Field(
+        None,
+        description="            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            ",
+        title="Filename",
+    )
+
+
+class GroupedFdMapWidget(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -547,30 +456,6 @@ class TileLayer(BaseModel):
     opacity: Optional[float] = Field(1, title="Opacity")
 
 
-class WidgetType(str, Enum):
-    graph = "graph"
-    map = "map"
-    text = "text"
-    stat = "stat"
-
-
-class WidgetSingleView(BaseModel):
-    widget_type: WidgetType = Field(..., title="Widget Type")
-    title: str = Field(..., title="Title")
-    data: Union[Path, AnyUrl, str] = Field(..., title="Data")
-    view: Optional[List[List]] = Field(None, title="View")
-
-
-class Unit(str, Enum):
-    m = "m"
-    km = "km"
-    s = "s"
-    h = "h"
-    d = "d"
-    m_s = "m/s"
-    km_h = "km/h"
-
-
 class BarLayoutStyle(BaseModel):
     font_color: Optional[str] = Field(None, title="Font Color")
     font_style: Optional[str] = Field(None, title="Font Style")
@@ -593,6 +478,20 @@ class PlotStyle(BaseModel):
     marker_colors: Optional[List[str]] = Field(None, title="Marker Colors")
     textinfo: Optional[str] = Field(None, title="Textinfo")
     line: Optional[LineStyle] = Field(None, title="Line")
+
+
+class WidgetType(str, Enum):
+    graph = "graph"
+    map = "map"
+    text = "text"
+    stat = "stat"
+
+
+class WidgetSingleView(BaseModel):
+    widget_type: WidgetType = Field(..., title="Widget Type")
+    title: str = Field(..., title="Title")
+    data: Union[Path, AnyUrl, str] = Field(..., title="Data")
+    view: Optional[List[List]] = Field(None, title="View")
 
 
 class LayoutStyle(BaseModel):
@@ -619,28 +518,6 @@ class Groupers(BaseModel):
     )
 
 
-class PatrolReloc(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    filter_point_coords: List[Coordinate] = Field(..., title="Filter Point Coords")
-    relocs_columns: List[str] = Field(..., title="Relocs Columns")
-
-
-class PatrolTrajMapLayers(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    layer_style: Union[PolylineLayerStyle, PolygonLayerStyle, PointLayerStyle] = Field(
-        ..., description="Style arguments for the layer.", title="Layer Style"
-    )
-    legend: Optional[LegendDefinition] = Field(
-        None,
-        description="If present, includes this layer in the map legend",
-        title="Legend",
-    )
-
-
 class FilterPatrolEvents(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -657,7 +534,7 @@ class FilterPatrolEvents(BaseModel):
     )
 
 
-class PatrolEventsMapLayers(BaseModel):
+class PeMapLayer(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -671,7 +548,7 @@ class PatrolEventsMapLayers(BaseModel):
     )
 
 
-class TrajPatrolEventsEcomap(BaseModel):
+class PeEcomap(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -700,55 +577,93 @@ class TrajPatrolEventsEcomap(BaseModel):
     )
 
 
-class TotalPatrolTimeConverted(BaseModel):
+class FdMapLayer(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    original_unit: Optional[Unit] = Field(
-        None, description="The original unit of measurement.", title="Original Unit"
+    layer_style: Union[PolylineLayerStyle, PolygonLayerStyle, PointLayerStyle] = Field(
+        ..., description="Style arguments for the layer.", title="Layer Style"
     )
-    new_unit: Optional[Unit] = Field(
-        None, description="The unit to convert to.", title="New Unit"
+    legend: Optional[LegendDefinition] = Field(
+        None,
+        description="If present, includes this layer in the map legend",
+        title="Legend",
     )
 
 
-class TotalPatrolDistConverted(BaseModel):
+class FdEcomap(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    original_unit: Optional[Unit] = Field(
-        None, description="The original unit of measurement.", title="Original Unit"
+    tile_layers: Optional[List[TileLayer]] = Field(
+        [],
+        description="A list of named tile layer with opacity, ie OpenStreetMap.",
+        title="Tile Layers",
     )
-    new_unit: Optional[Unit] = Field(
-        None, description="The unit to convert to.", title="New Unit"
+    static: Optional[bool] = Field(
+        False, description="Set to true to disable map pan/zoom.", title="Static"
+    )
+    title: Optional[str] = Field("", description="The map title.", title="Title")
+    north_arrow_style: Optional[NorthArrowStyle] = Field(
+        default_factory=lambda: NorthArrowStyle.model_validate(
+            {"placement": "top-left", "style": {"transform": "scale(0.8)"}}
+        ),
+        description="Additional arguments for configuring the North Arrow.",
+        title="North Arrow Style",
+    )
+    legend_style: Optional[LegendStyle] = Field(
+        default_factory=lambda: LegendStyle.model_validate(
+            {"placement": "bottom-right"}
+        ),
+        description="Additional arguments for configuring the legend.",
+        title="Legend Style",
     )
 
 
-class AverageSpeedConverted(BaseModel):
+class GroupedPeMapLayer(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    original_unit: Optional[Unit] = Field(
-        None, description="The original unit of measurement.", title="Original Unit"
+    layer_style: Union[PolylineLayerStyle, PolygonLayerStyle, PointLayerStyle] = Field(
+        ..., description="Style arguments for the layer.", title="Layer Style"
     )
-    new_unit: Optional[Unit] = Field(
-        None, description="The unit to convert to.", title="New Unit"
+    legend: Optional[LegendDefinition] = Field(
+        None,
+        description="If present, includes this layer in the map legend",
+        title="Legend",
     )
 
 
-class MaxSpeedConverted(BaseModel):
+class GroupedPeEcomap(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    original_unit: Optional[Unit] = Field(
-        None, description="The original unit of measurement.", title="Original Unit"
+    tile_layers: Optional[List[TileLayer]] = Field(
+        [],
+        description="A list of named tile layer with opacity, ie OpenStreetMap.",
+        title="Tile Layers",
     )
-    new_unit: Optional[Unit] = Field(
-        None, description="The unit to convert to.", title="New Unit"
+    static: Optional[bool] = Field(
+        False, description="Set to true to disable map pan/zoom.", title="Static"
+    )
+    title: Optional[str] = Field("", description="The map title.", title="Title")
+    north_arrow_style: Optional[NorthArrowStyle] = Field(
+        default_factory=lambda: NorthArrowStyle.model_validate(
+            {"placement": "top-left", "style": {"transform": "scale(0.8)"}}
+        ),
+        description="Additional arguments for configuring the North Arrow.",
+        title="North Arrow Style",
+    )
+    legend_style: Optional[LegendStyle] = Field(
+        default_factory=lambda: LegendStyle.model_validate(
+            {"placement": "bottom-right"}
+        ),
+        description="Additional arguments for configuring the legend.",
+        title="Legend Style",
     )
 
 
-class PatrolEventsPieChart(BaseModel):
+class GroupedPePieChart(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -779,7 +694,7 @@ class PatrolEventsPieChart(BaseModel):
     )
 
 
-class TdMapLayer(BaseModel):
+class GroupedFdMapLayer(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -793,7 +708,7 @@ class TdMapLayer(BaseModel):
     )
 
 
-class TdEcomap(BaseModel):
+class GroupedFdEcomap(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -822,17 +737,12 @@ class TdEcomap(BaseModel):
     )
 
 
-class Quantity(BaseModel):
-    value: Union[int, float] = Field(..., title="Value")
-    unit: Optional[Unit] = None
-
-
 class GroupedPlotStyle(BaseModel):
     category: str = Field(..., title="Category")
     plot_style: PlotCategoryStyle
 
 
-class PatrolEventsBarChart(BaseModel):
+class PeBarChart(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -879,32 +789,12 @@ class PatrolEventsBarChart(BaseModel):
     )
 
 
-class Params(BaseModel):
+class FormData(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
     groupers: Optional[Groupers] = Field(None, title="Set Groupers")
-    patrol_obs: Optional[PatrolObs] = Field(
-        None, title="Get Patrol Observations from EarthRanger"
-    )
-    patrol_reloc: Optional[PatrolReloc] = Field(
-        None, title="Transform Observations to Relocations"
-    )
-    patrol_traj: Optional[PatrolTraj] = Field(
-        None, title="Transform Relocations to Trajectories"
-    )
-    traj_add_temporal_index: Optional[TrajAddTemporalIndex] = Field(
-        None, title="Add temporal index to Patrol Trajectories"
-    )
-    split_patrol_traj_groups: Optional[Dict[str, Any]] = Field(
-        None, title="Split Patrol Trajectories by Group"
-    )
-    patrol_traj_map_layers: Optional[PatrolTrajMapLayers] = Field(
-        None, title="Create map layer for each Patrol Trajectories group"
-    )
-    patrol_events: Optional[PatrolEvents] = Field(
-        None, title="Get Patrol Events from EarthRanger"
-    )
+    pe: Optional[Pe] = Field(None, title="Get Patrol Events from EarthRanger")
     filter_patrol_events: Optional[FilterPatrolEvents] = Field(
         None, title="Apply Relocation Coordinate Filter"
     )
@@ -912,114 +802,94 @@ class Params(BaseModel):
         None, title="Add temporal index to Patrol Events"
     )
     pe_colormap: Optional[PeColormap] = Field(None, title="Patrol Events Colormap")
-    split_pe_groups: Optional[Dict[str, Any]] = Field(
-        None, title="Split Patrol Events by Group"
+    pe_map_layer: Optional[PeMapLayer] = Field(
+        None, title="Create map layer from Patrol Events"
     )
-    patrol_events_map_layers: Optional[PatrolEventsMapLayers] = Field(
-        None, title="Create map layers for each Patrols Events group"
-    )
-    combined_traj_and_pe_map_layers: Optional[Dict[str, Any]] = Field(
-        None, title="Combine Trajectories and Patrol Events layers"
-    )
-    traj_patrol_events_ecomap: Optional[TrajPatrolEventsEcomap] = Field(
-        None, title="Draw Ecomaps for each combined Trajectory and Patrol Events group"
-    )
-    traj_pe_ecomap_html_urls: Optional[TrajPeEcomapHtmlUrls] = Field(
-        None, title="Persist Patrols Ecomap as Text"
-    )
-    traj_pe_map_widgets_single_views: Optional[TrajPeMapWidgetsSingleViews] = Field(
-        None, title="Create Map Widgets for Patrol Events"
-    )
-    traj_pe_grouped_map_widget: Optional[Dict[str, Any]] = Field(
-        None, title="Merge EcoMap Widget Views"
-    )
-    total_patrols: Optional[TotalPatrols] = Field(
-        None, title="Calculate Total Patrols Per Group"
-    )
-    total_patrols_sv_widgets: Optional[TotalPatrolsSvWidgets] = Field(
-        None, title="Create Single Value Widgets for Total Patrols Per Group"
-    )
-    total_patrols_grouped_sv_widget: Optional[Dict[str, Any]] = Field(
-        None, title="Merge per group Total Patrols SV widgets"
-    )
-    total_patrol_time: Optional[TotalPatrolTime] = Field(
-        None, title="Calculate Total Patrol Time Per Group"
-    )
-    total_patrol_time_converted: Optional[TotalPatrolTimeConverted] = Field(
-        None, title="Convert total patrol time units"
-    )
-    total_patrol_time_sv_widgets: Optional[TotalPatrolTimeSvWidgets] = Field(
-        None, title="Create Single Value Widgets for Total Patrol Time Per Group"
-    )
-    patrol_time_grouped_widget: Optional[Dict[str, Any]] = Field(
-        None, title="Merge per group Total Patrol Time SV widgets"
-    )
-    total_patrol_dist: Optional[TotalPatrolDist] = Field(
-        None, title="Calculate Total Distance Per Group"
-    )
-    total_patrol_dist_converted: Optional[TotalPatrolDistConverted] = Field(
-        None, title="Convert total patrol distance units"
-    )
-    total_patrol_dist_sv_widgets: Optional[TotalPatrolDistSvWidgets] = Field(
-        None, title="Create Single Value Widgets for Total Distance Per Group"
-    )
-    patrol_dist_grouped_widget: Optional[Dict[str, Any]] = Field(
-        None, title="Merge per group Total Patrol Distance SV widgets"
-    )
-    avg_speed: Optional[AvgSpeed] = Field(
-        None, title="Calculate Average Speed Per Group"
-    )
-    average_speed_converted: Optional[AverageSpeedConverted] = Field(
-        None, title="Convert Average Speed units"
-    )
-    avg_speed_sv_widgets: Optional[AvgSpeedSvWidgets] = Field(
-        None, title="Create Single Value Widgets for Avg Speed Per Group"
-    )
-    avg_speed_grouped_widget: Optional[Dict[str, Any]] = Field(
-        None, title="Merge per group Avg Speed SV widgets"
-    )
-    max_speed: Optional[MaxSpeed] = Field(None, title="Calculate Max Speed Per Group")
-    max_speed_converted: Optional[MaxSpeedConverted] = Field(
-        None, title="Convert Max Speed units"
-    )
-    max_speed_sv_widgets: Optional[MaxSpeedSvWidgets] = Field(
-        None, title="Create Single Value Widgets for Max Speed Per Group"
-    )
-    max_speed_grouped_widget: Optional[Dict[str, Any]] = Field(
-        None, title="Merge per group Max Speed SV widgets"
-    )
-    patrol_events_bar_chart: Optional[PatrolEventsBarChart] = Field(
-        None, title="Draw Time Series Bar Chart for Patrols Events"
-    )
-    patrol_events_bar_chart_html_url: Optional[PatrolEventsBarChartHtmlUrl] = Field(
-        None, title="Persist Patrols Bar Chart as Text"
-    )
-    patrol_events_bar_chart_widget: Optional[PatrolEventsBarChartWidget] = Field(
-        None, title="Create Plot Widget for Patrol Events"
-    )
-    patrol_events_pie_chart: Optional[PatrolEventsPieChart] = Field(
-        None, title="Draw Pie Chart for Patrols Events"
-    )
-    pe_pie_chart_html_urls: Optional[PePieChartHtmlUrls] = Field(
-        None, title="Persist Patrols Pie Chart as Text"
-    )
-    patrol_events_pie_chart_widgets: Optional[PatrolEventsPieChartWidgets] = Field(
-        None, title="Create Plot Widget for Patrol Events"
-    )
-    patrol_events_pie_widget_grouped: Optional[Dict[str, Any]] = Field(
-        None, title="Merge Pie Chart Widget Views"
-    )
-    td: Optional[Td] = Field(None, title="Calculate Time Density from Trajectory")
-    td_colormap: Optional[TdColormap] = Field(None, title="Time Density Colormap")
-    td_map_layer: Optional[TdMapLayer] = Field(
-        None, title="Create map layer from Time Density"
-    )
-    td_ecomap: Optional[TdEcomap] = Field(None, title="Draw Ecomap from Time Density")
-    td_ecomap_html_url: Optional[TdEcomapHtmlUrl] = Field(
+    pe_ecomap: Optional[PeEcomap] = Field(None, title="Draw Ecomap from Time Density")
+    pe_ecomap_html_url: Optional[PeEcomapHtmlUrl] = Field(
         None, title="Persist Ecomap as Text"
     )
-    td_map_widget: Optional[TdMapWidget] = Field(
+    pe_map_widget: Optional[PeMapWidget] = Field(
         None, title="Create Time Density Map Widget"
+    )
+    pe_bar_chart: Optional[PeBarChart] = Field(
+        None, title="Draw Time Series Bar Chart for Patrols Events"
+    )
+    pe_bar_chart_html_url: Optional[PeBarChartHtmlUrl] = Field(
+        None, title="Persist Patrols Bar Chart as Text"
+    )
+    pe_bar_chart_widget: Optional[PeBarChartWidget] = Field(
+        None, title="Create Plot Widget for Patrol Events"
+    )
+    pe_meshgrid: Optional[PeMeshgrid] = Field(
+        None, title="Create Patrol Events Meshgrid"
+    )
+    pe_feature_density: Optional[PeFeatureDensity] = Field(
+        None, title="Patrol Events Feature Density"
+    )
+    fd_colormap: Optional[FdColormap] = Field(None, title="Feature Density Colormap")
+    fd_map_layer: Optional[FdMapLayer] = Field(
+        None, title="Create map layer from Feature Density"
+    )
+    fd_ecomap: Optional[FdEcomap] = Field(
+        None, title="Draw Ecomap from Feature Density"
+    )
+    fd_ecomap_html_url: Optional[FdEcomapHtmlUrl] = Field(
+        None, title="Persist Feature Density Ecomap as Text"
+    )
+    fd_map_widget: Optional[FdMapWidget] = Field(
+        None, title="Create Feature Density Map Widget"
+    )
+    split_patrol_event_groups: Optional[Dict[str, Any]] = Field(
+        None, title="Split Patrol Events by Group"
+    )
+    grouped_pe_map_layer: Optional[GroupedPeMapLayer] = Field(
+        None, title="Create map layer from grouped Patrol Events"
+    )
+    grouped_pe_ecomap: Optional[GroupedPeEcomap] = Field(
+        None, title="Draw Ecomap from grouped Patrol Events"
+    )
+    grouped_pe_ecomap_html_url: Optional[GroupedPeEcomapHtmlUrl] = Field(
+        None, title="Persist grouped Patrol Events Ecomap as Text"
+    )
+    grouped_pe_map_widget: Optional[GroupedPeMapWidget] = Field(
+        None, title="Create grouped Patrol Events Map Widget"
+    )
+    grouped_pe_map_widget_merge: Optional[Dict[str, Any]] = Field(
+        None, title="Merge Patrol Events Map Widget Views"
+    )
+    grouped_pe_pie_chart: Optional[GroupedPePieChart] = Field(
+        None, title="Draw Pie Chart for Patrols Events"
+    )
+    grouped_pe_pie_chart_html_urls: Optional[GroupedPePieChartHtmlUrls] = Field(
+        None, title="Persist Patrols Pie Chart as Text"
+    )
+    grouped_pe_pie_chart_widgets: Optional[GroupedPePieChartWidgets] = Field(
+        None, title="Create Plot Widget for Patrol Events"
+    )
+    grouped_pe_pie_widget_merge: Optional[Dict[str, Any]] = Field(
+        None, title="Merge Pie Chart Widget Views"
+    )
+    grouped_pe_feature_density: Optional[GroupedPeFeatureDensity] = Field(
+        None, title="Grouped Patrol Events Feature Density"
+    )
+    grouped_fd_colormap: Optional[GroupedFdColormap] = Field(
+        None, title="Grouped Feature Density Colormap"
+    )
+    grouped_fd_map_layer: Optional[GroupedFdMapLayer] = Field(
+        None, title="Create map layer from Feature Density"
+    )
+    grouped_fd_ecomap: Optional[GroupedFdEcomap] = Field(
+        None, title="Draw Ecomap from Feature Density"
+    )
+    grouped_fd_ecomap_html_url: Optional[GroupedFdEcomapHtmlUrl] = Field(
+        None, title="Persist Feature Density Ecomap as Text"
+    )
+    grouped_fd_map_widget: Optional[GroupedFdMapWidget] = Field(
+        None, title="Create Feature Density Map Widget"
+    )
+    grouped_fd_map_widget_merge: Optional[Dict[str, Any]] = Field(
+        None, title="Merge Feature Density Widget Views"
     )
     patrol_dashboard: Optional[PatrolDashboard] = Field(
         None, title="Create Dashboard with Patrol Map Widgets"

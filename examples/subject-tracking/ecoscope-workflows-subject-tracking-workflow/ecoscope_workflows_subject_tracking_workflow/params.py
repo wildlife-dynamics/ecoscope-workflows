@@ -634,6 +634,9 @@ class TdEcomap(BaseModel):
 
 
 class Params(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
     groupers: Optional[Groupers] = Field(None, title="Set Groupers")
     subject_obs: Optional[SubjectObs] = Field(
         None, title="Get Subject Group Observations from EarthRanger"
