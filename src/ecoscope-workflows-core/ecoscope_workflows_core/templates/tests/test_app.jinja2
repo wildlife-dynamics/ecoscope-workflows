@@ -36,7 +36,13 @@ def test_run(
 def test_get_params(client: TestClient):
     response = client.get("/params")
     assert response.status_code == 200
-    assert set(list(response.json())) == {"title", "properties", "$defs", "additionalProperties", "uiSchema"}
+    assert set(list(response.json())) == {
+        "title",
+        "properties",
+        "$defs",
+        "additionalProperties",
+        "uiSchema",
+    }
 
 
 def test_validate_formdata(client: TestClient, case: TestCase, formdata: dict):
