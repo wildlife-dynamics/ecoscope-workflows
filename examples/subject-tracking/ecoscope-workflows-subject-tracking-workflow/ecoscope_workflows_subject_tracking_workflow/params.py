@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "1bba0e65ec660ba6386aa5c8a7c29109ccb34607bd2f62e3aed4d8f3b2a9ef10"
+# from-spec-sha256 = "df01bef5064cc2f34b7d5530c12241b9189b5ed34b92dab242314ea35d79f59d"
 
 
 from __future__ import annotations
@@ -192,6 +192,48 @@ class NumLocationSvWidgets(BaseModel):
 
 
 class DaynightRatioSvWidgets(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    title: str = Field(..., description="The title of the widget", title="Title")
+    decimal_places: Optional[int] = Field(
+        1,
+        description="The number of decimal places to display.",
+        title="Decimal Places",
+    )
+
+
+class TotalDistance(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    column_name: str = Field(
+        ..., description="Column to aggregate", title="Column Name"
+    )
+
+
+class TotalDistanceSvWidgets(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    title: str = Field(..., description="The title of the widget", title="Title")
+    decimal_places: Optional[int] = Field(
+        1,
+        description="The number of decimal places to display.",
+        title="Decimal Places",
+    )
+
+
+class TotalTime(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    column_name: str = Field(
+        ..., description="Column to aggregate", title="Column Name"
+    )
+
+
+class TotalTimeSvWidgets(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -590,6 +632,30 @@ class MaxSpeedConverted(BaseModel):
     )
 
 
+class TotalDistConverted(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    original_unit: Optional[Unit] = Field(
+        None, description="The original unit of measurement.", title="Original Unit"
+    )
+    new_unit: Optional[Unit] = Field(
+        None, description="The unit to convert to.", title="New Unit"
+    )
+
+
+class TotalTimeConverted(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    original_unit: Optional[Unit] = Field(
+        None, description="The original unit of measurement.", title="Original Unit"
+    )
+    new_unit: Optional[Unit] = Field(
+        None, description="The unit to convert to.", title="New Unit"
+    )
+
+
 class TdMapLayer(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -710,6 +776,30 @@ class Params(BaseModel):
     )
     daynight_ratio_grouped_sv_widget: Optional[Dict[str, Any]] = Field(
         None, title="Merge per group Day/Night Ratio SV widgets"
+    )
+    total_distance: Optional[TotalDistance] = Field(
+        None, title="Calculate Total Distance Per Group"
+    )
+    total_dist_converted: Optional[TotalDistConverted] = Field(
+        None, title="Convert total distance units"
+    )
+    total_distance_sv_widgets: Optional[TotalDistanceSvWidgets] = Field(
+        None, title="Create Single Value Widgets for Total Distance Per Group"
+    )
+    total_dist_grouped_sv_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge per group Total Distance SV widgets"
+    )
+    total_time: Optional[TotalTime] = Field(
+        None, title="Calculate Total Time Per Group"
+    )
+    total_time_converted: Optional[TotalTimeConverted] = Field(
+        None, title="Convert total time units"
+    )
+    total_time_sv_widgets: Optional[TotalTimeSvWidgets] = Field(
+        None, title="Create Single Value Widgets for Total Distance Per Group"
+    )
+    total_time_grouped_sv_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge per group Total Distance SV widgets"
     )
     td: Optional[Td] = Field(None, title="Calculate Time Density from Trajectory")
     td_colormap: Optional[TdColormap] = Field(None, title="Time Density Colormap")

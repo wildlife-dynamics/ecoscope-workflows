@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "1bba0e65ec660ba6386aa5c8a7c29109ccb34607bd2f62e3aed4d8f3b2a9ef10"
+# from-spec-sha256 = "df01bef5064cc2f34b7d5530c12241b9189b5ed34b92dab242314ea35d79f59d"
 
 
 # ruff: noqa: E402
@@ -34,6 +34,7 @@ from ecoscope_workflows_core.tasks.results import create_single_value_widget_sin
 from ecoscope_workflows_core.tasks.analysis import dataframe_column_max
 from ecoscope_workflows_core.tasks.analysis import dataframe_count
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import get_day_night_ratio
+from ecoscope_workflows_core.tasks.analysis import dataframe_column_sum
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import calculate_time_density
 from ecoscope_workflows_core.tasks.results import gather_dashboard
 
@@ -561,6 +562,158 @@ daynight_ratio_grouped_sv_widget = merge_widget_views.partial(
 
 
 # %% [markdown]
+# ## Calculate Total Distance Per Group
+
+# %%
+# parameters
+
+total_distance_params = dict(
+    column_name=...,
+)
+
+# %%
+# call the task
+
+
+total_distance = dataframe_column_sum.partial(**total_distance_params).mapvalues(
+    argnames=["df"], argvalues=split_subject_traj_groups
+)
+
+
+# %% [markdown]
+# ## Convert total distance units
+
+# %%
+# parameters
+
+total_dist_converted_params = dict(
+    original_unit=...,
+    new_unit=...,
+)
+
+# %%
+# call the task
+
+
+total_dist_converted = with_unit.partial(**total_dist_converted_params).mapvalues(
+    argnames=["value"], argvalues=total_distance
+)
+
+
+# %% [markdown]
+# ## Create Single Value Widgets for Total Distance Per Group
+
+# %%
+# parameters
+
+total_distance_sv_widgets_params = dict(
+    title=...,
+    decimal_places=...,
+)
+
+# %%
+# call the task
+
+
+total_distance_sv_widgets = create_single_value_widget_single_view.partial(
+    **total_distance_sv_widgets_params
+).map(argnames=["view", "data"], argvalues=total_dist_converted)
+
+
+# %% [markdown]
+# ## Merge per group Total Distance SV widgets
+
+# %%
+# parameters
+
+total_dist_grouped_sv_widget_params = dict()
+
+# %%
+# call the task
+
+
+total_dist_grouped_sv_widget = merge_widget_views.partial(
+    widgets=total_distance_sv_widgets, **total_dist_grouped_sv_widget_params
+).call()
+
+
+# %% [markdown]
+# ## Calculate Total Time Per Group
+
+# %%
+# parameters
+
+total_time_params = dict(
+    column_name=...,
+)
+
+# %%
+# call the task
+
+
+total_time = dataframe_column_sum.partial(**total_time_params).mapvalues(
+    argnames=["df"], argvalues=split_subject_traj_groups
+)
+
+
+# %% [markdown]
+# ## Convert total time units
+
+# %%
+# parameters
+
+total_time_converted_params = dict(
+    original_unit=...,
+    new_unit=...,
+)
+
+# %%
+# call the task
+
+
+total_time_converted = with_unit.partial(**total_time_converted_params).mapvalues(
+    argnames=["value"], argvalues=total_time
+)
+
+
+# %% [markdown]
+# ## Create Single Value Widgets for Total Distance Per Group
+
+# %%
+# parameters
+
+total_time_sv_widgets_params = dict(
+    title=...,
+    decimal_places=...,
+)
+
+# %%
+# call the task
+
+
+total_time_sv_widgets = create_single_value_widget_single_view.partial(
+    **total_time_sv_widgets_params
+).map(argnames=["view", "data"], argvalues=total_time_converted)
+
+
+# %% [markdown]
+# ## Merge per group Total Distance SV widgets
+
+# %%
+# parameters
+
+total_time_grouped_sv_widget_params = dict()
+
+# %%
+# call the task
+
+
+total_time_grouped_sv_widget = merge_widget_views.partial(
+    widgets=total_time_sv_widgets, **total_time_grouped_sv_widget_params
+).call()
+
+
+# %% [markdown]
 # ## Calculate Time Density from Trajectory
 
 # %%
@@ -726,6 +879,8 @@ subject_tracking_dashboard = gather_dashboard.partial(
         max_speed_grouped_sv_widget,
         num_location_grouped_sv_widget,
         daynight_ratio_grouped_sv_widget,
+        total_dist_grouped_sv_widget,
+        total_time_grouped_sv_widget,
         td_grouped_map_widget,
     ],
     groupers=groupers,

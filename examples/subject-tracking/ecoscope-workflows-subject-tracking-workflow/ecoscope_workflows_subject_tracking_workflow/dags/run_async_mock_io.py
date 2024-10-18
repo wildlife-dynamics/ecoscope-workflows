@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "1bba0e65ec660ba6386aa5c8a7c29109ccb34607bd2f62e3aed4d8f3b2a9ef10"
+# from-spec-sha256 = "df01bef5064cc2f34b7d5530c12241b9189b5ed34b92dab242314ea35d79f59d"
 
 # ruff: noqa: E402
 
@@ -42,6 +42,7 @@ from ecoscope_workflows_core.tasks.results import create_single_value_widget_sin
 from ecoscope_workflows_core.tasks.analysis import dataframe_column_max
 from ecoscope_workflows_core.tasks.analysis import dataframe_count
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import get_day_night_ratio
+from ecoscope_workflows_core.tasks.analysis import dataframe_column_sum
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import calculate_time_density
 from ecoscope_workflows_core.tasks.results import gather_dashboard
 
@@ -81,6 +82,14 @@ def main(params: Params):
         "daynight_ratio": ["split_subject_traj_groups"],
         "daynight_ratio_sv_widgets": ["daynight_ratio"],
         "daynight_ratio_grouped_sv_widget": ["daynight_ratio_sv_widgets"],
+        "total_distance": ["split_subject_traj_groups"],
+        "total_dist_converted": ["total_distance"],
+        "total_distance_sv_widgets": ["total_dist_converted"],
+        "total_dist_grouped_sv_widget": ["total_distance_sv_widgets"],
+        "total_time": ["split_subject_traj_groups"],
+        "total_time_converted": ["total_time"],
+        "total_time_sv_widgets": ["total_time_converted"],
+        "total_time_grouped_sv_widget": ["total_time_sv_widgets"],
         "td": ["split_subject_traj_groups"],
         "td_colormap": ["td"],
         "td_map_layer": ["td_colormap"],
@@ -94,6 +103,8 @@ def main(params: Params):
             "max_speed_grouped_sv_widget",
             "num_location_grouped_sv_widget",
             "daynight_ratio_grouped_sv_widget",
+            "total_dist_grouped_sv_widget",
+            "total_time_grouped_sv_widget",
             "td_grouped_map_widget",
             "groupers",
         ],
@@ -338,6 +349,80 @@ def main(params: Params):
             | params_dict["daynight_ratio_grouped_sv_widget"],
             method="call",
         ),
+        "total_distance": Node(
+            async_task=dataframe_column_sum.validate().set_executor("lithops"),
+            partial=params_dict["total_distance"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["df"],
+                "argvalues": DependsOn("split_subject_traj_groups"),
+            },
+        ),
+        "total_dist_converted": Node(
+            async_task=with_unit.validate().set_executor("lithops"),
+            partial=params_dict["total_dist_converted"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["value"],
+                "argvalues": DependsOn("total_distance"),
+            },
+        ),
+        "total_distance_sv_widgets": Node(
+            async_task=create_single_value_widget_single_view.validate().set_executor(
+                "lithops"
+            ),
+            partial=params_dict["total_distance_sv_widgets"],
+            method="map",
+            kwargs={
+                "argnames": ["view", "data"],
+                "argvalues": DependsOn("total_dist_converted"),
+            },
+        ),
+        "total_dist_grouped_sv_widget": Node(
+            async_task=merge_widget_views.validate().set_executor("lithops"),
+            partial={
+                "widgets": DependsOn("total_distance_sv_widgets"),
+            }
+            | params_dict["total_dist_grouped_sv_widget"],
+            method="call",
+        ),
+        "total_time": Node(
+            async_task=dataframe_column_sum.validate().set_executor("lithops"),
+            partial=params_dict["total_time"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["df"],
+                "argvalues": DependsOn("split_subject_traj_groups"),
+            },
+        ),
+        "total_time_converted": Node(
+            async_task=with_unit.validate().set_executor("lithops"),
+            partial=params_dict["total_time_converted"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["value"],
+                "argvalues": DependsOn("total_time"),
+            },
+        ),
+        "total_time_sv_widgets": Node(
+            async_task=create_single_value_widget_single_view.validate().set_executor(
+                "lithops"
+            ),
+            partial=params_dict["total_time_sv_widgets"],
+            method="map",
+            kwargs={
+                "argnames": ["view", "data"],
+                "argvalues": DependsOn("total_time_converted"),
+            },
+        ),
+        "total_time_grouped_sv_widget": Node(
+            async_task=merge_widget_views.validate().set_executor("lithops"),
+            partial={
+                "widgets": DependsOn("total_time_sv_widgets"),
+            }
+            | params_dict["total_time_grouped_sv_widget"],
+            method="call",
+        ),
         "td": Node(
             async_task=calculate_time_density.validate().set_executor("lithops"),
             partial=params_dict["td"],
@@ -413,6 +498,8 @@ def main(params: Params):
                         DependsOn("max_speed_grouped_sv_widget"),
                         DependsOn("num_location_grouped_sv_widget"),
                         DependsOn("daynight_ratio_grouped_sv_widget"),
+                        DependsOn("total_dist_grouped_sv_widget"),
+                        DependsOn("total_time_grouped_sv_widget"),
                         DependsOn("td_grouped_map_widget"),
                     ],
                 ),
