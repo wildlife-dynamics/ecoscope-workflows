@@ -831,7 +831,11 @@ class DagCompiler(BaseModel):
         return PackageDirectory(
             dags=self.get_dags(),
             **{
-                "app.py": self.ruffrender("pkg/app.jinja2"),
+                "app.py": self.ruffrender(
+                    "pkg/app.jinja2",
+                    title=self.spec.id,
+                    version=self.spec.sha256[:7],
+                ),
                 "cli.py": self.ruffrender("pkg/cli.jinja2"),
                 "dispatch.py": self.ruffrender("pkg/dispatch.jinja2"),
                 "params-jsonschema.json": self.get_params_jsonschema(flat=False),
