@@ -5,6 +5,8 @@
 
 from pathlib import Path
 
+import pytest
+import pydantic
 from fastapi.testclient import TestClient
 from ecoscope_workflows_core.testing import TestCase
 
@@ -37,20 +39,26 @@ def test_run(
 def test_get_params(client: TestClient):
     response = client.get("/params")
     assert response.status_code == 200
-    assert list(response.json()) == ["title", "properties", "$defs", "uiSchema"]
+    assert set(list(response.json())) == {
+        "title",
+        "properties",
+        "$defs",
+        "additionalProperties",
+        "uiSchema",
+    }
 
 
 def test_validate_formdata(client: TestClient, case: TestCase, formdata: dict):
+    invalid_request = client.post("/params", json=case.params)
+    assert invalid_request.status_code == 422
+
     response = client.post("/params", json=formdata)
     assert response.status_code == 200
 
     assert set(formdata) != set(case.params)
     assert set(response.json()) == set(case.params)
 
-    assert Params(**formdata) != Params(**case.params)
+    with pytest.raises(pydantic.ValidationError):
+        Params(**formdata)
+
     assert Params(**response.json()) == Params(**case.params)
-
-
-def test_validate_formdata_invalid(client: TestClient, case: TestCase):
-    response = client.post("/params", json=case.params)
-    assert response.status_code == 422
