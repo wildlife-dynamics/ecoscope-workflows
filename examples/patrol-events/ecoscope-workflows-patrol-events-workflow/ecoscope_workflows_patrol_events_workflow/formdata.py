@@ -789,7 +789,7 @@ class PeBarChart(BaseModel):
     )
 
 
-class Params(BaseModel):
+class FormData(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )

@@ -1828,6 +1828,7 @@
       "type": "object"
     }
   },
+  "additionalProperties": false,
   "uiSchema": {
     "ui:order": [
       "groupers",
