@@ -626,6 +626,148 @@
       "type": "object",
       "title": "Merge per group Day/Night Ratio SV widgets"
     },
+    "total_distance": {
+      "additionalProperties": false,
+      "properties": {
+        "column_name": {
+          "title": "Column Name",
+          "type": "string",
+          "description": "Column to aggregate"
+        }
+      },
+      "required": [
+        "column_name"
+      ],
+      "type": "object",
+      "title": "Calculate Total Distance Per Group"
+    },
+    "total_dist_converted": {
+      "additionalProperties": false,
+      "properties": {
+        "original_unit": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/Unit"
+            }
+          ],
+          "default": null,
+          "title": "Original Unit",
+          "description": "The original unit of measurement."
+        },
+        "new_unit": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/Unit"
+            }
+          ],
+          "default": null,
+          "title": "New Unit",
+          "description": "The unit to convert to."
+        }
+      },
+      "required": [],
+      "type": "object",
+      "title": "Convert total distance units"
+    },
+    "total_distance_sv_widgets": {
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title",
+          "type": "string",
+          "description": "The title of the widget"
+        },
+        "decimal_places": {
+          "default": 1,
+          "title": "Decimal Places",
+          "type": "integer",
+          "description": "The number of decimal places to display."
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "type": "object",
+      "title": "Create Single Value Widgets for Total Distance Per Group"
+    },
+    "total_dist_grouped_sv_widget": {
+      "additionalProperties": false,
+      "properties": {},
+      "required": [],
+      "type": "object",
+      "title": "Merge per group Total Distance SV widgets"
+    },
+    "total_time": {
+      "additionalProperties": false,
+      "properties": {
+        "column_name": {
+          "title": "Column Name",
+          "type": "string",
+          "description": "Column to aggregate"
+        }
+      },
+      "required": [
+        "column_name"
+      ],
+      "type": "object",
+      "title": "Calculate Total Time Per Group"
+    },
+    "total_time_converted": {
+      "additionalProperties": false,
+      "properties": {
+        "original_unit": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/Unit"
+            }
+          ],
+          "default": null,
+          "title": "Original Unit",
+          "description": "The original unit of measurement."
+        },
+        "new_unit": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/Unit"
+            }
+          ],
+          "default": null,
+          "title": "New Unit",
+          "description": "The unit to convert to."
+        }
+      },
+      "required": [],
+      "type": "object",
+      "title": "Convert total time units"
+    },
+    "total_time_sv_widgets": {
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title",
+          "type": "string",
+          "description": "The title of the widget"
+        },
+        "decimal_places": {
+          "default": 1,
+          "title": "Decimal Places",
+          "type": "integer",
+          "description": "The number of decimal places to display."
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "type": "object",
+      "title": "Create Single Value Widgets for Total Distance Per Group"
+    },
+    "total_time_grouped_sv_widget": {
+      "additionalProperties": false,
+      "properties": {},
+      "required": [],
+      "type": "object",
+      "title": "Merge per group Total Distance SV widgets"
+    },
     "td": {
       "additionalProperties": false,
       "properties": {
@@ -1736,6 +1878,14 @@
       "daynight_ratio",
       "daynight_ratio_sv_widgets",
       "daynight_ratio_grouped_sv_widget",
+      "total_distance",
+      "total_dist_converted",
+      "total_distance_sv_widgets",
+      "total_dist_grouped_sv_widget",
+      "total_time",
+      "total_time_converted",
+      "total_time_sv_widgets",
+      "total_time_grouped_sv_widget",
       "td",
       "td_colormap",
       "td_map_layer",

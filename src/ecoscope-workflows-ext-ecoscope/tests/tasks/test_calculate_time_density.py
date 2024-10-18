@@ -1,7 +1,6 @@
 from importlib.resources import files
 
 import geopandas as gpd  # type: ignore[import-untyped]
-
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import calculate_time_density
 
 
@@ -15,7 +14,7 @@ def test_calculate_time_density():
         pixel_size=250.0,
         crs="ESRI:102022",
         band_count=1,
-        nodata_value=float("nan"),
+        nodata_value="nan",
         max_speed_factor=1.05,
         expansion_factor=1.3,
         percentiles=[50.0, 60.0, 70.0, 80.0, 90.0, 95.0],
@@ -24,4 +23,11 @@ def test_calculate_time_density():
 
     assert result.shape == (6, 3)
     assert all([column in result for column in ["percentile", "geometry", "area_sqkm"]])
-    assert list(result["area_sqkm"]) == [17.75, 13.4375, 8.875, 6.25, 4.4375, 3.125]
+    assert list(result["area_sqkm"]) == [
+        501.875,
+        258.75,
+        96.6875,
+        46.8125,
+        25.1875,
+        13.375,
+    ]

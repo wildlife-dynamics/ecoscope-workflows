@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "1bba0e65ec660ba6386aa5c8a7c29109ccb34607bd2f62e3aed4d8f3b2a9ef10"
+# from-spec-sha256 = "df01bef5064cc2f34b7d5530c12241b9189b5ed34b92dab242314ea35d79f59d"
 
 # ruff: noqa: E402
 
@@ -40,6 +40,7 @@ from ecoscope_workflows_core.tasks.results import create_single_value_widget_sin
 from ecoscope_workflows_core.tasks.analysis import dataframe_column_max
 from ecoscope_workflows_core.tasks.analysis import dataframe_count
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import get_day_night_ratio
+from ecoscope_workflows_core.tasks.analysis import dataframe_column_sum
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import calculate_time_density
 from ecoscope_workflows_core.tasks.results import gather_dashboard
 
@@ -229,6 +230,59 @@ def main(params: Params):
         .call()
     )
 
+    total_distance = (
+        dataframe_column_sum.validate()
+        .partial(**params_dict["total_distance"])
+        .mapvalues(argnames=["df"], argvalues=split_subject_traj_groups)
+    )
+
+    total_dist_converted = (
+        with_unit.validate()
+        .partial(**params_dict["total_dist_converted"])
+        .mapvalues(argnames=["value"], argvalues=total_distance)
+    )
+
+    total_distance_sv_widgets = (
+        create_single_value_widget_single_view.validate()
+        .partial(**params_dict["total_distance_sv_widgets"])
+        .map(argnames=["view", "data"], argvalues=total_dist_converted)
+    )
+
+    total_dist_grouped_sv_widget = (
+        merge_widget_views.validate()
+        .partial(
+            widgets=total_distance_sv_widgets,
+            **params_dict["total_dist_grouped_sv_widget"],
+        )
+        .call()
+    )
+
+    total_time = (
+        dataframe_column_sum.validate()
+        .partial(**params_dict["total_time"])
+        .mapvalues(argnames=["df"], argvalues=split_subject_traj_groups)
+    )
+
+    total_time_converted = (
+        with_unit.validate()
+        .partial(**params_dict["total_time_converted"])
+        .mapvalues(argnames=["value"], argvalues=total_time)
+    )
+
+    total_time_sv_widgets = (
+        create_single_value_widget_single_view.validate()
+        .partial(**params_dict["total_time_sv_widgets"])
+        .map(argnames=["view", "data"], argvalues=total_time_converted)
+    )
+
+    total_time_grouped_sv_widget = (
+        merge_widget_views.validate()
+        .partial(
+            widgets=total_time_sv_widgets, **params_dict["total_time_grouped_sv_widget"]
+        )
+        .call()
+    )
+
     td = (
         calculate_time_density.validate()
         .partial(**params_dict["td"])
@@ -283,6 +337,8 @@ def main(params: Params):
                 max_speed_grouped_sv_widget,
                 num_location_grouped_sv_widget,
                 daynight_ratio_grouped_sv_widget,
+                total_dist_grouped_sv_widget,
+                total_time_grouped_sv_widget,
                 td_grouped_map_widget,
             ],
             groupers=groupers,
