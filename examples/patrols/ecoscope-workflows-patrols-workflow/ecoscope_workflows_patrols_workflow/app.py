@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field, SecretStr
 from ecoscope_workflows_core.tasks.results import DashboardJson
 
 from .dispatch import dispatch
+from .formdata import FormData
 from .params import Params
 
 
@@ -114,3 +115,8 @@ def run(
 def params_jsonschema():
     with Path(__file__).parent.joinpath("params-jsonschema.json").open() as f:
         return json.load(f)
+
+
+@app.post("/params/validate-formdata", response_model=Params, status_code=200)
+def validate_formdata(formdata: FormData):
+    return Params.from_formdata(formdata)
