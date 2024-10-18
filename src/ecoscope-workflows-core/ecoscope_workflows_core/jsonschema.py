@@ -107,6 +107,7 @@ class ReactJSONSchemaFormConfiguration(BaseModel):
     title: str = "Params"
     properties: dict[str, Any]
     definitions: dict[str, Any] | None = Field(alias="$defs", default=None)
+    additionalProperties: bool = False
 
     @computed_field
     def uiSchema(self) -> dict[str, list[str]]:

@@ -880,6 +880,9 @@ class PatrolEventsBarChart(BaseModel):
 
 
 class Params(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
     groupers: Optional[Groupers] = Field(None, title="Set Groupers")
     patrol_obs: Optional[PatrolObs] = Field(
         None, title="Get Patrol Observations from EarthRanger"

@@ -1053,6 +1053,9 @@ class PatrolEventsBarChart(BaseModel):
 
 
 class FormData(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
     groupers: Optional[Groupers] = Field(None, title="Set Groupers")
     Fetch_and_preprocess_patrol_observations: Optional[
         FetchAndPreprocessPatrolObservations
