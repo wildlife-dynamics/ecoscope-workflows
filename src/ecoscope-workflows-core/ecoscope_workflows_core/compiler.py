@@ -676,6 +676,7 @@ class DagCompiler(BaseModel):
             pytest = "*"
             [feature.test.tasks]
             test-all = "python -m pytest -v tests"
+            test-app-params = "python -m pytest -v tests/test_app.py -k 'params or formdata'"
             test-app-async-mock-io = "python -m pytest -v tests/test_app.py -k 'async and mock-io'"
             test-app-sequential-mock-io = "python -m pytest -v tests/test_app.py -k 'sequential and mock-io'"
             test-cli-async-mock-io = "python -m pytest -v tests/test_cli.py -k 'async and mock-io'"
@@ -827,7 +828,10 @@ class DagCompiler(BaseModel):
                     package_name=self.package_name,
                     release_name=self.release_name,
                 ),
-                "test_app.py": self.ruffrender("tests/test_app.jinja2"),
+                "test_app.py": self.ruffrender(
+                    "tests/test_app.jinja2",
+                    package_name=self.package_name,
+                ),
                 "test_cli.py": self.ruffrender("tests/test_cli.jinja2"),
             },
         )

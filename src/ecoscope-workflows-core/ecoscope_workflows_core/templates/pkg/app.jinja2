@@ -5,7 +5,7 @@ import os
 import tempfile
 import traceback
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 import ruamel.yaml
 from fastapi import FastAPI, Response, status
@@ -108,12 +108,21 @@ def run(
     return {"result": result.model_dump()}
 
 
-@app.get("/params/jsonschema", status_code=200)
+@app.get("/params", status_code=200)
 def params_jsonschema():
     with Path(__file__).parent.joinpath("params-jsonschema.json").open() as f:
         return json.load(f)
 
 
-@app.post("/params/validate-formdata", response_model=Params, status_code=200)
+@app.post("/params", response_model=Params, status_code=200)
 def validate_formdata(formdata: FormData):
-    return Params.from_formdata(formdata)
+    formdata_asdict: dict[str, dict | Any] = formdata.model_dump()
+    params_fieldnames = Params.model_fields.keys()
+    params_kws = {}
+    for k, v in formdata_asdict.items():
+        if k in params_fieldnames:
+            params_kws[k] = v
+        else:
+            for inner_k, inner_v in v.items():
+                params_kws[inner_k] = inner_v
+    return Params(**params_kws)
