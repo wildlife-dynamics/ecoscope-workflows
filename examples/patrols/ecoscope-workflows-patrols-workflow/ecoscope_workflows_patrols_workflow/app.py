@@ -20,9 +20,9 @@ from .params import Params
 
 
 app = FastAPI(
-    title="Ecoscope Workflows Runner",
+    title="patrols",
     debug=True,
-    version="0.0.0",
+    version="16f756",
 )
 app.add_middleware(
     CORSMiddleware,
