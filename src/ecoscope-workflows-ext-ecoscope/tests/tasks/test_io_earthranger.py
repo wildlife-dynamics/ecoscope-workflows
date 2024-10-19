@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pytest
 from ecoscope_workflows_core.tasks.filter._filter import TimeRange
@@ -30,8 +30,12 @@ def test_get_subject_group_observations(client):
         subject_group_name="Elephants",
         include_inactive=True,
         time_range=TimeRange(
-            since=datetime.strptime("2023-01-01", "%Y-%m-%d"),
-            until=datetime.strptime("2024-01-01", "%Y-%m-%d"),
+            since=datetime.strptime("2023-01-01", "%Y-%m-%d").replace(
+                tzinfo=timezone.utc
+            ),
+            until=datetime.strptime("2024-01-01", "%Y-%m-%d").replace(
+                tzinfo=timezone.utc
+            ),
         ),
     )
 
@@ -46,11 +50,14 @@ def test_get_patrol_observations(client):
     result = get_patrol_observations(
         client=client,
         time_range=TimeRange(
-            since=datetime.strptime("2023-01-01", "%Y-%m-%d"),
-            until=datetime.strptime("2024-01-01", "%Y-%m-%d"),
+            since=datetime.strptime("2015-01-01", "%Y-%m-%d").replace(
+                tzinfo=timezone.utc
+            ),
+            until=datetime.strptime("2015-03-01", "%Y-%m-%d").replace(
+                tzinfo=timezone.utc
+            ),
         ),
-        # MEP_Distance_Survey_Patrol
-        patrol_type="0ef3bf48-b44c-4a4e-a145-7ab2e38c9a57",
+        patrol_type="05ad114e-1aff-4602-bc83-efd333cdd8a2",
         status=None,
         include_patrol_details=True,
     )
@@ -66,10 +73,14 @@ def test_get_patrol_events(client):
     result = get_patrol_events(
         client=client,
         time_range=TimeRange(
-            since=datetime.strptime("2023-01-01", "%Y-%m-%d"),
-            until=datetime.strptime("2024-01-01", "%Y-%m-%d"),
+            since=datetime.strptime("2015-01-01", "%Y-%m-%d").replace(
+                tzinfo=timezone.utc
+            ),
+            until=datetime.strptime("2015-03-01", "%Y-%m-%d").replace(
+                tzinfo=timezone.utc
+            ),
         ),
-        patrol_type=None,
+        patrol_type="05ad114e-1aff-4602-bc83-efd333cdd8a2",
         status=None,
     )
 
