@@ -23,20 +23,24 @@
       "additionalProperties": false,
       "properties": {
         "since": {
-          "title": "Since"
+          "format": "date-time",
+          "title": "Since",
+          "type": "string"
         },
         "until": {
-          "title": "Until"
+          "format": "date-time",
+          "title": "Until",
+          "type": "string"
         },
-        "format": {
-          "title": "Format",
+        "time_format": {
+          "title": "Time Format",
           "type": "string"
         }
       },
       "required": [
         "since",
         "until",
-        "format"
+        "time_format"
       ],
       "type": "object",
       "title": "Set Time Range Filters"

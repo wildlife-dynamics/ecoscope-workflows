@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 import pytest
-
+from ecoscope_workflows_core.tasks.filter._filter import TimeRange
 from ecoscope_workflows_ext_ecoscope.connections import EarthRangerConnection
 from ecoscope_workflows_ext_ecoscope.tasks.io import (
     get_patrol_events,
@@ -29,8 +29,10 @@ def test_get_subject_group_observations(client):
         client=client,
         subject_group_name="Elephants",
         include_inactive=True,
-        since=datetime.strptime("2011-01-01", "%Y-%m-%d"),
-        until=datetime.strptime("2023-01-01", "%Y-%m-%d"),
+        time_range=TimeRange(
+            datetime.strptime("2011-01-01", "%Y-%m-%d"),
+            datetime.strptime("2023-01-01", "%Y-%m-%d"),
+        ),
     )
 
     assert len(result) > 0
@@ -43,8 +45,10 @@ def test_get_subject_group_observations(client):
 def test_get_patrol_observations(client):
     result = get_patrol_observations(
         client=client,
-        since="2011-01-01",
-        until="2023-01-01",
+        time_range=TimeRange(
+            datetime.strptime("2011-01-01", "%Y-%m-%d"),
+            datetime.strptime("2023-01-01", "%Y-%m-%d"),
+        ),
         # MEP_Distance_Survey_Patrol
         patrol_type="0ef3bf48-b44c-4a4e-a145-7ab2e38c9a57",
         status=None,
@@ -61,8 +65,10 @@ def test_get_patrol_observations(client):
 def test_get_patrol_events(client):
     result = get_patrol_events(
         client=client,
-        since="2011-01-01",
-        until="2025-01-01",
+        time_range=TimeRange(
+            datetime.strptime("2011-01-01", "%Y-%m-%d"),
+            datetime.strptime("2023-01-01", "%Y-%m-%d"),
+        ),
         patrol_type=None,
         status=None,
     )

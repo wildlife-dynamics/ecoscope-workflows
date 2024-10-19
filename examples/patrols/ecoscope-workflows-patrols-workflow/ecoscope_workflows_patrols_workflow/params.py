@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "f5429f1b54fe6b75253a95a7fb355e5a12c9eb9609d3e3a66ce1f9f20159668b"
+# from-spec-sha256 = "8a3657e3ebaa4bfbe1bbaaac414f150f77aaa86dfa1e7d1d71c3b10235974666"
 
 
 from __future__ import annotations
@@ -16,9 +16,9 @@ class TimeRange(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    since: Any = Field(..., title="Since")
-    until: Any = Field(..., title="Until")
-    format: str = Field(..., title="Format")
+    since: AwareDatetime = Field(..., title="Since")
+    until: AwareDatetime = Field(..., title="Until")
+    time_format: str = Field(..., title="Time Format")
 
 
 class StatusEnum(str, Enum):
