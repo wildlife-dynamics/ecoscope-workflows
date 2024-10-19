@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "642b49f4f5683b9f83cee62a5237f9d77844a04097aff8e569967a2010f54e41"
+# from-spec-sha256 = "adbb0f72888f0a6db61bb6d48c55ed1be8665d8b175928759e81ce6088846562"
 
 
 # ruff: noqa: E402
@@ -14,6 +14,7 @@
 
 import os
 from ecoscope_workflows_core.tasks.groupby import set_groupers
+from ecoscope_workflows_core.tasks.filter import set_time_range
 from ecoscope_workflows_ext_ecoscope.tasks.io import get_patrol_events
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import (
     apply_reloc_coord_filter,
@@ -51,6 +52,25 @@ groupers = set_groupers.partial(**groupers_params).call()
 
 
 # %% [markdown]
+# ## Set Time Range Filters
+
+# %%
+# parameters
+
+time_range_params = dict(
+    since=...,
+    until=...,
+    time_format=...,
+)
+
+# %%
+# call the task
+
+
+time_range = set_time_range.partial(**time_range_params).call()
+
+
+# %% [markdown]
 # ## Get Patrol Events from EarthRanger
 
 # %%
@@ -58,8 +78,6 @@ groupers = set_groupers.partial(**groupers_params).call()
 
 pe_params = dict(
     client=...,
-    since=...,
-    until=...,
     patrol_type=...,
     status=...,
 )
@@ -68,7 +86,7 @@ pe_params = dict(
 # call the task
 
 
-pe = get_patrol_events.partial(**pe_params).call()
+pe = get_patrol_events.partial(time_range=time_range, **pe_params).call()
 
 
 # %% [markdown]
@@ -792,5 +810,6 @@ patrol_dashboard = gather_dashboard.partial(
         grouped_fd_map_widget_merge,
     ],
     groupers=groupers,
+    time_range=time_range,
     **patrol_dashboard_params,
 ).call()

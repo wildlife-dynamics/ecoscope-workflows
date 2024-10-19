@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "642b49f4f5683b9f83cee62a5237f9d77844a04097aff8e569967a2010f54e41"
+# from-spec-sha256 = "adbb0f72888f0a6db61bb6d48c55ed1be8665d8b175928759e81ce6088846562"
 
 
 from __future__ import annotations
@@ -9,7 +9,16 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
-from pydantic import AnyUrl, BaseModel, ConfigDict, Field, confloat
+from pydantic import AnyUrl, AwareDatetime, BaseModel, ConfigDict, Field, confloat
+
+
+class TimeRange(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    since: AwareDatetime = Field(..., description="The start time", title="Since")
+    until: AwareDatetime = Field(..., description="The end time", title="Until")
+    time_format: str = Field(..., description="The time format", title="Time Format")
 
 
 class Pe(BaseModel):
@@ -19,8 +28,6 @@ class Pe(BaseModel):
     client: str = Field(
         ..., description="A named EarthRanger connection.", title="Client"
     )
-    since: str = Field(..., description="Start date", title="Since")
-    until: str = Field(..., description="End date", title="Until")
     patrol_type: List[str] = Field(
         ..., description="list of UUID of patrol types", title="Patrol Type"
     )
@@ -331,6 +338,12 @@ class Grouper(BaseModel):
     index_name: str = Field(..., title="Index Name")
     display_name: Optional[str] = Field(None, title="Display Name")
     help_text: Optional[str] = Field(None, title="Help Text")
+
+
+class TimeRange1(BaseModel):
+    since: AwareDatetime = Field(..., title="Since")
+    until: AwareDatetime = Field(..., title="Until")
+    time_format: Optional[str] = Field("%d %b %Y %H:%M:%S %Z", title="Time Format")
 
 
 class Coordinate(BaseModel):
@@ -793,6 +806,7 @@ class PeBarChart(BaseModel):
 
 class Params(BaseModel):
     groupers: Optional[Groupers] = Field(None, title="Set Groupers")
+    time_range: Optional[TimeRange] = Field(None, title="Set Time Range Filters")
     pe: Optional[Pe] = Field(None, title="Get Patrol Events from EarthRanger")
     filter_patrol_events: Optional[FilterPatrolEvents] = Field(
         None, title="Apply Relocation Coordinate Filter"
