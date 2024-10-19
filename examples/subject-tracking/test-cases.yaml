@@ -26,6 +26,8 @@ test1:
           y: 0.0
       relocs_columns: ["groupby_col", "fixtime", "junk_status", "geometry"] # (list[str], FieldInfo(annotation=NoneType, required=True))
 
+    day_night_labels: {}
+
     # Parameters for 'Transform Relocations to Trajectories' using task `relocations_to_trajectory`.
     subject_traj:
       min_length_meters: 0.001 # (<class 'float'>, FieldInfo(annotation=NoneType, required=True))
@@ -89,6 +91,38 @@ test1:
 
     # Parameters for 'Merge EcoMap Widget Views' using task `merge_widget_views`.
     traj_grouped_map_widget: {}
+
+    colormap_traj_night:
+      input_column_name: "extra__is_night"
+      colormap: ["#292965", "#e7a553"]
+      output_column_name: "is_night_colors"
+
+    # Parameters for 'Create map layer for each trajectory group' using task `create_map_layer`.
+    traj_map_night_layers:
+      layer_style:
+        layer_type: "polyline"
+        color_column: "is_night_colors"
+      legend:
+        labels: ["Night", "Day"]
+        colors: ["#292965", "#e7a553"]
+
+    # Parameters for 'Draw Ecomaps for each trajectory group' using task `draw_ecomap`.
+    traj_daynight_ecomap:
+      tile_layers:
+        - name: "SATELLITE"
+        - name: "TERRAIN"
+          opacity: 0.5
+      static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
+
+    # Parameters for 'Persist ecomap as Text' using task `persist_text`.
+    ecomap_daynight_html_urls: {}
+
+    # Parameters for 'Create Map Widgets for Patrol Events' using task `create_map_widget_single_view`.
+    traj_map_daynight_widgets_sv:
+      title: "Subject Group Day/Night Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+    # Parameters for 'Merge EcoMap Widget Views' using task `merge_widget_views`.
+    traj_daynight_grouped_map_widget: {}
 
     # Parameters for 'Calculate Mean Speed Per Group' using task `dataframe_column_mean`.
     mean_speed:

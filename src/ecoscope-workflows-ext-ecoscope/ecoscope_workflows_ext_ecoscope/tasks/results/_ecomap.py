@@ -205,9 +205,7 @@ def draw_ecomap(
                 )
             elif layer_def.legend.labels:
                 legend_labels.extend(layer_def.legend.labels)
-                legend_colors.extend(
-                    layer_def.layer_def.legend.colors.apply(color_to_hex)
-                )
+                legend_colors.extend(layer_def.legend.colors)
 
         m.add_layer(layer)
 
