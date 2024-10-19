@@ -1,4 +1,4 @@
-id: patrol_events
+id: events
 requirements:
   - name: ecoscope-workflows-core
     version: "*"

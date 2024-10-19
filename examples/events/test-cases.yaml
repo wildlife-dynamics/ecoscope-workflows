@@ -1,7 +1,7 @@
 # TODO: generate this _instead_ of "params_fillable.yaml"  and then edit it
 test1:
   name: Test 1
-  description: "Test case for patrol-events"
+  description: "Test case for events"
   params:
     # Parameters for 'Set Groupers' using task `set_groupers`.
     groupers:

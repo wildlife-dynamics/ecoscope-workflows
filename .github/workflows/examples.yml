@@ -32,23 +32,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        example: [
-          "patrol-events",
-          "patrols",
-          "subject-tracking",
-        ]
-        deployment: [
-          "local",
-          "docker",
-        ]
-        api: [
-          "app",
-          "cli",
-        ]
-        execution-mode: [
-          "async",
-          "sequential",
-        ]
+        example: ["events", "patrols", "subject-tracking"]
+        deployment: ["local", "docker"]
+        api: ["app", "cli"]
+        execution-mode: ["async", "sequential"]
         exclude:
           # at this point, the docker container we are building runs the app only (not the cli)
           # if we want to build a version of the container that runs the cli at a later point,
@@ -82,4 +69,4 @@ jobs:
           docker logs ${{ matrix.example }}
       - name: Invoke container with curl
         if: matrix.deployment == 'docker'
-        run:  pixi run --manifest-path pixi.toml curl-invoke-${{ matrix.example }} ${{ matrix.execution-mode }}
+        run: pixi run --manifest-path pixi.toml curl-invoke-${{ matrix.example }} ${{ matrix.execution-mode }}
