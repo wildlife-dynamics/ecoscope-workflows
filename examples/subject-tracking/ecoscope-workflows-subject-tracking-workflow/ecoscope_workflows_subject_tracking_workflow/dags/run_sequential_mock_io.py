@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "df01bef5064cc2f34b7d5530c12241b9189b5ed34b92dab242314ea35d79f59d"
+# from-spec-sha256 = "2ae7a06ff92fc61a80723012afb506084a82214ff9ed3e8d7d1d12f4c7454a73"
 
 # ruff: noqa: E402
 
@@ -29,6 +29,7 @@ from ecoscope_workflows_core.tasks.transformation import add_temporal_index
 from ecoscope_workflows_core.tasks.groupby import split_groups
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import apply_classification
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import apply_color_map
+from ecoscope_workflows_core.tasks.transformation import map_values_with_unit
 from ecoscope_workflows_ext_ecoscope.tasks.results import create_map_layer
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecomap
 from ecoscope_workflows_core.tasks.io import persist_text
@@ -100,10 +101,16 @@ def main(params: Params):
         .mapvalues(argnames=["df"], argvalues=classify_traj_speed)
     )
 
+    speedmap_legend_with_unit = (
+        map_values_with_unit.validate()
+        .partial(**params_dict["speedmap_legend_with_unit"])
+        .mapvalues(argnames=["df"], argvalues=colormap_traj_speed)
+    )
+
     traj_map_layers = (
         create_map_layer.validate()
         .partial(**params_dict["traj_map_layers"])
-        .mapvalues(argnames=["geodataframe"], argvalues=colormap_traj_speed)
+        .mapvalues(argnames=["geodataframe"], argvalues=speedmap_legend_with_unit)
     )
 
     traj_ecomap = (

@@ -57,13 +57,19 @@ test1:
         ["#1a9850", "#91cf60", "#d9ef8b", "#fee08b", "#fc8d59", "#d73027"]
       output_column_name: "speed_bins_colormap"
 
+    speedmap_legend_with_unit:
+      input_column_name: "speed_bins"
+      output_column_name: "speed_bins_formatted"
+      original_unit: "km/h"
+      new_unit: "km/h"
+
     # Parameters for 'Create map layer for each trajectory group' using task `create_map_layer`.
     traj_map_layers:
       layer_style:
         layer_type: "polyline"
         color_column: "speed_bins_colormap"
       legend:
-        label_column: "speed_bins"
+        label_column: "speed_bins_formatted"
         color_column: "speed_bins_colormap"
 
     # Parameters for 'Draw Ecomaps for each trajectory group' using task `draw_ecomap`.

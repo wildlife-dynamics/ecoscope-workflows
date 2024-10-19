@@ -287,6 +287,53 @@
       "type": "object",
       "title": "Apply Color to Trajectories By Speed"
     },
+    "speedmap_legend_with_unit": {
+      "additionalProperties": false,
+      "properties": {
+        "input_column_name": {
+          "title": "Input Column Name",
+          "type": "string",
+          "description": "The column name to map."
+        },
+        "output_column_name": {
+          "title": "Output Column Name",
+          "type": "string",
+          "description": "The new column name."
+        },
+        "original_unit": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/Unit"
+            }
+          ],
+          "default": null,
+          "title": "Original Unit",
+          "description": "The original unit of measurement."
+        },
+        "new_unit": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/Unit"
+            }
+          ],
+          "default": null,
+          "title": "New Unit",
+          "description": "The unit to convert to."
+        },
+        "decimal_places": {
+          "default": 1,
+          "title": "Decimal Places",
+          "type": "integer",
+          "description": "The number of decimal places to display."
+        }
+      },
+      "required": [
+        "input_column_name",
+        "output_column_name"
+      ],
+      "type": "object",
+      "title": "Format Speedmap Legend Label"
+    },
     "traj_map_layers": {
       "additionalProperties": false,
       "properties": {
@@ -1224,6 +1271,19 @@
       "title": "StdMeanArgs",
       "type": "object"
     },
+    "Unit": {
+      "enum": [
+        "m",
+        "km",
+        "s",
+        "h",
+        "d",
+        "m/s",
+        "km/h"
+      ],
+      "title": "Unit",
+      "type": "string"
+    },
     "LegendDefinition": {
       "properties": {
         "label_column": {
@@ -1759,19 +1819,6 @@
       "title": "WidgetSingleView",
       "type": "object"
     },
-    "Unit": {
-      "enum": [
-        "m",
-        "km",
-        "s",
-        "h",
-        "d",
-        "m/s",
-        "km/h"
-      ],
-      "title": "Unit",
-      "type": "string"
-    },
     "Quantity": {
       "properties": {
         "value": {
@@ -1859,6 +1906,7 @@
       "split_subject_traj_groups",
       "classify_traj_speed",
       "colormap_traj_speed",
+      "speedmap_legend_with_unit",
       "traj_map_layers",
       "traj_ecomap",
       "ecomap_html_urls",

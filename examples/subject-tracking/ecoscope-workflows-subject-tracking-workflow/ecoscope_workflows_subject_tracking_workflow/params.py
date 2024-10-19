@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "df01bef5064cc2f34b7d5530c12241b9189b5ed34b92dab242314ea35d79f59d"
+# from-spec-sha256 = "2ae7a06ff92fc61a80723012afb506084a82214ff9ed3e8d7d1d12f4c7454a73"
 
 
 from __future__ import annotations
@@ -364,6 +364,16 @@ class StdMeanArgs(BaseModel):
     anchor: Optional[bool] = Field(False, title="Anchor")
 
 
+class Unit(str, Enum):
+    m = "m"
+    km = "km"
+    s = "s"
+    h = "h"
+    d = "d"
+    m_s = "m/s"
+    km_h = "km/h"
+
+
 class LegendDefinition(BaseModel):
     label_column: str = Field(..., title="Label Column")
     color_column: str = Field(..., title="Color Column")
@@ -496,16 +506,6 @@ class WidgetSingleView(BaseModel):
     view: Optional[List[List]] = Field(None, title="View")
 
 
-class Unit(str, Enum):
-    m = "m"
-    km = "km"
-    s = "s"
-    h = "h"
-    d = "d"
-    m_s = "m/s"
-    km_h = "km/h"
-
-
 class Quantity(BaseModel):
     value: Union[int, float] = Field(..., title="Value")
     unit: Optional[Unit] = None
@@ -563,6 +563,29 @@ class ClassifyTrajSpeed(BaseModel):
             FisherJenksArgs,
         ]
     ] = Field({"k": 5}, title="Classification Options")
+
+
+class SpeedmapLegendWithUnit(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    input_column_name: str = Field(
+        ..., description="The column name to map.", title="Input Column Name"
+    )
+    output_column_name: str = Field(
+        ..., description="The new column name.", title="Output Column Name"
+    )
+    original_unit: Optional[Unit] = Field(
+        None, description="The original unit of measurement.", title="Original Unit"
+    )
+    new_unit: Optional[Unit] = Field(
+        None, description="The unit to convert to.", title="New Unit"
+    )
+    decimal_places: Optional[int] = Field(
+        1,
+        description="The number of decimal places to display.",
+        title="Decimal Places",
+    )
 
 
 class TrajMapLayers(BaseModel):
@@ -721,6 +744,9 @@ class Params(BaseModel):
     )
     colormap_traj_speed: Optional[ColormapTrajSpeed] = Field(
         None, title="Apply Color to Trajectories By Speed"
+    )
+    speedmap_legend_with_unit: Optional[SpeedmapLegendWithUnit] = Field(
+        None, title="Format Speedmap Legend Label"
     )
     traj_map_layers: Optional[TrajMapLayers] = Field(
         None, title="Create map layer for each trajectory group"

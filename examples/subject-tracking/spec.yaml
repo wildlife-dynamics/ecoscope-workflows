@@ -51,12 +51,18 @@ workflow:
     mapvalues:
       argnames: df
       argvalues: ${{ workflow.classify_traj_speed.return }}
+  - name: Format Speedmap Legend Label
+    id: speedmap_legend_with_unit
+    task: map_values_with_unit
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.colormap_traj_speed.return }}
   - name: Create map layer for each trajectory group
     id: traj_map_layers
     task: create_map_layer
     mapvalues:
       argnames: geodataframe
-      argvalues: ${{ workflow.colormap_traj_speed.return }}
+      argvalues: ${{ workflow.speedmap_legend_with_unit.return }}
   - name: Draw Ecomaps for each trajectory group
     id: traj_ecomap
     task: draw_ecomap
