@@ -6,15 +6,15 @@ test1:
     # Parameters for 'Set Groupers' using task `set_groupers`.
     groupers:
       groupers: # (list[ecoscope_workflows.tasks.groupby._groupby.Grouper], FieldInfo(annotation=NoneType, required=True, description='            Index(es) and/or column(s) to group by, along with\n            optional display names and help text.\n            '))
-        - index_name: "year"
-          display_name: "Year"
+        - index_name: "month"
+          display_name: "Month"
 
     # Parameters for 'Get Subject Group Observations from EarthRanger' using task `get_subjectgroup_observations`.
     subject_obs:
       client: "mep_dev" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
-      subject_group_name: "Elephants" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of EarthRanger Subject'))
-      since: "2011-01-01T00:00:00Z" # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
-      until: "2023-01-01T00:00:00Z" # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
+      subject_group_name: "Salif" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of EarthRanger Subject'))
+      since: "2009-01-01T00:00:00Z" # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
+      until: "2009-03-31T23:59:59Z" # (<class 'datetime.datetime'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
       include_inactive: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether or not to include inactive subjects'))
 
     # Parameters for 'Transform Observations to Relocations' using task `process_relocations`.
@@ -25,6 +25,8 @@ test1:
         - x: 0.0
           y: 0.0
       relocs_columns: ["groupby_col", "fixtime", "junk_status", "geometry"] # (list[str], FieldInfo(annotation=NoneType, required=True))
+
+    day_night_labels: {}
 
     # Parameters for 'Transform Relocations to Trajectories' using task `relocations_to_trajectory`.
     subject_traj:
@@ -37,9 +39,9 @@ test1:
 
     # Parameters for 'Add temporal index to Subject Trajectories' using task `add_temporal_index`.
     traj_add_temporal_index:
-      index_name: "year" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A name for the new index which will be added.'))
+      index_name: "month" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A name for the new index which will be added.'))
       time_col: "segment_start" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of existing column containing time data.'))
-      directive: "%Y" # (typing.Literal['%a', '%A', '%b', '%B', '%c', '%d', '%f', '%H', '%I', '%j', '%m', '%M', '%p', '%S', '%U', '%w', '%W', '%x', '%X', '%y', '%Y', '%z', '%%'], FieldInfo(annotation=NoneType, required=True, description='A directive for formatting the time data.'))
+      directive: "%B" # (typing.Literal['%a', '%A', '%b', '%B', '%c', '%d', '%f', '%H', '%I', '%j', '%m', '%M', '%p', '%S', '%U', '%w', '%W', '%x', '%X', '%y', '%Y', '%z', '%%'], FieldInfo(annotation=NoneType, required=True, description='A directive for formatting the time data.'))
 
     # Parameters for 'Split Subject Trajectories by Group' using task `split_groups`.
     split_subject_traj_groups: {}
@@ -57,13 +59,19 @@ test1:
         ["#1a9850", "#91cf60", "#d9ef8b", "#fee08b", "#fc8d59", "#d73027"]
       output_column_name: "speed_bins_colormap"
 
+    speedmap_legend_with_unit:
+      input_column_name: "speed_bins"
+      output_column_name: "speed_bins_formatted"
+      original_unit: "km/h"
+      new_unit: "km/h"
+
     # Parameters for 'Create map layer for each trajectory group' using task `create_map_layer`.
     traj_map_layers:
       layer_style:
         layer_type: "polyline"
         color_column: "speed_bins_colormap"
       legend:
-        label_column: "speed_bins"
+        label_column: "speed_bins_formatted"
         color_column: "speed_bins_colormap"
 
     # Parameters for 'Draw Ecomaps for each trajectory group' using task `draw_ecomap`.
@@ -83,6 +91,38 @@ test1:
 
     # Parameters for 'Merge EcoMap Widget Views' using task `merge_widget_views`.
     traj_grouped_map_widget: {}
+
+    colormap_traj_night:
+      input_column_name: "extra__is_night"
+      colormap: ["#292965", "#e7a553"]
+      output_column_name: "is_night_colors"
+
+    # Parameters for 'Create map layer for each trajectory group' using task `create_map_layer`.
+    traj_map_night_layers:
+      layer_style:
+        layer_type: "polyline"
+        color_column: "is_night_colors"
+      legend:
+        labels: ["Night", "Day"]
+        colors: ["#292965", "#e7a553"]
+
+    # Parameters for 'Draw Ecomaps for each trajectory group' using task `draw_ecomap`.
+    traj_daynight_ecomap:
+      tile_layers:
+        - name: "SATELLITE"
+        - name: "TERRAIN"
+          opacity: 0.5
+      static: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=False))
+
+    # Parameters for 'Persist ecomap as Text' using task `persist_text`.
+    ecomap_daynight_html_urls: {}
+
+    # Parameters for 'Create Map Widgets for Patrol Events' using task `create_map_widget_single_view`.
+    traj_map_daynight_widgets_sv:
+      title: "Subject Group Day/Night Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+    # Parameters for 'Merge EcoMap Widget Views' using task `merge_widget_views`.
+    traj_daynight_grouped_map_widget: {}
 
     # Parameters for 'Calculate Mean Speed Per Group' using task `dataframe_column_mean`.
     mean_speed:
@@ -133,6 +173,38 @@ test1:
 
     # Parameters for 'Merge per group Day/Night Ratio SV widgets' using task `merge_widget_views`.
     daynight_ratio_grouped_sv_widget: {}
+
+    # Parameters for 'Calculate Total Distance Per Group' using task `dataframe_column_sum`.
+    total_distance:
+      column_name: "dist_meters" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Column to aggregate'))
+
+    # Parameters for 'Convert total patrol distance units' using task `apply_arithmetic_operation`.
+    total_dist_converted:
+      original_unit: "m"
+      new_unit: "km"
+
+    # Parameters for 'Create Single Value Widgets for Total Distance Per Group' using task `create_single_value_widget_single_view`.
+    total_distance_sv_widgets:
+      title: "Total Distance" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+    # Parameters for 'Merge per group Total Patrol Per Group SV widgets' using task `merge_widget_views`.
+    total_dist_grouped_sv_widget: {}
+
+    # Parameters for 'Calculate Total Patrol Time Per Group' using task `dataframe_column_sum`.
+    total_time:
+      column_name: "timespan_seconds" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Column to aggregate'))
+
+    # Parameters for 'Convert total patrol time units' using task `apply_arithmetic_operation`.
+    total_time_converted:
+      original_unit: "s"
+      new_unit: "h"
+
+    # Parameters for 'Create Single Value Widgets for Total Patrol Time Per Group' using task `create_single_value_widget_single_view`.
+    total_time_sv_widgets:
+      title: "Total Time" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
+    # Parameters for 'Merge per group Total Patrol Per Group SV widgets' using task `merge_widget_views`.
+    total_time_grouped_sv_widget: {}
 
     # Parameters for 'Calculate Time Density from Trajectory' using task `calculate_time_density`.
     td:

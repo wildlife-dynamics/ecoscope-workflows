@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "1bba0e65ec660ba6386aa5c8a7c29109ccb34607bd2f62e3aed4d8f3b2a9ef10"
+# from-spec-sha256 = "b9febf5b3ff98ca3fd882b4f918e74114c04e0ff454b22c33ea84337b0ba9b0f"
 import json
 import os
 
@@ -9,6 +9,7 @@ from ecoscope_workflows_core.graph import DependsOn, DependsOnSequence, Graph, N
 from ecoscope_workflows_core.tasks.groupby import set_groupers
 from ecoscope_workflows_ext_ecoscope.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import process_relocations
+from ecoscope_workflows_ext_ecoscope.tasks.transformation import classify_is_night
 from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import (
     relocations_to_trajectory,
 )
@@ -16,6 +17,7 @@ from ecoscope_workflows_core.tasks.transformation import add_temporal_index
 from ecoscope_workflows_core.tasks.groupby import split_groups
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import apply_classification
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import apply_color_map
+from ecoscope_workflows_core.tasks.transformation import map_values_with_unit
 from ecoscope_workflows_ext_ecoscope.tasks.results import create_map_layer
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecomap
 from ecoscope_workflows_core.tasks.io import persist_text
@@ -27,6 +29,7 @@ from ecoscope_workflows_core.tasks.results import create_single_value_widget_sin
 from ecoscope_workflows_core.tasks.analysis import dataframe_column_max
 from ecoscope_workflows_core.tasks.analysis import dataframe_count
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import get_day_night_ratio
+from ecoscope_workflows_core.tasks.analysis import dataframe_column_sum
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import calculate_time_density
 from ecoscope_workflows_core.tasks.results import gather_dashboard
 
@@ -40,16 +43,24 @@ def main(params: Params):
         "groupers": [],
         "subject_obs": [],
         "subject_reloc": ["subject_obs"],
-        "subject_traj": ["subject_reloc"],
+        "day_night_labels": ["subject_reloc"],
+        "subject_traj": ["day_night_labels"],
         "traj_add_temporal_index": ["subject_traj"],
         "split_subject_traj_groups": ["traj_add_temporal_index", "groupers"],
         "classify_traj_speed": ["split_subject_traj_groups"],
         "colormap_traj_speed": ["classify_traj_speed"],
-        "traj_map_layers": ["colormap_traj_speed"],
+        "speedmap_legend_with_unit": ["colormap_traj_speed"],
+        "traj_map_layers": ["speedmap_legend_with_unit"],
         "traj_ecomap": ["traj_map_layers"],
         "ecomap_html_urls": ["traj_ecomap"],
         "traj_map_widgets_single_views": ["ecomap_html_urls"],
         "traj_grouped_map_widget": ["traj_map_widgets_single_views"],
+        "colormap_traj_night": ["split_subject_traj_groups"],
+        "traj_map_night_layers": ["colormap_traj_night"],
+        "traj_daynight_ecomap": ["traj_map_night_layers"],
+        "ecomap_daynight_html_urls": ["traj_daynight_ecomap"],
+        "traj_map_daynight_widgets_sv": ["ecomap_daynight_html_urls"],
+        "traj_daynight_grouped_map_widget": ["traj_map_daynight_widgets_sv"],
         "mean_speed": ["split_subject_traj_groups"],
         "average_speed_converted": ["mean_speed"],
         "mean_speed_sv_widgets": ["average_speed_converted"],
@@ -64,6 +75,14 @@ def main(params: Params):
         "daynight_ratio": ["split_subject_traj_groups"],
         "daynight_ratio_sv_widgets": ["daynight_ratio"],
         "daynight_ratio_grouped_sv_widget": ["daynight_ratio_sv_widgets"],
+        "total_distance": ["split_subject_traj_groups"],
+        "total_dist_converted": ["total_distance"],
+        "total_distance_sv_widgets": ["total_dist_converted"],
+        "total_dist_grouped_sv_widget": ["total_distance_sv_widgets"],
+        "total_time": ["split_subject_traj_groups"],
+        "total_time_converted": ["total_time"],
+        "total_time_sv_widgets": ["total_time_converted"],
+        "total_time_grouped_sv_widget": ["total_time_sv_widgets"],
         "td": ["split_subject_traj_groups"],
         "td_colormap": ["td"],
         "td_map_layer": ["td_colormap"],
@@ -77,7 +96,10 @@ def main(params: Params):
             "max_speed_grouped_sv_widget",
             "num_location_grouped_sv_widget",
             "daynight_ratio_grouped_sv_widget",
+            "total_dist_grouped_sv_widget",
+            "total_time_grouped_sv_widget",
             "td_grouped_map_widget",
+            "traj_daynight_grouped_map_widget",
             "groupers",
         ],
     }
@@ -101,10 +123,18 @@ def main(params: Params):
             | params_dict["subject_reloc"],
             method="call",
         ),
+        "day_night_labels": Node(
+            async_task=classify_is_night.validate().set_executor("lithops"),
+            partial={
+                "relocations": DependsOn("subject_reloc"),
+            }
+            | params_dict["day_night_labels"],
+            method="call",
+        ),
         "subject_traj": Node(
             async_task=relocations_to_trajectory.validate().set_executor("lithops"),
             partial={
-                "relocations": DependsOn("subject_reloc"),
+                "relocations": DependsOn("day_night_labels"),
             }
             | params_dict["subject_traj"],
             method="call",
@@ -144,13 +174,22 @@ def main(params: Params):
                 "argvalues": DependsOn("classify_traj_speed"),
             },
         ),
+        "speedmap_legend_with_unit": Node(
+            async_task=map_values_with_unit.validate().set_executor("lithops"),
+            partial=params_dict["speedmap_legend_with_unit"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["df"],
+                "argvalues": DependsOn("colormap_traj_speed"),
+            },
+        ),
         "traj_map_layers": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
             partial=params_dict["traj_map_layers"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geodataframe"],
-                "argvalues": DependsOn("colormap_traj_speed"),
+                "argvalues": DependsOn("speedmap_legend_with_unit"),
             },
         ),
         "traj_ecomap": Node(
@@ -189,6 +228,62 @@ def main(params: Params):
                 "widgets": DependsOn("traj_map_widgets_single_views"),
             }
             | params_dict["traj_grouped_map_widget"],
+            method="call",
+        ),
+        "colormap_traj_night": Node(
+            async_task=apply_color_map.validate().set_executor("lithops"),
+            partial=params_dict["colormap_traj_night"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["df"],
+                "argvalues": DependsOn("split_subject_traj_groups"),
+            },
+        ),
+        "traj_map_night_layers": Node(
+            async_task=create_map_layer.validate().set_executor("lithops"),
+            partial=params_dict["traj_map_night_layers"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["geodataframe"],
+                "argvalues": DependsOn("colormap_traj_night"),
+            },
+        ),
+        "traj_daynight_ecomap": Node(
+            async_task=draw_ecomap.validate().set_executor("lithops"),
+            partial=params_dict["traj_daynight_ecomap"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["geo_layers"],
+                "argvalues": DependsOn("traj_map_night_layers"),
+            },
+        ),
+        "ecomap_daynight_html_urls": Node(
+            async_task=persist_text.validate().set_executor("lithops"),
+            partial={
+                "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            }
+            | params_dict["ecomap_daynight_html_urls"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["text"],
+                "argvalues": DependsOn("traj_daynight_ecomap"),
+            },
+        ),
+        "traj_map_daynight_widgets_sv": Node(
+            async_task=create_map_widget_single_view.validate().set_executor("lithops"),
+            partial=params_dict["traj_map_daynight_widgets_sv"],
+            method="map",
+            kwargs={
+                "argnames": ["view", "data"],
+                "argvalues": DependsOn("ecomap_daynight_html_urls"),
+            },
+        ),
+        "traj_daynight_grouped_map_widget": Node(
+            async_task=merge_widget_views.validate().set_executor("lithops"),
+            partial={
+                "widgets": DependsOn("traj_map_daynight_widgets_sv"),
+            }
+            | params_dict["traj_daynight_grouped_map_widget"],
             method="call",
         ),
         "mean_speed": Node(
@@ -321,6 +416,80 @@ def main(params: Params):
             | params_dict["daynight_ratio_grouped_sv_widget"],
             method="call",
         ),
+        "total_distance": Node(
+            async_task=dataframe_column_sum.validate().set_executor("lithops"),
+            partial=params_dict["total_distance"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["df"],
+                "argvalues": DependsOn("split_subject_traj_groups"),
+            },
+        ),
+        "total_dist_converted": Node(
+            async_task=with_unit.validate().set_executor("lithops"),
+            partial=params_dict["total_dist_converted"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["value"],
+                "argvalues": DependsOn("total_distance"),
+            },
+        ),
+        "total_distance_sv_widgets": Node(
+            async_task=create_single_value_widget_single_view.validate().set_executor(
+                "lithops"
+            ),
+            partial=params_dict["total_distance_sv_widgets"],
+            method="map",
+            kwargs={
+                "argnames": ["view", "data"],
+                "argvalues": DependsOn("total_dist_converted"),
+            },
+        ),
+        "total_dist_grouped_sv_widget": Node(
+            async_task=merge_widget_views.validate().set_executor("lithops"),
+            partial={
+                "widgets": DependsOn("total_distance_sv_widgets"),
+            }
+            | params_dict["total_dist_grouped_sv_widget"],
+            method="call",
+        ),
+        "total_time": Node(
+            async_task=dataframe_column_sum.validate().set_executor("lithops"),
+            partial=params_dict["total_time"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["df"],
+                "argvalues": DependsOn("split_subject_traj_groups"),
+            },
+        ),
+        "total_time_converted": Node(
+            async_task=with_unit.validate().set_executor("lithops"),
+            partial=params_dict["total_time_converted"],
+            method="mapvalues",
+            kwargs={
+                "argnames": ["value"],
+                "argvalues": DependsOn("total_time"),
+            },
+        ),
+        "total_time_sv_widgets": Node(
+            async_task=create_single_value_widget_single_view.validate().set_executor(
+                "lithops"
+            ),
+            partial=params_dict["total_time_sv_widgets"],
+            method="map",
+            kwargs={
+                "argnames": ["view", "data"],
+                "argvalues": DependsOn("total_time_converted"),
+            },
+        ),
+        "total_time_grouped_sv_widget": Node(
+            async_task=merge_widget_views.validate().set_executor("lithops"),
+            partial={
+                "widgets": DependsOn("total_time_sv_widgets"),
+            }
+            | params_dict["total_time_grouped_sv_widget"],
+            method="call",
+        ),
         "td": Node(
             async_task=calculate_time_density.validate().set_executor("lithops"),
             partial=params_dict["td"],
@@ -396,7 +565,10 @@ def main(params: Params):
                         DependsOn("max_speed_grouped_sv_widget"),
                         DependsOn("num_location_grouped_sv_widget"),
                         DependsOn("daynight_ratio_grouped_sv_widget"),
+                        DependsOn("total_dist_grouped_sv_widget"),
+                        DependsOn("total_time_grouped_sv_widget"),
                         DependsOn("td_grouped_map_widget"),
+                        DependsOn("traj_daynight_grouped_map_widget"),
                     ],
                 ),
                 "groupers": DependsOn("groupers"),

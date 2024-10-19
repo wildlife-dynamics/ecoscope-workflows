@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "1bba0e65ec660ba6386aa5c8a7c29109ccb34607bd2f62e3aed4d8f3b2a9ef10"
+# from-spec-sha256 = "b9febf5b3ff98ca3fd882b4f918e74114c04e0ff454b22c33ea84337b0ba9b0f"
 
 
 # ruff: noqa: E402
@@ -16,6 +16,7 @@ import os
 from ecoscope_workflows_core.tasks.groupby import set_groupers
 from ecoscope_workflows_ext_ecoscope.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import process_relocations
+from ecoscope_workflows_ext_ecoscope.tasks.transformation import classify_is_night
 from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import (
     relocations_to_trajectory,
 )
@@ -23,6 +24,7 @@ from ecoscope_workflows_core.tasks.transformation import add_temporal_index
 from ecoscope_workflows_core.tasks.groupby import split_groups
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import apply_classification
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import apply_color_map
+from ecoscope_workflows_core.tasks.transformation import map_values_with_unit
 from ecoscope_workflows_ext_ecoscope.tasks.results import create_map_layer
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecomap
 from ecoscope_workflows_core.tasks.io import persist_text
@@ -34,6 +36,7 @@ from ecoscope_workflows_core.tasks.results import create_single_value_widget_sin
 from ecoscope_workflows_core.tasks.analysis import dataframe_column_max
 from ecoscope_workflows_core.tasks.analysis import dataframe_count
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import get_day_night_ratio
+from ecoscope_workflows_core.tasks.analysis import dataframe_column_sum
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import calculate_time_density
 from ecoscope_workflows_core.tasks.results import gather_dashboard
 
@@ -96,6 +99,23 @@ subject_reloc = process_relocations.partial(
 
 
 # %% [markdown]
+# ## Apply Day/Night Labels to Relocations
+
+# %%
+# parameters
+
+day_night_labels_params = dict()
+
+# %%
+# call the task
+
+
+day_night_labels = classify_is_night.partial(
+    relocations=subject_reloc, **day_night_labels_params
+).call()
+
+
+# %% [markdown]
 # ## Transform Relocations to Trajectories
 
 # %%
@@ -115,7 +135,7 @@ subject_traj_params = dict(
 
 
 subject_traj = relocations_to_trajectory.partial(
-    relocations=subject_reloc, **subject_traj_params
+    relocations=day_night_labels, **subject_traj_params
 ).call()
 
 
@@ -203,6 +223,29 @@ colormap_traj_speed = apply_color_map.partial(**colormap_traj_speed_params).mapv
 
 
 # %% [markdown]
+# ## Format Speedmap Legend Label
+
+# %%
+# parameters
+
+speedmap_legend_with_unit_params = dict(
+    input_column_name=...,
+    output_column_name=...,
+    original_unit=...,
+    new_unit=...,
+    decimal_places=...,
+)
+
+# %%
+# call the task
+
+
+speedmap_legend_with_unit = map_values_with_unit.partial(
+    **speedmap_legend_with_unit_params
+).mapvalues(argnames=["df"], argvalues=colormap_traj_speed)
+
+
+# %% [markdown]
 # ## Create map layer for each trajectory group
 
 # %%
@@ -218,7 +261,7 @@ traj_map_layers_params = dict(
 
 
 traj_map_layers = create_map_layer.partial(**traj_map_layers_params).mapvalues(
-    argnames=["geodataframe"], argvalues=colormap_traj_speed
+    argnames=["geodataframe"], argvalues=speedmap_legend_with_unit
 )
 
 
@@ -297,6 +340,126 @@ traj_grouped_map_widget_params = dict()
 
 traj_grouped_map_widget = merge_widget_views.partial(
     widgets=traj_map_widgets_single_views, **traj_grouped_map_widget_params
+).call()
+
+
+# %% [markdown]
+# ## Apply Color to Trajectories By Day/Night
+
+# %%
+# parameters
+
+colormap_traj_night_params = dict(
+    input_column_name=...,
+    colormap=...,
+    output_column_name=...,
+)
+
+# %%
+# call the task
+
+
+colormap_traj_night = apply_color_map.partial(**colormap_traj_night_params).mapvalues(
+    argnames=["df"], argvalues=split_subject_traj_groups
+)
+
+
+# %% [markdown]
+# ## Create map layer for each trajectory group
+
+# %%
+# parameters
+
+traj_map_night_layers_params = dict(
+    layer_style=...,
+    legend=...,
+)
+
+# %%
+# call the task
+
+
+traj_map_night_layers = create_map_layer.partial(
+    **traj_map_night_layers_params
+).mapvalues(argnames=["geodataframe"], argvalues=colormap_traj_night)
+
+
+# %% [markdown]
+# ## Draw Ecomaps for each trajectory group
+
+# %%
+# parameters
+
+traj_daynight_ecomap_params = dict(
+    tile_layers=...,
+    static=...,
+    title=...,
+    north_arrow_style=...,
+    legend_style=...,
+)
+
+# %%
+# call the task
+
+
+traj_daynight_ecomap = draw_ecomap.partial(**traj_daynight_ecomap_params).mapvalues(
+    argnames=["geo_layers"], argvalues=traj_map_night_layers
+)
+
+
+# %% [markdown]
+# ## Persist ecomap as Text
+
+# %%
+# parameters
+
+ecomap_daynight_html_urls_params = dict(
+    filename=...,
+)
+
+# %%
+# call the task
+
+
+ecomap_daynight_html_urls = persist_text.partial(
+    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+    **ecomap_daynight_html_urls_params,
+).mapvalues(argnames=["text"], argvalues=traj_daynight_ecomap)
+
+
+# %% [markdown]
+# ## Create Map Widgets for Trajectories
+
+# %%
+# parameters
+
+traj_map_daynight_widgets_sv_params = dict(
+    title=...,
+)
+
+# %%
+# call the task
+
+
+traj_map_daynight_widgets_sv = create_map_widget_single_view.partial(
+    **traj_map_daynight_widgets_sv_params
+).map(argnames=["view", "data"], argvalues=ecomap_daynight_html_urls)
+
+
+# %% [markdown]
+# ## Merge EcoMap Widget Views
+
+# %%
+# parameters
+
+traj_daynight_grouped_map_widget_params = dict()
+
+# %%
+# call the task
+
+
+traj_daynight_grouped_map_widget = merge_widget_views.partial(
+    widgets=traj_map_daynight_widgets_sv, **traj_daynight_grouped_map_widget_params
 ).call()
 
 
@@ -561,6 +724,158 @@ daynight_ratio_grouped_sv_widget = merge_widget_views.partial(
 
 
 # %% [markdown]
+# ## Calculate Total Distance Per Group
+
+# %%
+# parameters
+
+total_distance_params = dict(
+    column_name=...,
+)
+
+# %%
+# call the task
+
+
+total_distance = dataframe_column_sum.partial(**total_distance_params).mapvalues(
+    argnames=["df"], argvalues=split_subject_traj_groups
+)
+
+
+# %% [markdown]
+# ## Convert total distance units
+
+# %%
+# parameters
+
+total_dist_converted_params = dict(
+    original_unit=...,
+    new_unit=...,
+)
+
+# %%
+# call the task
+
+
+total_dist_converted = with_unit.partial(**total_dist_converted_params).mapvalues(
+    argnames=["value"], argvalues=total_distance
+)
+
+
+# %% [markdown]
+# ## Create Single Value Widgets for Total Distance Per Group
+
+# %%
+# parameters
+
+total_distance_sv_widgets_params = dict(
+    title=...,
+    decimal_places=...,
+)
+
+# %%
+# call the task
+
+
+total_distance_sv_widgets = create_single_value_widget_single_view.partial(
+    **total_distance_sv_widgets_params
+).map(argnames=["view", "data"], argvalues=total_dist_converted)
+
+
+# %% [markdown]
+# ## Merge per group Total Distance SV widgets
+
+# %%
+# parameters
+
+total_dist_grouped_sv_widget_params = dict()
+
+# %%
+# call the task
+
+
+total_dist_grouped_sv_widget = merge_widget_views.partial(
+    widgets=total_distance_sv_widgets, **total_dist_grouped_sv_widget_params
+).call()
+
+
+# %% [markdown]
+# ## Calculate Total Time Per Group
+
+# %%
+# parameters
+
+total_time_params = dict(
+    column_name=...,
+)
+
+# %%
+# call the task
+
+
+total_time = dataframe_column_sum.partial(**total_time_params).mapvalues(
+    argnames=["df"], argvalues=split_subject_traj_groups
+)
+
+
+# %% [markdown]
+# ## Convert total time units
+
+# %%
+# parameters
+
+total_time_converted_params = dict(
+    original_unit=...,
+    new_unit=...,
+)
+
+# %%
+# call the task
+
+
+total_time_converted = with_unit.partial(**total_time_converted_params).mapvalues(
+    argnames=["value"], argvalues=total_time
+)
+
+
+# %% [markdown]
+# ## Create Single Value Widgets for Total Distance Per Group
+
+# %%
+# parameters
+
+total_time_sv_widgets_params = dict(
+    title=...,
+    decimal_places=...,
+)
+
+# %%
+# call the task
+
+
+total_time_sv_widgets = create_single_value_widget_single_view.partial(
+    **total_time_sv_widgets_params
+).map(argnames=["view", "data"], argvalues=total_time_converted)
+
+
+# %% [markdown]
+# ## Merge per group Total Distance SV widgets
+
+# %%
+# parameters
+
+total_time_grouped_sv_widget_params = dict()
+
+# %%
+# call the task
+
+
+total_time_grouped_sv_widget = merge_widget_views.partial(
+    widgets=total_time_sv_widgets, **total_time_grouped_sv_widget_params
+).call()
+
+
+# %% [markdown]
 # ## Calculate Time Density from Trajectory
 
 # %%
@@ -726,7 +1041,10 @@ subject_tracking_dashboard = gather_dashboard.partial(
         max_speed_grouped_sv_widget,
         num_location_grouped_sv_widget,
         daynight_ratio_grouped_sv_widget,
+        total_dist_grouped_sv_widget,
+        total_time_grouped_sv_widget,
         td_grouped_map_widget,
+        traj_daynight_grouped_map_widget,
     ],
     groupers=groupers,
     **subject_tracking_dashboard_params,

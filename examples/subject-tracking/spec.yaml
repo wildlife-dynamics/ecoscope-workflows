@@ -21,11 +21,16 @@ workflow:
     task: process_relocations
     partial:
       observations: ${{ workflow.subject_obs.return }}
+  - name: Apply Day/Night Labels to Relocations
+    id: day_night_labels
+    task: classify_is_night
+    partial:
+      relocations: ${{ workflow.subject_reloc.return }}
   - name: Transform Relocations to Trajectories
     id: subject_traj
     task: relocations_to_trajectory
     partial:
-      relocations: ${{ workflow.subject_reloc.return }}
+      relocations: ${{ workflow.day_night_labels.return }}
   - name: Add temporal index to Subject Trajectories
     id: traj_add_temporal_index
     task: add_temporal_index
@@ -51,12 +56,18 @@ workflow:
     mapvalues:
       argnames: df
       argvalues: ${{ workflow.classify_traj_speed.return }}
+  - name: Format Speedmap Legend Label
+    id: speedmap_legend_with_unit
+    task: map_values_with_unit
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.colormap_traj_speed.return }}
   - name: Create map layer for each trajectory group
     id: traj_map_layers
     task: create_map_layer
     mapvalues:
       argnames: geodataframe
-      argvalues: ${{ workflow.colormap_traj_speed.return }}
+      argvalues: ${{ workflow.speedmap_legend_with_unit.return }}
   - name: Draw Ecomaps for each trajectory group
     id: traj_ecomap
     task: draw_ecomap
@@ -82,6 +93,45 @@ workflow:
     task: merge_widget_views
     partial:
       widgets: ${{ workflow.traj_map_widgets_single_views.return }}
+
+  # subject group trajectories day/night map
+  - name: Apply Color to Trajectories By Day/Night
+    id: colormap_traj_night
+    task: apply_color_map
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.split_subject_traj_groups.return }}
+  - name: Create map layer for each trajectory group
+    id: traj_map_night_layers
+    task: create_map_layer
+    mapvalues:
+      argnames: geodataframe
+      argvalues: ${{ workflow.colormap_traj_night.return }}
+  - name: Draw Ecomaps for each trajectory group
+    id: traj_daynight_ecomap
+    task: draw_ecomap
+    mapvalues:
+      argnames: geo_layers
+      argvalues: ${{ workflow.traj_map_night_layers.return }}
+  - name: Persist ecomap as Text
+    id: ecomap_daynight_html_urls
+    task: persist_text
+    partial:
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+    mapvalues:
+      argnames: text
+      argvalues: ${{ workflow.traj_daynight_ecomap.return }}
+  - name: Create Map Widgets for Trajectories
+    id: traj_map_daynight_widgets_sv
+    task: create_map_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.ecomap_daynight_html_urls.return }}
+  - name: Merge EcoMap Widget Views
+    id: traj_daynight_grouped_map_widget
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.traj_map_daynight_widgets_sv.return }}
 
   # Grouped single value widget (1) - mean speed per group
   - name: Calculate Mean Speed Per Group
@@ -171,6 +221,56 @@ workflow:
     partial:
       widgets: ${{ workflow.daynight_ratio_sv_widgets.return }}
 
+  # Grouped single value widget (5) - total distance
+  - name: Calculate Total Distance Per Group
+    id: total_distance
+    task: dataframe_column_sum
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.split_subject_traj_groups.return }}
+  - name: Convert total distance units
+    id: total_dist_converted
+    task: with_unit
+    mapvalues:
+      argnames: value
+      argvalues: ${{ workflow.total_distance.return }}
+  - name: Create Single Value Widgets for Total Distance Per Group
+    id: total_distance_sv_widgets
+    task: create_single_value_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.total_dist_converted.return }}
+  - name: Merge per group Total Distance SV widgets
+    id: total_dist_grouped_sv_widget
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.total_distance_sv_widgets.return }}
+
+  # Grouped single value widget (6) - total time
+  - name: Calculate Total Time Per Group
+    id: total_time
+    task: dataframe_column_sum
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.split_subject_traj_groups.return }}
+  - name: Convert total time units
+    id: total_time_converted
+    task: with_unit
+    mapvalues:
+      argnames: value
+      argvalues: ${{ workflow.total_time.return }}
+  - name: Create Single Value Widgets for Total Distance Per Group
+    id: total_time_sv_widgets
+    task: create_single_value_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.total_time_converted.return }}
+  - name: Merge per group Total Distance SV widgets
+    id: total_time_grouped_sv_widget
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.total_time_sv_widgets.return }}
+
   # time density
   - name: Calculate Time Density from Trajectory
     id: td
@@ -228,5 +328,8 @@ workflow:
         - ${{ workflow.max_speed_grouped_sv_widget.return }}
         - ${{ workflow.num_location_grouped_sv_widget.return }}
         - ${{ workflow.daynight_ratio_grouped_sv_widget.return }}
+        - ${{ workflow.total_dist_grouped_sv_widget.return }}
+        - ${{ workflow.total_time_grouped_sv_widget.return }}
         - ${{ workflow.td_grouped_map_widget.return }}
+        - ${{ workflow.traj_daynight_grouped_map_widget.return }}
       groupers: ${{ workflow.groupers.return }}
