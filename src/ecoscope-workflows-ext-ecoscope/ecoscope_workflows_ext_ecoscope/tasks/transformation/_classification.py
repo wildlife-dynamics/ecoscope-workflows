@@ -120,7 +120,9 @@ def apply_classification(
     Returns:
         The input dataframe with a classification column appended.
     """
-    from ecoscope.analysis.classifier import apply_classification  # type: ignore[import-untyped]
+    from ecoscope.analysis.classifier import (
+        apply_classification,  # type: ignore[import-untyped]
+    )
 
     return apply_classification(
         df,
@@ -165,7 +167,9 @@ def apply_color_map(
     Returns:
     pd.DataFrame: The dataframe with an additional color column.
     """
-    from ecoscope.analysis.classifier import apply_color_map  # type: ignore[import-untyped]
+    from ecoscope.analysis.classifier import (
+        apply_color_map,  # type: ignore[import-untyped]
+    )
 
     return apply_color_map(
         dataframe=df,
@@ -173,3 +177,26 @@ def apply_color_map(
         cmap=colormap,
         output_column_name=output_column_name,
     )
+
+
+@task
+def classify_is_night(
+    relocations: Annotated[
+        AnyDataFrame,
+        Field(description="The dataframe to classify.", exclude=True),
+    ],
+) -> AnyDataFrame:
+    """
+    Classifies if segments occur at night in a trajectory dataframe
+
+    Args:
+        dataframe (pd.DatFrame): The input data.
+
+    Returns:
+        The input dataframe with a `is_night` column appended.
+    """
+    from ecoscope.analysis.astronomy import is_night  # type: ignore[import-untyped]
+
+    relocations["is_night"] = is_night(relocations.geometry, relocations.fixtime)
+
+    return relocations

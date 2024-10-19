@@ -21,11 +21,16 @@ workflow:
     task: process_relocations
     partial:
       observations: ${{ workflow.subject_obs.return }}
+  - name: Apply Day/Night Labels to Relocations
+    id: day_night_labels
+    task: classify_is_night
+    partial:
+      relocations: ${{ workflow.process_relocations.return }}
   - name: Transform Relocations to Trajectories
     id: subject_traj
     task: relocations_to_trajectory
     partial:
-      relocations: ${{ workflow.subject_reloc.return }}
+      relocations: ${{ workflow.day_night_labels.return }}
   - name: Add temporal index to Subject Trajectories
     id: traj_add_temporal_index
     task: add_temporal_index
@@ -88,6 +93,45 @@ workflow:
     task: merge_widget_views
     partial:
       widgets: ${{ workflow.traj_map_widgets_single_views.return }}
+
+  # subject group trajectories day/night map
+  - name: Apply Color to Trajectories By Day/Night
+    id: colormap_traj_night
+    task: apply_color_map
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.split_subject_traj_groups.return }}
+  - name: Create map layer for each trajectory group
+    id: traj_map_night_layers
+    task: create_map_layer
+    mapvalues:
+      argnames: geodataframe
+      argvalues: ${{ workflow.colormap_traj_night.return }}
+  - name: Draw Ecomaps for each trajectory group
+    id: traj_daynight_ecomap
+    task: draw_ecomap
+    mapvalues:
+      argnames: geo_layers
+      argvalues: ${{ workflow.traj_map_night_layers.return }}
+  - name: Persist ecomap as Text
+    id: ecomap_daynight_html_urls
+    task: persist_text
+    partial:
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+    mapvalues:
+      argnames: text
+      argvalues: ${{ workflow.traj_daynight_ecomap.return }}
+  - name: Create Map Widgets for Trajectories
+    id: traj_map_daynight_widgets_single_views
+    task: create_map_widget_single_view
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.ecomap_daynight_html_urls.return }}
+  - name: Merge EcoMap Widget Views
+    id: traj_daynight_grouped_map_widget
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.traj_map_daynight_widgets_single_views.return }}
 
   # Grouped single value widget (1) - mean speed per group
   - name: Calculate Mean Speed Per Group
@@ -287,4 +331,5 @@ workflow:
         - ${{ workflow.total_dist_grouped_sv_widget.return }}
         - ${{ workflow.total_time_grouped_sv_widget.return }}
         - ${{ workflow.td_grouped_map_widget.return }}
+        - ${{ workflow.traj_daynight_grouped_map_widget.return }}
       groupers: ${{ workflow.groupers.return }}
