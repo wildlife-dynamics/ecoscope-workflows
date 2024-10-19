@@ -1,10 +1,11 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "a14c0deb652592fad3edfb3b99b76dc2ed865482e7948f3915215fe3626119e9"
+# from-spec-sha256 = "a41aeb6df58c206db71d5bb3e5946b51f1f65b061cf042d44dfebe577a72f433"
 import json
 import os
 
 from ecoscope_workflows_core.tasks.groupby import set_groupers
+from ecoscope_workflows_core.tasks.filter import set_time_range
 from ecoscope_workflows_ext_ecoscope.tasks.io import get_patrol_events
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import (
     apply_reloc_coord_filter,
@@ -32,7 +33,13 @@ def main(params: Params):
 
     groupers = set_groupers.validate().partial(**params_dict["groupers"]).call()
 
-    pe = get_patrol_events.validate().partial(**params_dict["pe"]).call()
+    time_range = set_time_range.validate().partial(**params_dict["time_range"]).call()
+
+    pe = (
+        get_patrol_events.validate()
+        .partial(time_range=time_range, **params_dict["pe"])
+        .call()
+    )
 
     filter_patrol_events = (
         apply_reloc_coord_filter.validate()
@@ -286,6 +293,7 @@ def main(params: Params):
                 grouped_fd_map_widget_merge,
             ],
             groupers=groupers,
+            time_range=time_range,
             **params_dict["patrol_dashboard"],
         )
         .call()

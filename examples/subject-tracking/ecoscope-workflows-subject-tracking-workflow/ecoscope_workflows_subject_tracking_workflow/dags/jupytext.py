@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "b9febf5b3ff98ca3fd882b4f918e74114c04e0ff454b22c33ea84337b0ba9b0f"
+# from-spec-sha256 = "0d1105f115cdc90bd410b5ba170adfc21fb0b9d91af21f80eb7fac7ae90281bb"
 
 
 # ruff: noqa: E402
@@ -14,6 +14,7 @@
 
 import os
 from ecoscope_workflows_core.tasks.groupby import set_groupers
+from ecoscope_workflows_core.tasks.filter import set_time_range
 from ecoscope_workflows_ext_ecoscope.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import process_relocations
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import classify_is_night
@@ -58,6 +59,25 @@ groupers = set_groupers.partial(**groupers_params).call()
 
 
 # %% [markdown]
+# ## Set Time Range Filters
+
+# %%
+# parameters
+
+time_range_params = dict(
+    since=...,
+    until=...,
+    time_format=...,
+)
+
+# %%
+# call the task
+
+
+time_range = set_time_range.partial(**time_range_params).call()
+
+
+# %% [markdown]
 # ## Get Subject Group Observations from EarthRanger
 
 # %%
@@ -66,8 +86,6 @@ groupers = set_groupers.partial(**groupers_params).call()
 subject_obs_params = dict(
     client=...,
     subject_group_name=...,
-    since=...,
-    until=...,
     include_inactive=...,
 )
 
@@ -75,7 +93,9 @@ subject_obs_params = dict(
 # call the task
 
 
-subject_obs = get_subjectgroup_observations.partial(**subject_obs_params).call()
+subject_obs = get_subjectgroup_observations.partial(
+    time_range=time_range, **subject_obs_params
+).call()
 
 
 # %% [markdown]
@@ -1047,5 +1067,6 @@ subject_tracking_dashboard = gather_dashboard.partial(
         traj_daynight_grouped_map_widget,
     ],
     groupers=groupers,
+    time_range=time_range,
     **subject_tracking_dashboard_params,
 ).call()

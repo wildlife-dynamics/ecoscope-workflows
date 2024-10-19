@@ -12,10 +12,16 @@ workflow:
     id: groupers
     task: set_groupers
 
+  - name: Set Time Range Filters
+    id: time_range
+    task: set_time_range
+
   # patrol events
   - name: Get Patrol Events from EarthRanger
     id: pe
     task: get_patrol_events
+    partial:
+      time_range: ${{ workflow.time_range.return }}
   - name: Apply Relocation Coordinate Filter
     id: filter_patrol_events
     task: apply_reloc_coord_filter
@@ -244,3 +250,4 @@ workflow:
         - ${{ workflow.grouped_pe_pie_widget_merge.return }}
         - ${{ workflow.grouped_fd_map_widget_merge.return }}
       groupers: ${{ workflow.groupers.return }}
+      time_range: ${{ workflow.time_range.return}}

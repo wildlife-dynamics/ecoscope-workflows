@@ -25,16 +25,19 @@
         "since": {
           "format": "date-time",
           "title": "Since",
-          "type": "string"
+          "type": "string",
+          "description": "The start time"
         },
         "until": {
           "format": "date-time",
           "title": "Until",
-          "type": "string"
+          "type": "string",
+          "description": "The end time"
         },
         "time_format": {
           "title": "Time Format",
-          "type": "string"
+          "type": "string",
+          "description": "The time format"
         }
       },
       "required": [
@@ -1557,14 +1560,14 @@
           "type": "string"
         },
         "time_format": {
+          "default": "%d %b %Y %H:%M:%S %Z",
           "title": "Time Format",
           "type": "string"
         }
       },
       "required": [
         "since",
-        "until",
-        "time_format"
+        "until"
       ],
       "title": "TimeRange",
       "type": "object"
@@ -1590,18 +1593,32 @@
     "LegendDefinition": {
       "properties": {
         "label_column": {
+          "default": null,
           "title": "Label Column",
           "type": "string"
         },
         "color_column": {
+          "default": null,
           "title": "Color Column",
           "type": "string"
+        },
+        "labels": {
+          "default": null,
+          "items": {
+            "type": "string"
+          },
+          "title": "Labels",
+          "type": "array"
+        },
+        "colors": {
+          "default": null,
+          "items": {
+            "type": "string"
+          },
+          "title": "Colors",
+          "type": "array"
         }
       },
-      "required": [
-        "label_column",
-        "color_column"
-      ],
       "title": "LegendDefinition",
       "type": "object"
     },

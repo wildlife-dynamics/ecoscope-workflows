@@ -16,9 +16,9 @@ class TimeRange(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    since: AwareDatetime = Field(..., title="Since")
-    until: AwareDatetime = Field(..., title="Until")
-    time_format: str = Field(..., title="Time Format")
+    since: AwareDatetime = Field(..., description="The start time", title="Since")
+    until: AwareDatetime = Field(..., description="The end time", title="Until")
+    time_format: str = Field(..., description="The time format", title="Time Format")
 
 
 class StatusEnum(str, Enum):
@@ -432,7 +432,7 @@ class Grouper(BaseModel):
 class TimeRange1(BaseModel):
     since: AwareDatetime = Field(..., title="Since")
     until: AwareDatetime = Field(..., title="Until")
-    time_format: str = Field(..., title="Time Format")
+    time_format: Optional[str] = Field("%d %b %Y %H:%M:%S %Z", title="Time Format")
 
 
 class Coordinate(BaseModel):
@@ -441,8 +441,10 @@ class Coordinate(BaseModel):
 
 
 class LegendDefinition(BaseModel):
-    label_column: str = Field(..., title="Label Column")
-    color_column: str = Field(..., title="Color Column")
+    label_column: Optional[str] = Field(None, title="Label Column")
+    color_column: Optional[str] = Field(None, title="Color Column")
+    labels: Optional[List[str]] = Field(None, title="Labels")
+    colors: Optional[List[str]] = Field(None, title="Colors")
 
 
 class LineWidthUnits(str, Enum):
