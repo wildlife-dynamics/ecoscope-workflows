@@ -8,6 +8,7 @@ from ecoscope_workflows_ext_ecoscope.tasks.io import (
     get_patrol_events,
     get_patrol_observations,
     get_subjectgroup_observations,
+    get_events,
 )
 
 pytestmark = pytest.mark.io
@@ -71,6 +72,27 @@ def test_get_patrol_observations(client):
 
 def test_get_patrol_events(client):
     result = get_patrol_events(
+        client=client,
+        time_range=TimeRange(
+            since=datetime.strptime("2015-01-01", "%Y-%m-%d").replace(
+                tzinfo=timezone.utc
+            ),
+            until=datetime.strptime("2015-03-01", "%Y-%m-%d").replace(
+                tzinfo=timezone.utc
+            ),
+        ),
+        patrol_type="05ad114e-1aff-4602-bc83-efd333cdd8a2",
+        status=None,
+    )
+
+    assert len(result) > 0
+    assert "id" in result
+    assert "event_type" in result
+    assert "geometry" in result
+
+
+def test_get_events(client):
+    result = get_events(
         client=client,
         time_range=TimeRange(
             since=datetime.strptime("2015-01-01", "%Y-%m-%d").replace(
