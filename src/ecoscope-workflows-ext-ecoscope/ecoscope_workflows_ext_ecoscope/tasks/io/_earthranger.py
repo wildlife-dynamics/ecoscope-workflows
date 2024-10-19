@@ -1,13 +1,13 @@
-from datetime import datetime
 from typing import Annotated, Literal, cast
 
 import pandas as pd
 import pandera as pa
 import pandera.typing as pa_typing
-from pydantic import Field
-
 from ecoscope_workflows_core.annotations import DataFrame, GeoDataFrameBaseSchema
 from ecoscope_workflows_core.decorators import task
+from ecoscope_workflows_core.tasks.filter._filter import TimeRange
+from pydantic import Field
+
 from ecoscope_workflows_ext_ecoscope.connections import EarthRangerClient
 
 
@@ -31,8 +31,7 @@ def get_subjectgroup_observations(
     subject_group_name: Annotated[
         str, Field(description="Name of EarthRanger Subject")
     ],
-    since: Annotated[datetime, Field(description="Start date")],
-    until: Annotated[datetime, Field(description="End date")],
+    time_range: Annotated[TimeRange, Field(description="Time range filter")],
     include_inactive: Annotated[
         bool,
         Field(description="Whether or not to include inactive subjects"),
@@ -45,8 +44,8 @@ def get_subjectgroup_observations(
             subject_group_name=subject_group_name,
             include_subject_details=True,
             include_inactive=include_inactive,
-            since=since,
-            until=until,
+            since=time_range.since.isoformat(),
+            until=time_range.until.isoformat(),
         ),
     )
 
@@ -54,8 +53,7 @@ def get_subjectgroup_observations(
 @task(tags=["io"])
 def get_patrol_observations(
     client: EarthRangerClient,
-    since: Annotated[str, Field(description="Start date")],
-    until: Annotated[str, Field(description="End date")],
+    time_range: Annotated[TimeRange, Field(description="Time range filter")],
     patrol_type: Annotated[
         list[str],
         Field(description="list of UUID of patrol types"),
@@ -72,8 +70,8 @@ def get_patrol_observations(
     return cast(
         DataFrame[SubjectGroupObservationsGDFSchema],
         client.get_patrol_observations_with_patrol_filter(
-            since=since,
-            until=until,
+            since=time_range.since.isoformat(),
+            until=time_range.until.isoformat(),
             patrol_type=patrol_type,
             status=status,
             include_patrol_details=include_patrol_details,
@@ -84,8 +82,7 @@ def get_patrol_observations(
 @task(tags=["io"])
 def get_patrol_events(
     client: EarthRangerClient,
-    since: Annotated[str, Field(description="Start date")],
-    until: Annotated[str, Field(description="End date")],
+    time_range: Annotated[TimeRange, Field(description="Time range filter")],
     patrol_type: Annotated[
         list[str],
         Field(description="list of UUID of patrol types"),
@@ -101,8 +98,8 @@ def get_patrol_events(
     return cast(
         DataFrame[EventGDFSchema],
         client.get_patrol_events(
-            since=since,
-            until=until,
+            since=time_range.since.isoformat(),
+            until=time_range.until.isoformat(),
             patrol_type=patrol_type,
             status=status,
         ),

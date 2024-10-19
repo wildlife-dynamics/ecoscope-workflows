@@ -1,12 +1,13 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "b9febf5b3ff98ca3fd882b4f918e74114c04e0ff454b22c33ea84337b0ba9b0f"
+# from-spec-sha256 = "0d1105f115cdc90bd410b5ba170adfc21fb0b9d91af21f80eb7fac7ae90281bb"
 import json
 import os
 
 from ecoscope_workflows_core.graph import DependsOn, DependsOnSequence, Graph, Node
 
 from ecoscope_workflows_core.tasks.groupby import set_groupers
+from ecoscope_workflows_core.tasks.filter import set_time_range
 from ecoscope_workflows_ext_ecoscope.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import process_relocations
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import classify_is_night
@@ -41,7 +42,8 @@ def main(params: Params):
 
     dependencies = {
         "groupers": [],
-        "subject_obs": [],
+        "time_range": [],
+        "subject_obs": ["time_range"],
         "subject_reloc": ["subject_obs"],
         "day_night_labels": ["subject_reloc"],
         "subject_traj": ["day_night_labels"],
@@ -101,6 +103,7 @@ def main(params: Params):
             "td_grouped_map_widget",
             "traj_daynight_grouped_map_widget",
             "groupers",
+            "time_range",
         ],
     }
 
@@ -110,9 +113,17 @@ def main(params: Params):
             partial=params_dict["groupers"],
             method="call",
         ),
+        "time_range": Node(
+            async_task=set_time_range.validate().set_executor("lithops"),
+            partial=params_dict["time_range"],
+            method="call",
+        ),
         "subject_obs": Node(
             async_task=get_subjectgroup_observations.validate().set_executor("lithops"),
-            partial=params_dict["subject_obs"],
+            partial={
+                "time_range": DependsOn("time_range"),
+            }
+            | params_dict["subject_obs"],
             method="call",
         ),
         "subject_reloc": Node(
@@ -572,6 +583,7 @@ def main(params: Params):
                     ],
                 ),
                 "groupers": DependsOn("groupers"),
+                "time_range": DependsOn("time_range"),
             }
             | params_dict["subject_tracking_dashboard"],
             method="call",

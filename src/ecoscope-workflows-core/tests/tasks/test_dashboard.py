@@ -1,5 +1,7 @@
-import pytest
+from datetime import datetime
 
+import pytest
+from ecoscope_workflows_core.tasks.filter._filter import TimeRange
 from ecoscope_workflows_core.tasks.groupby._groupby import Grouper
 from ecoscope_workflows_core.tasks.results import gather_dashboard
 from ecoscope_workflows_core.tasks.results._dashboard import (
@@ -59,6 +61,10 @@ def test_gather_dashboard(single_filter_dashboard: DashboardFixture):
     dashboard: Dashboard = gather_dashboard(
         title="A Great Dashboard",
         description="A dashboard with a map and a plot",
+        time_range=TimeRange(
+            since=datetime.strptime("2011-01-01", "%Y-%m-%d"),
+            until=datetime.strptime("2023-01-01", "%Y-%m-%d"),
+        ),
         widgets=grouped_widgets,
         groupers=[Grouper(index_name="month")],
     )
@@ -192,6 +198,10 @@ def test_gather_dashboard_two_filter(two_filter_dashboard: DashboardFixture):
     dashboard: Dashboard = gather_dashboard(
         title="A Great Dashboard",
         description="A dashboard with a map",
+        time_range=TimeRange(
+            since=datetime.strptime("2011-01-01", "%Y-%m-%d"),
+            until=datetime.strptime("2023-01-01", "%Y-%m-%d"),
+        ),
         widgets=grouped_widgets,
         groupers=[Grouper(index_name="month"), Grouper(index_name="year")],
     )
@@ -315,6 +325,10 @@ def test_gather_dashboard_three_filter(three_filter_dashboard: DashboardFixture)
     dashboard: Dashboard = gather_dashboard(
         title="A Great Dashboard",
         description="A dashboard with a map",
+        time_range=TimeRange(
+            since=datetime.strptime("2011-01-01", "%Y-%m-%d"),
+            until=datetime.strptime("2023-01-01", "%Y-%m-%d"),
+        ),
         widgets=grouped_widgets,
         groupers=[
             Grouper(index_name="month"),
@@ -454,6 +468,10 @@ def test_gather_dashboard_with_none_views(dashboard_with_none_views: DashboardFi
     dashboard: Dashboard = gather_dashboard(
         title="A Great Dashboard",
         description="A dashboard with a map and a plot",
+        time_range=TimeRange(
+            since=datetime.strptime("2011-01-01", "%Y-%m-%d"),
+            until=datetime.strptime("2023-01-01", "%Y-%m-%d"),
+        ),
         widgets=grouped_widgets,
         groupers=[Grouper(index_name="month")],
     )
@@ -581,6 +599,7 @@ def test_gather_dashboard_with_all_none_views(
     dashboard: Dashboard = gather_dashboard(
         title=expected_dashboard.metadata.title,
         description=expected_dashboard.metadata.description,
+        time_range=None,
         widgets=grouped_widgets,
         groupers=None,
     )

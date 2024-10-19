@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "a14c0deb652592fad3edfb3b99b76dc2ed865482e7948f3915215fe3626119e9"
+# from-spec-sha256 = "a41aeb6df58c206db71d5bb3e5946b51f1f65b061cf042d44dfebe577a72f433"
 
 
 from __future__ import annotations
@@ -9,7 +9,16 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
-from pydantic import AnyUrl, BaseModel, ConfigDict, Field, confloat
+from pydantic import AnyUrl, AwareDatetime, BaseModel, ConfigDict, Field, confloat
+
+
+class TimeRange(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    since: AwareDatetime = Field(..., description="The start time", title="Since")
+    until: AwareDatetime = Field(..., description="The end time", title="Until")
+    time_format: str = Field(..., description="The time format", title="Time Format")
 
 
 class Pe(BaseModel):
@@ -19,8 +28,6 @@ class Pe(BaseModel):
     client: str = Field(
         ..., description="A named EarthRanger connection.", title="Client"
     )
-    since: str = Field(..., description="Start date", title="Since")
-    until: str = Field(..., description="End date", title="Until")
     patrol_type: List[str] = Field(
         ..., description="list of UUID of patrol types", title="Patrol Type"
     )
@@ -333,14 +340,22 @@ class Grouper(BaseModel):
     help_text: Optional[str] = Field(None, title="Help Text")
 
 
+class TimeRange1(BaseModel):
+    since: AwareDatetime = Field(..., title="Since")
+    until: AwareDatetime = Field(..., title="Until")
+    time_format: Optional[str] = Field("%d %b %Y %H:%M:%S %Z", title="Time Format")
+
+
 class Coordinate(BaseModel):
     x: float = Field(..., title="X")
     y: float = Field(..., title="Y")
 
 
 class LegendDefinition(BaseModel):
-    label_column: str = Field(..., title="Label Column")
-    color_column: str = Field(..., title="Color Column")
+    label_column: Optional[str] = Field(None, title="Label Column")
+    color_column: Optional[str] = Field(None, title="Color Column")
+    labels: Optional[List[str]] = Field(None, title="Labels")
+    colors: Optional[List[str]] = Field(None, title="Colors")
 
 
 class LineWidthUnits(str, Enum):
@@ -791,6 +806,7 @@ class PeBarChart(BaseModel):
 
 class Params(BaseModel):
     groupers: Optional[Groupers] = Field(None, title="Set Groupers")
+    time_range: Optional[TimeRange] = Field(None, title="Set Time Range Filters")
     pe: Optional[Pe] = Field(None, title="Get Patrol Events from EarthRanger")
     filter_patrol_events: Optional[FilterPatrolEvents] = Field(
         None, title="Apply Relocation Coordinate Filter"

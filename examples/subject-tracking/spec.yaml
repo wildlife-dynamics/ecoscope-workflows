@@ -12,10 +12,16 @@ workflow:
     id: groupers
     task: set_groupers
 
+  - name: Set Time Range Filters
+    id: time_range
+    task: set_time_range
+
   # subject group observations
   - name: Get Subject Group Observations from EarthRanger
     id: subject_obs
     task: get_subjectgroup_observations
+    partial:
+      time_range: ${{ workflow.time_range.return }}
   - name: Transform Observations to Relocations
     id: subject_reloc
     task: process_relocations
@@ -333,3 +339,4 @@ workflow:
         - ${{ workflow.td_grouped_map_widget.return }}
         - ${{ workflow.traj_daynight_grouped_map_widget.return }}
       groupers: ${{ workflow.groupers.return }}
+      time_range: ${{ workflow.time_range.return}}

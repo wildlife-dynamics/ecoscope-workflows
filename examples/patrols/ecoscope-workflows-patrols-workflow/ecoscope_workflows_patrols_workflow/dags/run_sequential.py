@@ -1,10 +1,11 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "16f756386e14612d875d95d9640b778f31eb33ad9db3f241ab4ce1fe3aecc4b6"
+# from-spec-sha256 = "8a3657e3ebaa4bfbe1bbaaac414f150f77aaa86dfa1e7d1d71c3b10235974666"
 import json
 import os
 
 from ecoscope_workflows_core.tasks.groupby import set_groupers
+from ecoscope_workflows_core.tasks.filter import set_time_range
 from ecoscope_workflows_ext_ecoscope.tasks.io import get_patrol_observations
 from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import process_relocations
 from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import (
@@ -43,8 +44,12 @@ def main(params: Params):
 
     groupers = set_groupers.validate().partial(**params_dict["groupers"]).call()
 
+    time_range = set_time_range.validate().partial(**params_dict["time_range"]).call()
+
     patrol_obs = (
-        get_patrol_observations.validate().partial(**params_dict["patrol_obs"]).call()
+        get_patrol_observations.validate()
+        .partial(time_range=time_range, **params_dict["patrol_obs"])
+        .call()
     )
 
     patrol_reloc = (
@@ -82,7 +87,9 @@ def main(params: Params):
     )
 
     patrol_events = (
-        get_patrol_events.validate().partial(**params_dict["patrol_events"]).call()
+        get_patrol_events.validate()
+        .partial(time_range=time_range, **params_dict["patrol_events"])
+        .call()
     )
 
     filter_patrol_events = (
@@ -391,6 +398,7 @@ def main(params: Params):
                 max_speed_grouped_widget,
             ],
             groupers=groupers,
+            time_range=time_range,
             **params_dict["patrol_dashboard"],
         )
         .call()

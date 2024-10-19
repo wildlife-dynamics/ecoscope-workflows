@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "b9febf5b3ff98ca3fd882b4f918e74114c04e0ff454b22c33ea84337b0ba9b0f"
+# from-spec-sha256 = "0d1105f115cdc90bd410b5ba170adfc21fb0b9d91af21f80eb7fac7ae90281bb"
 
 
 from __future__ import annotations
@@ -10,6 +10,15 @@ from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
 from pydantic import AnyUrl, AwareDatetime, BaseModel, ConfigDict, Field
+
+
+class TimeRange(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    since: AwareDatetime = Field(..., description="The start time", title="Since")
+    until: AwareDatetime = Field(..., description="The end time", title="Until")
+    time_format: str = Field(..., description="The time format", title="Time Format")
 
 
 class SubjectObs(BaseModel):
@@ -22,8 +31,6 @@ class SubjectObs(BaseModel):
     subject_group_name: str = Field(
         ..., description="Name of EarthRanger Subject", title="Subject Group Name"
     )
-    since: AwareDatetime = Field(..., description="Start date", title="Since")
-    until: AwareDatetime = Field(..., description="End date", title="Until")
     include_inactive: Optional[bool] = Field(
         True,
         description="Whether or not to include inactive subjects",
@@ -354,6 +361,12 @@ class Grouper(BaseModel):
     index_name: str = Field(..., title="Index Name")
     display_name: Optional[str] = Field(None, title="Display Name")
     help_text: Optional[str] = Field(None, title="Help Text")
+
+
+class TimeRange1(BaseModel):
+    since: AwareDatetime = Field(..., title="Since")
+    until: AwareDatetime = Field(..., title="Until")
+    time_format: Optional[str] = Field("%d %b %Y %H:%M:%S %Z", title="Time Format")
 
 
 class Coordinate(BaseModel):
@@ -808,6 +821,7 @@ class TdEcomap(BaseModel):
 
 class Params(BaseModel):
     groupers: Optional[Groupers] = Field(None, title="Set Groupers")
+    time_range: Optional[TimeRange] = Field(None, title="Set Time Range Filters")
     subject_obs: Optional[SubjectObs] = Field(
         None, title="Get Subject Group Observations from EarthRanger"
     )

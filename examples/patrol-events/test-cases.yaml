@@ -9,11 +9,15 @@ test1:
         - index_name: "month"
           display_name: "Month"
           help_text: "The month in which the patrol began or the event was updated."
+
+    time_range:
+      since: "2011-01-01T00:00:00Z"
+      until: "2023-01-01T23:59:59Z"
+      time_format: "%d %b %Y %H:%M:%S %Z"
+
     # Parameters for 'Get Patrol Events from EarthRanger' using task `get_patrol_events`.
     pe:
       client: "mep_dev" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
-      since: "2011-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Start date'))
-      until: "2023-01-01" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='End date'))
       patrol_type: [
           "804c75f0-ed55-4bf5-b6fc-1aaf166bcf84",
           "fde19413-cb55-443e-9be6-d10e4a48c668",

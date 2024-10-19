@@ -1,12 +1,13 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "a14c0deb652592fad3edfb3b99b76dc2ed865482e7948f3915215fe3626119e9"
+# from-spec-sha256 = "a41aeb6df58c206db71d5bb3e5946b51f1f65b061cf042d44dfebe577a72f433"
 import json
 import os
 
 from ecoscope_workflows_core.graph import DependsOn, DependsOnSequence, Graph, Node
 
 from ecoscope_workflows_core.tasks.groupby import set_groupers
+from ecoscope_workflows_core.tasks.filter import set_time_range
 from ecoscope_workflows_ext_ecoscope.tasks.io import get_patrol_events
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import (
     apply_reloc_coord_filter,
@@ -34,7 +35,8 @@ def main(params: Params):
 
     dependencies = {
         "groupers": [],
-        "pe": [],
+        "time_range": [],
+        "pe": ["time_range"],
         "filter_patrol_events": ["pe"],
         "pe_add_temporal_index": ["filter_patrol_events"],
         "pe_colormap": ["pe_add_temporal_index"],
@@ -77,6 +79,7 @@ def main(params: Params):
             "grouped_pe_pie_widget_merge",
             "grouped_fd_map_widget_merge",
             "groupers",
+            "time_range",
         ],
     }
 
@@ -86,9 +89,17 @@ def main(params: Params):
             partial=params_dict["groupers"],
             method="call",
         ),
+        "time_range": Node(
+            async_task=set_time_range.validate().set_executor("lithops"),
+            partial=params_dict["time_range"],
+            method="call",
+        ),
         "pe": Node(
             async_task=get_patrol_events.validate().set_executor("lithops"),
-            partial=params_dict["pe"],
+            partial={
+                "time_range": DependsOn("time_range"),
+            }
+            | params_dict["pe"],
             method="call",
         ),
         "filter_patrol_events": Node(
@@ -411,6 +422,7 @@ def main(params: Params):
                     ],
                 ),
                 "groupers": DependsOn("groupers"),
+                "time_range": DependsOn("time_range"),
             }
             | params_dict["patrol_dashboard"],
             method="call",
