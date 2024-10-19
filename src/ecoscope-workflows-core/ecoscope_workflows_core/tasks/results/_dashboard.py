@@ -305,6 +305,10 @@ def gather_dashboard(
         grouper_choices = composite_filters_to_grouper_choices_dict(
             groupers, keys_sample
         )
+    formatted_time_range = ""
+    if time_range:
+        formatted_time_range = f"From {time_range.since.strftime(time_range.time_format)} to {time_range.until.strftime(time_range.time_format)}"
+
     return Dashboard(
         widgets=grouped_widgets,
         grouper_choices=(grouper_choices if groupers else None),
@@ -312,6 +316,6 @@ def gather_dashboard(
         metadata=Metadata(
             title=title,
             description=description,
-            time_range=f"From {time_range.since.strftime(time_range.time_format)} to {time_range.until.strftime(time_range.time_format)}",
+            time_range=formatted_time_range,
         ),
     )
