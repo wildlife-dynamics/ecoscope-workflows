@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "2ae7a06ff92fc61a80723012afb506084a82214ff9ed3e8d7d1d12f4c7454a73"
+# from-spec-sha256 = "b9febf5b3ff98ca3fd882b4f918e74114c04e0ff454b22c33ea84337b0ba9b0f"
 
 
 from __future__ import annotations
@@ -131,6 +131,45 @@ class EcomapHtmlUrls(BaseModel):
 
 
 class TrajMapWidgetsSingleViews(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    title: str = Field(..., description="The title of the widget", title="Title")
+
+
+class ColormapTrajNight(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    input_column_name: str = Field(
+        ...,
+        description="The name of the column with categorical values.",
+        title="Input Column Name",
+    )
+    colormap: Optional[Union[str, List[str]]] = Field(
+        "viridis",
+        description="Either a named mpl.colormap or a list of string hex values.",
+        title="Colormap",
+    )
+    output_column_name: Optional[str] = Field(
+        None,
+        description="The dataframe column that will contain the color values.",
+        title="Output Column Name",
+    )
+
+
+class EcomapDaynightHtmlUrls(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    filename: Optional[str] = Field(
+        None,
+        description="            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            ",
+        title="Filename",
+    )
+
+
+class TrajMapDaynightWidgetsSv(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -375,8 +414,10 @@ class Unit(str, Enum):
 
 
 class LegendDefinition(BaseModel):
-    label_column: str = Field(..., title="Label Column")
-    color_column: str = Field(..., title="Color Column")
+    label_column: Optional[str] = Field(None, title="Label Column")
+    color_column: Optional[str] = Field(None, title="Color Column")
+    labels: Optional[List[str]] = Field(None, title="Labels")
+    colors: Optional[List[str]] = Field(None, title="Colors")
 
 
 class LineWidthUnits(str, Enum):
@@ -631,6 +672,49 @@ class TrajEcomap(BaseModel):
     )
 
 
+class TrajMapNightLayers(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    layer_style: Union[PolylineLayerStyle, PolygonLayerStyle, PointLayerStyle] = Field(
+        ..., description="Style arguments for the layer.", title="Layer Style"
+    )
+    legend: Optional[LegendDefinition] = Field(
+        None,
+        description="If present, includes this layer in the map legend",
+        title="Legend",
+    )
+
+
+class TrajDaynightEcomap(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    tile_layers: Optional[List[TileLayer]] = Field(
+        [],
+        description="A list of named tile layer with opacity, ie OpenStreetMap.",
+        title="Tile Layers",
+    )
+    static: Optional[bool] = Field(
+        False, description="Set to true to disable map pan/zoom.", title="Static"
+    )
+    title: Optional[str] = Field("", description="The map title.", title="Title")
+    north_arrow_style: Optional[NorthArrowStyle] = Field(
+        default_factory=lambda: NorthArrowStyle.model_validate(
+            {"placement": "top-left", "style": {"transform": "scale(0.8)"}}
+        ),
+        description="Additional arguments for configuring the North Arrow.",
+        title="North Arrow Style",
+    )
+    legend_style: Optional[LegendStyle] = Field(
+        default_factory=lambda: LegendStyle.model_validate(
+            {"placement": "bottom-right"}
+        ),
+        description="Additional arguments for configuring the legend.",
+        title="Legend Style",
+    )
+
+
 class AverageSpeedConverted(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -730,6 +814,9 @@ class Params(BaseModel):
     subject_reloc: Optional[SubjectReloc] = Field(
         None, title="Transform Observations to Relocations"
     )
+    day_night_labels: Optional[Dict[str, Any]] = Field(
+        None, title="Apply Day/Night Labels to Relocations"
+    )
     subject_traj: Optional[SubjectTraj] = Field(
         None, title="Transform Relocations to Trajectories"
     )
@@ -761,6 +848,24 @@ class Params(BaseModel):
         None, title="Create Map Widgets for Trajectories"
     )
     traj_grouped_map_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge EcoMap Widget Views"
+    )
+    colormap_traj_night: Optional[ColormapTrajNight] = Field(
+        None, title="Apply Color to Trajectories By Day/Night"
+    )
+    traj_map_night_layers: Optional[TrajMapNightLayers] = Field(
+        None, title="Create map layer for each trajectory group"
+    )
+    traj_daynight_ecomap: Optional[TrajDaynightEcomap] = Field(
+        None, title="Draw Ecomaps for each trajectory group"
+    )
+    ecomap_daynight_html_urls: Optional[EcomapDaynightHtmlUrls] = Field(
+        None, title="Persist ecomap as Text"
+    )
+    traj_map_daynight_widgets_sv: Optional[TrajMapDaynightWidgetsSv] = Field(
+        None, title="Create Map Widgets for Trajectories"
+    )
+    traj_daynight_grouped_map_widget: Optional[Dict[str, Any]] = Field(
         None, title="Merge EcoMap Widget Views"
     )
     mean_speed: Optional[MeanSpeed] = Field(

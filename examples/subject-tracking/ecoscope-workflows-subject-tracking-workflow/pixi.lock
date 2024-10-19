@@ -5682,8 +5682,8 @@ packages:
   subdir: noarch
   noarch: python
   url: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-core-v0.0.6-pyh4616a5c_0.conda
-  sha256: e755724fc12fb76015390d7461f9e834e683c1ed13638a835f125f779b9aecef
-  md5: 30420110b1d77318fdc204d6e68964b7
+  sha256: dba42a4453fd2d25f14866a73556e14481bea33be438f67088d056687e872efa
+  md5: a53ab6a9556fce1920efcfe6b56a5d72
   depends:
   - python
   - jinja2
@@ -5700,8 +5700,8 @@ packages:
   - pydot
   - python
   license: BSD-3-Clause
-  size: 48174
-  timestamp: 1729314502817
+  size: 48168
+  timestamp: 1729317502293
 - kind: conda
   name: ecoscope-workflows-ext-ecoscope
   version: v0.0.6
@@ -5709,21 +5709,21 @@ packages:
   subdir: noarch
   noarch: python
   url: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-ext-ecoscope-v0.0.6-pyh4616a5c_0.conda
-  sha256: 18c5bc6c1a1ffa5c28fdd557a817df20b54e911409a5e6bcdbf0e911b28aaf97
-  md5: 532f5be73f1d1ad2ba3432eb85ee4d4d
+  sha256: 4d6f634eca4df58e4f88a66e547d0b2c155078b7c06985e5cd93bb24acd5a7e2
+  md5: 849f29e2f8828e594af2d10b059e6ca7
   depends:
   - python
   - ecoscope-workflows-core ==v0.0.6
   - ecoscope ==v1.8.3
   - python
   license: BSD-3-Clause
-  size: 1088381
-  timestamp: 1729314578355
+  size: 1088518
+  timestamp: 1729317581737
 - kind: pypi
   name: ecoscope-workflows-subject-tracking-workflow
   version: 0.0.0
   path: .
-  sha256: 31ba5d9de1aa6d6e265794046859732310bd0f618a9f61d6a58de4fe6ca9ecda
+  sha256: 1ee26571836844c7fa80556c3bef7c96af88b737bde6db47b39857ed2e2a4b7a
   requires_python: '>=3.10'
   editable: true
 - kind: conda

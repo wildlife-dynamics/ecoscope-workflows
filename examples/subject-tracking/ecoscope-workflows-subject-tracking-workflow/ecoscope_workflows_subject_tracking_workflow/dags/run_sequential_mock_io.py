@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "2ae7a06ff92fc61a80723012afb506084a82214ff9ed3e8d7d1d12f4c7454a73"
+# from-spec-sha256 = "b9febf5b3ff98ca3fd882b4f918e74114c04e0ff454b22c33ea84337b0ba9b0f"
 
 # ruff: noqa: E402
 
@@ -22,6 +22,7 @@ get_subjectgroup_observations = create_task_magicmock(  # 🧪
     func_name="get_subjectgroup_observations",  # 🧪
 )  # 🧪
 from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import process_relocations
+from ecoscope_workflows_ext_ecoscope.tasks.transformation import classify_is_night
 from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import (
     relocations_to_trajectory,
 )
@@ -67,9 +68,15 @@ def main(params: Params):
         .call()
     )
 
+    day_night_labels = (
+        classify_is_night.validate()
+        .partial(relocations=subject_reloc, **params_dict["day_night_labels"])
+        .call()
+    )
+
     subject_traj = (
         relocations_to_trajectory.validate()
-        .partial(relocations=subject_reloc, **params_dict["subject_traj"])
+        .partial(relocations=day_night_labels, **params_dict["subject_traj"])
         .call()
     )
 
@@ -139,6 +146,48 @@ def main(params: Params):
         .partial(
             widgets=traj_map_widgets_single_views,
             **params_dict["traj_grouped_map_widget"],
+        )
+        .call()
+    )
+
+    colormap_traj_night = (
+        apply_color_map.validate()
+        .partial(**params_dict["colormap_traj_night"])
+        .mapvalues(argnames=["df"], argvalues=split_subject_traj_groups)
+    )
+
+    traj_map_night_layers = (
+        create_map_layer.validate()
+        .partial(**params_dict["traj_map_night_layers"])
+        .mapvalues(argnames=["geodataframe"], argvalues=colormap_traj_night)
+    )
+
+    traj_daynight_ecomap = (
+        draw_ecomap.validate()
+        .partial(**params_dict["traj_daynight_ecomap"])
+        .mapvalues(argnames=["geo_layers"], argvalues=traj_map_night_layers)
+    )
+
+    ecomap_daynight_html_urls = (
+        persist_text.validate()
+        .partial(
+            root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            **params_dict["ecomap_daynight_html_urls"],
+        )
+        .mapvalues(argnames=["text"], argvalues=traj_daynight_ecomap)
+    )
+
+    traj_map_daynight_widgets_sv = (
+        create_map_widget_single_view.validate()
+        .partial(**params_dict["traj_map_daynight_widgets_sv"])
+        .map(argnames=["view", "data"], argvalues=ecomap_daynight_html_urls)
+    )
+
+    traj_daynight_grouped_map_widget = (
+        merge_widget_views.validate()
+        .partial(
+            widgets=traj_map_daynight_widgets_sv,
+            **params_dict["traj_daynight_grouped_map_widget"],
         )
         .call()
     )
@@ -347,6 +396,7 @@ def main(params: Params):
                 total_dist_grouped_sv_widget,
                 total_time_grouped_sv_widget,
                 td_grouped_map_widget,
+                traj_daynight_grouped_map_widget,
             ],
             groupers=groupers,
             **params_dict["subject_tracking_dashboard"],

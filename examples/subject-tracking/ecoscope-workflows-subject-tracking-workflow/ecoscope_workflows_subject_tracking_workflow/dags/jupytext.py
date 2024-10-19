@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "2ae7a06ff92fc61a80723012afb506084a82214ff9ed3e8d7d1d12f4c7454a73"
+# from-spec-sha256 = "b9febf5b3ff98ca3fd882b4f918e74114c04e0ff454b22c33ea84337b0ba9b0f"
 
 
 # ruff: noqa: E402
@@ -16,6 +16,7 @@ import os
 from ecoscope_workflows_core.tasks.groupby import set_groupers
 from ecoscope_workflows_ext_ecoscope.tasks.io import get_subjectgroup_observations
 from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import process_relocations
+from ecoscope_workflows_ext_ecoscope.tasks.transformation import classify_is_night
 from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import (
     relocations_to_trajectory,
 )
@@ -98,6 +99,23 @@ subject_reloc = process_relocations.partial(
 
 
 # %% [markdown]
+# ## Apply Day/Night Labels to Relocations
+
+# %%
+# parameters
+
+day_night_labels_params = dict()
+
+# %%
+# call the task
+
+
+day_night_labels = classify_is_night.partial(
+    relocations=subject_reloc, **day_night_labels_params
+).call()
+
+
+# %% [markdown]
 # ## Transform Relocations to Trajectories
 
 # %%
@@ -117,7 +135,7 @@ subject_traj_params = dict(
 
 
 subject_traj = relocations_to_trajectory.partial(
-    relocations=subject_reloc, **subject_traj_params
+    relocations=day_night_labels, **subject_traj_params
 ).call()
 
 
@@ -322,6 +340,126 @@ traj_grouped_map_widget_params = dict()
 
 traj_grouped_map_widget = merge_widget_views.partial(
     widgets=traj_map_widgets_single_views, **traj_grouped_map_widget_params
+).call()
+
+
+# %% [markdown]
+# ## Apply Color to Trajectories By Day/Night
+
+# %%
+# parameters
+
+colormap_traj_night_params = dict(
+    input_column_name=...,
+    colormap=...,
+    output_column_name=...,
+)
+
+# %%
+# call the task
+
+
+colormap_traj_night = apply_color_map.partial(**colormap_traj_night_params).mapvalues(
+    argnames=["df"], argvalues=split_subject_traj_groups
+)
+
+
+# %% [markdown]
+# ## Create map layer for each trajectory group
+
+# %%
+# parameters
+
+traj_map_night_layers_params = dict(
+    layer_style=...,
+    legend=...,
+)
+
+# %%
+# call the task
+
+
+traj_map_night_layers = create_map_layer.partial(
+    **traj_map_night_layers_params
+).mapvalues(argnames=["geodataframe"], argvalues=colormap_traj_night)
+
+
+# %% [markdown]
+# ## Draw Ecomaps for each trajectory group
+
+# %%
+# parameters
+
+traj_daynight_ecomap_params = dict(
+    tile_layers=...,
+    static=...,
+    title=...,
+    north_arrow_style=...,
+    legend_style=...,
+)
+
+# %%
+# call the task
+
+
+traj_daynight_ecomap = draw_ecomap.partial(**traj_daynight_ecomap_params).mapvalues(
+    argnames=["geo_layers"], argvalues=traj_map_night_layers
+)
+
+
+# %% [markdown]
+# ## Persist ecomap as Text
+
+# %%
+# parameters
+
+ecomap_daynight_html_urls_params = dict(
+    filename=...,
+)
+
+# %%
+# call the task
+
+
+ecomap_daynight_html_urls = persist_text.partial(
+    root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+    **ecomap_daynight_html_urls_params,
+).mapvalues(argnames=["text"], argvalues=traj_daynight_ecomap)
+
+
+# %% [markdown]
+# ## Create Map Widgets for Trajectories
+
+# %%
+# parameters
+
+traj_map_daynight_widgets_sv_params = dict(
+    title=...,
+)
+
+# %%
+# call the task
+
+
+traj_map_daynight_widgets_sv = create_map_widget_single_view.partial(
+    **traj_map_daynight_widgets_sv_params
+).map(argnames=["view", "data"], argvalues=ecomap_daynight_html_urls)
+
+
+# %% [markdown]
+# ## Merge EcoMap Widget Views
+
+# %%
+# parameters
+
+traj_daynight_grouped_map_widget_params = dict()
+
+# %%
+# call the task
+
+
+traj_daynight_grouped_map_widget = merge_widget_views.partial(
+    widgets=traj_map_daynight_widgets_sv, **traj_daynight_grouped_map_widget_params
 ).call()
 
 
@@ -906,6 +1044,7 @@ subject_tracking_dashboard = gather_dashboard.partial(
         total_dist_grouped_sv_widget,
         total_time_grouped_sv_widget,
         td_grouped_map_widget,
+        traj_daynight_grouped_map_widget,
     ],
     groupers=groupers,
     **subject_tracking_dashboard_params,

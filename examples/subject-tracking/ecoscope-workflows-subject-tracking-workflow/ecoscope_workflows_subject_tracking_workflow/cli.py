@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "2ae7a06ff92fc61a80723012afb506084a82214ff9ed3e8d7d1d12f4c7454a73"
+# from-spec-sha256 = "b9febf5b3ff98ca3fd882b4f918e74114c04e0ff454b22c33ea84337b0ba9b0f"
 
 
 from io import TextIOWrapper
@@ -8,8 +8,8 @@ from io import TextIOWrapper
 import click
 import ruamel.yaml
 
-from ecoscope_workflows_subject_tracking_workflow.dispatch import dispatch
-from ecoscope_workflows_subject_tracking_workflow.params import Params
+from .dispatch import dispatch
+from .params import Params
 
 
 @click.command()

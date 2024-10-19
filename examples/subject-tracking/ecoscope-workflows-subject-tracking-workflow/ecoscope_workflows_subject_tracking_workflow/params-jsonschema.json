@@ -85,6 +85,13 @@
       "type": "object",
       "title": "Transform Observations to Relocations"
     },
+    "day_night_labels": {
+      "additionalProperties": false,
+      "properties": {},
+      "required": [],
+      "type": "object",
+      "title": "Apply Day/Night Labels to Relocations"
+    },
     "subject_traj": {
       "additionalProperties": false,
       "properties": {
@@ -455,6 +462,170 @@
       "title": "Create Map Widgets for Trajectories"
     },
     "traj_grouped_map_widget": {
+      "additionalProperties": false,
+      "properties": {},
+      "required": [],
+      "type": "object",
+      "title": "Merge EcoMap Widget Views"
+    },
+    "colormap_traj_night": {
+      "additionalProperties": false,
+      "properties": {
+        "input_column_name": {
+          "title": "Input Column Name",
+          "type": "string",
+          "description": "The name of the column with categorical values."
+        },
+        "colormap": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "default": "viridis",
+          "title": "Colormap",
+          "description": "Either a named mpl.colormap or a list of string hex values."
+        },
+        "output_column_name": {
+          "default": null,
+          "title": "Output Column Name",
+          "type": "string",
+          "description": "The dataframe column that will contain the color values."
+        }
+      },
+      "required": [
+        "input_column_name"
+      ],
+      "type": "object",
+      "title": "Apply Color to Trajectories By Day/Night"
+    },
+    "traj_map_night_layers": {
+      "additionalProperties": false,
+      "properties": {
+        "layer_style": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PolylineLayerStyle"
+            },
+            {
+              "$ref": "#/$defs/PolygonLayerStyle"
+            },
+            {
+              "$ref": "#/$defs/PointLayerStyle"
+            }
+          ],
+          "title": "Layer Style",
+          "description": "Style arguments for the layer."
+        },
+        "legend": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/LegendDefinition"
+            }
+          ],
+          "default": null,
+          "title": "Legend",
+          "description": "If present, includes this layer in the map legend"
+        }
+      },
+      "required": [
+        "layer_style"
+      ],
+      "type": "object",
+      "title": "Create map layer for each trajectory group"
+    },
+    "traj_daynight_ecomap": {
+      "additionalProperties": false,
+      "properties": {
+        "tile_layers": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/TileLayer"
+          },
+          "title": "Tile Layers",
+          "type": "array",
+          "description": "A list of named tile layer with opacity, ie OpenStreetMap."
+        },
+        "static": {
+          "default": false,
+          "title": "Static",
+          "type": "boolean",
+          "description": "Set to true to disable map pan/zoom."
+        },
+        "title": {
+          "default": "",
+          "title": "Title",
+          "type": "string",
+          "description": "The map title."
+        },
+        "north_arrow_style": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/NorthArrowStyle"
+            }
+          ],
+          "default": {
+            "placement": "top-left",
+            "style": {
+              "transform": "scale(0.8)"
+            }
+          },
+          "title": "North Arrow Style",
+          "description": "Additional arguments for configuring the North Arrow."
+        },
+        "legend_style": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/LegendStyle"
+            }
+          ],
+          "default": {
+            "placement": "bottom-right"
+          },
+          "title": "Legend Style",
+          "description": "Additional arguments for configuring the legend."
+        }
+      },
+      "required": [],
+      "type": "object",
+      "title": "Draw Ecomaps for each trajectory group"
+    },
+    "ecomap_daynight_html_urls": {
+      "additionalProperties": false,
+      "properties": {
+        "filename": {
+          "default": null,
+          "title": "Filename",
+          "type": "string",
+          "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+        }
+      },
+      "required": [],
+      "type": "object",
+      "title": "Persist ecomap as Text"
+    },
+    "traj_map_daynight_widgets_sv": {
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title",
+          "type": "string",
+          "description": "The title of the widget"
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "type": "object",
+      "title": "Create Map Widgets for Trajectories"
+    },
+    "traj_daynight_grouped_map_widget": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
@@ -1287,18 +1458,32 @@
     "LegendDefinition": {
       "properties": {
         "label_column": {
+          "default": null,
           "title": "Label Column",
           "type": "string"
         },
         "color_column": {
+          "default": null,
           "title": "Color Column",
           "type": "string"
+        },
+        "labels": {
+          "default": null,
+          "items": {
+            "type": "string"
+          },
+          "title": "Labels",
+          "type": "array"
+        },
+        "colors": {
+          "default": null,
+          "items": {
+            "type": "string"
+          },
+          "title": "Colors",
+          "type": "array"
         }
       },
-      "required": [
-        "label_column",
-        "color_column"
-      ],
       "title": "LegendDefinition",
       "type": "object"
     },
@@ -1901,6 +2086,7 @@
       "groupers",
       "subject_obs",
       "subject_reloc",
+      "day_night_labels",
       "subject_traj",
       "traj_add_temporal_index",
       "split_subject_traj_groups",
@@ -1912,6 +2098,12 @@
       "ecomap_html_urls",
       "traj_map_widgets_single_views",
       "traj_grouped_map_widget",
+      "colormap_traj_night",
+      "traj_map_night_layers",
+      "traj_daynight_ecomap",
+      "ecomap_daynight_html_urls",
+      "traj_map_daynight_widgets_sv",
+      "traj_daynight_grouped_map_widget",
       "mean_speed",
       "average_speed_converted",
       "mean_speed_sv_widgets",

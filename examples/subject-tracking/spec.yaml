@@ -25,7 +25,7 @@ workflow:
     id: day_night_labels
     task: classify_is_night
     partial:
-      relocations: ${{ workflow.process_relocations.return }}
+      relocations: ${{ workflow.subject_reloc.return }}
   - name: Transform Relocations to Trajectories
     id: subject_traj
     task: relocations_to_trajectory
@@ -122,7 +122,7 @@ workflow:
       argnames: text
       argvalues: ${{ workflow.traj_daynight_ecomap.return }}
   - name: Create Map Widgets for Trajectories
-    id: traj_map_daynight_widgets_single_views
+    id: traj_map_daynight_widgets_sv
     task: create_map_widget_single_view
     map:
       argnames: [view, data]
@@ -131,7 +131,7 @@ workflow:
     id: traj_daynight_grouped_map_widget
     task: merge_widget_views
     partial:
-      widgets: ${{ workflow.traj_map_daynight_widgets_single_views.return }}
+      widgets: ${{ workflow.traj_map_daynight_widgets_sv.return }}
 
   # Grouped single value widget (1) - mean speed per group
   - name: Calculate Mean Speed Per Group
