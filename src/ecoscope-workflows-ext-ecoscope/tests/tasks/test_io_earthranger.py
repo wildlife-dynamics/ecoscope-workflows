@@ -30,8 +30,8 @@ def test_get_subject_group_observations(client):
         subject_group_name="Elephants",
         include_inactive=True,
         time_range=TimeRange(
-            since=datetime.strptime("2011-01-01", "%Y-%m-%d"),
-            until=datetime.strptime("2023-01-01", "%Y-%m-%d"),
+            since=datetime.strptime("2023-01-01", "%Y-%m-%d"),
+            until=datetime.strptime("2024-01-01", "%Y-%m-%d"),
         ),
     )
 
@@ -46,8 +46,8 @@ def test_get_patrol_observations(client):
     result = get_patrol_observations(
         client=client,
         time_range=TimeRange(
-            since=datetime.strptime("2011-01-01", "%Y-%m-%d"),
-            until=datetime.strptime("2023-01-01", "%Y-%m-%d"),
+            since=datetime.strptime("2023-01-01", "%Y-%m-%d"),
+            until=datetime.strptime("2024-01-01", "%Y-%m-%d"),
         ),
         # MEP_Distance_Survey_Patrol
         patrol_type="0ef3bf48-b44c-4a4e-a145-7ab2e38c9a57",
@@ -66,8 +66,8 @@ def test_get_patrol_events(client):
     result = get_patrol_events(
         client=client,
         time_range=TimeRange(
-            since=datetime.strptime("2011-01-01", "%Y-%m-%d"),
-            until=datetime.strptime("2023-01-01", "%Y-%m-%d"),
+            since=datetime.strptime("2023-01-01", "%Y-%m-%d"),
+            until=datetime.strptime("2024-01-01", "%Y-%m-%d"),
         ),
         patrol_type=None,
         status=None,

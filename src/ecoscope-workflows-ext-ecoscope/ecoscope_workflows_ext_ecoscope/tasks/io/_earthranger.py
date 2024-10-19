@@ -44,8 +44,8 @@ def get_subjectgroup_observations(
             subject_group_name=subject_group_name,
             include_subject_details=True,
             include_inactive=include_inactive,
-            since=time_range.since,
-            until=time_range.until,
+            since=time_range.since.isoformat(),
+            until=time_range.until.isoformat(),
         ),
     )
 
@@ -70,8 +70,8 @@ def get_patrol_observations(
     return cast(
         DataFrame[SubjectGroupObservationsGDFSchema],
         client.get_patrol_observations_with_patrol_filter(
-            since=time_range.since,
-            until=time_range.until,
+            since=time_range.since.isoformat(),
+            until=time_range.until.isoformat(),
             patrol_type=patrol_type,
             status=status,
             include_patrol_details=include_patrol_details,
@@ -98,8 +98,8 @@ def get_patrol_events(
     return cast(
         DataFrame[EventGDFSchema],
         client.get_patrol_events(
-            since=time_range.since,
-            until=time_range.until,
+            since=time_range.since.isoformat(),
+            until=time_range.until.isoformat(),
             patrol_type=patrol_type,
             status=status,
         ),
