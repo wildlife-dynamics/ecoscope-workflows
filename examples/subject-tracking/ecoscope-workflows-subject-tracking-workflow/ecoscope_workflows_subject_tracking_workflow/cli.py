@@ -8,8 +8,8 @@ from io import TextIOWrapper
 import click
 import ruamel.yaml
 
-from ecoscope_workflows_subject_tracking_workflow.dispatch import dispatch
-from ecoscope_workflows_subject_tracking_workflow.params import Params
+from .dispatch import dispatch
+from .params import Params
 
 
 @click.command()
