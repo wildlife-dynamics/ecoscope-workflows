@@ -1,3 +1,3 @@
-from ._filter import persist_text
+from ._filter import set_time_range
 
-__all__ = ["persist_text"]
+__all__ = ["set_time_range"]

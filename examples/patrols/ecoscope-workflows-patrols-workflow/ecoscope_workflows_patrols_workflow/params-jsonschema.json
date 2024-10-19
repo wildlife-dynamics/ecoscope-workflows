@@ -19,6 +19,28 @@
       "type": "object",
       "title": "Set Groupers"
     },
+    "time_range": {
+      "additionalProperties": false,
+      "properties": {
+        "since": {
+          "title": "Since"
+        },
+        "until": {
+          "title": "Until"
+        },
+        "format": {
+          "title": "Format",
+          "type": "string"
+        }
+      },
+      "required": [
+        "since",
+        "until",
+        "format"
+      ],
+      "type": "object",
+      "title": "Set Time Range Filters"
+    },
     "Fetch and preprocess patrol observations": {
       "type": "object",
       "description": "Fetch patrol observations from EarthRanger, preprocess them into trajectories, and add a temporal index.",
@@ -30,16 +52,6 @@
               "description": "A named EarthRanger connection.",
               "title": "Client",
               "type": "string"
-            },
-            "since": {
-              "title": "Since",
-              "type": "string",
-              "description": "Start date"
-            },
-            "until": {
-              "title": "Until",
-              "type": "string",
-              "description": "End date"
             },
             "patrol_type": {
               "items": {
@@ -72,8 +84,6 @@
           },
           "required": [
             "client",
-            "since",
-            "until",
             "patrol_type",
             "status"
           ],
@@ -283,16 +293,6 @@
               "title": "Client",
               "type": "string"
             },
-            "since": {
-              "title": "Since",
-              "type": "string",
-              "description": "Start date"
-            },
-            "until": {
-              "title": "Until",
-              "type": "string",
-              "description": "End date"
-            },
             "patrol_type": {
               "items": {
                 "type": "string"
@@ -312,8 +312,6 @@
           },
           "required": [
             "client",
-            "since",
-            "until",
             "patrol_type",
             "status"
           ],
@@ -1542,6 +1540,31 @@
       "title": "Grouper",
       "type": "object"
     },
+    "TimeRange": {
+      "properties": {
+        "since": {
+          "format": "date-time",
+          "title": "Since",
+          "type": "string"
+        },
+        "until": {
+          "format": "date-time",
+          "title": "Until",
+          "type": "string"
+        },
+        "time_format": {
+          "title": "Time Format",
+          "type": "string"
+        }
+      },
+      "required": [
+        "since",
+        "until",
+        "time_format"
+      ],
+      "title": "TimeRange",
+      "type": "object"
+    },
     "Coordinate": {
       "properties": {
         "x": {
@@ -2326,6 +2349,7 @@
   "uiSchema": {
     "ui:order": [
       "groupers",
+      "time_range",
       "Fetch and preprocess patrol observations",
       "Patrol trajectories map layers",
       "Fetch and preprocess patrol events",

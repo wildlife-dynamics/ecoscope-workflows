@@ -5,7 +5,7 @@ import pandera as pa
 import pandera.typing as pa_typing
 from ecoscope_workflows_core.annotations import DataFrame, GeoDataFrameBaseSchema
 from ecoscope_workflows_core.decorators import task
-from ecoscope_workflows_core.tasks.filter import TimeRange
+from ecoscope_workflows_core.tasks.filter._filter import TimeRange
 from pydantic import Field
 
 from ecoscope_workflows_ext_ecoscope.connections import EarthRangerClient

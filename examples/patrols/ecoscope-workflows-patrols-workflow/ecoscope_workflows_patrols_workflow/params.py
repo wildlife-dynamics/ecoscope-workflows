@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "16f756386e14612d875d95d9640b778f31eb33ad9db3f241ab4ce1fe3aecc4b6"
+# from-spec-sha256 = "f5429f1b54fe6b75253a95a7fb355e5a12c9eb9609d3e3a66ce1f9f20159668b"
 
 
 from __future__ import annotations
@@ -9,7 +9,16 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
-from pydantic import AnyUrl, BaseModel, ConfigDict, Field, confloat
+from pydantic import AnyUrl, AwareDatetime, BaseModel, ConfigDict, Field, confloat
+
+
+class TimeRange(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    since: Any = Field(..., title="Since")
+    until: Any = Field(..., title="Until")
+    format: str = Field(..., title="Format")
 
 
 class StatusEnum(str, Enum):
@@ -26,8 +35,6 @@ class PatrolObs(BaseModel):
     client: str = Field(
         ..., description="A named EarthRanger connection.", title="Client"
     )
-    since: str = Field(..., description="Start date", title="Since")
-    until: str = Field(..., description="End date", title="Until")
     patrol_type: List[str] = Field(
         ..., description="list of UUID of patrol types", title="Patrol Type"
     )
@@ -115,8 +122,6 @@ class PatrolEvents(BaseModel):
     client: str = Field(
         ..., description="A named EarthRanger connection.", title="Client"
     )
-    since: str = Field(..., description="Start date", title="Since")
-    until: str = Field(..., description="End date", title="Until")
     patrol_type: List[str] = Field(
         ..., description="list of UUID of patrol types", title="Patrol Type"
     )
@@ -422,6 +427,12 @@ class Grouper(BaseModel):
     index_name: str = Field(..., title="Index Name")
     display_name: Optional[str] = Field(None, title="Display Name")
     help_text: Optional[str] = Field(None, title="Help Text")
+
+
+class TimeRange1(BaseModel):
+    since: AwareDatetime = Field(..., title="Since")
+    until: AwareDatetime = Field(..., title="Until")
+    time_format: str = Field(..., title="Time Format")
 
 
 class Coordinate(BaseModel):
@@ -881,6 +892,7 @@ class PatrolEventsBarChart(BaseModel):
 
 class Params(BaseModel):
     groupers: Optional[Groupers] = Field(None, title="Set Groupers")
+    time_range: Optional[TimeRange] = Field(None, title="Set Time Range Filters")
     patrol_obs: Optional[PatrolObs] = Field(
         None, title="Get Patrol Observations from EarthRanger"
     )

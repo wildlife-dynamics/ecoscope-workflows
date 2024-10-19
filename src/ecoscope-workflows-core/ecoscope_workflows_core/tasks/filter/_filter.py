@@ -15,7 +15,7 @@ class TimeRange:
 
 
 @task
-def time_range(
+def set_time_range(
     since, until, format: str
 ) -> Annotated[TimeRange, Field(description="Time range filter")]:
     return TimeRange(since=since, until=until, format=format)

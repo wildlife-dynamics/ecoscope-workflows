@@ -12,6 +12,10 @@ workflow:
     id: groupers
     task: set_groupers
 
+  - name: Set Time Range Filters
+    id: time_range
+    task: set_time_range
+
   # patrol observations
   - title: Fetch and preprocess patrol observations
     type: task-group
@@ -22,6 +26,8 @@ workflow:
       - name: Get Patrol Observations from EarthRanger
         id: patrol_obs
         task: get_patrol_observations
+        partial:
+          time_range: ${{ workflow.time_range.return }}
       - name: Transform Observations to Relocations
         id: patrol_reloc
         task: process_relocations
@@ -66,6 +72,8 @@ workflow:
       - name: Get Patrol Events from EarthRanger
         id: patrol_events
         task: get_patrol_events
+        partial:
+          time_range: ${{ workflow.time_range.return }}
       - name: Apply Relocation Coordinate Filter
         id: filter_patrol_events
         task: apply_reloc_coord_filter
@@ -397,3 +405,4 @@ workflow:
         - ${{ workflow.avg_speed_grouped_widget.return }}
         - ${{ workflow.max_speed_grouped_widget.return }}
       groupers: ${{ workflow.groupers.return }}
+      time_range: ${{ workflow.time_range.return}}
