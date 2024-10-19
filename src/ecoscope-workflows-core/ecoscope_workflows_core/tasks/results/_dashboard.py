@@ -263,7 +263,9 @@ def _flatten(possibly_nested: NestedWidgetList | FlatWidgetList) -> FlatWidgetLi
 def gather_dashboard(
     title: Annotated[str, Field(description="The title of the dashboard")],
     description: Annotated[str, Field(description="The description of the dashboard")],
-    time_range: Annotated[TimeRange, Field(description="Time range filter")],
+    time_range: Annotated[
+        TimeRange | SkipJsonSchema[None], Field(description="Time range filter")
+    ],
     widgets: Annotated[
         NestedWidgetList | FlatWidgetList | GroupedOrSingleWidget,
         Field(description="The widgets to display.", exclude=True),
