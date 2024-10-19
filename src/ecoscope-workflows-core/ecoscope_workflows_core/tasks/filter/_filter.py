@@ -8,14 +8,14 @@ from ecoscope_workflows_core.decorators import task
 
 
 @dataclass
-class TimeFilter:
+class TimeRange:
     since: datetime
     until: datetime
     time_format: str
 
 
 @task
-def time_filter(
+def time_range(
     since, until, format: str
-) -> Annotated[TimeFilter, Field(description="Time range filter")]:
-    return TimeFilter(since=since, until=until, format=format)
+) -> Annotated[TimeRange, Field(description="Time range filter")]:
+    return TimeRange(since=since, until=until, format=format)
