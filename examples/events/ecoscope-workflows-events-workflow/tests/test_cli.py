@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "a41aeb6df58c206db71d5bb3e5946b51f1f65b061cf042d44dfebe577a72f433"
+# from-spec-sha256 = "4c4b15573d985d4dd22886118300bbb53ad094f5c88dbd6cc5bdcc47703957a9"
 
 
 from pathlib import Path

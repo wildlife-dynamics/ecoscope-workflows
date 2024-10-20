@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "a41aeb6df58c206db71d5bb3e5946b51f1f65b061cf042d44dfebe577a72f433"
+# from-spec-sha256 = "4c4b15573d985d4dd22886118300bbb53ad094f5c88dbd6cc5bdcc47703957a9"
 
 
 from pathlib import Path
@@ -10,12 +10,12 @@ import ruamel.yaml
 from fastapi.testclient import TestClient
 
 from ecoscope_workflows_core.testing import TestCase
-from ecoscope_workflows_patrol_events_workflow.app import app
+from ecoscope_workflows_events_workflow.app import app
 
 
 ARTIFACTS = Path(__file__).parent.parent
 TEST_CASES_YAML = ARTIFACTS.parent / "test-cases.yaml"
-ENTRYPOINT = "ecoscope-workflows-patrol-events-workflow"
+ENTRYPOINT = "ecoscope-workflows-events-workflow"
 
 
 def pytest_addoption(parser: pytest.Parser):

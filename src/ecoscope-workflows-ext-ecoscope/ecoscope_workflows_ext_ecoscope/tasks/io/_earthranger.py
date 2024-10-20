@@ -104,3 +104,36 @@ def get_patrol_events(
             status=status,
         ),
     )
+
+
+@task(tags=["io"])
+def get_events(
+    client: EarthRangerClient,
+    time_range: Annotated[TimeRange, Field(description="Time range filter")],
+    event_types: Annotated[
+        list[str],
+        Field(description="list of event types"),
+    ],
+    event_columns: Annotated[
+        list[str],
+        Field(description="The interested event columns"),
+    ],
+) -> DataFrame[EventGDFSchema]:
+    """Get events."""
+    all_event_types = pd.DataFrame(client.get_event_types())
+    event_type_ids = (
+        all_event_types[all_event_types["value"].isin(event_types)]["id"].values
+        if event_types
+        else all_event_types["id"].values
+    )
+
+    events_df = client.get_events(
+        since=time_range.since.isoformat(),
+        until=time_range.until.isoformat(),
+        event_type=event_type_ids,
+    ).reset_index()
+
+    return cast(
+        DataFrame[EventGDFSchema],
+        events_df[event_columns],
+    )

@@ -5,6 +5,7 @@ import pytest
 from ecoscope_workflows_core.tasks.filter._filter import TimeRange
 from ecoscope_workflows_ext_ecoscope.connections import EarthRangerConnection
 from ecoscope_workflows_ext_ecoscope.tasks.io import (
+    get_events,
     get_patrol_events,
     get_patrol_observations,
     get_subjectgroup_observations,
@@ -86,5 +87,34 @@ def test_get_patrol_events(client):
 
     assert len(result) > 0
     assert "id" in result
+    assert "event_type" in result
+    assert "geometry" in result
+
+
+def test_get_events(client):
+    result = get_events(
+        client=client,
+        time_range=TimeRange(
+            since=datetime.strptime("2015-01-01", "%Y-%m-%d").replace(
+                tzinfo=timezone.utc
+            ),
+            until=datetime.strptime("2015-12-31", "%Y-%m-%d").replace(
+                tzinfo=timezone.utc
+            ),
+        ),
+        event_types=[
+            "hwc_rep",
+            "bird_sighting_rep",
+            "wildlife_sighting_rep",
+            "poacher_camp_rep",
+            "fire_rep",
+            "injured_animal_rep",
+        ],
+        event_columns=["id", "time", "event_type", "geometry"],
+    )
+
+    assert len(result) > 0
+    assert "id" in result
+    assert "time" in result
     assert "event_type" in result
     assert "geometry" in result

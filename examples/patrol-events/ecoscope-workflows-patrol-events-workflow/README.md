@@ -1,9 +1,0 @@
-```
-# [generated]
-# by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "a41aeb6df58c206db71d5bb3e5946b51f1f65b061cf042d44dfebe577a72f433"
-
-```
-# ecoscope-workflows-patrol-events-workflow
-
-![](graph.png)

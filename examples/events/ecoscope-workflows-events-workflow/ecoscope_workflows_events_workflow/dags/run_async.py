@@ -1,29 +1,14 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "a41aeb6df58c206db71d5bb3e5946b51f1f65b061cf042d44dfebe577a72f433"
-
-# ruff: noqa: E402
-
-"""WARNING: This file is generated in a testing context and should not be used in production.
-Lines specific to the testing context are marked with a test tube emoji (🧪) to indicate
-that they would not be included (or would be different) in the production version of this file.
-"""
-
+# from-spec-sha256 = "4c4b15573d985d4dd22886118300bbb53ad094f5c88dbd6cc5bdcc47703957a9"
 import json
 import os
-import warnings  # 🧪
-from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
-
 
 from ecoscope_workflows_core.graph import DependsOn, DependsOnSequence, Graph, Node
 
 from ecoscope_workflows_core.tasks.groupby import set_groupers
 from ecoscope_workflows_core.tasks.filter import set_time_range
-
-get_patrol_events = create_task_magicmock(  # 🧪
-    anchor="ecoscope_workflows_ext_ecoscope.tasks.io",  # 🧪
-    func_name="get_patrol_events",  # 🧪
-)  # 🧪
+from ecoscope_workflows_ext_ecoscope.tasks.io import get_events
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import (
     apply_reloc_coord_filter,
 )
@@ -46,54 +31,52 @@ from ..params import Params
 
 
 def main(params: Params):
-    warnings.warn("This test script should not be used in production!")  # 🧪
-
     params_dict = json.loads(params.model_dump_json(exclude_unset=True))
 
     dependencies = {
         "groupers": [],
         "time_range": [],
-        "pe": ["time_range"],
-        "filter_patrol_events": ["pe"],
-        "pe_add_temporal_index": ["filter_patrol_events"],
-        "pe_colormap": ["pe_add_temporal_index"],
-        "pe_map_layer": ["pe_colormap"],
-        "pe_ecomap": ["pe_map_layer"],
-        "pe_ecomap_html_url": ["pe_ecomap"],
-        "pe_map_widget": ["pe_ecomap_html_url"],
-        "pe_bar_chart": ["pe_colormap"],
-        "pe_bar_chart_html_url": ["pe_bar_chart"],
-        "pe_bar_chart_widget": ["pe_bar_chart_html_url"],
-        "pe_meshgrid": ["pe_add_temporal_index"],
-        "pe_feature_density": ["pe_add_temporal_index", "pe_meshgrid"],
-        "fd_colormap": ["pe_feature_density"],
+        "get_events_data": ["time_range"],
+        "filter_events": ["get_events_data"],
+        "events_add_temporal_index": ["filter_events"],
+        "events_colormap": ["events_add_temporal_index"],
+        "events_map_layer": ["events_colormap"],
+        "events_ecomap": ["events_map_layer"],
+        "events_ecomap_html_url": ["events_ecomap"],
+        "events_map_widget": ["events_ecomap_html_url"],
+        "events_bar_chart": ["events_colormap"],
+        "events_bar_chart_html_url": ["events_bar_chart"],
+        "events_bar_chart_widget": ["events_bar_chart_html_url"],
+        "events_meshgrid": ["events_add_temporal_index"],
+        "events_feature_density": ["events_add_temporal_index", "events_meshgrid"],
+        "fd_colormap": ["events_feature_density"],
         "fd_map_layer": ["fd_colormap"],
         "fd_ecomap": ["fd_map_layer"],
         "fd_ecomap_html_url": ["fd_ecomap"],
         "fd_map_widget": ["fd_ecomap_html_url"],
-        "split_patrol_event_groups": ["pe_colormap", "groupers"],
-        "grouped_pe_map_layer": ["split_patrol_event_groups"],
-        "grouped_pe_ecomap": ["grouped_pe_map_layer"],
-        "grouped_pe_ecomap_html_url": ["grouped_pe_ecomap"],
-        "grouped_pe_map_widget": ["grouped_pe_ecomap_html_url"],
-        "grouped_pe_map_widget_merge": ["grouped_pe_map_widget"],
-        "grouped_pe_pie_chart": ["split_patrol_event_groups"],
-        "grouped_pe_pie_chart_html_urls": ["grouped_pe_pie_chart"],
-        "grouped_pe_pie_chart_widgets": ["grouped_pe_pie_chart_html_urls"],
-        "grouped_pe_pie_widget_merge": ["grouped_pe_pie_chart_widgets"],
-        "grouped_pe_feature_density": ["pe_meshgrid", "split_patrol_event_groups"],
-        "grouped_fd_colormap": ["grouped_pe_feature_density"],
+        "split_event_groups": ["events_colormap", "groupers"],
+        "grouped_events_map_layer": ["split_event_groups"],
+        "grouped_events_ecomap": ["grouped_events_map_layer"],
+        "grouped_events_ecomap_html_url": ["grouped_events_ecomap"],
+        "grouped_events_map_widget": ["grouped_events_ecomap_html_url"],
+        "grouped_events_map_widget_merge": ["grouped_events_map_widget"],
+        "grouped_events_pie_chart": ["split_event_groups"],
+        "grouped_pie_chart_html_urls": ["grouped_events_pie_chart"],
+        "grouped_events_pie_chart_widgets": ["grouped_pie_chart_html_urls"],
+        "grouped_events_pie_widget_merge": ["grouped_events_pie_chart_widgets"],
+        "grouped_events_feature_density": ["events_meshgrid", "split_event_groups"],
+        "grouped_fd_colormap": ["grouped_events_feature_density"],
         "grouped_fd_map_layer": ["grouped_fd_colormap"],
         "grouped_fd_ecomap": ["grouped_fd_map_layer"],
         "grouped_fd_ecomap_html_url": ["grouped_fd_ecomap"],
         "grouped_fd_map_widget": ["grouped_fd_ecomap_html_url"],
         "grouped_fd_map_widget_merge": ["grouped_fd_map_widget"],
-        "patrol_dashboard": [
-            "pe_map_widget",
-            "pe_bar_chart_widget",
+        "events_dashboard": [
+            "events_map_widget",
+            "events_bar_chart_widget",
             "fd_map_widget",
-            "grouped_pe_map_widget_merge",
-            "grouped_pe_pie_widget_merge",
+            "grouped_events_map_widget_merge",
+            "grouped_events_pie_widget_merge",
             "grouped_fd_map_widget_merge",
             "groupers",
             "time_range",
@@ -111,119 +94,119 @@ def main(params: Params):
             partial=params_dict["time_range"],
             method="call",
         ),
-        "pe": Node(
-            async_task=get_patrol_events.validate().set_executor("lithops"),
+        "get_events_data": Node(
+            async_task=get_events.validate().set_executor("lithops"),
             partial={
                 "time_range": DependsOn("time_range"),
             }
-            | params_dict["pe"],
+            | params_dict["get_events_data"],
             method="call",
         ),
-        "filter_patrol_events": Node(
+        "filter_events": Node(
             async_task=apply_reloc_coord_filter.validate().set_executor("lithops"),
             partial={
-                "df": DependsOn("pe"),
+                "df": DependsOn("get_events_data"),
             }
-            | params_dict["filter_patrol_events"],
+            | params_dict["filter_events"],
             method="call",
         ),
-        "pe_add_temporal_index": Node(
+        "events_add_temporal_index": Node(
             async_task=add_temporal_index.validate().set_executor("lithops"),
             partial={
-                "df": DependsOn("filter_patrol_events"),
+                "df": DependsOn("filter_events"),
             }
-            | params_dict["pe_add_temporal_index"],
+            | params_dict["events_add_temporal_index"],
             method="call",
         ),
-        "pe_colormap": Node(
+        "events_colormap": Node(
             async_task=apply_color_map.validate().set_executor("lithops"),
             partial={
-                "df": DependsOn("pe_add_temporal_index"),
+                "df": DependsOn("events_add_temporal_index"),
             }
-            | params_dict["pe_colormap"],
+            | params_dict["events_colormap"],
             method="call",
         ),
-        "pe_map_layer": Node(
+        "events_map_layer": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
             partial={
-                "geodataframe": DependsOn("pe_colormap"),
+                "geodataframe": DependsOn("events_colormap"),
             }
-            | params_dict["pe_map_layer"],
+            | params_dict["events_map_layer"],
             method="call",
         ),
-        "pe_ecomap": Node(
+        "events_ecomap": Node(
             async_task=draw_ecomap.validate().set_executor("lithops"),
             partial={
-                "geo_layers": DependsOn("pe_map_layer"),
+                "geo_layers": DependsOn("events_map_layer"),
             }
-            | params_dict["pe_ecomap"],
+            | params_dict["events_ecomap"],
             method="call",
         ),
-        "pe_ecomap_html_url": Node(
+        "events_ecomap_html_url": Node(
             async_task=persist_text.validate().set_executor("lithops"),
             partial={
-                "text": DependsOn("pe_ecomap"),
+                "text": DependsOn("events_ecomap"),
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
-            | params_dict["pe_ecomap_html_url"],
+            | params_dict["events_ecomap_html_url"],
             method="call",
         ),
-        "pe_map_widget": Node(
+        "events_map_widget": Node(
             async_task=create_map_widget_single_view.validate().set_executor("lithops"),
             partial={
-                "data": DependsOn("pe_ecomap_html_url"),
+                "data": DependsOn("events_ecomap_html_url"),
             }
-            | params_dict["pe_map_widget"],
+            | params_dict["events_map_widget"],
             method="call",
         ),
-        "pe_bar_chart": Node(
+        "events_bar_chart": Node(
             async_task=draw_time_series_bar_chart.validate().set_executor("lithops"),
             partial={
-                "dataframe": DependsOn("pe_colormap"),
+                "dataframe": DependsOn("events_colormap"),
             }
-            | params_dict["pe_bar_chart"],
+            | params_dict["events_bar_chart"],
             method="call",
         ),
-        "pe_bar_chart_html_url": Node(
+        "events_bar_chart_html_url": Node(
             async_task=persist_text.validate().set_executor("lithops"),
             partial={
-                "text": DependsOn("pe_bar_chart"),
+                "text": DependsOn("events_bar_chart"),
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
-            | params_dict["pe_bar_chart_html_url"],
+            | params_dict["events_bar_chart_html_url"],
             method="call",
         ),
-        "pe_bar_chart_widget": Node(
+        "events_bar_chart_widget": Node(
             async_task=create_plot_widget_single_view.validate().set_executor(
                 "lithops"
             ),
             partial={
-                "data": DependsOn("pe_bar_chart_html_url"),
+                "data": DependsOn("events_bar_chart_html_url"),
             }
-            | params_dict["pe_bar_chart_widget"],
+            | params_dict["events_bar_chart_widget"],
             method="call",
         ),
-        "pe_meshgrid": Node(
+        "events_meshgrid": Node(
             async_task=create_meshgrid.validate().set_executor("lithops"),
             partial={
-                "aoi": DependsOn("pe_add_temporal_index"),
+                "aoi": DependsOn("events_add_temporal_index"),
             }
-            | params_dict["pe_meshgrid"],
+            | params_dict["events_meshgrid"],
             method="call",
         ),
-        "pe_feature_density": Node(
+        "events_feature_density": Node(
             async_task=calculate_feature_density.validate().set_executor("lithops"),
             partial={
-                "geodataframe": DependsOn("pe_add_temporal_index"),
-                "meshgrid": DependsOn("pe_meshgrid"),
+                "geodataframe": DependsOn("events_add_temporal_index"),
+                "meshgrid": DependsOn("events_meshgrid"),
             }
-            | params_dict["pe_feature_density"],
+            | params_dict["events_feature_density"],
             method="call",
         ),
         "fd_colormap": Node(
             async_task=apply_color_map.validate().set_executor("lithops"),
             partial={
-                "df": DependsOn("pe_feature_density"),
+                "df": DependsOn("events_feature_density"),
             }
             | params_dict["fd_colormap"],
             method="call",
@@ -261,112 +244,112 @@ def main(params: Params):
             | params_dict["fd_map_widget"],
             method="call",
         ),
-        "split_patrol_event_groups": Node(
+        "split_event_groups": Node(
             async_task=split_groups.validate().set_executor("lithops"),
             partial={
-                "df": DependsOn("pe_colormap"),
+                "df": DependsOn("events_colormap"),
                 "groupers": DependsOn("groupers"),
             }
-            | params_dict["split_patrol_event_groups"],
+            | params_dict["split_event_groups"],
             method="call",
         ),
-        "grouped_pe_map_layer": Node(
+        "grouped_events_map_layer": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
-            partial=params_dict["grouped_pe_map_layer"],
+            partial=params_dict["grouped_events_map_layer"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geodataframe"],
-                "argvalues": DependsOn("split_patrol_event_groups"),
+                "argvalues": DependsOn("split_event_groups"),
             },
         ),
-        "grouped_pe_ecomap": Node(
+        "grouped_events_ecomap": Node(
             async_task=draw_ecomap.validate().set_executor("lithops"),
-            partial=params_dict["grouped_pe_ecomap"],
+            partial=params_dict["grouped_events_ecomap"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geo_layers"],
-                "argvalues": DependsOn("grouped_pe_map_layer"),
+                "argvalues": DependsOn("grouped_events_map_layer"),
             },
         ),
-        "grouped_pe_ecomap_html_url": Node(
+        "grouped_events_ecomap_html_url": Node(
             async_task=persist_text.validate().set_executor("lithops"),
             partial={
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
-            | params_dict["grouped_pe_ecomap_html_url"],
+            | params_dict["grouped_events_ecomap_html_url"],
             method="mapvalues",
             kwargs={
                 "argnames": ["text"],
-                "argvalues": DependsOn("grouped_pe_ecomap"),
+                "argvalues": DependsOn("grouped_events_ecomap"),
             },
         ),
-        "grouped_pe_map_widget": Node(
+        "grouped_events_map_widget": Node(
             async_task=create_map_widget_single_view.validate().set_executor("lithops"),
-            partial=params_dict["grouped_pe_map_widget"],
+            partial=params_dict["grouped_events_map_widget"],
             method="map",
             kwargs={
                 "argnames": ["view", "data"],
-                "argvalues": DependsOn("grouped_pe_ecomap_html_url"),
+                "argvalues": DependsOn("grouped_events_ecomap_html_url"),
             },
         ),
-        "grouped_pe_map_widget_merge": Node(
+        "grouped_events_map_widget_merge": Node(
             async_task=merge_widget_views.validate().set_executor("lithops"),
             partial={
-                "widgets": DependsOn("grouped_pe_map_widget"),
+                "widgets": DependsOn("grouped_events_map_widget"),
             }
-            | params_dict["grouped_pe_map_widget_merge"],
+            | params_dict["grouped_events_map_widget_merge"],
             method="call",
         ),
-        "grouped_pe_pie_chart": Node(
+        "grouped_events_pie_chart": Node(
             async_task=draw_pie_chart.validate().set_executor("lithops"),
-            partial=params_dict["grouped_pe_pie_chart"],
+            partial=params_dict["grouped_events_pie_chart"],
             method="mapvalues",
             kwargs={
                 "argnames": ["dataframe"],
-                "argvalues": DependsOn("split_patrol_event_groups"),
+                "argvalues": DependsOn("split_event_groups"),
             },
         ),
-        "grouped_pe_pie_chart_html_urls": Node(
+        "grouped_pie_chart_html_urls": Node(
             async_task=persist_text.validate().set_executor("lithops"),
             partial={
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             }
-            | params_dict["grouped_pe_pie_chart_html_urls"],
+            | params_dict["grouped_pie_chart_html_urls"],
             method="mapvalues",
             kwargs={
                 "argnames": ["text"],
-                "argvalues": DependsOn("grouped_pe_pie_chart"),
+                "argvalues": DependsOn("grouped_events_pie_chart"),
             },
         ),
-        "grouped_pe_pie_chart_widgets": Node(
+        "grouped_events_pie_chart_widgets": Node(
             async_task=create_plot_widget_single_view.validate().set_executor(
                 "lithops"
             ),
-            partial=params_dict["grouped_pe_pie_chart_widgets"],
+            partial=params_dict["grouped_events_pie_chart_widgets"],
             method="map",
             kwargs={
                 "argnames": ["view", "data"],
-                "argvalues": DependsOn("grouped_pe_pie_chart_html_urls"),
+                "argvalues": DependsOn("grouped_pie_chart_html_urls"),
             },
         ),
-        "grouped_pe_pie_widget_merge": Node(
+        "grouped_events_pie_widget_merge": Node(
             async_task=merge_widget_views.validate().set_executor("lithops"),
             partial={
-                "widgets": DependsOn("grouped_pe_pie_chart_widgets"),
+                "widgets": DependsOn("grouped_events_pie_chart_widgets"),
             }
-            | params_dict["grouped_pe_pie_widget_merge"],
+            | params_dict["grouped_events_pie_widget_merge"],
             method="call",
         ),
-        "grouped_pe_feature_density": Node(
+        "grouped_events_feature_density": Node(
             async_task=calculate_feature_density.validate().set_executor("lithops"),
             partial={
-                "meshgrid": DependsOn("pe_meshgrid"),
+                "meshgrid": DependsOn("events_meshgrid"),
             }
-            | params_dict["grouped_pe_feature_density"],
+            | params_dict["grouped_events_feature_density"],
             method="mapvalues",
             kwargs={
                 "argnames": ["geodataframe"],
-                "argvalues": DependsOn("split_patrol_event_groups"),
+                "argvalues": DependsOn("split_event_groups"),
             },
         ),
         "grouped_fd_colormap": Node(
@@ -375,7 +358,7 @@ def main(params: Params):
             method="mapvalues",
             kwargs={
                 "argnames": ["df"],
-                "argvalues": DependsOn("grouped_pe_feature_density"),
+                "argvalues": DependsOn("grouped_events_feature_density"),
             },
         ),
         "grouped_fd_map_layer": Node(
@@ -425,23 +408,23 @@ def main(params: Params):
             | params_dict["grouped_fd_map_widget_merge"],
             method="call",
         ),
-        "patrol_dashboard": Node(
+        "events_dashboard": Node(
             async_task=gather_dashboard.validate().set_executor("lithops"),
             partial={
                 "widgets": DependsOnSequence(
                     [
-                        DependsOn("pe_map_widget"),
-                        DependsOn("pe_bar_chart_widget"),
+                        DependsOn("events_map_widget"),
+                        DependsOn("events_bar_chart_widget"),
                         DependsOn("fd_map_widget"),
-                        DependsOn("grouped_pe_map_widget_merge"),
-                        DependsOn("grouped_pe_pie_widget_merge"),
+                        DependsOn("grouped_events_map_widget_merge"),
+                        DependsOn("grouped_events_pie_widget_merge"),
                         DependsOn("grouped_fd_map_widget_merge"),
                     ],
                 ),
                 "groupers": DependsOn("groupers"),
                 "time_range": DependsOn("time_range"),
             }
-            | params_dict["patrol_dashboard"],
+            | params_dict["events_dashboard"],
             method="call",
         ),
     }
