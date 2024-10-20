@@ -16,7 +16,7 @@ test1:
       time_format: "%d %b %Y %H:%M:%S %Z"
 
     # Parameters for 'Get Events from EarthRanger' using task `get_events`.
-    events:
+    get_events_data:
       client: "mep_dev" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
       event_types:
         [
@@ -28,6 +28,7 @@ test1:
           "injured_animal_rep",
         ]
       event_columns: ["id", "time", "event_type", "geometry"]
+
     # Parameters for 'Apply Relocation Coordinate Filter' using task `apply_reloc_coord_filter`.
     filter_events:
       max_y: 0.0 # (<class 'float'>, FieldInfo(annotation=NoneType, required=False, default=90.0))
@@ -36,12 +37,14 @@ test1:
           y: 90.0
         - x: 0.0
           y: 0.0
+
     # Parameters for 'Add temporal index to Events' using task `add_temporal_index`.
     events_add_temporal_index:
       index_name: "month" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='A name for the new index which will be added.'))
-      time_col: "updated_at" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of existing column containing time data.'))
+      time_col: "time" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of existing column containing time data.'))
       directive: "%B" # (typing.Literal['%a', '%A', '%b', '%B', '%c', '%d', '%f', '%H', '%I', '%j', '%m', '%M', '%p', '%S', '%U', '%w', '%W', '%x', '%X', '%y', '%Y', '%z', '%%'], FieldInfo(annotation=NoneType, required=True, description='A directive for formatting the time data.'))
     # Parameters for 'Events Colormap' using task `apply_color_map`.
+
     events_colormap:
       input_column_name: "event_type" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
       colormap: "tab20b" # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
@@ -69,7 +72,7 @@ test1:
       title: "Events Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
     # Parameters for 'Draw Time Series Bar Chart for Events' using task `draw_time_series_bar_chart`.
     events_bar_chart:
-      x_axis: "updated_at" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the x axis.'))
+      x_axis: "time" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the x axis.'))
       y_axis: "event_type" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the y axis.'))
       category: "event_type" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to stack in the y axis.'))
       agg_function: "count" # (typing.Literal['count', 'mean', 'sum', 'min', 'max'], FieldInfo(annotation=NoneType, required=True, description='The aggregate function to apply to the group.'))
@@ -179,7 +182,7 @@ test1:
       title: "Grouped Density Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
     grouped_fd_map_widget_merge: {}
     # Parameters for 'Create Dashboard with Map Widgets' using task `gather_dashboard`.
-    eventsdashboard:
+    events_dashboard:
       title: "Events Dashboard"
       description: "A dashboard for visualizing events."
 
