@@ -114,6 +114,10 @@ def get_events(
         list[str],
         Field(description="list of event types"),
     ],
+    event_columns: Annotated[
+        list[str],
+        Field(description="The interested event columns"),
+    ],
 ) -> DataFrame[EventGDFSchema]:
     """Get events."""
     all_event_types = pd.DataFrame(client.get_event_types())
@@ -123,11 +127,13 @@ def get_events(
         else all_event_types["id"].values
     )
 
+    events_df = client.get_events(
+        since=time_range.since.isoformat(),
+        until=time_range.until.isoformat(),
+        event_type=event_type_ids,
+    ).reset_index()
+
     return cast(
         DataFrame[EventGDFSchema],
-        client.get_events(
-            since=time_range.since.isoformat(),
-            until=time_range.until.isoformat(),
-            event_type=event_type_ids,
-        ).reset_index(),
+        events_df[event_columns],
     )

@@ -98,7 +98,7 @@ def test_get_events(client):
             since=datetime.strptime("2015-01-01", "%Y-%m-%d").replace(
                 tzinfo=timezone.utc
             ),
-            until=datetime.strptime("2015-03-01", "%Y-%m-%d").replace(
+            until=datetime.strptime("2015-12-31", "%Y-%m-%d").replace(
                 tzinfo=timezone.utc
             ),
         ),
@@ -110,9 +110,11 @@ def test_get_events(client):
             "fire_rep",
             "injured_animal_rep",
         ],
+        event_columns=["id", "time", "event_type", "geometry"],
     )
 
     assert len(result) > 0
     assert "id" in result
+    assert "time" in result
     assert "event_type" in result
     assert "geometry" in result
