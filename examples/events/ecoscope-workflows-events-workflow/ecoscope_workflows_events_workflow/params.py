@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "adbb0f72888f0a6db61bb6d48c55ed1be8665d8b175928759e81ce6088846562"
+# from-spec-sha256 = "4c4b15573d985d4dd22886118300bbb53ad094f5c88dbd6cc5bdcc47703957a9"
 
 
 from __future__ import annotations
@@ -21,20 +21,18 @@ class TimeRange(BaseModel):
     time_format: str = Field(..., description="The time format", title="Time Format")
 
 
-class Pe(BaseModel):
+class GetEventsData(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
     client: str = Field(
         ..., description="A named EarthRanger connection.", title="Client"
     )
-    patrol_type: List[str] = Field(
-        ..., description="list of UUID of patrol types", title="Patrol Type"
+    event_types: List[str] = Field(
+        ..., description="list of event types", title="Event Types"
     )
-    status: List[str] = Field(
-        ...,
-        description="list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'",
-        title="Status",
+    event_columns: List[str] = Field(
+        ..., description="The interested event columns", title="Event Columns"
     )
 
 
@@ -64,7 +62,7 @@ class Directive(str, Enum):
     field__ = "%%"
 
 
-class PeAddTemporalIndex(BaseModel):
+class EventsAddTemporalIndex(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -93,7 +91,7 @@ class PeAddTemporalIndex(BaseModel):
     )
 
 
-class PeColormap(BaseModel):
+class EventsColormap(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -114,7 +112,7 @@ class PeColormap(BaseModel):
     )
 
 
-class PeEcomapHtmlUrl(BaseModel):
+class EventsEcomapHtmlUrl(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -125,7 +123,7 @@ class PeEcomapHtmlUrl(BaseModel):
     )
 
 
-class PeMapWidget(BaseModel):
+class EventsMapWidget(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -148,7 +146,7 @@ class TimeInterval(str, Enum):
     hour = "hour"
 
 
-class PeBarChartHtmlUrl(BaseModel):
+class EventsBarChartHtmlUrl(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -159,14 +157,14 @@ class PeBarChartHtmlUrl(BaseModel):
     )
 
 
-class PeBarChartWidget(BaseModel):
+class EventsBarChartWidget(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
     title: str = Field(..., description="The title of the widget", title="Title")
 
 
-class PeMeshgrid(BaseModel):
+class EventsMeshgrid(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -188,7 +186,7 @@ class GeometryType(str, Enum):
     line = "line"
 
 
-class PeFeatureDensity(BaseModel):
+class EventsFeatureDensity(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -238,7 +236,7 @@ class FdMapWidget(BaseModel):
     title: str = Field(..., description="The title of the widget", title="Title")
 
 
-class GroupedPeEcomapHtmlUrl(BaseModel):
+class GroupedEventsEcomapHtmlUrl(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -249,14 +247,14 @@ class GroupedPeEcomapHtmlUrl(BaseModel):
     )
 
 
-class GroupedPeMapWidget(BaseModel):
+class GroupedEventsMapWidget(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
     title: str = Field(..., description="The title of the widget", title="Title")
 
 
-class GroupedPePieChartHtmlUrls(BaseModel):
+class GroupedPieChartHtmlUrls(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -267,14 +265,14 @@ class GroupedPePieChartHtmlUrls(BaseModel):
     )
 
 
-class GroupedPePieChartWidgets(BaseModel):
+class GroupedEventsPieChartWidgets(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
     title: str = Field(..., description="The title of the widget", title="Title")
 
 
-class GroupedPeFeatureDensity(BaseModel):
+class GroupedEventsFeatureDensity(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -324,7 +322,7 @@ class GroupedFdMapWidget(BaseModel):
     title: str = Field(..., description="The title of the widget", title="Title")
 
 
-class PatrolDashboard(BaseModel):
+class EventsDashboard(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -533,7 +531,7 @@ class Groupers(BaseModel):
     )
 
 
-class FilterPatrolEvents(BaseModel):
+class FilterEvents(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -549,7 +547,7 @@ class FilterPatrolEvents(BaseModel):
     )
 
 
-class PeMapLayer(BaseModel):
+class EventsMapLayer(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -563,7 +561,7 @@ class PeMapLayer(BaseModel):
     )
 
 
-class PeEcomap(BaseModel):
+class EventsEcomap(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -635,7 +633,7 @@ class FdEcomap(BaseModel):
     )
 
 
-class GroupedPeMapLayer(BaseModel):
+class GroupedEventsMapLayer(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -649,7 +647,7 @@ class GroupedPeMapLayer(BaseModel):
     )
 
 
-class GroupedPeEcomap(BaseModel):
+class GroupedEventsEcomap(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -678,7 +676,7 @@ class GroupedPeEcomap(BaseModel):
     )
 
 
-class GroupedPePieChart(BaseModel):
+class GroupedEventsPieChart(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -757,7 +755,7 @@ class GroupedPlotStyle(BaseModel):
     plot_style: PlotCategoryStyle
 
 
-class PeBarChart(BaseModel):
+class EventsBarChart(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -807,38 +805,42 @@ class PeBarChart(BaseModel):
 class Params(BaseModel):
     groupers: Optional[Groupers] = Field(None, title="Set Groupers")
     time_range: Optional[TimeRange] = Field(None, title="Set Time Range Filters")
-    pe: Optional[Pe] = Field(None, title="Get Patrol Events from EarthRanger")
-    filter_patrol_events: Optional[FilterPatrolEvents] = Field(
+    get_events_data: Optional[GetEventsData] = Field(
+        None, title="Get Events from EarthRanger"
+    )
+    filter_events: Optional[FilterEvents] = Field(
         None, title="Apply Relocation Coordinate Filter"
     )
-    pe_add_temporal_index: Optional[PeAddTemporalIndex] = Field(
-        None, title="Add temporal index to Patrol Events"
+    events_add_temporal_index: Optional[EventsAddTemporalIndex] = Field(
+        None, title="Add temporal index to Events"
     )
-    pe_colormap: Optional[PeColormap] = Field(None, title="Patrol Events Colormap")
-    pe_map_layer: Optional[PeMapLayer] = Field(
-        None, title="Create map layer from Patrol Events"
+    events_colormap: Optional[EventsColormap] = Field(None, title="Events Colormap")
+    events_map_layer: Optional[EventsMapLayer] = Field(
+        None, title="Create map layer from Events"
     )
-    pe_ecomap: Optional[PeEcomap] = Field(None, title="Draw Ecomap from Time Density")
-    pe_ecomap_html_url: Optional[PeEcomapHtmlUrl] = Field(
+    events_ecomap: Optional[EventsEcomap] = Field(
+        None, title="Draw Ecomap from Time Density"
+    )
+    events_ecomap_html_url: Optional[EventsEcomapHtmlUrl] = Field(
         None, title="Persist Ecomap as Text"
     )
-    pe_map_widget: Optional[PeMapWidget] = Field(
+    events_map_widget: Optional[EventsMapWidget] = Field(
         None, title="Create Time Density Map Widget"
     )
-    pe_bar_chart: Optional[PeBarChart] = Field(
-        None, title="Draw Time Series Bar Chart for Patrols Events"
+    events_bar_chart: Optional[EventsBarChart] = Field(
+        None, title="Draw Time Series Bar Chart for Events"
     )
-    pe_bar_chart_html_url: Optional[PeBarChartHtmlUrl] = Field(
-        None, title="Persist Patrols Bar Chart as Text"
+    events_bar_chart_html_url: Optional[EventsBarChartHtmlUrl] = Field(
+        None, title="Persist Bar Chart as Text"
     )
-    pe_bar_chart_widget: Optional[PeBarChartWidget] = Field(
-        None, title="Create Plot Widget for Patrol Events"
+    events_bar_chart_widget: Optional[EventsBarChartWidget] = Field(
+        None, title="Create Plot Widget for Events"
     )
-    pe_meshgrid: Optional[PeMeshgrid] = Field(
-        None, title="Create Patrol Events Meshgrid"
+    events_meshgrid: Optional[EventsMeshgrid] = Field(
+        None, title="Create Events Meshgrid"
     )
-    pe_feature_density: Optional[PeFeatureDensity] = Field(
-        None, title="Patrol Events Feature Density"
+    events_feature_density: Optional[EventsFeatureDensity] = Field(
+        None, title="Events Feature Density"
     )
     fd_colormap: Optional[FdColormap] = Field(None, title="Feature Density Colormap")
     fd_map_layer: Optional[FdMapLayer] = Field(
@@ -853,38 +855,38 @@ class Params(BaseModel):
     fd_map_widget: Optional[FdMapWidget] = Field(
         None, title="Create Feature Density Map Widget"
     )
-    split_patrol_event_groups: Optional[Dict[str, Any]] = Field(
-        None, title="Split Patrol Events by Group"
+    split_event_groups: Optional[Dict[str, Any]] = Field(
+        None, title="Split Events by Group"
     )
-    grouped_pe_map_layer: Optional[GroupedPeMapLayer] = Field(
-        None, title="Create map layer from grouped Patrol Events"
+    grouped_events_map_layer: Optional[GroupedEventsMapLayer] = Field(
+        None, title="Create map layer from grouped Events"
     )
-    grouped_pe_ecomap: Optional[GroupedPeEcomap] = Field(
-        None, title="Draw Ecomap from grouped Patrol Events"
+    grouped_events_ecomap: Optional[GroupedEventsEcomap] = Field(
+        None, title="Draw Ecomap from grouped Events"
     )
-    grouped_pe_ecomap_html_url: Optional[GroupedPeEcomapHtmlUrl] = Field(
-        None, title="Persist grouped Patrol Events Ecomap as Text"
+    grouped_events_ecomap_html_url: Optional[GroupedEventsEcomapHtmlUrl] = Field(
+        None, title="Persist grouped Events Ecomap as Text"
     )
-    grouped_pe_map_widget: Optional[GroupedPeMapWidget] = Field(
-        None, title="Create grouped Patrol Events Map Widget"
+    grouped_events_map_widget: Optional[GroupedEventsMapWidget] = Field(
+        None, title="Create grouped Events Map Widget"
     )
-    grouped_pe_map_widget_merge: Optional[Dict[str, Any]] = Field(
-        None, title="Merge Patrol Events Map Widget Views"
+    grouped_events_map_widget_merge: Optional[Dict[str, Any]] = Field(
+        None, title="Merge Events Map Widget Views"
     )
-    grouped_pe_pie_chart: Optional[GroupedPePieChart] = Field(
-        None, title="Draw Pie Chart for Patrols Events"
+    grouped_events_pie_chart: Optional[GroupedEventsPieChart] = Field(
+        None, title="Draw Pie Chart for Events"
     )
-    grouped_pe_pie_chart_html_urls: Optional[GroupedPePieChartHtmlUrls] = Field(
-        None, title="Persist Patrols Pie Chart as Text"
+    grouped_pie_chart_html_urls: Optional[GroupedPieChartHtmlUrls] = Field(
+        None, title="Persist Pie Chart as Text"
     )
-    grouped_pe_pie_chart_widgets: Optional[GroupedPePieChartWidgets] = Field(
-        None, title="Create Plot Widget for Patrol Events"
+    grouped_events_pie_chart_widgets: Optional[GroupedEventsPieChartWidgets] = Field(
+        None, title="Create Plot Widget for Events"
     )
-    grouped_pe_pie_widget_merge: Optional[Dict[str, Any]] = Field(
+    grouped_events_pie_widget_merge: Optional[Dict[str, Any]] = Field(
         None, title="Merge Pie Chart Widget Views"
     )
-    grouped_pe_feature_density: Optional[GroupedPeFeatureDensity] = Field(
-        None, title="Grouped Patrol Events Feature Density"
+    grouped_events_feature_density: Optional[GroupedEventsFeatureDensity] = Field(
+        None, title="Grouped Events Feature Density"
     )
     grouped_fd_colormap: Optional[GroupedFdColormap] = Field(
         None, title="Grouped Feature Density Colormap"
@@ -904,6 +906,6 @@ class Params(BaseModel):
     grouped_fd_map_widget_merge: Optional[Dict[str, Any]] = Field(
         None, title="Merge Feature Density Widget Views"
     )
-    patrol_dashboard: Optional[PatrolDashboard] = Field(
-        None, title="Create Dashboard with Patrol Map Widgets"
+    events_dashboard: Optional[EventsDashboard] = Field(
+        None, title="Create Dashboard with Map Widgets"
     )

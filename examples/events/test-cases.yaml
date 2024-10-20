@@ -145,7 +145,7 @@ test1:
       plot_style:
         textinfo: "value"
     # Parameters for 'Persist Pie Chart as Text' using task `persist_text`.
-    grouped_events_pie_chart_html_urls: {}
+    grouped_pie_chart_html_urls: {}
     # Parameters for 'Create Plot Widget for Events' using task `create_plot_widget_single_view`.
     grouped_events_pie_chart_widgets:
       title: "Events Pie Chart" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))

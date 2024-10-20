@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "adbb0f72888f0a6db61bb6d48c55ed1be8665d8b175928759e81ce6088846562"
+# from-spec-sha256 = "4c4b15573d985d4dd22886118300bbb53ad094f5c88dbd6cc5bdcc47703957a9"
 
 
 # ruff: noqa: E402
@@ -15,7 +15,7 @@
 import os
 from ecoscope_workflows_core.tasks.groupby import set_groupers
 from ecoscope_workflows_core.tasks.filter import set_time_range
-from ecoscope_workflows_ext_ecoscope.tasks.io import get_patrol_events
+from ecoscope_workflows_ext_ecoscope.tasks.io import get_events
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import (
     apply_reloc_coord_filter,
 )
@@ -71,22 +71,24 @@ time_range = set_time_range.partial(**time_range_params).call()
 
 
 # %% [markdown]
-# ## Get Patrol Events from EarthRanger
+# ## Get Events from EarthRanger
 
 # %%
 # parameters
 
-pe_params = dict(
+get_events_data_params = dict(
     client=...,
-    patrol_type=...,
-    status=...,
+    event_types=...,
+    event_columns=...,
 )
 
 # %%
 # call the task
 
 
-pe = get_patrol_events.partial(time_range=time_range, **pe_params).call()
+get_events_data = get_events.partial(
+    time_range=time_range, **get_events_data_params
+).call()
 
 
 # %% [markdown]
@@ -95,7 +97,7 @@ pe = get_patrol_events.partial(time_range=time_range, **pe_params).call()
 # %%
 # parameters
 
-filter_patrol_events_params = dict(
+filter_events_params = dict(
     min_x=...,
     max_x=...,
     min_y=...,
@@ -107,18 +109,18 @@ filter_patrol_events_params = dict(
 # call the task
 
 
-filter_patrol_events = apply_reloc_coord_filter.partial(
-    df=pe, **filter_patrol_events_params
+filter_events = apply_reloc_coord_filter.partial(
+    df=get_events_data, **filter_events_params
 ).call()
 
 
 # %% [markdown]
-# ## Add temporal index to Patrol Events
+# ## Add temporal index to Events
 
 # %%
 # parameters
 
-pe_add_temporal_index_params = dict(
+events_add_temporal_index_params = dict(
     index_name=...,
     time_col=...,
     directive=...,
@@ -130,18 +132,18 @@ pe_add_temporal_index_params = dict(
 # call the task
 
 
-pe_add_temporal_index = add_temporal_index.partial(
-    df=filter_patrol_events, **pe_add_temporal_index_params
+events_add_temporal_index = add_temporal_index.partial(
+    df=filter_events, **events_add_temporal_index_params
 ).call()
 
 
 # %% [markdown]
-# ## Patrol Events Colormap
+# ## Events Colormap
 
 # %%
 # parameters
 
-pe_colormap_params = dict(
+events_colormap_params = dict(
     input_column_name=...,
     colormap=...,
     output_column_name=...,
@@ -151,18 +153,18 @@ pe_colormap_params = dict(
 # call the task
 
 
-pe_colormap = apply_color_map.partial(
-    df=pe_add_temporal_index, **pe_colormap_params
+events_colormap = apply_color_map.partial(
+    df=events_add_temporal_index, **events_colormap_params
 ).call()
 
 
 # %% [markdown]
-# ## Create map layer from Patrol Events
+# ## Create map layer from Events
 
 # %%
 # parameters
 
-pe_map_layer_params = dict(
+events_map_layer_params = dict(
     layer_style=...,
     legend=...,
 )
@@ -171,8 +173,8 @@ pe_map_layer_params = dict(
 # call the task
 
 
-pe_map_layer = create_map_layer.partial(
-    geodataframe=pe_colormap, **pe_map_layer_params
+events_map_layer = create_map_layer.partial(
+    geodataframe=events_colormap, **events_map_layer_params
 ).call()
 
 
@@ -182,7 +184,7 @@ pe_map_layer = create_map_layer.partial(
 # %%
 # parameters
 
-pe_ecomap_params = dict(
+events_ecomap_params = dict(
     tile_layers=...,
     static=...,
     title=...,
@@ -194,7 +196,9 @@ pe_ecomap_params = dict(
 # call the task
 
 
-pe_ecomap = draw_ecomap.partial(geo_layers=pe_map_layer, **pe_ecomap_params).call()
+events_ecomap = draw_ecomap.partial(
+    geo_layers=events_map_layer, **events_ecomap_params
+).call()
 
 
 # %% [markdown]
@@ -203,7 +207,7 @@ pe_ecomap = draw_ecomap.partial(geo_layers=pe_map_layer, **pe_ecomap_params).cal
 # %%
 # parameters
 
-pe_ecomap_html_url_params = dict(
+events_ecomap_html_url_params = dict(
     filename=...,
 )
 
@@ -211,10 +215,10 @@ pe_ecomap_html_url_params = dict(
 # call the task
 
 
-pe_ecomap_html_url = persist_text.partial(
-    text=pe_ecomap,
+events_ecomap_html_url = persist_text.partial(
+    text=events_ecomap,
     root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-    **pe_ecomap_html_url_params,
+    **events_ecomap_html_url_params,
 ).call()
 
 
@@ -224,7 +228,7 @@ pe_ecomap_html_url = persist_text.partial(
 # %%
 # parameters
 
-pe_map_widget_params = dict(
+events_map_widget_params = dict(
     title=...,
     view=...,
 )
@@ -233,18 +237,18 @@ pe_map_widget_params = dict(
 # call the task
 
 
-pe_map_widget = create_map_widget_single_view.partial(
-    data=pe_ecomap_html_url, **pe_map_widget_params
+events_map_widget = create_map_widget_single_view.partial(
+    data=events_ecomap_html_url, **events_map_widget_params
 ).call()
 
 
 # %% [markdown]
-# ## Draw Time Series Bar Chart for Patrols Events
+# ## Draw Time Series Bar Chart for Events
 
 # %%
 # parameters
 
-pe_bar_chart_params = dict(
+events_bar_chart_params = dict(
     x_axis=...,
     y_axis=...,
     category=...,
@@ -260,18 +264,18 @@ pe_bar_chart_params = dict(
 # call the task
 
 
-pe_bar_chart = draw_time_series_bar_chart.partial(
-    dataframe=pe_colormap, **pe_bar_chart_params
+events_bar_chart = draw_time_series_bar_chart.partial(
+    dataframe=events_colormap, **events_bar_chart_params
 ).call()
 
 
 # %% [markdown]
-# ## Persist Patrols Bar Chart as Text
+# ## Persist Bar Chart as Text
 
 # %%
 # parameters
 
-pe_bar_chart_html_url_params = dict(
+events_bar_chart_html_url_params = dict(
     filename=...,
 )
 
@@ -279,20 +283,20 @@ pe_bar_chart_html_url_params = dict(
 # call the task
 
 
-pe_bar_chart_html_url = persist_text.partial(
-    text=pe_bar_chart,
+events_bar_chart_html_url = persist_text.partial(
+    text=events_bar_chart,
     root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-    **pe_bar_chart_html_url_params,
+    **events_bar_chart_html_url_params,
 ).call()
 
 
 # %% [markdown]
-# ## Create Plot Widget for Patrol Events
+# ## Create Plot Widget for Events
 
 # %%
 # parameters
 
-pe_bar_chart_widget_params = dict(
+events_bar_chart_widget_params = dict(
     title=...,
     view=...,
 )
@@ -301,18 +305,18 @@ pe_bar_chart_widget_params = dict(
 # call the task
 
 
-pe_bar_chart_widget = create_plot_widget_single_view.partial(
-    data=pe_bar_chart_html_url, **pe_bar_chart_widget_params
+events_bar_chart_widget = create_plot_widget_single_view.partial(
+    data=events_bar_chart_html_url, **events_bar_chart_widget_params
 ).call()
 
 
 # %% [markdown]
-# ## Create Patrol Events Meshgrid
+# ## Create Events Meshgrid
 
 # %%
 # parameters
 
-pe_meshgrid_params = dict(
+events_meshgrid_params = dict(
     cell_width=...,
     cell_height=...,
     intersecting_only=...,
@@ -322,18 +326,18 @@ pe_meshgrid_params = dict(
 # call the task
 
 
-pe_meshgrid = create_meshgrid.partial(
-    aoi=pe_add_temporal_index, **pe_meshgrid_params
+events_meshgrid = create_meshgrid.partial(
+    aoi=events_add_temporal_index, **events_meshgrid_params
 ).call()
 
 
 # %% [markdown]
-# ## Patrol Events Feature Density
+# ## Events Feature Density
 
 # %%
 # parameters
 
-pe_feature_density_params = dict(
+events_feature_density_params = dict(
     geometry_type=...,
 )
 
@@ -341,10 +345,10 @@ pe_feature_density_params = dict(
 # call the task
 
 
-pe_feature_density = calculate_feature_density.partial(
-    geodataframe=pe_add_temporal_index,
-    meshgrid=pe_meshgrid,
-    **pe_feature_density_params,
+events_feature_density = calculate_feature_density.partial(
+    geodataframe=events_add_temporal_index,
+    meshgrid=events_meshgrid,
+    **events_feature_density_params,
 ).call()
 
 
@@ -365,7 +369,7 @@ fd_colormap_params = dict(
 
 
 fd_colormap = apply_color_map.partial(
-    df=pe_feature_density, **fd_colormap_params
+    df=events_feature_density, **fd_colormap_params
 ).call()
 
 
@@ -452,29 +456,29 @@ fd_map_widget = create_map_widget_single_view.partial(
 
 
 # %% [markdown]
-# ## Split Patrol Events by Group
+# ## Split Events by Group
 
 # %%
 # parameters
 
-split_patrol_event_groups_params = dict()
+split_event_groups_params = dict()
 
 # %%
 # call the task
 
 
-split_patrol_event_groups = split_groups.partial(
-    df=pe_colormap, groupers=groupers, **split_patrol_event_groups_params
+split_event_groups = split_groups.partial(
+    df=events_colormap, groupers=groupers, **split_event_groups_params
 ).call()
 
 
 # %% [markdown]
-# ## Create map layer from grouped Patrol Events
+# ## Create map layer from grouped Events
 
 # %%
 # parameters
 
-grouped_pe_map_layer_params = dict(
+grouped_events_map_layer_params = dict(
     layer_style=...,
     legend=...,
 )
@@ -483,18 +487,18 @@ grouped_pe_map_layer_params = dict(
 # call the task
 
 
-grouped_pe_map_layer = create_map_layer.partial(
-    **grouped_pe_map_layer_params
-).mapvalues(argnames=["geodataframe"], argvalues=split_patrol_event_groups)
+grouped_events_map_layer = create_map_layer.partial(
+    **grouped_events_map_layer_params
+).mapvalues(argnames=["geodataframe"], argvalues=split_event_groups)
 
 
 # %% [markdown]
-# ## Draw Ecomap from grouped Patrol Events
+# ## Draw Ecomap from grouped Events
 
 # %%
 # parameters
 
-grouped_pe_ecomap_params = dict(
+grouped_events_ecomap_params = dict(
     tile_layers=...,
     static=...,
     title=...,
@@ -506,18 +510,18 @@ grouped_pe_ecomap_params = dict(
 # call the task
 
 
-grouped_pe_ecomap = draw_ecomap.partial(**grouped_pe_ecomap_params).mapvalues(
-    argnames=["geo_layers"], argvalues=grouped_pe_map_layer
+grouped_events_ecomap = draw_ecomap.partial(**grouped_events_ecomap_params).mapvalues(
+    argnames=["geo_layers"], argvalues=grouped_events_map_layer
 )
 
 
 # %% [markdown]
-# ## Persist grouped Patrol Events Ecomap as Text
+# ## Persist grouped Events Ecomap as Text
 
 # %%
 # parameters
 
-grouped_pe_ecomap_html_url_params = dict(
+grouped_events_ecomap_html_url_params = dict(
     filename=...,
 )
 
@@ -525,19 +529,19 @@ grouped_pe_ecomap_html_url_params = dict(
 # call the task
 
 
-grouped_pe_ecomap_html_url = persist_text.partial(
+grouped_events_ecomap_html_url = persist_text.partial(
     root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-    **grouped_pe_ecomap_html_url_params,
-).mapvalues(argnames=["text"], argvalues=grouped_pe_ecomap)
+    **grouped_events_ecomap_html_url_params,
+).mapvalues(argnames=["text"], argvalues=grouped_events_ecomap)
 
 
 # %% [markdown]
-# ## Create grouped Patrol Events Map Widget
+# ## Create grouped Events Map Widget
 
 # %%
 # parameters
 
-grouped_pe_map_widget_params = dict(
+grouped_events_map_widget_params = dict(
     title=...,
 )
 
@@ -545,35 +549,35 @@ grouped_pe_map_widget_params = dict(
 # call the task
 
 
-grouped_pe_map_widget = create_map_widget_single_view.partial(
-    **grouped_pe_map_widget_params
-).map(argnames=["view", "data"], argvalues=grouped_pe_ecomap_html_url)
+grouped_events_map_widget = create_map_widget_single_view.partial(
+    **grouped_events_map_widget_params
+).map(argnames=["view", "data"], argvalues=grouped_events_ecomap_html_url)
 
 
 # %% [markdown]
-# ## Merge Patrol Events Map Widget Views
+# ## Merge Events Map Widget Views
 
 # %%
 # parameters
 
-grouped_pe_map_widget_merge_params = dict()
+grouped_events_map_widget_merge_params = dict()
 
 # %%
 # call the task
 
 
-grouped_pe_map_widget_merge = merge_widget_views.partial(
-    widgets=grouped_pe_map_widget, **grouped_pe_map_widget_merge_params
+grouped_events_map_widget_merge = merge_widget_views.partial(
+    widgets=grouped_events_map_widget, **grouped_events_map_widget_merge_params
 ).call()
 
 
 # %% [markdown]
-# ## Draw Pie Chart for Patrols Events
+# ## Draw Pie Chart for Events
 
 # %%
 # parameters
 
-grouped_pe_pie_chart_params = dict(
+grouped_events_pie_chart_params = dict(
     value_column=...,
     label_column=...,
     color_column=...,
@@ -585,18 +589,18 @@ grouped_pe_pie_chart_params = dict(
 # call the task
 
 
-grouped_pe_pie_chart = draw_pie_chart.partial(**grouped_pe_pie_chart_params).mapvalues(
-    argnames=["dataframe"], argvalues=split_patrol_event_groups
-)
+grouped_events_pie_chart = draw_pie_chart.partial(
+    **grouped_events_pie_chart_params
+).mapvalues(argnames=["dataframe"], argvalues=split_event_groups)
 
 
 # %% [markdown]
-# ## Persist Patrols Pie Chart as Text
+# ## Persist Pie Chart as Text
 
 # %%
 # parameters
 
-grouped_pe_pie_chart_html_urls_params = dict(
+grouped_pie_chart_html_urls_params = dict(
     filename=...,
 )
 
@@ -604,19 +608,19 @@ grouped_pe_pie_chart_html_urls_params = dict(
 # call the task
 
 
-grouped_pe_pie_chart_html_urls = persist_text.partial(
+grouped_pie_chart_html_urls = persist_text.partial(
     root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-    **grouped_pe_pie_chart_html_urls_params,
-).mapvalues(argnames=["text"], argvalues=grouped_pe_pie_chart)
+    **grouped_pie_chart_html_urls_params,
+).mapvalues(argnames=["text"], argvalues=grouped_events_pie_chart)
 
 
 # %% [markdown]
-# ## Create Plot Widget for Patrol Events
+# ## Create Plot Widget for Events
 
 # %%
 # parameters
 
-grouped_pe_pie_chart_widgets_params = dict(
+grouped_events_pie_chart_widgets_params = dict(
     title=...,
 )
 
@@ -624,9 +628,9 @@ grouped_pe_pie_chart_widgets_params = dict(
 # call the task
 
 
-grouped_pe_pie_chart_widgets = create_plot_widget_single_view.partial(
-    **grouped_pe_pie_chart_widgets_params
-).map(argnames=["view", "data"], argvalues=grouped_pe_pie_chart_html_urls)
+grouped_events_pie_chart_widgets = create_plot_widget_single_view.partial(
+    **grouped_events_pie_chart_widgets_params
+).map(argnames=["view", "data"], argvalues=grouped_pie_chart_html_urls)
 
 
 # %% [markdown]
@@ -635,24 +639,24 @@ grouped_pe_pie_chart_widgets = create_plot_widget_single_view.partial(
 # %%
 # parameters
 
-grouped_pe_pie_widget_merge_params = dict()
+grouped_events_pie_widget_merge_params = dict()
 
 # %%
 # call the task
 
 
-grouped_pe_pie_widget_merge = merge_widget_views.partial(
-    widgets=grouped_pe_pie_chart_widgets, **grouped_pe_pie_widget_merge_params
+grouped_events_pie_widget_merge = merge_widget_views.partial(
+    widgets=grouped_events_pie_chart_widgets, **grouped_events_pie_widget_merge_params
 ).call()
 
 
 # %% [markdown]
-# ## Grouped Patrol Events Feature Density
+# ## Grouped Events Feature Density
 
 # %%
 # parameters
 
-grouped_pe_feature_density_params = dict(
+grouped_events_feature_density_params = dict(
     geometry_type=...,
 )
 
@@ -660,9 +664,9 @@ grouped_pe_feature_density_params = dict(
 # call the task
 
 
-grouped_pe_feature_density = calculate_feature_density.partial(
-    meshgrid=pe_meshgrid, **grouped_pe_feature_density_params
-).mapvalues(argnames=["geodataframe"], argvalues=split_patrol_event_groups)
+grouped_events_feature_density = calculate_feature_density.partial(
+    meshgrid=events_meshgrid, **grouped_events_feature_density_params
+).mapvalues(argnames=["geodataframe"], argvalues=split_event_groups)
 
 
 # %% [markdown]
@@ -682,7 +686,7 @@ grouped_fd_colormap_params = dict(
 
 
 grouped_fd_colormap = apply_color_map.partial(**grouped_fd_colormap_params).mapvalues(
-    argnames=["df"], argvalues=grouped_pe_feature_density
+    argnames=["df"], argvalues=grouped_events_feature_density
 )
 
 
@@ -786,12 +790,12 @@ grouped_fd_map_widget_merge = merge_widget_views.partial(
 
 
 # %% [markdown]
-# ## Create Dashboard with Patrol Map Widgets
+# ## Create Dashboard with Map Widgets
 
 # %%
 # parameters
 
-patrol_dashboard_params = dict(
+events_dashboard_params = dict(
     title=...,
     description=...,
 )
@@ -800,16 +804,16 @@ patrol_dashboard_params = dict(
 # call the task
 
 
-patrol_dashboard = gather_dashboard.partial(
+events_dashboard = gather_dashboard.partial(
     widgets=[
-        pe_map_widget,
-        pe_bar_chart_widget,
+        events_map_widget,
+        events_bar_chart_widget,
         fd_map_widget,
-        grouped_pe_map_widget_merge,
-        grouped_pe_pie_widget_merge,
+        grouped_events_map_widget_merge,
+        grouped_events_pie_widget_merge,
         grouped_fd_map_widget_merge,
     ],
     groupers=groupers,
     time_range=time_range,
-    **patrol_dashboard_params,
+    **events_dashboard_params,
 ).call()

@@ -6,6 +6,7 @@ requirements:
   - name: ecoscope-workflows-ext-ecoscope
     version: "*"
     channel: file:///tmp/ecoscope-workflows/release/artifacts/
+
 workflow:
   # set 'global' groupers
   - name: Set Groupers
@@ -18,7 +19,7 @@ workflow:
 
   # events
   - name: Get Events from EarthRanger
-    id: events
+    id: get_events_data
     task: get_events
     partial:
       time_range: ${{ workflow.time_range.return }}
@@ -26,7 +27,7 @@ workflow:
     id: filter_events
     task: apply_reloc_coord_filter
     partial:
-      df: ${{ workflow.events.return }}
+      df: ${{ workflow.get_events_data.return }}
   - name: Add temporal index to Events
     id: events_add_temporal_index
     task: add_temporal_index
@@ -171,7 +172,7 @@ workflow:
       argnames: dataframe
       argvalues: ${{ workflow.split_event_groups.return }}
   - name: Persist Pie Chart as Text
-    id: grouped_events_pie_chart_html_urls
+    id: grouped_pie_chart_html_urls
     task: persist_text
     partial:
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
@@ -183,7 +184,7 @@ workflow:
     task: create_plot_widget_single_view
     map:
       argnames: [view, data]
-      argvalues: ${{ workflow.grouped_events_pie_chart_html_urls.return }}
+      argvalues: ${{ workflow.grouped_pie_chart_html_urls.return }}
   - name: Merge Pie Chart Widget Views
     id: grouped_events_pie_widget_merge
     task: merge_widget_views
