@@ -863,8 +863,8 @@ class NsdChart(BaseModel):
     y_axis: str = Field(
         ..., description="The dataframe column to plot in the y axis.", title="Y Axis"
     )
-    plot_style: PlotStyle = Field(
-        ...,
+    plot_style: Optional[PlotStyle] = Field(
+        None,
         description="Style arguments passed to plotly.graph_objects.Scatter.",
         title="Plot Style",
     )

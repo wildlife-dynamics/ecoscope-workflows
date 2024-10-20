@@ -1,13 +1,12 @@
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field
-from pydantic.json_schema import SkipJsonSchema
-
 from ecoscope_workflows_core.annotations import (
     DataFrame,
     JsonSerializableDataFrameModel,
 )
 from ecoscope_workflows_core.decorators import task
+from pydantic import BaseModel, Field
+from pydantic.json_schema import SkipJsonSchema
 
 
 class LineStyle(BaseModel):
@@ -55,7 +54,7 @@ def draw_ecoplot(
     plot_style: Annotated[
         PlotStyle | SkipJsonSchema[None],
         Field(description="Style arguments passed to plotly.graph_objects.Scatter."),
-    ],
+    ] = None,
     color_column: Annotated[
         str | SkipJsonSchema[None],
         Field(
