@@ -43,6 +43,7 @@ class EmumeratedWidgetSingleView(WidgetBase):
             widget_type=view.widget_type,
             title=view.title,
             data=view.data,
+            is_filtered=view.is_filtered,
         )
 
 

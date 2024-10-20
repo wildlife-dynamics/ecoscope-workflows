@@ -189,9 +189,9 @@ test1:
   assertions:
     result_stdout_contains:
       - "A dashboard for visualizing events"
-      - "widget_type='map', title='Events Map'"
-      - "widget_type='map', title='Density Map'"
-      - "widget_type='map', title='Grouped Events Map'"
-      - "widget_type='map', title='Grouped Density Map'"
-      - "widget_type='graph', title='Events Bar Chart'"
-      - "widget_type='graph', title='Events Pie Chart'"
+      - "widget_type='map', title='Events Map', is_filtered=False"
+      - "widget_type='map', title='Density Map', is_filtered=False"
+      - "widget_type='map', title='Grouped Events Map', is_filtered=True"
+      - "widget_type='map', title='Grouped Density Map', is_filtered=True"
+      - "widget_type='graph', title='Events Bar Chart', is_filtered=False"
+      - "widget_type='graph', title='Events Pie Chart', is_filtered=True"
