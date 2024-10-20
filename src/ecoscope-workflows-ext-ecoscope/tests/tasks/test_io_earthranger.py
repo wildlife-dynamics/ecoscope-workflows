@@ -5,10 +5,10 @@ import pytest
 from ecoscope_workflows_core.tasks.filter._filter import TimeRange
 from ecoscope_workflows_ext_ecoscope.connections import EarthRangerConnection
 from ecoscope_workflows_ext_ecoscope.tasks.io import (
+    get_events,
     get_patrol_events,
     get_patrol_observations,
     get_subjectgroup_observations,
-    get_events,
 )
 
 pytestmark = pytest.mark.io
@@ -102,8 +102,14 @@ def test_get_events(client):
                 tzinfo=timezone.utc
             ),
         ),
-        patrol_type="05ad114e-1aff-4602-bc83-efd333cdd8a2",
-        status=None,
+        event_types=[
+            "hwc_rep",
+            "bird_sighting_rep",
+            "wildlife_sighting_rep",
+            "poacher_camp_rep",
+            "fire_rep",
+            "injured_animal_rep",
+        ],
     )
 
     assert len(result) > 0

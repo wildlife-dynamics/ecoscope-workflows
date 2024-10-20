@@ -129,5 +129,5 @@ def get_events(
             since=time_range.since.isoformat(),
             until=time_range.until.isoformat(),
             event_type=event_type_ids,
-        ),
+        ).reset_index(),
     )
