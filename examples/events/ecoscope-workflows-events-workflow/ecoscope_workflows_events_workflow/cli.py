@@ -40,7 +40,7 @@ def main(
 
     result = dispatch(execution_mode, mock_io, params)
 
-    print(result.model_dump_json())
+    print(result)
 
 
 if __name__ == "__main__":
