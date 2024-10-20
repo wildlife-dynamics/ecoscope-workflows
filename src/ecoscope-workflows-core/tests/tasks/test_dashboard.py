@@ -35,6 +35,7 @@ def single_filter_dashboard() -> DashboardFixture:
             (("month", "=", "january"),): "/path/to/precomputed/jan/map.html",
             (("month", "=", "february"),): "/path/to/precomputed/feb/map.html",
         },
+        is_filtered=True,
     )
     cool_plot = GroupedWidget(
         widget_type="graph",
@@ -43,6 +44,7 @@ def single_filter_dashboard() -> DashboardFixture:
             (("month", "=", "january"),): "/path/to/precomputed/jan/plot.html",
             (("month", "=", "february"),): "/path/to/precomputed/feb/plot.html",
         },
+        is_filtered=True,
     )
     widgets = [great_map, cool_plot]
     dashboard = Dashboard(
@@ -79,12 +81,14 @@ def test__get_view(single_filter_dashboard: DashboardFixture):
             widget_type="map",
             title="A Great Map",
             data="/path/to/precomputed/jan/map.html",
+            is_filtered=True,
         ),
         EmumeratedWidgetSingleView(
             id=1,
             widget_type="graph",
             title="A Cool Plot",
             data="/path/to/precomputed/jan/plot.html",
+            is_filtered=True,
         ),
     ]
     assert dashboard._get_view((("month", "=", "february"),)) == [
@@ -93,12 +97,14 @@ def test__get_view(single_filter_dashboard: DashboardFixture):
             widget_type="map",
             title="A Great Map",
             data="/path/to/precomputed/feb/map.html",
+            is_filtered=True,
         ),
         EmumeratedWidgetSingleView(
             id=1,
             widget_type="graph",
             title="A Cool Plot",
             data="/path/to/precomputed/feb/plot.html",
+            is_filtered=True,
         ),
     ]
 
@@ -112,12 +118,14 @@ def test_model_dump_views(single_filter_dashboard: DashboardFixture):
                 "widget_type": "map",
                 "title": "A Great Map",
                 "data": "/path/to/precomputed/jan/map.html",
+                "is_filtered": True,
             },
             {
                 "id": 1,
                 "widget_type": "graph",
                 "title": "A Cool Plot",
                 "data": "/path/to/precomputed/jan/plot.html",
+                "is_filtered": True,
             },
         ],
         '{"month": "february"}': [
@@ -126,12 +134,14 @@ def test_model_dump_views(single_filter_dashboard: DashboardFixture):
                 "widget_type": "map",
                 "title": "A Great Map",
                 "data": "/path/to/precomputed/feb/map.html",
+                "is_filtered": True,
             },
             {
                 "id": 1,
                 "widget_type": "graph",
                 "title": "A Cool Plot",
                 "data": "/path/to/precomputed/feb/plot.html",
+                "is_filtered": True,
             },
         ],
     }
@@ -177,6 +187,7 @@ def two_filter_dashboard() -> DashboardFixture:
                 ("year", "=", "2023"),
             ): "/path/to/jan/2023/map.html",
         },
+        is_filtered=True,
     )
     widgets = [great_map]
     dashboard = Dashboard(
@@ -216,6 +227,7 @@ def test__get_view_two_part_key(two_filter_dashboard: DashboardFixture):
             widget_type="map",
             title="A Great Map",
             data="/path/to/jan/2022/map.html",
+            is_filtered=True,
         ),
     ]
     assert dashboard._get_view((("month", "=", "jan"), ("year", "=", "2023"))) == [
@@ -224,6 +236,7 @@ def test__get_view_two_part_key(two_filter_dashboard: DashboardFixture):
             widget_type="map",
             title="A Great Map",
             data="/path/to/jan/2023/map.html",
+            is_filtered=True,
         ),
     ]
 
@@ -237,6 +250,7 @@ def test_model_dump_views_two_filter(two_filter_dashboard: DashboardFixture):
                 "widget_type": "map",
                 "title": "A Great Map",
                 "data": "/path/to/jan/2022/map.html",
+                "is_filtered": True,
             },
         ],
         '{"month": "jan", "year": "2023"}': [
@@ -245,6 +259,7 @@ def test_model_dump_views_two_filter(two_filter_dashboard: DashboardFixture):
                 "widget_type": "map",
                 "title": "A Great Map",
                 "data": "/path/to/jan/2023/map.html",
+                "is_filtered": True,
             },
         ],
     }
@@ -303,6 +318,7 @@ def three_filter_dashboard() -> DashboardFixture:
                 ("subject_name", "=", "zo"),
             ): "/path/to/jan/2022/zo/map.html",
         },
+        is_filtered=True,
     )
     widgets = [great_map]
     dashboard = Dashboard(
@@ -349,6 +365,7 @@ def test__get_view_three_part_key(three_filter_dashboard: DashboardFixture):
             widget_type="map",
             title="A Great Map",
             data="/path/to/jan/2022/jo/map.html",
+            is_filtered=True,
         ),
     ]
     assert dashboard._get_view(
@@ -359,6 +376,7 @@ def test__get_view_three_part_key(three_filter_dashboard: DashboardFixture):
             widget_type="map",
             title="A Great Map",
             data="/path/to/jan/2022/zo/map.html",
+            is_filtered=True,
         ),
     ]
 
@@ -374,6 +392,7 @@ def test_model_dump_views_three_filter(three_filter_dashboard: DashboardFixture)
                 "widget_type": "map",
                 "title": "A Great Map",
                 "data": "/path/to/jan/2022/jo/map.html",
+                "is_filtered": True,
             },
         ],
         '{"month": "jan", "subject_name": "zo", "year": "2022"}': [
@@ -382,6 +401,7 @@ def test_model_dump_views_three_filter(three_filter_dashboard: DashboardFixture)
                 "widget_type": "map",
                 "title": "A Great Map",
                 "data": "/path/to/jan/2022/zo/map.html",
+                "is_filtered": True,
             },
         ],
     }
@@ -443,6 +463,7 @@ def dashboard_with_none_views() -> DashboardFixture:
             (("month", "=", "january"),): "/path/to/precomputed/jan/map.html",
             (("month", "=", "february"),): "/path/to/precomputed/feb/map.html",
         },
+        is_filtered=True,
     )
     none_view_plot = GroupedWidget(
         widget_type="graph",
@@ -450,6 +471,7 @@ def dashboard_with_none_views() -> DashboardFixture:
         views={
             None: "/path/to/precomputed/single/plot.html",
         },
+        is_filtered=False,
     )
     widgets = [great_map, none_view_plot]
     dashboard = Dashboard(
@@ -486,12 +508,14 @@ def test__get_view_with_none_views(dashboard_with_none_views: DashboardFixture):
             widget_type="map",
             title="A Great Map",
             data="/path/to/precomputed/jan/map.html",
+            is_filtered=True,
         ),
         EmumeratedWidgetSingleView(
             id=1,
             widget_type="graph",
             title="A plot with only one view and no groupers",
             data="/path/to/precomputed/single/plot.html",
+            is_filtered=False,
         ),
     ]
     assert dashboard._get_view((("month", "=", "february"),)) == [
@@ -500,12 +524,14 @@ def test__get_view_with_none_views(dashboard_with_none_views: DashboardFixture):
             widget_type="map",
             title="A Great Map",
             data="/path/to/precomputed/feb/map.html",
+            is_filtered=True,
         ),
         EmumeratedWidgetSingleView(
             id=1,
             widget_type="graph",
             title="A plot with only one view and no groupers",
             data="/path/to/precomputed/single/plot.html",
+            is_filtered=False,
         ),
     ]
 
@@ -519,12 +545,14 @@ def test_model_dump_views_with_none_views(dashboard_with_none_views: DashboardFi
                 "widget_type": "map",
                 "title": "A Great Map",
                 "data": "/path/to/precomputed/jan/map.html",
+                "is_filtered": True,
             },
             {
                 "id": 1,
                 "widget_type": "graph",
                 "title": "A plot with only one view and no groupers",
                 "data": "/path/to/precomputed/single/plot.html",
+                "is_filtered": False,
             },
         ],
         '{"month": "february"}': [
@@ -533,12 +561,14 @@ def test_model_dump_views_with_none_views(dashboard_with_none_views: DashboardFi
                 "widget_type": "map",
                 "title": "A Great Map",
                 "data": "/path/to/precomputed/feb/map.html",
+                "is_filtered": True,
             },
             {
                 "id": 1,
                 "widget_type": "graph",
                 "title": "A plot with only one view and no groupers",
                 "data": "/path/to/precomputed/single/plot.html",
+                "is_filtered": False,
             },
         ],
     }
@@ -579,6 +609,7 @@ def dashboard_with_all_none_views() -> DashboardFixture:
         views={
             None: "/path/to/precomputed/single/map.html",
         },
+        is_filtered=False,
     )
     none_view_plot = GroupedWidget(
         widget_type="graph",
@@ -586,6 +617,7 @@ def dashboard_with_all_none_views() -> DashboardFixture:
         views={
             None: "/path/to/precomputed/single/plot.html",
         },
+        is_filtered=False,
     )
     widgets = [none_view_map, none_view_plot]
     dashboard = Dashboard(widgets=widgets)
@@ -616,12 +648,14 @@ def test__get_view_with_all_none_views(dashboard_with_all_none_views: DashboardF
             widget_type="map",
             title="A map with only one view and no groupers",
             data="/path/to/precomputed/single/map.html",
+            is_filtered=False,
         ),
         EmumeratedWidgetSingleView(
             id=1,
             widget_type="graph",
             title="A plot with only one view and no groupers",
             data="/path/to/precomputed/single/plot.html",
+            is_filtered=False,
         ),
     ]
 
@@ -637,12 +671,14 @@ def test_model_dump_views_with_all_none_views(
                 "widget_type": "map",
                 "title": "A map with only one view and no groupers",
                 "data": "/path/to/precomputed/single/map.html",
+                "is_filtered": False,
             },
             {
                 "id": 1,
                 "widget_type": "graph",
                 "title": "A plot with only one view and no groupers",
                 "data": "/path/to/precomputed/single/plot.html",
+                "is_filtered": False,
             },
         ],
     }
