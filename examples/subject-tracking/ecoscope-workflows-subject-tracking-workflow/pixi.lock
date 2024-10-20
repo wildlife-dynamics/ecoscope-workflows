@@ -5238,7 +5238,6 @@ packages:
   - python >=3.8
   - typing_extensions
   license: MIT
-  license_family: MIT
   purls:
   - pkg:pypi/cloudpathlib?source=hash-mapping
   size: 43563
@@ -5257,7 +5256,6 @@ packages:
   - google-cloud-storage
   - python >=3.8
   license: MIT
-  license_family: MIT
   purls: []
   size: 6730
   timestamp: 1729359200136
@@ -5686,9 +5684,15 @@ packages:
   build: pyh4616a5c_0
   subdir: noarch
   noarch: python
+<<<<<<< HEAD
   url: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-core-v0.0.10-pyh4616a5c_0.conda
   sha256: 23ec03630edfd148d5e21875f8c0f23aa464c2d87616b39eac41e8b665259b57
   md5: 2f37fc9442c50476c3464b6a333fe236
+=======
+  url: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-core-v0.0.6-pyh4616a5c_0.conda
+  sha256: f6843e7fa95e246457ff886ef546baf581fb07e23674492e59169556a749d42d
+  md5: 04be8e7afee337cfdbf6d12b96f81f30
+>>>>>>> 5e4aa4c (Add NSD Chart)
   depends:
   - python
   - jinja2
@@ -5705,30 +5709,46 @@ packages:
   - pydot
   - python
   license: BSD-3-Clause
+<<<<<<< HEAD
   size: 49642
   timestamp: 1729659176745
+=======
+  size: 48737
+  timestamp: 1729412793404
+>>>>>>> 5e4aa4c (Add NSD Chart)
 - kind: conda
   name: ecoscope-workflows-ext-ecoscope
   version: v0.0.10
   build: pyh4616a5c_0
   subdir: noarch
   noarch: python
+<<<<<<< HEAD
   url: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-ext-ecoscope-v0.0.10-pyh4616a5c_0.conda
   sha256: 69500e65950e90416b7ed0ccf7a07bcd52ee2f11c548daef7aa6c34d557b16f4
   md5: 9dd6968b0f1d63d13f9a17816ed8634b
+=======
+  url: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-ext-ecoscope-v0.0.6-pyh4616a5c_0.conda
+  sha256: 035152ec176359c5eb592c14ee22ebbb84b197286cb71a91284355f320cc32a5
+  md5: 9ba6af2598a5ce0d1ca6441d585f5596
+>>>>>>> 5e4aa4c (Add NSD Chart)
   depends:
   - python
   - ecoscope-workflows-core ==v0.0.10
   - ecoscope ==v1.8.6
   - python
   license: BSD-3-Clause
+<<<<<<< HEAD
   size: 6414861
   timestamp: 1729659230083
+=======
+  size: 1125322
+  timestamp: 1729412866005
+>>>>>>> 5e4aa4c (Add NSD Chart)
 - kind: pypi
   name: ecoscope-workflows-subject-tracking-workflow
   version: 0.0.0
   path: .
-  sha256: 7fdbd40dba403a1993584aa3ab669bdb78ea9ab8461d7e613f0e255a524c18b9
+  sha256: 9c8795a53f4d50243994ba2b1a9dbaf6d7bc966257db373be4f5cdf1df2e3d9f
   requires_python: '>=3.10'
   editable: true
 - kind: conda
@@ -15318,7 +15338,6 @@ packages:
   - protobuf >=3.19.0,<6.0.0dev
   - python >=3.7
   license: Apache-2.0
-  license_family: APACHE
   purls:
   - pkg:pypi/proto-plus?source=hash-mapping
   size: 42450
