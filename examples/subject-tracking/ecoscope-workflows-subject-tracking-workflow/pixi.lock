@@ -5690,9 +5690,14 @@ packages:
   md5: 2f37fc9442c50476c3464b6a333fe236
 =======
   url: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-core-v0.0.6-pyh4616a5c_0.conda
+<<<<<<< HEAD
   sha256: f6843e7fa95e246457ff886ef546baf581fb07e23674492e59169556a749d42d
   md5: 04be8e7afee337cfdbf6d12b96f81f30
 >>>>>>> 5e4aa4c (Add NSD Chart)
+=======
+  sha256: 255832b9271ce2bc2cd3dae6a132794f04fc3c7a6aefb70663c69f95e7a8ce1b
+  md5: b49a58db182b54daf11f2220a9ba6c30
+>>>>>>> ea4d8e5 (test)
   depends:
   - python
   - jinja2
@@ -5710,12 +5715,17 @@ packages:
   - python
   license: BSD-3-Clause
 <<<<<<< HEAD
+<<<<<<< HEAD
   size: 49642
   timestamp: 1729659176745
 =======
   size: 48737
   timestamp: 1729412793404
 >>>>>>> 5e4aa4c (Add NSD Chart)
+=======
+  size: 48728
+  timestamp: 1729413814792
+>>>>>>> ea4d8e5 (test)
 - kind: conda
   name: ecoscope-workflows-ext-ecoscope
   version: v0.0.10
@@ -5728,9 +5738,14 @@ packages:
   md5: 9dd6968b0f1d63d13f9a17816ed8634b
 =======
   url: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-ext-ecoscope-v0.0.6-pyh4616a5c_0.conda
+<<<<<<< HEAD
   sha256: 035152ec176359c5eb592c14ee22ebbb84b197286cb71a91284355f320cc32a5
   md5: 9ba6af2598a5ce0d1ca6441d585f5596
 >>>>>>> 5e4aa4c (Add NSD Chart)
+=======
+  sha256: df2912a4c7dedf250720e37695a6ab52b6c61d93ec7fd9692e36bf3af31f8eaf
+  md5: 705581498f60faa3377723e5439e1898
+>>>>>>> ea4d8e5 (test)
   depends:
   - python
   - ecoscope-workflows-core ==v0.0.10
@@ -5738,12 +5753,17 @@ packages:
   - python
   license: BSD-3-Clause
 <<<<<<< HEAD
+<<<<<<< HEAD
   size: 6414861
   timestamp: 1729659230083
 =======
   size: 1125322
   timestamp: 1729412866005
 >>>>>>> 5e4aa4c (Add NSD Chart)
+=======
+  size: 1125333
+  timestamp: 1729413876838
+>>>>>>> ea4d8e5 (test)
 - kind: pypi
   name: ecoscope-workflows-subject-tracking-workflow
   version: 0.0.0

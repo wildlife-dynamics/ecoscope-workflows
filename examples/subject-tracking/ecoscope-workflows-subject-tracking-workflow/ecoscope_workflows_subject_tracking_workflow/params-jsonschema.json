@@ -1245,7 +1245,12 @@
           "description": "The dataframe column to plot in the y axis."
         },
         "plot_style": {
-          "$ref": "#/$defs/PlotStyle",
+          "allOf": [
+            {
+              "$ref": "#/$defs/PlotStyle"
+            }
+          ],
+          "default": null,
           "title": "Plot Style",
           "description": "Style arguments passed to plotly.graph_objects.Scatter."
         },
@@ -1259,8 +1264,7 @@
       "required": [
         "group_by",
         "x_axis",
-        "y_axis",
-        "plot_style"
+        "y_axis"
       ],
       "type": "object",
       "title": "Draw NSD Scatter Chart"
