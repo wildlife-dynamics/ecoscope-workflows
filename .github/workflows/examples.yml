@@ -33,7 +33,7 @@ jobs:
       fail-fast: false
       matrix:
         example: [
-          "patrol-events",
+          "events",
           "patrols",
           "subject-tracking",
         ]
