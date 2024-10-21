@@ -40,7 +40,7 @@ recompile-all-carryover-lockfile = { cmd ="echo 'recompile-all-carryover-lockfil
 ]}
 
 
-pytest-patrol-events-params = { cmd = "./dev/pytest-examples-params.sh patrol-events" }
+pytest-events-params = { cmd = "./dev/pytest-examples-params.sh events" }
 pytest-patrols-params = { cmd = "./dev/pytest-examples-params.sh patrols" }
 pytest-subject-tracking-params = { cmd = "./dev/pytest-examples-params.sh subject-tracking" }
 
