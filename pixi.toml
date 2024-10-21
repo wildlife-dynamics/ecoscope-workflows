@@ -44,11 +44,11 @@ pytest-patrol-events-params = { cmd = "./dev/pytest-examples-params.sh patrol-ev
 pytest-patrols-params = { cmd = "./dev/pytest-examples-params.sh patrols" }
 pytest-subject-tracking-params = { cmd = "./dev/pytest-examples-params.sh subject-tracking" }
 
-pytest-patrol-events-app = { cmd = "./dev/pytest-examples-run.sh patrol-events 'app'" }
+pytest-events-app = { cmd = "./dev/pytest-examples-run.sh events 'app'" }
 pytest-patrols-app = { cmd = "./dev/pytest-examples-run.sh patrols 'app'" }
 pytest-subject-tracking-app = { cmd = "./dev/pytest-examples-run.sh subject-tracking 'app'" }
 
-pytest-patrol-events-cli = { cmd = "./dev/pytest-examples-run.sh patrol-events 'cli'" }
+pytest-events-cli = { cmd = "./dev/pytest-examples-run.sh events 'cli'" }
 pytest-patrols-cli = { cmd = "./dev/pytest-examples-run.sh patrols 'cli'" }
 pytest-subject-tracking-cli = { cmd = "./dev/pytest-examples-run.sh subject-tracking 'cli'" }
 
