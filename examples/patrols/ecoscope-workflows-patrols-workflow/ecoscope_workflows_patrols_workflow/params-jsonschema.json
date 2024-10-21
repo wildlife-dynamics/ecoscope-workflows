@@ -2081,6 +2081,10 @@
           "title": "Title",
           "type": "string"
         },
+        "is_filtered": {
+          "title": "Is Filtered",
+          "type": "boolean"
+        },
         "data": {
           "anyOf": [
             {
@@ -2134,6 +2138,7 @@
       "required": [
         "widget_type",
         "title",
+        "is_filtered",
         "data"
       ],
       "title": "WidgetSingleView",
@@ -2337,6 +2342,10 @@
           "title": "Title",
           "type": "string"
         },
+        "is_filtered": {
+          "title": "Is Filtered",
+          "type": "boolean"
+        },
         "views": {
           "additionalProperties": {
             "anyOf": [
@@ -2361,6 +2370,7 @@
       "required": [
         "widget_type",
         "title",
+        "is_filtered",
         "views"
       ],
       "title": "GroupedWidget",
