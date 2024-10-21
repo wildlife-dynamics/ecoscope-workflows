@@ -895,6 +895,9 @@ class PatrolEventsBarChart(BaseModel):
 
 
 class Params(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
     groupers: Optional[Groupers] = Field(None, title="Set Groupers")
     time_range: Optional[TimeRange] = Field(None, title="Set Time Range Filters")
     patrol_obs: Optional[PatrolObs] = Field(

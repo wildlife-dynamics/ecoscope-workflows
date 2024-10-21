@@ -12,9 +12,8 @@ yq = "*"
 
 # build ----------------------------------------------------------------------------------------
 
-build-vendor = { cmd = "./publish/build.sh vendor", inputs = ["publish/recipes/vendor/*.yaml"] }
-build-release = { cmd = "./publish/build.sh release"}
-# build-release = { cmd = "./publish/build.sh release", inputs = ["publish/recipes/release/*.yaml", "src/**/*.py", "src/**/pyproject.toml"] }
+build-vendor = { cmd = "./publish/build.sh vendor" }
+build-release = { cmd = "./publish/build.sh release" }
 
 # release ----------------------------------------------------------------------------------
 
@@ -40,13 +39,18 @@ recompile-all-carryover-lockfile = { cmd ="echo 'recompile-all-carryover-lockfil
     "recompile-subject-tracking-carryover-lockfile",
 ]}
 
-pytest-events-app = { cmd = "./dev/pytest-examples.sh events 'app'" }
-pytest-patrols-app = { cmd = "./dev/pytest-examples.sh patrols 'app'" }
-pytest-subject-tracking-app = { cmd = "./dev/pytest-examples.sh subject-tracking 'app'" }
 
-pytest-events-cli = { cmd = "./dev/pytest-examples.sh events 'cli'" }
-pytest-patrols-cli = { cmd = "./dev/pytest-examples.sh patrols 'cli'" }
-pytest-subject-tracking-cli = { cmd = "./dev/pytest-examples.sh subject-tracking 'cli'" }
+pytest-events-params = { cmd = "./dev/pytest-examples-params.sh events" }
+pytest-patrols-params = { cmd = "./dev/pytest-examples-params.sh patrols" }
+pytest-subject-tracking-params = { cmd = "./dev/pytest-examples-params.sh subject-tracking" }
+
+pytest-events-app = { cmd = "./dev/pytest-examples-run.sh events 'app'" }
+pytest-patrols-app = { cmd = "./dev/pytest-examples-run.sh patrols 'app'" }
+pytest-subject-tracking-app = { cmd = "./dev/pytest-examples-run.sh subject-tracking 'app'" }
+
+pytest-events-cli = { cmd = "./dev/pytest-examples-run.sh events 'cli'" }
+pytest-patrols-cli = { cmd = "./dev/pytest-examples-run.sh patrols 'cli'" }
+pytest-subject-tracking-cli = { cmd = "./dev/pytest-examples-run.sh subject-tracking 'cli'" }
 
 docker-build-events = { cmd = "./dev/docker-build.sh events" }
 docker-build-patrols = { cmd = "./dev/docker-build.sh patrols" }

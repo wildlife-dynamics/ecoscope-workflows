@@ -124,6 +124,7 @@ class PackageDirectory(BaseModel):
     dags: Dags
     params_jsonschema: dict = Field(..., alias="params-jsonschema.json")
     params_model: str = Field(..., alias="params.py")
+    formdata_model: str = Field(..., alias="formdata.py")
     app: str = Field(..., alias="app.py")
     cli: str = Field(..., alias="cli.py")
     dispatch: str = Field(..., alias="dispatch.py")

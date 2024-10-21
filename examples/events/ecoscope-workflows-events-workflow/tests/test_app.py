@@ -5,12 +5,15 @@
 
 from pathlib import Path
 
+import pytest
+import pydantic
 from fastapi.testclient import TestClient
-
 from ecoscope_workflows_core.testing import TestCase
 
+from ecoscope_workflows_events_workflow.params import Params
 
-def test_app(
+
+def test_run(
     client: TestClient,
     execution_mode: str,
     mock_io: bool,
@@ -31,3 +34,34 @@ def test_app(
         headers=headers,
     )
     assert response.status_code == 200
+
+
+def test_get_params(client: TestClient):
+    response = client.get("/params")
+    assert response.status_code == 200
+    assert set(list(response.json())) == {
+        "title",
+        "properties",
+        "$defs",
+        "additionalProperties",
+        "uiSchema",
+    }
+
+
+def test_validate_formdata(client: TestClient, case: TestCase, formdata: dict):
+    invalid_request = client.post("/params", json={"invalid": "request"})
+    assert invalid_request.status_code == 422
+
+    response = client.post("/params", json=formdata)
+    assert response.status_code == 200
+
+    if set(formdata) != set(case.params):
+        # this workflow uses task groups, so make a few extra asserts
+        # task groups are not required, so these asserts are skipped
+        # for workflows that simply use a flat layout
+        assert set(response.json()) == set(case.params)
+
+        with pytest.raises(pydantic.ValidationError):
+            Params(**formdata)
+
+    assert Params(**response.json()) == Params(**case.params)
