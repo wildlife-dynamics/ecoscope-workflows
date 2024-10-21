@@ -118,3 +118,13 @@ def test_get_events(client):
     assert "time" in result
     assert "event_type" in result
     assert "geometry" in result
+
+
+def test_bad_token_fails():
+    with pytest.raises(Exception, match="Authorization token is invalid or expired."):
+        EarthRangerConnection(
+            server=os.environ["EARTHRANGER_SERVER"],
+            token="abc123",
+            tcp_limit="5",
+            sub_page_size="4000",
+        ).get_client()
