@@ -65,8 +65,10 @@ class LegendStyle(BaseModel):
 
 @dataclass
 class LegendDefinition:
-    label_column: str
-    color_column: str
+    label_column: str | SkipJsonSchema[None] = None
+    color_column: str | SkipJsonSchema[None] = None
+    labels: list[str] | SkipJsonSchema[None] = None
+    colors: list[str] | SkipJsonSchema[None] = None
 
 
 @dataclass
@@ -192,12 +194,18 @@ def draw_ecomap(
                 )
 
         if layer_def.legend:
-            legend_labels.extend(layer_def.geodataframe[layer_def.legend.label_column])
-            legend_colors.extend(
-                layer_def.geodataframe[layer_def.legend.color_column].apply(
-                    color_to_hex
+            if layer_def.legend.label_column and layer_def.legend.color_column:
+                legend_labels.extend(
+                    layer_def.geodataframe[layer_def.legend.label_column]
                 )
-            )
+                legend_colors.extend(
+                    layer_def.geodataframe[layer_def.legend.color_column].apply(
+                        color_to_hex
+                    )
+                )
+            elif layer_def.legend.labels and layer_def.legend.colors:
+                legend_labels.extend(layer_def.legend.labels)
+                legend_colors.extend(layer_def.legend.colors)
 
         m.add_layer(layer)
 

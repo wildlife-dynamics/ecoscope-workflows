@@ -1,12 +1,13 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "16f756386e14612d875d95d9640b778f31eb33ad9db3f241ab4ce1fe3aecc4b6"
+# from-spec-sha256 = "8a3657e3ebaa4bfbe1bbaaac414f150f77aaa86dfa1e7d1d71c3b10235974666"
 import json
 import os
 
 from ecoscope_workflows_core.graph import DependsOn, DependsOnSequence, Graph, Node
 
 from ecoscope_workflows_core.tasks.groupby import set_groupers
+from ecoscope_workflows_core.tasks.filter import set_time_range
 from ecoscope_workflows_ext_ecoscope.tasks.io import get_patrol_observations
 from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import process_relocations
 from ecoscope_workflows_ext_ecoscope.tasks.preprocessing import (
@@ -45,13 +46,14 @@ def main(params: Params):
 
     dependencies = {
         "groupers": [],
-        "patrol_obs": [],
+        "time_range": [],
+        "patrol_obs": ["time_range"],
         "patrol_reloc": ["patrol_obs"],
         "patrol_traj": ["patrol_reloc"],
         "traj_add_temporal_index": ["patrol_traj"],
         "split_patrol_traj_groups": ["traj_add_temporal_index", "groupers"],
         "patrol_traj_map_layers": ["split_patrol_traj_groups"],
-        "patrol_events": [],
+        "patrol_events": ["time_range"],
         "filter_patrol_events": ["patrol_events"],
         "pe_add_temporal_index": ["filter_patrol_events"],
         "pe_colormap": ["pe_add_temporal_index"],
@@ -108,6 +110,7 @@ def main(params: Params):
             "avg_speed_grouped_widget",
             "max_speed_grouped_widget",
             "groupers",
+            "time_range",
         ],
     }
 
@@ -117,9 +120,17 @@ def main(params: Params):
             partial=params_dict["groupers"],
             method="call",
         ),
+        "time_range": Node(
+            async_task=set_time_range.validate().set_executor("lithops"),
+            partial=params_dict["time_range"],
+            method="call",
+        ),
         "patrol_obs": Node(
             async_task=get_patrol_observations.validate().set_executor("lithops"),
-            partial=params_dict["patrol_obs"],
+            partial={
+                "time_range": DependsOn("time_range"),
+            }
+            | params_dict["patrol_obs"],
             method="call",
         ),
         "patrol_reloc": Node(
@@ -166,7 +177,10 @@ def main(params: Params):
         ),
         "patrol_events": Node(
             async_task=get_patrol_events.validate().set_executor("lithops"),
-            partial=params_dict["patrol_events"],
+            partial={
+                "time_range": DependsOn("time_range"),
+            }
+            | params_dict["patrol_events"],
             method="call",
         ),
         "filter_patrol_events": Node(
@@ -571,6 +585,7 @@ def main(params: Params):
                     ],
                 ),
                 "groupers": DependsOn("groupers"),
+                "time_range": DependsOn("time_range"),
             }
             | params_dict["patrol_dashboard"],
             method="call",

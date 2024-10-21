@@ -6,7 +6,7 @@ python_version=$2
 command="pixi run \
 --manifest-path src/ecoscope-workflows-${namespace}/pyproject.toml \
 --locked --environment test-py${python_version} \
-pytest src/ecoscope-workflows-${namespace}/tests -vx"
+pytest src/ecoscope-workflows-${namespace}/tests -vv"
 
 if [ -n "$3" ]; then
     marker=$3

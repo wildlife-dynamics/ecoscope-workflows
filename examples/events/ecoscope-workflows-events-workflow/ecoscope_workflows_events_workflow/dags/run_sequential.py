@@ -1,26 +1,12 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "a14c0deb652592fad3edfb3b99b76dc2ed865482e7948f3915215fe3626119e9"
-
-# ruff: noqa: E402
-
-"""WARNING: This file is generated in a testing context and should not be used in production.
-Lines specific to the testing context are marked with a test tube emoji (🧪) to indicate
-that they would not be included (or would be different) in the production version of this file.
-"""
-
+# from-spec-sha256 = "4c4b15573d985d4dd22886118300bbb53ad094f5c88dbd6cc5bdcc47703957a9"
 import json
 import os
-import warnings  # 🧪
-from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
-
 
 from ecoscope_workflows_core.tasks.groupby import set_groupers
-
-get_patrol_events = create_task_magicmock(  # 🧪
-    anchor="ecoscope_workflows_ext_ecoscope.tasks.io",  # 🧪
-    func_name="get_patrol_events",  # 🧪
-)  # 🧪
+from ecoscope_workflows_core.tasks.filter import set_time_range
+from ecoscope_workflows_ext_ecoscope.tasks.io import get_events
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import (
     apply_reloc_coord_filter,
 )
@@ -43,101 +29,107 @@ from ..params import Params
 
 
 def main(params: Params):
-    warnings.warn("This test script should not be used in production!")  # 🧪
-
     params_dict = json.loads(params.model_dump_json(exclude_unset=True))
 
     groupers = set_groupers.validate().partial(**params_dict["groupers"]).call()
 
-    pe = get_patrol_events.validate().partial(**params_dict["pe"]).call()
+    time_range = set_time_range.validate().partial(**params_dict["time_range"]).call()
 
-    filter_patrol_events = (
+    get_events_data = (
+        get_events.validate()
+        .partial(time_range=time_range, **params_dict["get_events_data"])
+        .call()
+    )
+
+    filter_events = (
         apply_reloc_coord_filter.validate()
-        .partial(df=pe, **params_dict["filter_patrol_events"])
+        .partial(df=get_events_data, **params_dict["filter_events"])
         .call()
     )
 
-    pe_add_temporal_index = (
+    events_add_temporal_index = (
         add_temporal_index.validate()
-        .partial(df=filter_patrol_events, **params_dict["pe_add_temporal_index"])
+        .partial(df=filter_events, **params_dict["events_add_temporal_index"])
         .call()
     )
 
-    pe_colormap = (
+    events_colormap = (
         apply_color_map.validate()
-        .partial(df=pe_add_temporal_index, **params_dict["pe_colormap"])
+        .partial(df=events_add_temporal_index, **params_dict["events_colormap"])
         .call()
     )
 
-    pe_map_layer = (
+    events_map_layer = (
         create_map_layer.validate()
-        .partial(geodataframe=pe_colormap, **params_dict["pe_map_layer"])
+        .partial(geodataframe=events_colormap, **params_dict["events_map_layer"])
         .call()
     )
 
-    pe_ecomap = (
+    events_ecomap = (
         draw_ecomap.validate()
-        .partial(geo_layers=pe_map_layer, **params_dict["pe_ecomap"])
+        .partial(geo_layers=events_map_layer, **params_dict["events_ecomap"])
         .call()
     )
 
-    pe_ecomap_html_url = (
+    events_ecomap_html_url = (
         persist_text.validate()
         .partial(
-            text=pe_ecomap,
+            text=events_ecomap,
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-            **params_dict["pe_ecomap_html_url"],
+            **params_dict["events_ecomap_html_url"],
         )
         .call()
     )
 
-    pe_map_widget = (
+    events_map_widget = (
         create_map_widget_single_view.validate()
-        .partial(data=pe_ecomap_html_url, **params_dict["pe_map_widget"])
+        .partial(data=events_ecomap_html_url, **params_dict["events_map_widget"])
         .call()
     )
 
-    pe_bar_chart = (
+    events_bar_chart = (
         draw_time_series_bar_chart.validate()
-        .partial(dataframe=pe_colormap, **params_dict["pe_bar_chart"])
+        .partial(dataframe=events_colormap, **params_dict["events_bar_chart"])
         .call()
     )
 
-    pe_bar_chart_html_url = (
+    events_bar_chart_html_url = (
         persist_text.validate()
         .partial(
-            text=pe_bar_chart,
+            text=events_bar_chart,
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-            **params_dict["pe_bar_chart_html_url"],
+            **params_dict["events_bar_chart_html_url"],
         )
         .call()
     )
 
-    pe_bar_chart_widget = (
+    events_bar_chart_widget = (
         create_plot_widget_single_view.validate()
-        .partial(data=pe_bar_chart_html_url, **params_dict["pe_bar_chart_widget"])
+        .partial(
+            data=events_bar_chart_html_url, **params_dict["events_bar_chart_widget"]
+        )
         .call()
     )
 
-    pe_meshgrid = (
+    events_meshgrid = (
         create_meshgrid.validate()
-        .partial(aoi=pe_add_temporal_index, **params_dict["pe_meshgrid"])
+        .partial(aoi=events_add_temporal_index, **params_dict["events_meshgrid"])
         .call()
     )
 
-    pe_feature_density = (
+    events_feature_density = (
         calculate_feature_density.validate()
         .partial(
-            geodataframe=pe_add_temporal_index,
-            meshgrid=pe_meshgrid,
-            **params_dict["pe_feature_density"],
+            geodataframe=events_add_temporal_index,
+            meshgrid=events_meshgrid,
+            **params_dict["events_feature_density"],
         )
         .call()
     )
 
     fd_colormap = (
         apply_color_map.validate()
-        .partial(df=pe_feature_density, **params_dict["fd_colormap"])
+        .partial(df=events_feature_density, **params_dict["fd_colormap"])
         .call()
     )
 
@@ -169,91 +161,92 @@ def main(params: Params):
         .call()
     )
 
-    split_patrol_event_groups = (
+    split_event_groups = (
         split_groups.validate()
         .partial(
-            df=pe_colormap,
-            groupers=groupers,
-            **params_dict["split_patrol_event_groups"],
+            df=events_colormap, groupers=groupers, **params_dict["split_event_groups"]
         )
         .call()
     )
 
-    grouped_pe_map_layer = (
+    grouped_events_map_layer = (
         create_map_layer.validate()
-        .partial(**params_dict["grouped_pe_map_layer"])
-        .mapvalues(argnames=["geodataframe"], argvalues=split_patrol_event_groups)
+        .partial(**params_dict["grouped_events_map_layer"])
+        .mapvalues(argnames=["geodataframe"], argvalues=split_event_groups)
     )
 
-    grouped_pe_ecomap = (
+    grouped_events_ecomap = (
         draw_ecomap.validate()
-        .partial(**params_dict["grouped_pe_ecomap"])
-        .mapvalues(argnames=["geo_layers"], argvalues=grouped_pe_map_layer)
+        .partial(**params_dict["grouped_events_ecomap"])
+        .mapvalues(argnames=["geo_layers"], argvalues=grouped_events_map_layer)
     )
 
-    grouped_pe_ecomap_html_url = (
+    grouped_events_ecomap_html_url = (
         persist_text.validate()
         .partial(
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-            **params_dict["grouped_pe_ecomap_html_url"],
+            **params_dict["grouped_events_ecomap_html_url"],
         )
-        .mapvalues(argnames=["text"], argvalues=grouped_pe_ecomap)
+        .mapvalues(argnames=["text"], argvalues=grouped_events_ecomap)
     )
 
-    grouped_pe_map_widget = (
+    grouped_events_map_widget = (
         create_map_widget_single_view.validate()
-        .partial(**params_dict["grouped_pe_map_widget"])
-        .map(argnames=["view", "data"], argvalues=grouped_pe_ecomap_html_url)
+        .partial(**params_dict["grouped_events_map_widget"])
+        .map(argnames=["view", "data"], argvalues=grouped_events_ecomap_html_url)
     )
 
-    grouped_pe_map_widget_merge = (
+    grouped_events_map_widget_merge = (
         merge_widget_views.validate()
         .partial(
-            widgets=grouped_pe_map_widget, **params_dict["grouped_pe_map_widget_merge"]
+            widgets=grouped_events_map_widget,
+            **params_dict["grouped_events_map_widget_merge"],
         )
         .call()
     )
 
-    grouped_pe_pie_chart = (
+    grouped_events_pie_chart = (
         draw_pie_chart.validate()
-        .partial(**params_dict["grouped_pe_pie_chart"])
-        .mapvalues(argnames=["dataframe"], argvalues=split_patrol_event_groups)
+        .partial(**params_dict["grouped_events_pie_chart"])
+        .mapvalues(argnames=["dataframe"], argvalues=split_event_groups)
     )
 
-    grouped_pe_pie_chart_html_urls = (
+    grouped_pie_chart_html_urls = (
         persist_text.validate()
         .partial(
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-            **params_dict["grouped_pe_pie_chart_html_urls"],
+            **params_dict["grouped_pie_chart_html_urls"],
         )
-        .mapvalues(argnames=["text"], argvalues=grouped_pe_pie_chart)
+        .mapvalues(argnames=["text"], argvalues=grouped_events_pie_chart)
     )
 
-    grouped_pe_pie_chart_widgets = (
+    grouped_events_pie_chart_widgets = (
         create_plot_widget_single_view.validate()
-        .partial(**params_dict["grouped_pe_pie_chart_widgets"])
-        .map(argnames=["view", "data"], argvalues=grouped_pe_pie_chart_html_urls)
+        .partial(**params_dict["grouped_events_pie_chart_widgets"])
+        .map(argnames=["view", "data"], argvalues=grouped_pie_chart_html_urls)
     )
 
-    grouped_pe_pie_widget_merge = (
+    grouped_events_pie_widget_merge = (
         merge_widget_views.validate()
         .partial(
-            widgets=grouped_pe_pie_chart_widgets,
-            **params_dict["grouped_pe_pie_widget_merge"],
+            widgets=grouped_events_pie_chart_widgets,
+            **params_dict["grouped_events_pie_widget_merge"],
         )
         .call()
     )
 
-    grouped_pe_feature_density = (
+    grouped_events_feature_density = (
         calculate_feature_density.validate()
-        .partial(meshgrid=pe_meshgrid, **params_dict["grouped_pe_feature_density"])
-        .mapvalues(argnames=["geodataframe"], argvalues=split_patrol_event_groups)
+        .partial(
+            meshgrid=events_meshgrid, **params_dict["grouped_events_feature_density"]
+        )
+        .mapvalues(argnames=["geodataframe"], argvalues=split_event_groups)
     )
 
     grouped_fd_colormap = (
         apply_color_map.validate()
         .partial(**params_dict["grouped_fd_colormap"])
-        .mapvalues(argnames=["df"], argvalues=grouped_pe_feature_density)
+        .mapvalues(argnames=["df"], argvalues=grouped_events_feature_density)
     )
 
     grouped_fd_map_layer = (
@@ -291,21 +284,22 @@ def main(params: Params):
         .call()
     )
 
-    patrol_dashboard = (
+    events_dashboard = (
         gather_dashboard.validate()
         .partial(
             widgets=[
-                pe_map_widget,
-                pe_bar_chart_widget,
+                events_map_widget,
+                events_bar_chart_widget,
                 fd_map_widget,
-                grouped_pe_map_widget_merge,
-                grouped_pe_pie_widget_merge,
+                grouped_events_map_widget_merge,
+                grouped_events_pie_widget_merge,
                 grouped_fd_map_widget_merge,
             ],
             groupers=groupers,
-            **params_dict["patrol_dashboard"],
+            time_range=time_range,
+            **params_dict["events_dashboard"],
         )
         .call()
     )
 
-    return patrol_dashboard
+    return events_dashboard

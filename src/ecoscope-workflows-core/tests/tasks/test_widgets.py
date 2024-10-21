@@ -26,6 +26,7 @@ def test_create_map_widget_single_view():
         title=title,
         data=data,
         view=view,
+        is_filtered=True,
     )
 
 
@@ -40,6 +41,7 @@ def test_create_plot_widget_single_view():
         title=title,
         data=data,
         view=view,
+        is_filtered=True,
     )
 
 
@@ -54,6 +56,7 @@ def test_create_text_widget_single_view():
         title=title,
         data=data,
         view=view,
+        is_filtered=True,
     )
 
 
@@ -68,6 +71,7 @@ def test_create_single_value_widget_single_view():
         title=title,
         data="123.5",
         view=view,
+        is_filtered=True,
     )
 
 
@@ -82,6 +86,7 @@ def test_create_single_value_widget_single_view_float():
         title=title,
         data="123.5",
         view=view,
+        is_filtered=True,
     )
 
 
@@ -96,6 +101,7 @@ def test_create_single_value_widget_single_view_int():
         title=title,
         data="123",
         view=view,
+        is_filtered=True,
     )
 
 
@@ -110,6 +116,7 @@ def test_create_single_value_widget_single_view_unit():
         title=title,
         data="123.5 h",
         view=view,
+        is_filtered=True,
     )
 
 
@@ -124,6 +131,7 @@ def test_create_single_value_widget_single_view_decimal_places():
         title=title,
         data="123.450 h",
         view=view,
+        is_filtered=True,
     )
 
 
@@ -135,6 +143,7 @@ def test_grouped_widget_merge():
             ("month", "=", "january"): "/path/to/precomputed/jan/map.html",
             ("month", "=", "february"): "/path/to/precomputed/feb/map.html",
         },
+        is_filtered=True,
     )
     widget2 = GroupedWidget(
         widget_type="map",
@@ -143,6 +152,7 @@ def test_grouped_widget_merge():
             ("month", "=", "march"): "/path/to/precomputed/mar/map.html",
             ("month", "=", "april"): "/path/to/precomputed/apr/map.html",
         },
+        is_filtered=True,
     )
     widget1 |= widget2
     assert widget1 == GroupedWidget(
@@ -154,6 +164,7 @@ def test_grouped_widget_merge():
             ("month", "=", "march"): "/path/to/precomputed/mar/map.html",
             ("month", "=", "april"): "/path/to/precomputed/apr/map.html",
         },
+        is_filtered=True,
     )
 
 
@@ -165,6 +176,7 @@ def test_grouped_widget_incompatible_merge_raises():
             ("month", "=", "january"): "/path/to/precomputed/jan/map.html",
             ("month", "=", "february"): "/path/to/precomputed/feb/map.html",
         },
+        is_filtered=True,
     )
     widget2 = GroupedWidget(
         widget_type="map",
@@ -173,6 +185,7 @@ def test_grouped_widget_incompatible_merge_raises():
             ("month", "=", "march"): "/path/to/precomputed/mar/map.html",
             ("month", "=", "april"): "/path/to/precomputed/apr/map.html",
         },
+        is_filtered=True,
     )
     with pytest.raises(
         ValueError,
@@ -190,6 +203,7 @@ def test_single_view_widget_to_grouped_widget():
         title="A Great Map",
         view=("month", "=", "january"),
         data="/path/to/precomputed/jan/map.html",
+        is_filtered=True,
     )
     grouped = GroupedWidget.from_single_view(widget)
     assert grouped == GroupedWidget(
@@ -198,6 +212,7 @@ def test_single_view_widget_to_grouped_widget():
         views={
             ("month", "=", "january"): "/path/to/precomputed/jan/map.html",
         },
+        is_filtered=True,
     )
 
 
@@ -207,12 +222,14 @@ def test_merge_grouped_widget_views():
         title="A Great Map",
         view=("month", "=", "january"),
         data="/path/to/precomputed/jan/map.html",
+        is_filtered=True,
     )
     view2 = WidgetSingleView(
         widget_type="map",
         title="A Great Map",
         view=("month", "=", "february"),
         data="/path/to/precomputed/feb/map.html",
+        is_filtered=True,
     )
     merged = merge_widget_views([view1, view2])
     assert merged == [
@@ -223,6 +240,7 @@ def test_merge_grouped_widget_views():
                 ("month", "=", "january"): "/path/to/precomputed/jan/map.html",
                 ("month", "=", "february"): "/path/to/precomputed/feb/map.html",
             },
+            is_filtered=True,
         ),
     ]
 
@@ -233,24 +251,28 @@ def test_merge_grouped_widget_views_multiple_widgets():
         title="A Great Map",
         view=("month", "=", "january"),
         data="/path/to/precomputed/jan/map.html",
+        is_filtered=True,
     )
     widget1_view2 = WidgetSingleView(
         widget_type="map",
         title="A Great Map",
         view=("month", "=", "february"),
         data="/path/to/precomputed/feb/map.html",
+        is_filtered=True,
     )
     widget2_view1 = WidgetSingleView(
         widget_type="graph",
         title="Super Cool Plot",
         view=("month", "=", "january"),
         data="/path/to/precomputed/jan/plot.html",
+        is_filtered=True,
     )
     widget2_view2 = WidgetSingleView(
         widget_type="graph",
         title="Super Cool Plot",
         view=("month", "=", "february"),
         data="/path/to/precomputed/feb/plot.html",
+        is_filtered=True,
     )
     merged = merge_widget_views(
         [
@@ -268,6 +290,7 @@ def test_merge_grouped_widget_views_multiple_widgets():
                 ("month", "=", "january"): "/path/to/precomputed/jan/map.html",
                 ("month", "=", "february"): "/path/to/precomputed/feb/map.html",
             },
+            is_filtered=True,
         ),
         GroupedWidget(
             widget_type="graph",
@@ -276,6 +299,7 @@ def test_merge_grouped_widget_views_multiple_widgets():
                 ("month", "=", "january"): "/path/to/precomputed/jan/plot.html",
                 ("month", "=", "february"): "/path/to/precomputed/feb/plot.html",
             },
+            is_filtered=True,
         ),
     ]
 
@@ -288,6 +312,7 @@ def test_grouped_widget_get_view():
             ("month", "=", "january"): "/path/to/precomputed/jan/map.html",
             ("month", "=", "february"): "/path/to/precomputed/feb/map.html",
         },
+        is_filtered=True,
     )
     view = grouped.get_view(("month", "=", "january"))
     assert view == WidgetSingleView(
@@ -295,6 +320,7 @@ def test_grouped_widget_get_view():
         title="A Great Map",
         view=("month", "=", "january"),
         data="/path/to/precomputed/jan/map.html",
+        is_filtered=True,
     )
 
 
@@ -305,6 +331,7 @@ def test_grouped_widget_get_view_none():
         views={
             None: "/path/to/precomputed/single/map.html",
         },
+        is_filtered=False,
     )
     view = none_view.get_view(None)
     assert view == WidgetSingleView(
@@ -312,6 +339,7 @@ def test_grouped_widget_get_view_none():
         title="A map with only one view and no groupers",
         view=None,
         data="/path/to/precomputed/single/map.html",
+        is_filtered=False,
     )
 
 
@@ -321,24 +349,28 @@ def test_merge_grouped_widget_views_multiple_widgets_with_none_views():
         title="A Great Map",
         view=("month", "=", "january"),
         data="/path/to/precomputed/jan/map.html",
+        is_filtered=True,
     )
     widget1_view2 = WidgetSingleView(
         widget_type="map",
         title="A Great Map",
         view=("month", "=", "february"),
         data="/path/to/precomputed/feb/map.html",
+        is_filtered=True,
     )
     widget2_only_view = WidgetSingleView(
         widget_type="map",
         title="A map with only one view and no groupers",
         view=None,
         data="/path/to/precomputed/single/map.html",
+        is_filtered=False,
     )
     widget3_only_view = WidgetSingleView(
         widget_type="graph",
         title="A plot with only one view and no groupers",
         view=None,
         data="/path/to/precomputed/single/plot.html",
+        is_filtered=False,
     )
     merged = merge_widget_views(
         [
@@ -356,6 +388,7 @@ def test_merge_grouped_widget_views_multiple_widgets_with_none_views():
                 ("month", "=", "january"): "/path/to/precomputed/jan/map.html",
                 ("month", "=", "february"): "/path/to/precomputed/feb/map.html",
             },
+            is_filtered=True,
         ),
         GroupedWidget(
             widget_type="map",
@@ -363,6 +396,7 @@ def test_merge_grouped_widget_views_multiple_widgets_with_none_views():
             views={
                 None: "/path/to/precomputed/single/map.html",
             },
+            is_filtered=False,
         ),
         GroupedWidget(
             widget_type="graph",
@@ -370,5 +404,6 @@ def test_merge_grouped_widget_views_multiple_widgets_with_none_views():
             views={
                 None: "/path/to/precomputed/single/plot.html",
             },
+            is_filtered=False,
         ),
     ]

@@ -19,7 +19,36 @@
       "type": "object",
       "title": "Set Groupers"
     },
-    "pe": {
+    "time_range": {
+      "additionalProperties": false,
+      "properties": {
+        "since": {
+          "format": "date-time",
+          "title": "Since",
+          "type": "string",
+          "description": "The start time"
+        },
+        "until": {
+          "format": "date-time",
+          "title": "Until",
+          "type": "string",
+          "description": "The end time"
+        },
+        "time_format": {
+          "title": "Time Format",
+          "type": "string",
+          "description": "The time format"
+        }
+      },
+      "required": [
+        "since",
+        "until",
+        "time_format"
+      ],
+      "type": "object",
+      "title": "Set Time Range Filters"
+    },
+    "get_events_data": {
       "additionalProperties": false,
       "properties": {
         "client": {
@@ -27,44 +56,32 @@
           "title": "Client",
           "type": "string"
         },
-        "since": {
-          "title": "Since",
-          "type": "string",
-          "description": "Start date"
-        },
-        "until": {
-          "title": "Until",
-          "type": "string",
-          "description": "End date"
-        },
-        "patrol_type": {
+        "event_types": {
           "items": {
             "type": "string"
           },
-          "title": "Patrol Type",
+          "title": "Event Types",
           "type": "array",
-          "description": "list of UUID of patrol types"
+          "description": "list of event types"
         },
-        "status": {
+        "event_columns": {
           "items": {
             "type": "string"
           },
-          "title": "Status",
+          "title": "Event Columns",
           "type": "array",
-          "description": "list of 'scheduled'/'active'/'overdue'/'done'/'cancelled'"
+          "description": "The interested event columns"
         }
       },
       "required": [
         "client",
-        "since",
-        "until",
-        "patrol_type",
-        "status"
+        "event_types",
+        "event_columns"
       ],
       "type": "object",
-      "title": "Get Patrol Events from EarthRanger"
+      "title": "Get Events from EarthRanger"
     },
-    "filter_patrol_events": {
+    "filter_events": {
       "additionalProperties": false,
       "properties": {
         "min_x": {
@@ -105,7 +122,7 @@
       "type": "object",
       "title": "Apply Relocation Coordinate Filter"
     },
-    "pe_add_temporal_index": {
+    "events_add_temporal_index": {
       "additionalProperties": false,
       "properties": {
         "index_name": {
@@ -167,9 +184,9 @@
         "directive"
       ],
       "type": "object",
-      "title": "Add temporal index to Patrol Events"
+      "title": "Add temporal index to Events"
     },
-    "pe_colormap": {
+    "events_colormap": {
       "additionalProperties": false,
       "properties": {
         "input_column_name": {
@@ -204,9 +221,9 @@
         "input_column_name"
       ],
       "type": "object",
-      "title": "Patrol Events Colormap"
+      "title": "Events Colormap"
     },
-    "pe_map_layer": {
+    "events_map_layer": {
       "additionalProperties": false,
       "properties": {
         "layer_style": {
@@ -239,9 +256,9 @@
         "layer_style"
       ],
       "type": "object",
-      "title": "Create map layer from Patrol Events"
+      "title": "Create map layer from Events"
     },
-    "pe_ecomap": {
+    "events_ecomap": {
       "additionalProperties": false,
       "properties": {
         "tile_layers": {
@@ -297,7 +314,7 @@
       "type": "object",
       "title": "Draw Ecomap from Time Density"
     },
-    "pe_ecomap_html_url": {
+    "events_ecomap_html_url": {
       "additionalProperties": false,
       "properties": {
         "filename": {
@@ -311,7 +328,7 @@
       "type": "object",
       "title": "Persist Ecomap as Text"
     },
-    "pe_map_widget": {
+    "events_map_widget": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -326,7 +343,7 @@
       "type": "object",
       "title": "Create Time Density Map Widget"
     },
-    "pe_bar_chart": {
+    "events_bar_chart": {
       "additionalProperties": false,
       "properties": {
         "x_axis": {
@@ -412,9 +429,9 @@
         "time_interval"
       ],
       "type": "object",
-      "title": "Draw Time Series Bar Chart for Patrols Events"
+      "title": "Draw Time Series Bar Chart for Events"
     },
-    "pe_bar_chart_html_url": {
+    "events_bar_chart_html_url": {
       "additionalProperties": false,
       "properties": {
         "filename": {
@@ -426,9 +443,9 @@
       },
       "required": [],
       "type": "object",
-      "title": "Persist Patrols Bar Chart as Text"
+      "title": "Persist Bar Chart as Text"
     },
-    "pe_bar_chart_widget": {
+    "events_bar_chart_widget": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -441,9 +458,9 @@
         "title"
       ],
       "type": "object",
-      "title": "Create Plot Widget for Patrol Events"
+      "title": "Create Plot Widget for Events"
     },
-    "pe_meshgrid": {
+    "events_meshgrid": {
       "additionalProperties": false,
       "properties": {
         "cell_width": {
@@ -467,9 +484,9 @@
       },
       "required": [],
       "type": "object",
-      "title": "Create Patrol Events Meshgrid"
+      "title": "Create Events Meshgrid"
     },
-    "pe_feature_density": {
+    "events_feature_density": {
       "additionalProperties": false,
       "properties": {
         "geometry_type": {
@@ -486,7 +503,7 @@
         "geometry_type"
       ],
       "type": "object",
-      "title": "Patrol Events Feature Density"
+      "title": "Events Feature Density"
     },
     "fd_colormap": {
       "additionalProperties": false,
@@ -645,14 +662,14 @@
       "type": "object",
       "title": "Create Feature Density Map Widget"
     },
-    "split_patrol_event_groups": {
+    "split_event_groups": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
       "type": "object",
-      "title": "Split Patrol Events by Group"
+      "title": "Split Events by Group"
     },
-    "grouped_pe_map_layer": {
+    "grouped_events_map_layer": {
       "additionalProperties": false,
       "properties": {
         "layer_style": {
@@ -685,9 +702,9 @@
         "layer_style"
       ],
       "type": "object",
-      "title": "Create map layer from grouped Patrol Events"
+      "title": "Create map layer from grouped Events"
     },
-    "grouped_pe_ecomap": {
+    "grouped_events_ecomap": {
       "additionalProperties": false,
       "properties": {
         "tile_layers": {
@@ -741,9 +758,9 @@
       },
       "required": [],
       "type": "object",
-      "title": "Draw Ecomap from grouped Patrol Events"
+      "title": "Draw Ecomap from grouped Events"
     },
-    "grouped_pe_ecomap_html_url": {
+    "grouped_events_ecomap_html_url": {
       "additionalProperties": false,
       "properties": {
         "filename": {
@@ -755,9 +772,9 @@
       },
       "required": [],
       "type": "object",
-      "title": "Persist grouped Patrol Events Ecomap as Text"
+      "title": "Persist grouped Events Ecomap as Text"
     },
-    "grouped_pe_map_widget": {
+    "grouped_events_map_widget": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -770,16 +787,16 @@
         "title"
       ],
       "type": "object",
-      "title": "Create grouped Patrol Events Map Widget"
+      "title": "Create grouped Events Map Widget"
     },
-    "grouped_pe_map_widget_merge": {
+    "grouped_events_map_widget_merge": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
       "type": "object",
-      "title": "Merge Patrol Events Map Widget Views"
+      "title": "Merge Events Map Widget Views"
     },
-    "grouped_pe_pie_chart": {
+    "grouped_events_pie_chart": {
       "additionalProperties": false,
       "properties": {
         "value_column": {
@@ -824,9 +841,9 @@
         "value_column"
       ],
       "type": "object",
-      "title": "Draw Pie Chart for Patrols Events"
+      "title": "Draw Pie Chart for Events"
     },
-    "grouped_pe_pie_chart_html_urls": {
+    "grouped_pie_chart_html_urls": {
       "additionalProperties": false,
       "properties": {
         "filename": {
@@ -838,9 +855,9 @@
       },
       "required": [],
       "type": "object",
-      "title": "Persist Patrols Pie Chart as Text"
+      "title": "Persist Pie Chart as Text"
     },
-    "grouped_pe_pie_chart_widgets": {
+    "grouped_events_pie_chart_widgets": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -853,16 +870,16 @@
         "title"
       ],
       "type": "object",
-      "title": "Create Plot Widget for Patrol Events"
+      "title": "Create Plot Widget for Events"
     },
-    "grouped_pe_pie_widget_merge": {
+    "grouped_events_pie_widget_merge": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
       "type": "object",
       "title": "Merge Pie Chart Widget Views"
     },
-    "grouped_pe_feature_density": {
+    "grouped_events_feature_density": {
       "additionalProperties": false,
       "properties": {
         "geometry_type": {
@@ -879,7 +896,7 @@
         "geometry_type"
       ],
       "type": "object",
-      "title": "Grouped Patrol Events Feature Density"
+      "title": "Grouped Events Feature Density"
     },
     "grouped_fd_colormap": {
       "additionalProperties": false,
@@ -1045,7 +1062,7 @@
       "type": "object",
       "title": "Merge Feature Density Widget Views"
     },
-    "patrol_dashboard": {
+    "events_dashboard": {
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -1064,7 +1081,7 @@
         "description"
       ],
       "type": "object",
-      "title": "Create Dashboard with Patrol Map Widgets"
+      "title": "Create Dashboard with Map Widgets"
     }
   },
   "$defs": {
@@ -1091,6 +1108,31 @@
       "title": "Grouper",
       "type": "object"
     },
+    "TimeRange": {
+      "properties": {
+        "since": {
+          "format": "date-time",
+          "title": "Since",
+          "type": "string"
+        },
+        "until": {
+          "format": "date-time",
+          "title": "Until",
+          "type": "string"
+        },
+        "time_format": {
+          "default": "%d %b %Y %H:%M:%S %Z",
+          "title": "Time Format",
+          "type": "string"
+        }
+      },
+      "required": [
+        "since",
+        "until"
+      ],
+      "title": "TimeRange",
+      "type": "object"
+    },
     "Coordinate": {
       "properties": {
         "x": {
@@ -1112,18 +1154,32 @@
     "LegendDefinition": {
       "properties": {
         "label_column": {
+          "default": null,
           "title": "Label Column",
           "type": "string"
         },
         "color_column": {
+          "default": null,
           "title": "Color Column",
           "type": "string"
+        },
+        "labels": {
+          "default": null,
+          "items": {
+            "type": "string"
+          },
+          "title": "Labels",
+          "type": "array"
+        },
+        "colors": {
+          "default": null,
+          "items": {
+            "type": "string"
+          },
+          "title": "Colors",
+          "type": "array"
         }
       },
-      "required": [
-        "label_column",
-        "color_column"
-      ],
       "title": "LegendDefinition",
       "type": "object"
     },
@@ -1698,6 +1754,10 @@
           "title": "Title",
           "type": "string"
         },
+        "is_filtered": {
+          "title": "Is Filtered",
+          "type": "boolean"
+        },
         "data": {
           "anyOf": [
             {
@@ -1751,6 +1811,7 @@
       "required": [
         "widget_type",
         "title",
+        "is_filtered",
         "data"
       ],
       "title": "WidgetSingleView",
@@ -1798,6 +1859,10 @@
           "title": "Title",
           "type": "string"
         },
+        "is_filtered": {
+          "title": "Is Filtered",
+          "type": "boolean"
+        },
         "views": {
           "additionalProperties": {
             "anyOf": [
@@ -1822,6 +1887,7 @@
       "required": [
         "widget_type",
         "title",
+        "is_filtered",
         "views"
       ],
       "title": "GroupedWidget",
@@ -1832,42 +1898,43 @@
   "uiSchema": {
     "ui:order": [
       "groupers",
-      "pe",
-      "filter_patrol_events",
-      "pe_add_temporal_index",
-      "pe_colormap",
-      "pe_map_layer",
-      "pe_ecomap",
-      "pe_ecomap_html_url",
-      "pe_map_widget",
-      "pe_bar_chart",
-      "pe_bar_chart_html_url",
-      "pe_bar_chart_widget",
-      "pe_meshgrid",
-      "pe_feature_density",
+      "time_range",
+      "get_events_data",
+      "filter_events",
+      "events_add_temporal_index",
+      "events_colormap",
+      "events_map_layer",
+      "events_ecomap",
+      "events_ecomap_html_url",
+      "events_map_widget",
+      "events_bar_chart",
+      "events_bar_chart_html_url",
+      "events_bar_chart_widget",
+      "events_meshgrid",
+      "events_feature_density",
       "fd_colormap",
       "fd_map_layer",
       "fd_ecomap",
       "fd_ecomap_html_url",
       "fd_map_widget",
-      "split_patrol_event_groups",
-      "grouped_pe_map_layer",
-      "grouped_pe_ecomap",
-      "grouped_pe_ecomap_html_url",
-      "grouped_pe_map_widget",
-      "grouped_pe_map_widget_merge",
-      "grouped_pe_pie_chart",
-      "grouped_pe_pie_chart_html_urls",
-      "grouped_pe_pie_chart_widgets",
-      "grouped_pe_pie_widget_merge",
-      "grouped_pe_feature_density",
+      "split_event_groups",
+      "grouped_events_map_layer",
+      "grouped_events_ecomap",
+      "grouped_events_ecomap_html_url",
+      "grouped_events_map_widget",
+      "grouped_events_map_widget_merge",
+      "grouped_events_pie_chart",
+      "grouped_pie_chart_html_urls",
+      "grouped_events_pie_chart_widgets",
+      "grouped_events_pie_widget_merge",
+      "grouped_events_feature_density",
       "grouped_fd_colormap",
       "grouped_fd_map_layer",
       "grouped_fd_ecomap",
       "grouped_fd_ecomap_html_url",
       "grouped_fd_map_widget",
       "grouped_fd_map_widget_merge",
-      "patrol_dashboard"
+      "events_dashboard"
     ]
   }
 }

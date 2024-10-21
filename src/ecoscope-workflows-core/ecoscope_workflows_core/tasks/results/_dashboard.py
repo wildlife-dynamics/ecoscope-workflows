@@ -8,12 +8,13 @@ from pydantic.json_schema import SkipJsonSchema
 from ecoscope_workflows_core.decorators import task
 from ecoscope_workflows_core.indexes import CompositeFilter, IndexName, IndexValue
 from ecoscope_workflows_core.jsonschema import (
-    oneOf,
     ReactJSONSchemaFormFilters,
     RJSFFilter,
     RJSFFilterProperty,
     RJSFFilterUiSchema,
+    oneOf,
 )
+from ecoscope_workflows_core.tasks.filter._filter import TimeRange
 from ecoscope_workflows_core.tasks.groupby._groupby import Grouper
 from ecoscope_workflows_core.tasks.results._widget_types import (
     GroupedWidget,
@@ -42,6 +43,7 @@ class EmumeratedWidgetSingleView(WidgetBase):
             widget_type=view.widget_type,
             title=view.title,
             data=view.data,
+            is_filtered=view.is_filtered,
         )
 
 
@@ -51,6 +53,7 @@ class Metadata:
 
     title: str = ""
     description: str = ""
+    time_range: str = ""
 
 
 class DashboardJson(BaseModel):
@@ -261,6 +264,9 @@ def _flatten(possibly_nested: NestedWidgetList | FlatWidgetList) -> FlatWidgetLi
 def gather_dashboard(
     title: Annotated[str, Field(description="The title of the dashboard")],
     description: Annotated[str, Field(description="The description of the dashboard")],
+    time_range: Annotated[
+        TimeRange | SkipJsonSchema[None], Field(description="Time range filter")
+    ],
     widgets: Annotated[
         NestedWidgetList | FlatWidgetList | GroupedOrSingleWidget,
         Field(description="The widgets to display.", exclude=True),
@@ -302,9 +308,17 @@ def gather_dashboard(
         grouper_choices = composite_filters_to_grouper_choices_dict(
             groupers, keys_sample
         )
+    formatted_time_range = ""
+    if time_range:
+        formatted_time_range = f"From {time_range.since.strftime(time_range.time_format)} to {time_range.until.strftime(time_range.time_format)}"
+
     return Dashboard(
         widgets=grouped_widgets,
         grouper_choices=(grouper_choices if groupers else None),
         keys=(keys_sample if groupers else None),  # type: ignore[arg-type]
-        metadata=Metadata(title=title, description=description),
+        metadata=Metadata(
+            title=title,
+            description=description,
+            time_range=formatted_time_range,
+        ),
     )

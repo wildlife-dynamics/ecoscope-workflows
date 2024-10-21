@@ -1,6 +1,6 @@
 context:
   name: ecoscope
-  version: v1.8.3
+  version: v1.8.6
 
 package:
   name: ecoscope
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://github.com/wildlife-dynamics/ecoscope/archive/${{ version }}.tar.gz
-  sha256: 747644036ca5100c1ed78b823d0f0c4f27c3fdd5a56140dd62c940efb07fd1ef
+  sha256: 50f402fa4bac3fe93632a040906011a577c0a50f4877478fea701ff0afdf5811
 
 build:
   noarch: python
@@ -49,7 +49,7 @@ requirements:
     - plotly
     # - scikit-learn  # duplicate with analysis
     # ~ mapping ~
-    - lonboard==0.0.2
+    - lonboard==0.0.3
     # - matplotlib  # duplicate with analysis
     # - mapclassify  # duplicate with analysis
 

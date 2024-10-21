@@ -73,7 +73,7 @@ cloudpathlib-gs = "*"
 lithops = { version = "==3.5.1cisaacstern", channel = "https://prefix.dev/ecoscope-workflows" }
 pydot = "*"
 # additional dependencies added by this extension
-ecoscope = { version = "v1.8.3", channel = "https://prefix.dev/ecoscope-workflows" }
+ecoscope = { version = "v1.8.6", channel = "https://prefix.dev/ecoscope-workflows" }
 
 [tool.mypy]
 plugins = ["pandera.mypy", "pydantic.mypy"]
