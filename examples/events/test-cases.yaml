@@ -117,11 +117,6 @@ test1:
       title: "Density Map" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
     # Parameters for 'Split Events by Group' using task `split_groups`.
     split_event_groups: {}
-    # Parameters for 'Grouped Events Colormap' using task `apply_color_map`.
-    grouped_events_colormap:
-      input_column_name: "event_type" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The name of the column with categorical values.'))
-      colormap: "tab20b" # (str | list[str], FieldInfo(annotation=NoneType, required=True, description='Either a named mpl.colormap or a list of string hex values.'))
-      output_column_name: "event_type_colormap"
     # Parameters for 'Create map layer from grouped Events' using task `create_map_layer`.
     grouped_events_map_layer:
       layer_style: # (ecoscope_workflows.tasks.results._ecomap.PolylineLayerStyle | ecoscope_workflows.tasks.results._ecomap.PolygonLayerStyle | ecoscope_workflows.tasks.results._ecomap.PointLayerStyle, FieldInfo(annotation=NoneType, required=True, description='Style arguments for the layer.'))
