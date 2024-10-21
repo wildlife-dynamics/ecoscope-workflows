@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "748252e8fb420e7edc39e0b05c8793c569ddb0fed5f92830889f0dcebdb72be1"
+# from-spec-sha256 = "8a3657e3ebaa4bfbe1bbaaac414f150f77aaa86dfa1e7d1d71c3b10235974666"
 
 # ruff: noqa: E402
 
@@ -18,6 +18,7 @@ from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
 from ecoscope_workflows_core.graph import DependsOn, DependsOnSequence, Graph, Node
 
 from ecoscope_workflows_core.tasks.groupby import set_groupers
+from ecoscope_workflows_core.tasks.filter import set_time_range
 
 get_patrol_observations = create_task_magicmock(  # 🧪
     anchor="ecoscope_workflows_ext_ecoscope.tasks.io",  # 🧪
@@ -38,6 +39,7 @@ get_patrol_events = create_task_magicmock(  # 🧪
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import (
     apply_reloc_coord_filter,
 )
+from ecoscope_workflows_ext_ecoscope.tasks.transformation import apply_color_map
 from ecoscope_workflows_core.tasks.groupby import groupbykey
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecomap
 from ecoscope_workflows_core.tasks.io import persist_text
@@ -65,16 +67,18 @@ def main(params: Params):
 
     dependencies = {
         "groupers": [],
-        "patrol_obs": [],
+        "time_range": [],
+        "patrol_obs": ["time_range"],
         "patrol_reloc": ["patrol_obs"],
         "patrol_traj": ["patrol_reloc"],
         "traj_add_temporal_index": ["patrol_traj"],
         "split_patrol_traj_groups": ["traj_add_temporal_index", "groupers"],
         "patrol_traj_map_layers": ["split_patrol_traj_groups"],
-        "patrol_events": [],
+        "patrol_events": ["time_range"],
         "filter_patrol_events": ["patrol_events"],
         "pe_add_temporal_index": ["filter_patrol_events"],
-        "split_pe_groups": ["pe_add_temporal_index", "groupers"],
+        "pe_colormap": ["pe_add_temporal_index"],
+        "split_pe_groups": ["pe_colormap", "groupers"],
         "patrol_events_map_layers": ["split_pe_groups"],
         "combined_traj_and_pe_map_layers": [
             "patrol_traj_map_layers",
@@ -111,7 +115,8 @@ def main(params: Params):
         "patrol_events_pie_chart_widgets": ["pe_pie_chart_html_urls"],
         "patrol_events_pie_widget_grouped": ["patrol_events_pie_chart_widgets"],
         "td": ["patrol_traj"],
-        "td_map_layer": ["td"],
+        "td_colormap": ["td"],
+        "td_map_layer": ["td_colormap"],
         "td_ecomap": ["td_map_layer"],
         "td_ecomap_html_url": ["td_ecomap"],
         "td_map_widget": ["td_ecomap_html_url"],
@@ -126,6 +131,7 @@ def main(params: Params):
             "avg_speed_grouped_widget",
             "max_speed_grouped_widget",
             "groupers",
+            "time_range",
         ],
     }
 
@@ -135,9 +141,17 @@ def main(params: Params):
             partial=params_dict["groupers"],
             method="call",
         ),
+        "time_range": Node(
+            async_task=set_time_range.validate().set_executor("lithops"),
+            partial=params_dict["time_range"],
+            method="call",
+        ),
         "patrol_obs": Node(
             async_task=get_patrol_observations.validate().set_executor("lithops"),
-            partial=params_dict["patrol_obs"],
+            partial={
+                "time_range": DependsOn("time_range"),
+            }
+            | params_dict["patrol_obs"],
             method="call",
         ),
         "patrol_reloc": Node(
@@ -184,7 +198,10 @@ def main(params: Params):
         ),
         "patrol_events": Node(
             async_task=get_patrol_events.validate().set_executor("lithops"),
-            partial=params_dict["patrol_events"],
+            partial={
+                "time_range": DependsOn("time_range"),
+            }
+            | params_dict["patrol_events"],
             method="call",
         ),
         "filter_patrol_events": Node(
@@ -203,10 +220,18 @@ def main(params: Params):
             | params_dict["pe_add_temporal_index"],
             method="call",
         ),
+        "pe_colormap": Node(
+            async_task=apply_color_map.validate().set_executor("lithops"),
+            partial={
+                "df": DependsOn("pe_add_temporal_index"),
+            }
+            | params_dict["pe_colormap"],
+            method="call",
+        ),
         "split_pe_groups": Node(
             async_task=split_groups.validate().set_executor("lithops"),
             partial={
-                "df": DependsOn("pe_add_temporal_index"),
+                "df": DependsOn("pe_colormap"),
                 "groupers": DependsOn("groupers"),
             }
             | params_dict["split_pe_groups"],
@@ -523,10 +548,18 @@ def main(params: Params):
             | params_dict["td"],
             method="call",
         ),
+        "td_colormap": Node(
+            async_task=apply_color_map.validate().set_executor("lithops"),
+            partial={
+                "df": DependsOn("td"),
+            }
+            | params_dict["td_colormap"],
+            method="call",
+        ),
         "td_map_layer": Node(
             async_task=create_map_layer.validate().set_executor("lithops"),
             partial={
-                "geodataframe": DependsOn("td"),
+                "geodataframe": DependsOn("td_colormap"),
             }
             | params_dict["td_map_layer"],
             method="call",
@@ -573,6 +606,7 @@ def main(params: Params):
                     ],
                 ),
                 "groupers": DependsOn("groupers"),
+                "time_range": DependsOn("time_range"),
             }
             | params_dict["patrol_dashboard"],
             method="call",

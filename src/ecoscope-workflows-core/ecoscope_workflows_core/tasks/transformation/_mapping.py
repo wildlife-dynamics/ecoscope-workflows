@@ -2,9 +2,11 @@ import logging
 from typing import Annotated, cast
 
 from pydantic import Field
+from pydantic.json_schema import SkipJsonSchema
 
 from ecoscope_workflows_core.annotations import AnyDataFrame
 from ecoscope_workflows_core.decorators import task
+from ecoscope_workflows_core.tasks.transformation._unit import Unit, with_unit
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +28,31 @@ def map_values(
     else:
         df[column_name] = df[column_name].map(value_map)
     return cast(AnyDataFrame, df)
+
+
+@task
+def map_values_with_unit(
+    df: AnyDataFrame,
+    input_column_name: Annotated[str, Field(description="The column name to map.")],
+    output_column_name: Annotated[str, Field(description="The new column name.")],
+    original_unit: Annotated[
+        Unit | SkipJsonSchema[None],
+        Field(description="The original unit of measurement."),
+    ] = None,
+    new_unit: Annotated[
+        Unit | SkipJsonSchema[None],
+        Field(description="The unit to convert to."),
+    ] = None,
+    decimal_places: Annotated[
+        int, Field(description="The number of decimal places to display.")
+    ] = 1,
+) -> AnyDataFrame:
+    def format_with_unit(x):
+        data = with_unit(x, original_unit=original_unit, new_unit=new_unit)
+        return f"{data.value:.{decimal_places}f} {data.unit or ''}".strip()
+
+    df[output_column_name] = df[input_column_name].apply(format_with_unit)
+    return df
 
 
 @task

@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "748252e8fb420e7edc39e0b05c8793c569ddb0fed5f92830889f0dcebdb72be1"
+# from-spec-sha256 = "8a3657e3ebaa4bfbe1bbaaac414f150f77aaa86dfa1e7d1d71c3b10235974666"
 
 # ruff: noqa: E402
 
@@ -16,6 +16,7 @@ from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
 
 
 from ecoscope_workflows_core.tasks.groupby import set_groupers
+from ecoscope_workflows_core.tasks.filter import set_time_range
 
 get_patrol_observations = create_task_magicmock(  # 🧪
     anchor="ecoscope_workflows_ext_ecoscope.tasks.io",  # 🧪
@@ -36,6 +37,7 @@ get_patrol_events = create_task_magicmock(  # 🧪
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import (
     apply_reloc_coord_filter,
 )
+from ecoscope_workflows_ext_ecoscope.tasks.transformation import apply_color_map
 from ecoscope_workflows_core.tasks.groupby import groupbykey
 from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecomap
 from ecoscope_workflows_core.tasks.io import persist_text
@@ -63,8 +65,12 @@ def main(params: Params):
 
     groupers = set_groupers.validate().partial(**params_dict["groupers"]).call()
 
+    time_range = set_time_range.validate().partial(**params_dict["time_range"]).call()
+
     patrol_obs = (
-        get_patrol_observations.validate().partial(**params_dict["patrol_obs"]).call()
+        get_patrol_observations.validate()
+        .partial(time_range=time_range, **params_dict["patrol_obs"])
+        .call()
     )
 
     patrol_reloc = (
@@ -102,7 +108,9 @@ def main(params: Params):
     )
 
     patrol_events = (
-        get_patrol_events.validate().partial(**params_dict["patrol_events"]).call()
+        get_patrol_events.validate()
+        .partial(time_range=time_range, **params_dict["patrol_events"])
+        .call()
     )
 
     filter_patrol_events = (
@@ -117,13 +125,15 @@ def main(params: Params):
         .call()
     )
 
+    pe_colormap = (
+        apply_color_map.validate()
+        .partial(df=pe_add_temporal_index, **params_dict["pe_colormap"])
+        .call()
+    )
+
     split_pe_groups = (
         split_groups.validate()
-        .partial(
-            df=pe_add_temporal_index,
-            groupers=groupers,
-            **params_dict["split_pe_groups"],
-        )
+        .partial(df=pe_colormap, groupers=groupers, **params_dict["split_pe_groups"])
         .call()
     )
 
@@ -362,9 +372,13 @@ def main(params: Params):
         .call()
     )
 
+    td_colormap = (
+        apply_color_map.validate().partial(df=td, **params_dict["td_colormap"]).call()
+    )
+
     td_map_layer = (
         create_map_layer.validate()
-        .partial(geodataframe=td, **params_dict["td_map_layer"])
+        .partial(geodataframe=td_colormap, **params_dict["td_map_layer"])
         .call()
     )
 
@@ -405,6 +419,7 @@ def main(params: Params):
                 max_speed_grouped_widget,
             ],
             groupers=groupers,
+            time_range=time_range,
             **params_dict["patrol_dashboard"],
         )
         .call()

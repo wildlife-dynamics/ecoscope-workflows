@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "030474a8999b732797c67f96a4e84066b843fa1b916296fe83f432ffa7d08480"
+# from-spec-sha256 = "0d1105f115cdc90bd410b5ba170adfc21fb0b9d91af21f80eb7fac7ae90281bb"
 
 
 from __future__ import annotations
@@ -10,6 +10,15 @@ from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
 from pydantic import AnyUrl, AwareDatetime, BaseModel, ConfigDict, Field
+
+
+class TimeRange(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    since: AwareDatetime = Field(..., description="The start time", title="Since")
+    until: AwareDatetime = Field(..., description="The end time", title="Until")
+    time_format: str = Field(..., description="The time format", title="Time Format")
 
 
 class SubjectObs(BaseModel):
@@ -22,8 +31,6 @@ class SubjectObs(BaseModel):
     subject_group_name: str = Field(
         ..., description="Name of EarthRanger Subject", title="Subject Group Name"
     )
-    since: AwareDatetime = Field(..., description="Start date", title="Since")
-    until: AwareDatetime = Field(..., description="End date", title="Until")
     include_inactive: Optional[bool] = Field(
         True,
         description="Whether or not to include inactive subjects",
@@ -98,6 +105,27 @@ class TrajAddTemporalIndex(BaseModel):
     )
 
 
+class ColormapTrajSpeed(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    input_column_name: str = Field(
+        ...,
+        description="The name of the column with categorical values.",
+        title="Input Column Name",
+    )
+    colormap: Optional[Union[str, List[str]]] = Field(
+        "viridis",
+        description="Either a named mpl.colormap or a list of string hex values.",
+        title="Colormap",
+    )
+    output_column_name: Optional[str] = Field(
+        None,
+        description="The dataframe column that will contain the color values.",
+        title="Output Column Name",
+    )
+
+
 class EcomapHtmlUrls(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -110,6 +138,45 @@ class EcomapHtmlUrls(BaseModel):
 
 
 class TrajMapWidgetsSingleViews(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    title: str = Field(..., description="The title of the widget", title="Title")
+
+
+class ColormapTrajNight(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    input_column_name: str = Field(
+        ...,
+        description="The name of the column with categorical values.",
+        title="Input Column Name",
+    )
+    colormap: Optional[Union[str, List[str]]] = Field(
+        "viridis",
+        description="Either a named mpl.colormap or a list of string hex values.",
+        title="Colormap",
+    )
+    output_column_name: Optional[str] = Field(
+        None,
+        description="The dataframe column that will contain the color values.",
+        title="Output Column Name",
+    )
+
+
+class EcomapDaynightHtmlUrls(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    filename: Optional[str] = Field(
+        None,
+        description="            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            ",
+        title="Filename",
+    )
+
+
+class TrajMapDaynightWidgetsSv(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -182,6 +249,48 @@ class DaynightRatioSvWidgets(BaseModel):
     )
 
 
+class TotalDistance(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    column_name: str = Field(
+        ..., description="Column to aggregate", title="Column Name"
+    )
+
+
+class TotalDistanceSvWidgets(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    title: str = Field(..., description="The title of the widget", title="Title")
+    decimal_places: Optional[int] = Field(
+        1,
+        description="The number of decimal places to display.",
+        title="Decimal Places",
+    )
+
+
+class TotalTime(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    column_name: str = Field(
+        ..., description="Column to aggregate", title="Column Name"
+    )
+
+
+class TotalTimeSvWidgets(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    title: str = Field(..., description="The title of the widget", title="Title")
+    decimal_places: Optional[int] = Field(
+        1,
+        description="The number of decimal places to display.",
+        title="Decimal Places",
+    )
+
+
 class Td(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -190,12 +299,33 @@ class Td(BaseModel):
         250.0, description="Pixel size for raster profile.", title="Pixel Size"
     )
     crs: Optional[str] = Field("ESRI:102022", title="Crs")
-    nodata_value: Optional[float] = Field("nan", title="Nodata Value")
+    nodata_value: Optional[Union[float, str]] = Field("nan", title="Nodata Value")
     band_count: Optional[int] = Field(1, title="Band Count")
     max_speed_factor: Optional[float] = Field(1.05, title="Max Speed Factor")
     expansion_factor: Optional[float] = Field(1.3, title="Expansion Factor")
     percentiles: Optional[List[float]] = Field(
         [50.0, 60.0, 70.0, 80.0, 90.0, 95.0], title="Percentiles"
+    )
+
+
+class TdColormap(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    input_column_name: str = Field(
+        ...,
+        description="The name of the column with categorical values.",
+        title="Input Column Name",
+    )
+    colormap: Optional[Union[str, List[str]]] = Field(
+        "viridis",
+        description="Either a named mpl.colormap or a list of string hex values.",
+        title="Colormap",
+    )
+    output_column_name: Optional[str] = Field(
+        None,
+        description="The dataframe column that will contain the color values.",
+        title="Output Column Name",
     )
 
 
@@ -233,14 +363,74 @@ class Grouper(BaseModel):
     help_text: Optional[str] = Field(None, title="Help Text")
 
 
+class TimeRange1(BaseModel):
+    since: AwareDatetime = Field(..., title="Since")
+    until: AwareDatetime = Field(..., title="Until")
+    time_format: Optional[str] = Field("%d %b %Y %H:%M:%S %Z", title="Time Format")
+
+
 class Coordinate(BaseModel):
     x: float = Field(..., title="X")
     y: float = Field(..., title="Y")
 
 
+class Scheme(str, Enum):
+    equal_interval = "equal_interval"
+    quantile = "quantile"
+    fisher_jenks = "fisher_jenks"
+    std_mean = "std_mean"
+    max_breaks = "max_breaks"
+    natural_breaks = "natural_breaks"
+
+
+class FisherJenksArgs(BaseModel):
+    scheme: Optional[Scheme] = Field("fisher_jenks", title="Scheme")
+    k: Optional[int] = Field(5, title="K")
+
+
+class MaxBreaksArgs(BaseModel):
+    scheme: Optional[Scheme] = Field("max_breaks", title="Scheme")
+    k: Optional[int] = Field(5, title="K")
+    mindiff: Optional[float] = Field(0, title="Mindiff")
+
+
+class NaturalBreaksArgs(BaseModel):
+    scheme: Optional[Scheme] = Field("natural_breaks", title="Scheme")
+    k: Optional[int] = Field(5, title="K")
+    initial: Optional[int] = Field(10, title="Initial")
+
+
+class QuantileArgs(BaseModel):
+    scheme: Optional[Scheme] = Field("quantile", title="Scheme")
+    k: Optional[int] = Field(5, title="K")
+
+
+class SharedArgs(BaseModel):
+    scheme: Optional[Scheme] = Field("equal_interval", title="Scheme")
+    k: Optional[int] = Field(5, title="K")
+
+
+class StdMeanArgs(BaseModel):
+    scheme: Optional[Scheme] = Field("std_mean", title="Scheme")
+    multiples: Optional[List[int]] = Field([-2, -1, 1, 2], title="Multiples")
+    anchor: Optional[bool] = Field(False, title="Anchor")
+
+
+class Unit(str, Enum):
+    m = "m"
+    km = "km"
+    s = "s"
+    h = "h"
+    d = "d"
+    m_s = "m/s"
+    km_h = "km/h"
+
+
 class LegendDefinition(BaseModel):
-    label_column: str = Field(..., title="Label Column")
-    color_column: str = Field(..., title="Color Column")
+    label_column: Optional[str] = Field(None, title="Label Column")
+    color_column: Optional[str] = Field(None, title="Color Column")
+    labels: Optional[List[str]] = Field(None, title="Labels")
+    colors: Optional[List[str]] = Field(None, title="Colors")
 
 
 class LineWidthUnits(str, Enum):
@@ -274,7 +464,7 @@ class PointLayerStyle(BaseModel):
         "pixels", title="Line Width Units"
     )
     layer_type: Literal["point"] = Field("point", title="Layer Type")
-    get_radius: Optional[float] = Field(1, title="Get Radius")
+    get_radius: Optional[float] = Field(5, title="Get Radius")
     radius_units: Optional[RadiusUnits] = Field("pixels", title="Radius Units")
 
 
@@ -320,7 +510,7 @@ class PolylineLayerStyle(BaseModel):
     get_color: Optional[Union[str, List[int], List[List[int]]]] = Field(
         None, title="Get Color"
     )
-    get_width: Optional[float] = Field(1, title="Get Width")
+    get_width: Optional[float] = Field(3, title="Get Width")
     color_column: Optional[str] = Field(None, title="Color Column")
     width_units: Optional[WidthUnits] = Field("pixels", title="Width Units")
     cap_rounded: Optional[bool] = Field(True, title="Cap Rounded")
@@ -351,6 +541,11 @@ class NorthArrowStyle(BaseModel):
     style: Optional[Dict[str, Any]] = Field({"transform": "scale(0.8)"}, title="Style")
 
 
+class TileLayer(BaseModel):
+    name: str = Field(..., title="Name")
+    opacity: Optional[float] = Field(1, title="Opacity")
+
+
 class WidgetType(str, Enum):
     graph = "graph"
     map = "map"
@@ -363,16 +558,6 @@ class WidgetSingleView(BaseModel):
     title: str = Field(..., title="Title")
     data: Union[Path, AnyUrl, str] = Field(..., title="Data")
     view: Optional[List[List]] = Field(None, title="View")
-
-
-class Unit(str, Enum):
-    m = "m"
-    km = "km"
-    s = "s"
-    h = "h"
-    d = "d"
-    m_s = "m/s"
-    km_h = "km/h"
 
 
 class Quantity(BaseModel):
@@ -405,6 +590,58 @@ class SubjectReloc(BaseModel):
     relocs_columns: List[str] = Field(..., title="Relocs Columns")
 
 
+class ClassifyTrajSpeed(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    input_column_name: str = Field(
+        ..., description="The dataframe column to classify.", title="Input Column Name"
+    )
+    output_column_name: Optional[str] = Field(
+        None,
+        description="The dataframe column that will contain the classification values.",
+        title="Output Column Name",
+    )
+    labels: Optional[List[str]] = Field(
+        None,
+        description="Labels of classification bins, uses bin edges if not provied.",
+        title="Labels",
+    )
+    classification_options: Optional[
+        Union[
+            SharedArgs,
+            StdMeanArgs,
+            MaxBreaksArgs,
+            NaturalBreaksArgs,
+            QuantileArgs,
+            FisherJenksArgs,
+        ]
+    ] = Field({"k": 5}, title="Classification Options")
+
+
+class SpeedmapLegendWithUnit(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    input_column_name: str = Field(
+        ..., description="The column name to map.", title="Input Column Name"
+    )
+    output_column_name: str = Field(
+        ..., description="The new column name.", title="Output Column Name"
+    )
+    original_unit: Optional[Unit] = Field(
+        None, description="The original unit of measurement.", title="Original Unit"
+    )
+    new_unit: Optional[Unit] = Field(
+        None, description="The unit to convert to.", title="New Unit"
+    )
+    decimal_places: Optional[int] = Field(
+        1,
+        description="The number of decimal places to display.",
+        title="Decimal Places",
+    )
+
+
 class TrajMapLayers(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -423,8 +660,53 @@ class TrajEcomap(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    tile_layer: Optional[str] = Field(
-        "", description="A named tile layer, ie OpenStreetMap.", title="Tile Layer"
+    tile_layers: Optional[List[TileLayer]] = Field(
+        [],
+        description="A list of named tile layer with opacity, ie OpenStreetMap.",
+        title="Tile Layers",
+    )
+    static: Optional[bool] = Field(
+        False, description="Set to true to disable map pan/zoom.", title="Static"
+    )
+    title: Optional[str] = Field("", description="The map title.", title="Title")
+    north_arrow_style: Optional[NorthArrowStyle] = Field(
+        default_factory=lambda: NorthArrowStyle.model_validate(
+            {"placement": "top-left", "style": {"transform": "scale(0.8)"}}
+        ),
+        description="Additional arguments for configuring the North Arrow.",
+        title="North Arrow Style",
+    )
+    legend_style: Optional[LegendStyle] = Field(
+        default_factory=lambda: LegendStyle.model_validate(
+            {"placement": "bottom-right"}
+        ),
+        description="Additional arguments for configuring the legend.",
+        title="Legend Style",
+    )
+
+
+class TrajMapNightLayers(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    layer_style: Union[PolylineLayerStyle, PolygonLayerStyle, PointLayerStyle] = Field(
+        ..., description="Style arguments for the layer.", title="Layer Style"
+    )
+    legend: Optional[LegendDefinition] = Field(
+        None,
+        description="If present, includes this layer in the map legend",
+        title="Legend",
+    )
+
+
+class TrajDaynightEcomap(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    tile_layers: Optional[List[TileLayer]] = Field(
+        [],
+        description="A list of named tile layer with opacity, ie OpenStreetMap.",
+        title="Tile Layers",
     )
     static: Optional[bool] = Field(
         False, description="Set to true to disable map pan/zoom.", title="Static"
@@ -470,6 +752,30 @@ class MaxSpeedConverted(BaseModel):
     )
 
 
+class TotalDistConverted(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    original_unit: Optional[Unit] = Field(
+        None, description="The original unit of measurement.", title="Original Unit"
+    )
+    new_unit: Optional[Unit] = Field(
+        None, description="The unit to convert to.", title="New Unit"
+    )
+
+
+class TotalTimeConverted(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    original_unit: Optional[Unit] = Field(
+        None, description="The original unit of measurement.", title="Original Unit"
+    )
+    new_unit: Optional[Unit] = Field(
+        None, description="The unit to convert to.", title="New Unit"
+    )
+
+
 class TdMapLayer(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -488,8 +794,10 @@ class TdEcomap(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    tile_layer: Optional[str] = Field(
-        "", description="A named tile layer, ie OpenStreetMap.", title="Tile Layer"
+    tile_layers: Optional[List[TileLayer]] = Field(
+        [],
+        description="A list of named tile layer with opacity, ie OpenStreetMap.",
+        title="Tile Layers",
     )
     static: Optional[bool] = Field(
         False, description="Set to true to disable map pan/zoom.", title="Static"
@@ -513,11 +821,15 @@ class TdEcomap(BaseModel):
 
 class Params(BaseModel):
     groupers: Optional[Groupers] = Field(None, title="Set Groupers")
+    time_range: Optional[TimeRange] = Field(None, title="Set Time Range Filters")
     subject_obs: Optional[SubjectObs] = Field(
         None, title="Get Subject Group Observations from EarthRanger"
     )
     subject_reloc: Optional[SubjectReloc] = Field(
         None, title="Transform Observations to Relocations"
+    )
+    day_night_labels: Optional[Dict[str, Any]] = Field(
+        None, title="Apply Day/Night Labels to Relocations"
     )
     subject_traj: Optional[SubjectTraj] = Field(
         None, title="Transform Relocations to Trajectories"
@@ -527,6 +839,15 @@ class Params(BaseModel):
     )
     split_subject_traj_groups: Optional[Dict[str, Any]] = Field(
         None, title="Split Subject Trajectories by Group"
+    )
+    classify_traj_speed: Optional[ClassifyTrajSpeed] = Field(
+        None, title="Classify Trajectories By Speed"
+    )
+    colormap_traj_speed: Optional[ColormapTrajSpeed] = Field(
+        None, title="Apply Color to Trajectories By Speed"
+    )
+    speedmap_legend_with_unit: Optional[SpeedmapLegendWithUnit] = Field(
+        None, title="Format Speedmap Legend Label"
     )
     traj_map_layers: Optional[TrajMapLayers] = Field(
         None, title="Create map layer for each trajectory group"
@@ -541,6 +862,24 @@ class Params(BaseModel):
         None, title="Create Map Widgets for Trajectories"
     )
     traj_grouped_map_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge EcoMap Widget Views"
+    )
+    colormap_traj_night: Optional[ColormapTrajNight] = Field(
+        None, title="Apply Color to Trajectories By Day/Night"
+    )
+    traj_map_night_layers: Optional[TrajMapNightLayers] = Field(
+        None, title="Create map layer for each trajectory group"
+    )
+    traj_daynight_ecomap: Optional[TrajDaynightEcomap] = Field(
+        None, title="Draw Ecomaps for each trajectory group"
+    )
+    ecomap_daynight_html_urls: Optional[EcomapDaynightHtmlUrls] = Field(
+        None, title="Persist ecomap as Text"
+    )
+    traj_map_daynight_widgets_sv: Optional[TrajMapDaynightWidgetsSv] = Field(
+        None, title="Create Map Widgets for Trajectories"
+    )
+    traj_daynight_grouped_map_widget: Optional[Dict[str, Any]] = Field(
         None, title="Merge EcoMap Widget Views"
     )
     mean_speed: Optional[MeanSpeed] = Field(
@@ -583,7 +922,32 @@ class Params(BaseModel):
     daynight_ratio_grouped_sv_widget: Optional[Dict[str, Any]] = Field(
         None, title="Merge per group Day/Night Ratio SV widgets"
     )
+    total_distance: Optional[TotalDistance] = Field(
+        None, title="Calculate Total Distance Per Group"
+    )
+    total_dist_converted: Optional[TotalDistConverted] = Field(
+        None, title="Convert total distance units"
+    )
+    total_distance_sv_widgets: Optional[TotalDistanceSvWidgets] = Field(
+        None, title="Create Single Value Widgets for Total Distance Per Group"
+    )
+    total_dist_grouped_sv_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge per group Total Distance SV widgets"
+    )
+    total_time: Optional[TotalTime] = Field(
+        None, title="Calculate Total Time Per Group"
+    )
+    total_time_converted: Optional[TotalTimeConverted] = Field(
+        None, title="Convert total time units"
+    )
+    total_time_sv_widgets: Optional[TotalTimeSvWidgets] = Field(
+        None, title="Create Single Value Widgets for Total Distance Per Group"
+    )
+    total_time_grouped_sv_widget: Optional[Dict[str, Any]] = Field(
+        None, title="Merge per group Total Distance SV widgets"
+    )
     td: Optional[Td] = Field(None, title="Calculate Time Density from Trajectory")
+    td_colormap: Optional[TdColormap] = Field(None, title="Time Density Colormap")
     td_map_layer: Optional[TdMapLayer] = Field(
         None, title="Create map layer from Time Density"
     )

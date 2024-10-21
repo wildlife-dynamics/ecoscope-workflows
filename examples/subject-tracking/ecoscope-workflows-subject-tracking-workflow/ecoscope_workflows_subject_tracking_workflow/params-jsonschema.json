@@ -19,6 +19,35 @@
       "type": "object",
       "title": "Set Groupers"
     },
+    "time_range": {
+      "additionalProperties": false,
+      "properties": {
+        "since": {
+          "format": "date-time",
+          "title": "Since",
+          "type": "string",
+          "description": "The start time"
+        },
+        "until": {
+          "format": "date-time",
+          "title": "Until",
+          "type": "string",
+          "description": "The end time"
+        },
+        "time_format": {
+          "title": "Time Format",
+          "type": "string",
+          "description": "The time format"
+        }
+      },
+      "required": [
+        "since",
+        "until",
+        "time_format"
+      ],
+      "type": "object",
+      "title": "Set Time Range Filters"
+    },
     "subject_obs": {
       "additionalProperties": false,
       "properties": {
@@ -32,18 +61,6 @@
           "type": "string",
           "description": "Name of EarthRanger Subject"
         },
-        "since": {
-          "format": "date-time",
-          "title": "Since",
-          "type": "string",
-          "description": "Start date"
-        },
-        "until": {
-          "format": "date-time",
-          "title": "Until",
-          "type": "string",
-          "description": "End date"
-        },
         "include_inactive": {
           "default": true,
           "title": "Include Inactive",
@@ -53,9 +70,7 @@
       },
       "required": [
         "client",
-        "subject_group_name",
-        "since",
-        "until"
+        "subject_group_name"
       ],
       "type": "object",
       "title": "Get Subject Group Observations from EarthRanger"
@@ -84,6 +99,13 @@
       ],
       "type": "object",
       "title": "Transform Observations to Relocations"
+    },
+    "day_night_labels": {
+      "additionalProperties": false,
+      "properties": {},
+      "required": [],
+      "type": "object",
+      "title": "Apply Day/Night Labels to Relocations"
     },
     "subject_traj": {
       "additionalProperties": false,
@@ -194,6 +216,146 @@
       "type": "object",
       "title": "Split Subject Trajectories by Group"
     },
+    "classify_traj_speed": {
+      "additionalProperties": false,
+      "properties": {
+        "input_column_name": {
+          "title": "Input Column Name",
+          "type": "string",
+          "description": "The dataframe column to classify."
+        },
+        "output_column_name": {
+          "default": null,
+          "title": "Output Column Name",
+          "type": "string",
+          "description": "The dataframe column that will contain the classification values."
+        },
+        "labels": {
+          "default": null,
+          "items": {
+            "type": "string"
+          },
+          "title": "Labels",
+          "type": "array",
+          "description": "Labels of classification bins, uses bin edges if not provied."
+        },
+        "classification_options": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SharedArgs"
+            },
+            {
+              "$ref": "#/$defs/StdMeanArgs"
+            },
+            {
+              "$ref": "#/$defs/MaxBreaksArgs"
+            },
+            {
+              "$ref": "#/$defs/NaturalBreaksArgs"
+            },
+            {
+              "$ref": "#/$defs/QuantileArgs"
+            },
+            {
+              "$ref": "#/$defs/FisherJenksArgs"
+            }
+          ],
+          "default": {
+            "k": 5
+          },
+          "title": "Classification Options"
+        }
+      },
+      "required": [
+        "input_column_name"
+      ],
+      "type": "object",
+      "title": "Classify Trajectories By Speed"
+    },
+    "colormap_traj_speed": {
+      "additionalProperties": false,
+      "properties": {
+        "input_column_name": {
+          "title": "Input Column Name",
+          "type": "string",
+          "description": "The name of the column with categorical values."
+        },
+        "colormap": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "default": "viridis",
+          "title": "Colormap",
+          "description": "Either a named mpl.colormap or a list of string hex values."
+        },
+        "output_column_name": {
+          "default": null,
+          "title": "Output Column Name",
+          "type": "string",
+          "description": "The dataframe column that will contain the color values."
+        }
+      },
+      "required": [
+        "input_column_name"
+      ],
+      "type": "object",
+      "title": "Apply Color to Trajectories By Speed"
+    },
+    "speedmap_legend_with_unit": {
+      "additionalProperties": false,
+      "properties": {
+        "input_column_name": {
+          "title": "Input Column Name",
+          "type": "string",
+          "description": "The column name to map."
+        },
+        "output_column_name": {
+          "title": "Output Column Name",
+          "type": "string",
+          "description": "The new column name."
+        },
+        "original_unit": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/Unit"
+            }
+          ],
+          "default": null,
+          "title": "Original Unit",
+          "description": "The original unit of measurement."
+        },
+        "new_unit": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/Unit"
+            }
+          ],
+          "default": null,
+          "title": "New Unit",
+          "description": "The unit to convert to."
+        },
+        "decimal_places": {
+          "default": 1,
+          "title": "Decimal Places",
+          "type": "integer",
+          "description": "The number of decimal places to display."
+        }
+      },
+      "required": [
+        "input_column_name",
+        "output_column_name"
+      ],
+      "type": "object",
+      "title": "Format Speedmap Legend Label"
+    },
     "traj_map_layers": {
       "additionalProperties": false,
       "properties": {
@@ -232,11 +394,14 @@
     "traj_ecomap": {
       "additionalProperties": false,
       "properties": {
-        "tile_layer": {
-          "default": "",
-          "title": "Tile Layer",
-          "type": "string",
-          "description": "A named tile layer, ie OpenStreetMap."
+        "tile_layers": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/TileLayer"
+          },
+          "title": "Tile Layers",
+          "type": "array",
+          "description": "A list of named tile layer with opacity, ie OpenStreetMap."
         },
         "static": {
           "default": false,
@@ -312,6 +477,170 @@
       "title": "Create Map Widgets for Trajectories"
     },
     "traj_grouped_map_widget": {
+      "additionalProperties": false,
+      "properties": {},
+      "required": [],
+      "type": "object",
+      "title": "Merge EcoMap Widget Views"
+    },
+    "colormap_traj_night": {
+      "additionalProperties": false,
+      "properties": {
+        "input_column_name": {
+          "title": "Input Column Name",
+          "type": "string",
+          "description": "The name of the column with categorical values."
+        },
+        "colormap": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "default": "viridis",
+          "title": "Colormap",
+          "description": "Either a named mpl.colormap or a list of string hex values."
+        },
+        "output_column_name": {
+          "default": null,
+          "title": "Output Column Name",
+          "type": "string",
+          "description": "The dataframe column that will contain the color values."
+        }
+      },
+      "required": [
+        "input_column_name"
+      ],
+      "type": "object",
+      "title": "Apply Color to Trajectories By Day/Night"
+    },
+    "traj_map_night_layers": {
+      "additionalProperties": false,
+      "properties": {
+        "layer_style": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PolylineLayerStyle"
+            },
+            {
+              "$ref": "#/$defs/PolygonLayerStyle"
+            },
+            {
+              "$ref": "#/$defs/PointLayerStyle"
+            }
+          ],
+          "title": "Layer Style",
+          "description": "Style arguments for the layer."
+        },
+        "legend": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/LegendDefinition"
+            }
+          ],
+          "default": null,
+          "title": "Legend",
+          "description": "If present, includes this layer in the map legend"
+        }
+      },
+      "required": [
+        "layer_style"
+      ],
+      "type": "object",
+      "title": "Create map layer for each trajectory group"
+    },
+    "traj_daynight_ecomap": {
+      "additionalProperties": false,
+      "properties": {
+        "tile_layers": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/TileLayer"
+          },
+          "title": "Tile Layers",
+          "type": "array",
+          "description": "A list of named tile layer with opacity, ie OpenStreetMap."
+        },
+        "static": {
+          "default": false,
+          "title": "Static",
+          "type": "boolean",
+          "description": "Set to true to disable map pan/zoom."
+        },
+        "title": {
+          "default": "",
+          "title": "Title",
+          "type": "string",
+          "description": "The map title."
+        },
+        "north_arrow_style": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/NorthArrowStyle"
+            }
+          ],
+          "default": {
+            "placement": "top-left",
+            "style": {
+              "transform": "scale(0.8)"
+            }
+          },
+          "title": "North Arrow Style",
+          "description": "Additional arguments for configuring the North Arrow."
+        },
+        "legend_style": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/LegendStyle"
+            }
+          ],
+          "default": {
+            "placement": "bottom-right"
+          },
+          "title": "Legend Style",
+          "description": "Additional arguments for configuring the legend."
+        }
+      },
+      "required": [],
+      "type": "object",
+      "title": "Draw Ecomaps for each trajectory group"
+    },
+    "ecomap_daynight_html_urls": {
+      "additionalProperties": false,
+      "properties": {
+        "filename": {
+          "default": null,
+          "title": "Filename",
+          "type": "string",
+          "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+        }
+      },
+      "required": [],
+      "type": "object",
+      "title": "Persist ecomap as Text"
+    },
+    "traj_map_daynight_widgets_sv": {
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title",
+          "type": "string",
+          "description": "The title of the widget"
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "type": "object",
+      "title": "Create Map Widgets for Trajectories"
+    },
+    "traj_daynight_grouped_map_widget": {
       "additionalProperties": false,
       "properties": {},
       "required": [],
@@ -530,6 +859,148 @@
       "type": "object",
       "title": "Merge per group Day/Night Ratio SV widgets"
     },
+    "total_distance": {
+      "additionalProperties": false,
+      "properties": {
+        "column_name": {
+          "title": "Column Name",
+          "type": "string",
+          "description": "Column to aggregate"
+        }
+      },
+      "required": [
+        "column_name"
+      ],
+      "type": "object",
+      "title": "Calculate Total Distance Per Group"
+    },
+    "total_dist_converted": {
+      "additionalProperties": false,
+      "properties": {
+        "original_unit": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/Unit"
+            }
+          ],
+          "default": null,
+          "title": "Original Unit",
+          "description": "The original unit of measurement."
+        },
+        "new_unit": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/Unit"
+            }
+          ],
+          "default": null,
+          "title": "New Unit",
+          "description": "The unit to convert to."
+        }
+      },
+      "required": [],
+      "type": "object",
+      "title": "Convert total distance units"
+    },
+    "total_distance_sv_widgets": {
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title",
+          "type": "string",
+          "description": "The title of the widget"
+        },
+        "decimal_places": {
+          "default": 1,
+          "title": "Decimal Places",
+          "type": "integer",
+          "description": "The number of decimal places to display."
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "type": "object",
+      "title": "Create Single Value Widgets for Total Distance Per Group"
+    },
+    "total_dist_grouped_sv_widget": {
+      "additionalProperties": false,
+      "properties": {},
+      "required": [],
+      "type": "object",
+      "title": "Merge per group Total Distance SV widgets"
+    },
+    "total_time": {
+      "additionalProperties": false,
+      "properties": {
+        "column_name": {
+          "title": "Column Name",
+          "type": "string",
+          "description": "Column to aggregate"
+        }
+      },
+      "required": [
+        "column_name"
+      ],
+      "type": "object",
+      "title": "Calculate Total Time Per Group"
+    },
+    "total_time_converted": {
+      "additionalProperties": false,
+      "properties": {
+        "original_unit": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/Unit"
+            }
+          ],
+          "default": null,
+          "title": "Original Unit",
+          "description": "The original unit of measurement."
+        },
+        "new_unit": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/Unit"
+            }
+          ],
+          "default": null,
+          "title": "New Unit",
+          "description": "The unit to convert to."
+        }
+      },
+      "required": [],
+      "type": "object",
+      "title": "Convert total time units"
+    },
+    "total_time_sv_widgets": {
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title",
+          "type": "string",
+          "description": "The title of the widget"
+        },
+        "decimal_places": {
+          "default": 1,
+          "title": "Decimal Places",
+          "type": "integer",
+          "description": "The number of decimal places to display."
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "type": "object",
+      "title": "Create Single Value Widgets for Total Distance Per Group"
+    },
+    "total_time_grouped_sv_widget": {
+      "additionalProperties": false,
+      "properties": {},
+      "required": [],
+      "type": "object",
+      "title": "Merge per group Total Distance SV widgets"
+    },
     "td": {
       "additionalProperties": false,
       "properties": {
@@ -545,9 +1016,16 @@
           "type": "string"
         },
         "nodata_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
           "default": "nan",
-          "title": "Nodata Value",
-          "type": "number"
+          "title": "Nodata Value"
         },
         "band_count": {
           "default": 1,
@@ -583,6 +1061,43 @@
       "required": [],
       "type": "object",
       "title": "Calculate Time Density from Trajectory"
+    },
+    "td_colormap": {
+      "additionalProperties": false,
+      "properties": {
+        "input_column_name": {
+          "title": "Input Column Name",
+          "type": "string",
+          "description": "The name of the column with categorical values."
+        },
+        "colormap": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "default": "viridis",
+          "title": "Colormap",
+          "description": "Either a named mpl.colormap or a list of string hex values."
+        },
+        "output_column_name": {
+          "default": null,
+          "title": "Output Column Name",
+          "type": "string",
+          "description": "The dataframe column that will contain the color values."
+        }
+      },
+      "required": [
+        "input_column_name"
+      ],
+      "type": "object",
+      "title": "Time Density Colormap"
     },
     "td_map_layer": {
       "additionalProperties": false,
@@ -622,11 +1137,14 @@
     "td_ecomap": {
       "additionalProperties": false,
       "properties": {
-        "tile_layer": {
-          "default": "",
-          "title": "Tile Layer",
-          "type": "string",
-          "description": "A named tile layer, ie OpenStreetMap."
+        "tile_layers": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/TileLayer"
+          },
+          "title": "Tile Layers",
+          "type": "array",
+          "description": "A list of named tile layer with opacity, ie OpenStreetMap."
         },
         "static": {
           "default": false,
@@ -754,6 +1272,31 @@
       "title": "Grouper",
       "type": "object"
     },
+    "TimeRange": {
+      "properties": {
+        "since": {
+          "format": "date-time",
+          "title": "Since",
+          "type": "string"
+        },
+        "until": {
+          "format": "date-time",
+          "title": "Until",
+          "type": "string"
+        },
+        "time_format": {
+          "default": "%d %b %Y %H:%M:%S %Z",
+          "title": "Time Format",
+          "type": "string"
+        }
+      },
+      "required": [
+        "since",
+        "until"
+      ],
+      "title": "TimeRange",
+      "type": "object"
+    },
     "Coordinate": {
       "properties": {
         "x": {
@@ -772,21 +1315,215 @@
       "title": "Coordinate",
       "type": "object"
     },
+    "FisherJenksArgs": {
+      "properties": {
+        "scheme": {
+          "default": "fisher_jenks",
+          "enum": [
+            "equal_interval",
+            "quantile",
+            "fisher_jenks",
+            "std_mean",
+            "max_breaks",
+            "natural_breaks"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "k": {
+          "default": 5,
+          "title": "K",
+          "type": "integer"
+        }
+      },
+      "title": "FisherJenksArgs",
+      "type": "object"
+    },
+    "MaxBreaksArgs": {
+      "properties": {
+        "scheme": {
+          "default": "max_breaks",
+          "enum": [
+            "equal_interval",
+            "quantile",
+            "fisher_jenks",
+            "std_mean",
+            "max_breaks",
+            "natural_breaks"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "k": {
+          "default": 5,
+          "title": "K",
+          "type": "integer"
+        },
+        "mindiff": {
+          "default": 0,
+          "title": "Mindiff",
+          "type": "number"
+        }
+      },
+      "title": "MaxBreaksArgs",
+      "type": "object"
+    },
+    "NaturalBreaksArgs": {
+      "properties": {
+        "scheme": {
+          "default": "natural_breaks",
+          "enum": [
+            "equal_interval",
+            "quantile",
+            "fisher_jenks",
+            "std_mean",
+            "max_breaks",
+            "natural_breaks"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "k": {
+          "default": 5,
+          "title": "K",
+          "type": "integer"
+        },
+        "initial": {
+          "default": 10,
+          "title": "Initial",
+          "type": "integer"
+        }
+      },
+      "title": "NaturalBreaksArgs",
+      "type": "object"
+    },
+    "QuantileArgs": {
+      "properties": {
+        "scheme": {
+          "default": "quantile",
+          "enum": [
+            "equal_interval",
+            "quantile",
+            "fisher_jenks",
+            "std_mean",
+            "max_breaks",
+            "natural_breaks"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "k": {
+          "default": 5,
+          "title": "K",
+          "type": "integer"
+        }
+      },
+      "title": "QuantileArgs",
+      "type": "object"
+    },
+    "SharedArgs": {
+      "properties": {
+        "scheme": {
+          "default": "equal_interval",
+          "enum": [
+            "equal_interval",
+            "quantile",
+            "fisher_jenks",
+            "std_mean",
+            "max_breaks",
+            "natural_breaks"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "k": {
+          "default": 5,
+          "title": "K",
+          "type": "integer"
+        }
+      },
+      "title": "SharedArgs",
+      "type": "object"
+    },
+    "StdMeanArgs": {
+      "properties": {
+        "scheme": {
+          "default": "std_mean",
+          "enum": [
+            "equal_interval",
+            "quantile",
+            "fisher_jenks",
+            "std_mean",
+            "max_breaks",
+            "natural_breaks"
+          ],
+          "title": "Scheme",
+          "type": "string"
+        },
+        "multiples": {
+          "default": [
+            -2,
+            -1,
+            1,
+            2
+          ],
+          "items": {
+            "type": "integer"
+          },
+          "title": "Multiples",
+          "type": "array"
+        },
+        "anchor": {
+          "default": false,
+          "title": "Anchor",
+          "type": "boolean"
+        }
+      },
+      "title": "StdMeanArgs",
+      "type": "object"
+    },
+    "Unit": {
+      "enum": [
+        "m",
+        "km",
+        "s",
+        "h",
+        "d",
+        "m/s",
+        "km/h"
+      ],
+      "title": "Unit",
+      "type": "string"
+    },
     "LegendDefinition": {
       "properties": {
         "label_column": {
+          "default": null,
           "title": "Label Column",
           "type": "string"
         },
         "color_column": {
+          "default": null,
           "title": "Color Column",
           "type": "string"
+        },
+        "labels": {
+          "default": null,
+          "items": {
+            "type": "string"
+          },
+          "title": "Labels",
+          "type": "array"
+        },
+        "colors": {
+          "default": null,
+          "items": {
+            "type": "string"
+          },
+          "title": "Colors",
+          "type": "array"
         }
       },
-      "required": [
-        "label_column",
-        "color_column"
-      ],
       "title": "LegendDefinition",
       "type": "object"
     },
@@ -902,7 +1639,7 @@
           "type": "string"
         },
         "get_radius": {
-          "default": 1,
+          "default": 5,
           "title": "Get Radius",
           "type": "number"
         },
@@ -1098,7 +1835,7 @@
           "title": "Get Color"
         },
         "get_width": {
-          "default": 1,
+          "default": 3,
           "title": "Get Width",
           "type": "number"
         },
@@ -1215,6 +1952,24 @@
       "title": "NorthArrowStyle",
       "type": "object"
     },
+    "TileLayer": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "opacity": {
+          "default": 1,
+          "title": "Opacity",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "TileLayer",
+      "type": "object"
+    },
     "WidgetSingleView": {
       "properties": {
         "widget_type": {
@@ -1288,19 +2043,6 @@
       ],
       "title": "WidgetSingleView",
       "type": "object"
-    },
-    "Unit": {
-      "enum": [
-        "m",
-        "km",
-        "s",
-        "h",
-        "d",
-        "m/s",
-        "km/h"
-      ],
-      "title": "Unit",
-      "type": "string"
     },
     "Quantity": {
       "properties": {
@@ -1382,16 +2124,27 @@
   "uiSchema": {
     "ui:order": [
       "groupers",
+      "time_range",
       "subject_obs",
       "subject_reloc",
+      "day_night_labels",
       "subject_traj",
       "traj_add_temporal_index",
       "split_subject_traj_groups",
+      "classify_traj_speed",
+      "colormap_traj_speed",
+      "speedmap_legend_with_unit",
       "traj_map_layers",
       "traj_ecomap",
       "ecomap_html_urls",
       "traj_map_widgets_single_views",
       "traj_grouped_map_widget",
+      "colormap_traj_night",
+      "traj_map_night_layers",
+      "traj_daynight_ecomap",
+      "ecomap_daynight_html_urls",
+      "traj_map_daynight_widgets_sv",
+      "traj_daynight_grouped_map_widget",
       "mean_speed",
       "average_speed_converted",
       "mean_speed_sv_widgets",
@@ -1406,7 +2159,16 @@
       "daynight_ratio",
       "daynight_ratio_sv_widgets",
       "daynight_ratio_grouped_sv_widget",
+      "total_distance",
+      "total_dist_converted",
+      "total_distance_sv_widgets",
+      "total_dist_grouped_sv_widget",
+      "total_time",
+      "total_time_converted",
+      "total_time_sv_widgets",
+      "total_time_grouped_sv_widget",
       "td",
+      "td_colormap",
       "td_map_layer",
       "td_ecomap",
       "td_ecomap_html_url",

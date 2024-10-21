@@ -22,6 +22,7 @@ GroupedWidgetMergeKey: TypeAlias = tuple[str, str]
 class WidgetBase:
     widget_type: WidgetTypes
     title: str
+    is_filtered: bool
 
 
 @dataclass
@@ -43,6 +44,7 @@ class GroupedWidget(WidgetBase):
             widget_type=view.widget_type,
             title=view.title,
             views={view.view: view.data},
+            is_filtered=view.is_filtered,
         )
 
     def get_view(self, view: CompositeFilter | None) -> WidgetSingleView:
@@ -54,6 +56,7 @@ class GroupedWidget(WidgetBase):
             title=self.title,
             view=view,
             data=self.views[view],
+            is_filtered=self.is_filtered,
         )
 
     @property

@@ -1,9 +1,9 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "5f829d8715e0d1d99e9bd17ffdbd4cdf3add65c43661fae0725e495fc4d20c66"
+# from-spec-sha256 = "4c4b15573d985d4dd22886118300bbb53ad094f5c88dbd6cc5bdcc47703957a9"
 
 [project]
-name = "ecoscope-workflows-patrol-events-workflow"
+name = "ecoscope-workflows-events-workflow"
 channels = [
     "file:///tmp/ecoscope-workflows/release/artifacts/",
     "https://repo.prefix.dev/ecoscope-workflows/",
@@ -56,8 +56,8 @@ features = [
 solve-group = "default"
 
 [tasks]
-docker-build = "mkdir -p .tmp/ecoscope-workflows/release/artifacts/\n&& cp -r /tmp/ecoscope-workflows/release/artifacts/* .tmp/ecoscope-workflows/release/artifacts/\n&& docker buildx build -t ecoscope-workflows-patrol-events-workflow .\n"
+docker-build = "mkdir -p .tmp/ecoscope-workflows/release/artifacts/\n&& cp -r /tmp/ecoscope-workflows/release/artifacts/* .tmp/ecoscope-workflows/release/artifacts/\n&& docker buildx build -t ecoscope-workflows-events-workflow .\n"
 
-[pypi-dependencies.ecoscope-workflows-patrol-events-workflow]
+[pypi-dependencies.ecoscope-workflows-events-workflow]
 path = "."
 editable = true

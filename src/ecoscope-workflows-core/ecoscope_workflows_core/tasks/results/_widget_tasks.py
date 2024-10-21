@@ -40,6 +40,7 @@ def create_map_widget_single_view(
         title=title,
         view=view,
         data=data,
+        is_filtered=(view is not None),
     )
 
 
@@ -69,6 +70,7 @@ def create_plot_widget_single_view(
         title=title,
         view=view,
         data=data,
+        is_filtered=(view is not None),
     )
 
 
@@ -96,6 +98,7 @@ def create_text_widget_single_view(
         title=title,
         view=view,
         data=data,
+        is_filtered=(view is not None),
     )
 
 
@@ -134,6 +137,7 @@ def create_single_value_widget_single_view(
         title=title,
         view=view,
         data=data_str,
+        is_filtered=(view is not None),
     )
 
 

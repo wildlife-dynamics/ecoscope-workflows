@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "748252e8fb420e7edc39e0b05c8793c569ddb0fed5f92830889f0dcebdb72be1"
+# from-spec-sha256 = "8a3657e3ebaa4bfbe1bbaaac414f150f77aaa86dfa1e7d1d71c3b10235974666"
 
 
 from __future__ import annotations
@@ -9,7 +9,16 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
-from pydantic import AnyUrl, BaseModel, ConfigDict, Field, confloat
+from pydantic import AnyUrl, AwareDatetime, BaseModel, ConfigDict, Field, confloat
+
+
+class TimeRange(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    since: AwareDatetime = Field(..., description="The start time", title="Since")
+    until: AwareDatetime = Field(..., description="The end time", title="Until")
+    time_format: str = Field(..., description="The time format", title="Time Format")
 
 
 class StatusEnum(str, Enum):
@@ -26,8 +35,6 @@ class PatrolObs(BaseModel):
     client: str = Field(
         ..., description="A named EarthRanger connection.", title="Client"
     )
-    since: str = Field(..., description="Start date", title="Since")
-    until: str = Field(..., description="End date", title="Until")
     patrol_type: List[str] = Field(
         ..., description="list of UUID of patrol types", title="Patrol Type"
     )
@@ -115,8 +122,6 @@ class PatrolEvents(BaseModel):
     client: str = Field(
         ..., description="A named EarthRanger connection.", title="Client"
     )
-    since: str = Field(..., description="Start date", title="Since")
-    until: str = Field(..., description="End date", title="Until")
     patrol_type: List[str] = Field(
         ..., description="list of UUID of patrol types", title="Patrol Type"
     )
@@ -153,6 +158,27 @@ class PeAddTemporalIndex(BaseModel):
         "mixed",
         description='            If `cast_to_datetime=True`, the format to pass to `pd.to_datetime`\n            when attempting to cast `time_col` to datetime. Defaults to "mixed".\n            ',
         title="Format",
+    )
+
+
+class PeColormap(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    input_column_name: str = Field(
+        ...,
+        description="The name of the column with categorical values.",
+        title="Input Column Name",
+    )
+    colormap: Optional[Union[str, List[str]]] = Field(
+        "viridis",
+        description="Either a named mpl.colormap or a list of string hex values.",
+        title="Colormap",
+    )
+    output_column_name: Optional[str] = Field(
+        None,
+        description="The dataframe column that will contain the color values.",
+        title="Output Column Name",
     )
 
 
@@ -339,12 +365,33 @@ class Td(BaseModel):
         250.0, description="Pixel size for raster profile.", title="Pixel Size"
     )
     crs: Optional[str] = Field("ESRI:102022", title="Crs")
-    nodata_value: Optional[float] = Field("nan", title="Nodata Value")
+    nodata_value: Optional[Union[float, str]] = Field("nan", title="Nodata Value")
     band_count: Optional[int] = Field(1, title="Band Count")
     max_speed_factor: Optional[float] = Field(1.05, title="Max Speed Factor")
     expansion_factor: Optional[float] = Field(1.3, title="Expansion Factor")
     percentiles: Optional[List[float]] = Field(
         [50.0, 60.0, 70.0, 80.0, 90.0, 95.0], title="Percentiles"
+    )
+
+
+class TdColormap(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    input_column_name: str = Field(
+        ...,
+        description="The name of the column with categorical values.",
+        title="Input Column Name",
+    )
+    colormap: Optional[Union[str, List[str]]] = Field(
+        "viridis",
+        description="Either a named mpl.colormap or a list of string hex values.",
+        title="Colormap",
+    )
+    output_column_name: Optional[str] = Field(
+        None,
+        description="The dataframe column that will contain the color values.",
+        title="Output Column Name",
     )
 
 
@@ -382,14 +429,22 @@ class Grouper(BaseModel):
     help_text: Optional[str] = Field(None, title="Help Text")
 
 
+class TimeRange1(BaseModel):
+    since: AwareDatetime = Field(..., title="Since")
+    until: AwareDatetime = Field(..., title="Until")
+    time_format: Optional[str] = Field("%d %b %Y %H:%M:%S %Z", title="Time Format")
+
+
 class Coordinate(BaseModel):
     x: float = Field(..., title="X")
     y: float = Field(..., title="Y")
 
 
 class LegendDefinition(BaseModel):
-    label_column: str = Field(..., title="Label Column")
-    color_column: str = Field(..., title="Color Column")
+    label_column: Optional[str] = Field(None, title="Label Column")
+    color_column: Optional[str] = Field(None, title="Color Column")
+    labels: Optional[List[str]] = Field(None, title="Labels")
+    colors: Optional[List[str]] = Field(None, title="Colors")
 
 
 class LineWidthUnits(str, Enum):
@@ -423,7 +478,7 @@ class PointLayerStyle(BaseModel):
         "pixels", title="Line Width Units"
     )
     layer_type: Literal["point"] = Field("point", title="Layer Type")
-    get_radius: Optional[float] = Field(1, title="Get Radius")
+    get_radius: Optional[float] = Field(5, title="Get Radius")
     radius_units: Optional[RadiusUnits] = Field("pixels", title="Radius Units")
 
 
@@ -469,7 +524,7 @@ class PolylineLayerStyle(BaseModel):
     get_color: Optional[Union[str, List[int], List[List[int]]]] = Field(
         None, title="Get Color"
     )
-    get_width: Optional[float] = Field(1, title="Get Width")
+    get_width: Optional[float] = Field(3, title="Get Width")
     color_column: Optional[str] = Field(None, title="Color Column")
     width_units: Optional[WidthUnits] = Field("pixels", title="Width Units")
     cap_rounded: Optional[bool] = Field(True, title="Cap Rounded")
@@ -498,6 +553,11 @@ class LegendStyle(BaseModel):
 class NorthArrowStyle(BaseModel):
     placement: Optional[Placement] = Field("top-left", title="Placement")
     style: Optional[Dict[str, Any]] = Field({"transform": "scale(0.8)"}, title="Style")
+
+
+class TileLayer(BaseModel):
+    name: str = Field(..., title="Name")
+    opacity: Optional[float] = Field(1, title="Opacity")
 
 
 class WidgetType(str, Enum):
@@ -628,8 +688,10 @@ class TrajPatrolEventsEcomap(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    tile_layer: Optional[str] = Field(
-        "", description="A named tile layer, ie OpenStreetMap.", title="Tile Layer"
+    tile_layers: Optional[List[TileLayer]] = Field(
+        [],
+        description="A list of named tile layer with opacity, ie OpenStreetMap.",
+        title="Tile Layers",
     )
     static: Optional[bool] = Field(
         False, description="Set to true to disable map pan/zoom.", title="Static"
@@ -748,8 +810,10 @@ class TdEcomap(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    tile_layer: Optional[str] = Field(
-        "", description="A named tile layer, ie OpenStreetMap.", title="Tile Layer"
+    tile_layers: Optional[List[TileLayer]] = Field(
+        [],
+        description="A list of named tile layer with opacity, ie OpenStreetMap.",
+        title="Tile Layers",
     )
     static: Optional[bool] = Field(
         False, description="Set to true to disable map pan/zoom.", title="Static"
@@ -830,6 +894,7 @@ class PatrolEventsBarChart(BaseModel):
 
 class Params(BaseModel):
     groupers: Optional[Groupers] = Field(None, title="Set Groupers")
+    time_range: Optional[TimeRange] = Field(None, title="Set Time Range Filters")
     patrol_obs: Optional[PatrolObs] = Field(
         None, title="Get Patrol Observations from EarthRanger"
     )
@@ -857,6 +922,7 @@ class Params(BaseModel):
     pe_add_temporal_index: Optional[PeAddTemporalIndex] = Field(
         None, title="Add temporal index to Patrol Events"
     )
+    pe_colormap: Optional[PeColormap] = Field(None, title="Patrol Events Colormap")
     split_pe_groups: Optional[Dict[str, Any]] = Field(
         None, title="Split Patrol Events by Group"
     )
@@ -955,6 +1021,7 @@ class Params(BaseModel):
         None, title="Merge Pie Chart Widget Views"
     )
     td: Optional[Td] = Field(None, title="Calculate Time Density from Trajectory")
+    td_colormap: Optional[TdColormap] = Field(None, title="Time Density Colormap")
     td_map_layer: Optional[TdMapLayer] = Field(
         None, title="Create map layer from Time Density"
     )

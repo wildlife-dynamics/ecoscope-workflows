@@ -1,11 +1,10 @@
 from typing import Annotated, ClassVar, Protocol, runtime_checkable
 
+from ecoscope_workflows_core.annotations import AnyDataFrame, AnyGeoDataFrame
+from ecoscope_workflows_core.connections import DataConnection
 from pydantic import Field, SecretStr, field_validator, ValidationInfo
 from pydantic.functional_validators import BeforeValidator
 from pydantic.json_schema import WithJsonSchema
-
-from ecoscope_workflows_core.annotations import AnyGeoDataFrame
-from ecoscope_workflows_core.connections import DataConnection
 
 
 @runtime_checkable
@@ -35,6 +34,15 @@ class EarthRangerClientProtocol(Protocol):
         patrol_type,
         status,
     ) -> AnyGeoDataFrame: ...
+
+    def get_events(
+        self,
+        since,
+        until,
+        event_type,
+    ) -> AnyGeoDataFrame: ...
+
+    def get_event_types(self) -> AnyDataFrame: ...
 
 
 class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):

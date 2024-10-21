@@ -1,5 +1,7 @@
-import pandas as pd
+from datetime import datetime
 
+import pandas as pd
+from ecoscope_workflows_core.tasks.filter._filter import TimeRange
 from ecoscope_workflows_core.testing import MockSyncTask, create_task_magicmock
 from ecoscope_workflows_core.util import load_example_return_from_task_reference
 
@@ -24,8 +26,10 @@ def test_create_task_magicmock_lithops_executor():
     kws = {
         "client": 0,
         "subject_group_name": 1,
-        "since": 2,
-        "until": 3,
+        "time_range": TimeRange(
+            since=datetime.strptime("2011-01-01", "%Y-%m-%d"),
+            until=datetime.strptime("2023-01-01", "%Y-%m-%d"),
+        ),
         "include_inactive": 4,
     }
     future = get_subjectgroup_observations.set_executor("lithops").call(**kws)

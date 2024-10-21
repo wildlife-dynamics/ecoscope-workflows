@@ -19,6 +19,35 @@
       "type": "object",
       "title": "Set Groupers"
     },
+    "time_range": {
+      "additionalProperties": false,
+      "properties": {
+        "since": {
+          "format": "date-time",
+          "title": "Since",
+          "type": "string",
+          "description": "The start time"
+        },
+        "until": {
+          "format": "date-time",
+          "title": "Until",
+          "type": "string",
+          "description": "The end time"
+        },
+        "time_format": {
+          "title": "Time Format",
+          "type": "string",
+          "description": "The time format"
+        }
+      },
+      "required": [
+        "since",
+        "until",
+        "time_format"
+      ],
+      "type": "object",
+      "title": "Set Time Range Filters"
+    },
     "Fetch and preprocess patrol observations": {
       "type": "object",
       "description": "Fetch patrol observations from EarthRanger, preprocess them into trajectories, and add a temporal index.",
@@ -30,16 +59,6 @@
               "description": "A named EarthRanger connection.",
               "title": "Client",
               "type": "string"
-            },
-            "since": {
-              "title": "Since",
-              "type": "string",
-              "description": "Start date"
-            },
-            "until": {
-              "title": "Until",
-              "type": "string",
-              "description": "End date"
             },
             "patrol_type": {
               "items": {
@@ -72,8 +91,6 @@
           },
           "required": [
             "client",
-            "since",
-            "until",
             "patrol_type",
             "status"
           ],
@@ -283,16 +300,6 @@
               "title": "Client",
               "type": "string"
             },
-            "since": {
-              "title": "Since",
-              "type": "string",
-              "description": "Start date"
-            },
-            "until": {
-              "title": "Until",
-              "type": "string",
-              "description": "End date"
-            },
             "patrol_type": {
               "items": {
                 "type": "string"
@@ -312,8 +319,6 @@
           },
           "required": [
             "client",
-            "since",
-            "until",
             "patrol_type",
             "status"
           ],
@@ -438,6 +443,43 @@
       "type": "object",
       "description": "Create map layers for each group of patrol events.",
       "properties": {
+        "pe_colormap": {
+          "additionalProperties": false,
+          "properties": {
+            "input_column_name": {
+              "title": "Input Column Name",
+              "type": "string",
+              "description": "The name of the column with categorical values."
+            },
+            "colormap": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              ],
+              "default": "viridis",
+              "title": "Colormap",
+              "description": "Either a named mpl.colormap or a list of string hex values."
+            },
+            "output_column_name": {
+              "default": null,
+              "title": "Output Column Name",
+              "type": "string",
+              "description": "The dataframe column that will contain the color values."
+            }
+          },
+          "required": [
+            "input_column_name"
+          ],
+          "type": "object",
+          "title": "Patrol Events Colormap"
+        },
         "split_pe_groups": {
           "additionalProperties": false,
           "properties": {},
@@ -483,6 +525,7 @@
       },
       "uiSchema": {
         "ui:order": [
+          "pe_colormap",
           "split_pe_groups",
           "patrol_events_map_layers"
         ]
@@ -502,11 +545,14 @@
         "traj_patrol_events_ecomap": {
           "additionalProperties": false,
           "properties": {
-            "tile_layer": {
-              "default": "",
-              "title": "Tile Layer",
-              "type": "string",
-              "description": "A named tile layer, ie OpenStreetMap."
+            "tile_layers": {
+              "default": [],
+              "items": {
+                "$ref": "#/$defs/TileLayer"
+              },
+              "title": "Tile Layers",
+              "type": "array",
+              "description": "A list of named tile layer with opacity, ie OpenStreetMap."
             },
             "static": {
               "default": false,
@@ -1240,9 +1286,16 @@
               "type": "string"
             },
             "nodata_value": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "default": "nan",
-              "title": "Nodata Value",
-              "type": "number"
+              "title": "Nodata Value"
             },
             "band_count": {
               "default": 1,
@@ -1278,6 +1331,43 @@
           "required": [],
           "type": "object",
           "title": "Calculate Time Density from Trajectory"
+        },
+        "td_colormap": {
+          "additionalProperties": false,
+          "properties": {
+            "input_column_name": {
+              "title": "Input Column Name",
+              "type": "string",
+              "description": "The name of the column with categorical values."
+            },
+            "colormap": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              ],
+              "default": "viridis",
+              "title": "Colormap",
+              "description": "Either a named mpl.colormap or a list of string hex values."
+            },
+            "output_column_name": {
+              "default": null,
+              "title": "Output Column Name",
+              "type": "string",
+              "description": "The dataframe column that will contain the color values."
+            }
+          },
+          "required": [
+            "input_column_name"
+          ],
+          "type": "object",
+          "title": "Time Density Colormap"
         },
         "td_map_layer": {
           "additionalProperties": false,
@@ -1317,11 +1407,14 @@
         "td_ecomap": {
           "additionalProperties": false,
           "properties": {
-            "tile_layer": {
-              "default": "",
-              "title": "Tile Layer",
-              "type": "string",
-              "description": "A named tile layer, ie OpenStreetMap."
+            "tile_layers": {
+              "default": [],
+              "items": {
+                "$ref": "#/$defs/TileLayer"
+              },
+              "title": "Tile Layers",
+              "type": "array",
+              "description": "A list of named tile layer with opacity, ie OpenStreetMap."
             },
             "static": {
               "default": false,
@@ -1400,6 +1493,7 @@
       "uiSchema": {
         "ui:order": [
           "td",
+          "td_colormap",
           "td_map_layer",
           "td_ecomap",
           "td_ecomap_html_url",
@@ -1453,6 +1547,31 @@
       "title": "Grouper",
       "type": "object"
     },
+    "TimeRange": {
+      "properties": {
+        "since": {
+          "format": "date-time",
+          "title": "Since",
+          "type": "string"
+        },
+        "until": {
+          "format": "date-time",
+          "title": "Until",
+          "type": "string"
+        },
+        "time_format": {
+          "default": "%d %b %Y %H:%M:%S %Z",
+          "title": "Time Format",
+          "type": "string"
+        }
+      },
+      "required": [
+        "since",
+        "until"
+      ],
+      "title": "TimeRange",
+      "type": "object"
+    },
     "Coordinate": {
       "properties": {
         "x": {
@@ -1474,18 +1593,32 @@
     "LegendDefinition": {
       "properties": {
         "label_column": {
+          "default": null,
           "title": "Label Column",
           "type": "string"
         },
         "color_column": {
+          "default": null,
           "title": "Color Column",
           "type": "string"
+        },
+        "labels": {
+          "default": null,
+          "items": {
+            "type": "string"
+          },
+          "title": "Labels",
+          "type": "array"
+        },
+        "colors": {
+          "default": null,
+          "items": {
+            "type": "string"
+          },
+          "title": "Colors",
+          "type": "array"
         }
       },
-      "required": [
-        "label_column",
-        "color_column"
-      ],
       "title": "LegendDefinition",
       "type": "object"
     },
@@ -1601,7 +1734,7 @@
           "type": "string"
         },
         "get_radius": {
-          "default": 1,
+          "default": 5,
           "title": "Get Radius",
           "type": "number"
         },
@@ -1797,7 +1930,7 @@
           "title": "Get Color"
         },
         "get_width": {
-          "default": 1,
+          "default": 3,
           "title": "Get Width",
           "type": "number"
         },
@@ -1912,6 +2045,24 @@
         }
       },
       "title": "NorthArrowStyle",
+      "type": "object"
+    },
+    "TileLayer": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "opacity": {
+          "default": 1,
+          "title": "Opacity",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "TileLayer",
       "type": "object"
     },
     "WidgetSingleView": {
@@ -2219,6 +2370,7 @@
   "uiSchema": {
     "ui:order": [
       "groupers",
+      "time_range",
       "Fetch and preprocess patrol observations",
       "Patrol trajectories map layers",
       "Fetch and preprocess patrol events",

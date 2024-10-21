@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "5f829d8715e0d1d99e9bd17ffdbd4cdf3add65c43661fae0725e495fc4d20c66"
+# from-spec-sha256 = "4c4b15573d985d4dd22886118300bbb53ad094f5c88dbd6cc5bdcc47703957a9"
 
 
 FROM bitnami/minideb:bullseye as fetch
@@ -27,7 +27,7 @@ ENV PORT 8080
 ENV CONCURRENCY 1
 ENV TIMEOUT 600
 CMD pixi run -e default \
-    uvicorn --host 0.0.0.0 --port $PORT --workers $CONCURRENCY --timeout-graceful-shutdown $TIMEOUT ecoscope_workflows_patrol_events_workflow.app:app
+    uvicorn --host 0.0.0.0 --port $PORT --workers $CONCURRENCY --timeout-graceful-shutdown $TIMEOUT ecoscope_workflows_events_workflow.app:app
 
 # FROM python:3.10-slim-buster AS unzip_proxy
 # RUN apt-get update && apt-get install -y \
