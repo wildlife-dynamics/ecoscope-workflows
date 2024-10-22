@@ -87,7 +87,7 @@ be done to ensure that these cached builds are being re-built at the appropriate
 To release conda packages for `ecoscope-workflows-core` and `ecoscope-workflows-ext-ecoscope`:
 
 1. Open and merge a PR that bumps the context version for both recipes in `publish/recipes/release/*.yaml`
-to the desired release tag
+to the desired release tag, if the `ecoscope` (core) version has changed in `src/ecoscope-workflows-ext-ecoscope/pyproject.toml`, then this will also need to be bumped in the recipt for `ecoscope-workflows-ext-ecoscope`
     > **Note**: To get examples CI tests to pass, you will also need to build a release locally with the
     `build-release` pixi task, and then recompile all examples to get the new release tag reflected in
     the lockfiles for all examples. We may be able to remove this requirement eventually, as we improve
