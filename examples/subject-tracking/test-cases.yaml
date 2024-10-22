@@ -10,14 +10,14 @@ test1:
           display_name: "Month"
 
     time_range:
-      since: "2009-01-01T00:00:00Z"
-      until: "2009-03-31T23:59:59Z"
+      since: "2017-01-01T00:00:00Z"
+      until: "2017-03-31T23:59:59Z"
       time_format: "%d %b %Y %H:%M:%S %Z"
 
     # Parameters for 'Get Subject Group Observations from EarthRanger' using task `get_subjectgroup_observations`.
     subject_obs:
       client: "mep_dev" # (<class 'ecoscope_workflows.connections.EarthRangerClientProtocol'>, BeforeValidator(func=<bound method DataConnection.client_from_named_connection of <class 'ecoscope_workflows.connections.EarthRangerConnection'>>), WithJsonSchema(json_schema={'type': 'string', 'description': 'A named EarthRanger connection.'}, mode=None))
-      subject_group_name: "Salif" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of EarthRanger Subject'))
+      subject_group_name: "Ecoscope" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='Name of EarthRanger Subject'))
       include_inactive: False # (<class 'bool'>, FieldInfo(annotation=NoneType, required=True, description='Whether or not to include inactive subjects'))
 
     # Parameters for 'Transform Observations to Relocations' using task `process_relocations`.
