@@ -659,6 +659,14 @@ class DagCompiler(BaseModel):
             platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
             """
         )
+        system_requirements = dedent(
+            # for compatibility with `bitnami/minideb:bullseye` in Dockerfile;
+            # this appears to only be necessary on GCP Cloud Run, as local builds work fine.
+            """\
+            [system-requirements]
+            linux="4.4.0"
+            """
+        )
         dependencies = dedent(
             """\
             [dependencies]
@@ -716,6 +724,9 @@ class DagCompiler(BaseModel):
         return PixiToml(
             file_header=self.file_header,
             project=tomllib.loads(project)["project"],
+            system_requirements=tomllib.loads(system_requirements)[
+                "system-requirements"
+            ],
             dependencies=tomllib.loads(dependencies)["dependencies"],
             feature=tomllib.loads(feature)["feature"],
             tasks=tomllib.loads(tasks)["tasks"],
