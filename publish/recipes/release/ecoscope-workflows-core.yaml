@@ -1,6 +1,6 @@
 context:
   name: ecoscope-workflows-core
-  version: v0.0.8
+  version: v0.0.9
 
 package:
   name: ${{ name }}
