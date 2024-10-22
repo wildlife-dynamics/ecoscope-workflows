@@ -69,6 +69,9 @@ class PixiToml(_AllowArbitraryAndValidateAssignment):
     """The pixi.toml file that specifies the workflow."""
 
     project: PixiProject
+    system_requirements: dict[str, str] = Field(
+        default_factory=dict, alias="system-requirements"
+    )
     dependencies: dict[str, NamelessMatchSpecType]
     feature: dict[FeatureName, Feature] = Field(default_factory=dict)
     environments: dict[str, Environment] = Field(default_factory=dict)
