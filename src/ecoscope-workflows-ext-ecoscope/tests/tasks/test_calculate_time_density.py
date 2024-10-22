@@ -1,6 +1,7 @@
 from importlib.resources import files
 
 import geopandas as gpd  # type: ignore[import-untyped]
+import pytest
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import calculate_time_density
 
 
@@ -23,11 +24,13 @@ def test_calculate_time_density():
 
     assert result.shape == (6, 3)
     assert all([column in result for column in ["percentile", "geometry", "area_sqkm"]])
-    assert list(result["area_sqkm"]) == [
-        3223.8125,
-        2468.6875,
-        1622.8125,
-        1121.875,
-        785.6875,
-        544.9375,
-    ]
+    assert list(result["area_sqkm"]) == pytest.approx(
+        [
+            3223.8125,
+            2468.6875,
+            1622.8125,
+            1121.875,
+            785.6875,
+            544.9375,
+        ]
+    )
