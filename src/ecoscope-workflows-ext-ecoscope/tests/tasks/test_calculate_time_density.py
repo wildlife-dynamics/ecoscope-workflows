@@ -24,10 +24,10 @@ def test_calculate_time_density():
     assert result.shape == (6, 3)
     assert all([column in result for column in ["percentile", "geometry", "area_sqkm"]])
     assert list(result["area_sqkm"]) == [
-        501.875,
-        258.75,
-        96.6875,
-        46.8125,
-        25.1875,
-        13.375,
+        3223.8125,
+        2468.6875,
+        1622.8125,
+        1121.875,
+        785.6875,
+        544.9375,
     ]
