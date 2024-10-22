@@ -28,13 +28,13 @@ def client():
 def test_get_subject_group_observations(client):
     result = get_subjectgroup_observations(
         client=client,
-        subject_group_name="Elephants",
+        subject_group_name="Ecoscope",
         include_inactive=True,
         time_range=TimeRange(
-            since=datetime.strptime("2023-01-01", "%Y-%m-%d").replace(
+            since=datetime.strptime("2017-01-01", "%Y-%m-%d").replace(
                 tzinfo=timezone.utc
             ),
-            until=datetime.strptime("2024-01-01", "%Y-%m-%d").replace(
+            until=datetime.strptime("2017-03-31", "%Y-%m-%d").replace(
                 tzinfo=timezone.utc
             ),
         ),
