@@ -1,6 +1,6 @@
 context:
   name: ecoscope-workflows-ext-ecoscope
-  version: v0.0.7
+  version: v0.0.8
 
 package:
   name: ${{ name }}
@@ -23,7 +23,7 @@ requirements:
   run:
     - python
     - ecoscope-workflows-core ==${{ version }}  # core & ext-ecoscope pinned to same version
-    - ecoscope ==v1.8.3
+    - ecoscope ==v1.8.6
 
 tests:
   - python:
