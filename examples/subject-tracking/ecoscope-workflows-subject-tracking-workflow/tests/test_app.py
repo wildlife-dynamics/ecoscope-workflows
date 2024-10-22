@@ -55,11 +55,12 @@ def test_validate_formdata(client: TestClient, case: TestCase, formdata: dict):
     response = client.post("/params", json=formdata)
     assert response.status_code == 200
 
+    assert set(response.json()) == set(case.params)
+
     if set(formdata) != set(case.params):
-        # this workflow uses task groups, so make a few extra asserts
+        # this workflow uses task groups, so make one other assert
         # task groups are not required, so these asserts are skipped
         # for workflows that simply use a flat layout
-        assert set(response.json()) == set(case.params)
 
         with pytest.raises(pydantic.ValidationError):
             Params(**formdata)
