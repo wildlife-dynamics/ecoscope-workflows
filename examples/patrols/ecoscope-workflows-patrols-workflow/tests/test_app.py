@@ -49,10 +49,10 @@ def test_get_params(client: TestClient):
 
 
 def test_validate_formdata(client: TestClient, case: TestCase, formdata: dict):
-    invalid_request = client.post("/validate", json={"invalid": "request"})
+    invalid_request = client.post("/formdata-to-params", json={"invalid": "request"})
     assert invalid_request.status_code == 422
 
-    response = client.post("/validate", json=formdata)
+    response = client.post("/formdata-to-params", json=formdata)
     assert response.status_code == 200
 
     assert set(response.json()) == set(case.params)
@@ -69,17 +69,19 @@ def test_validate_formdata(client: TestClient, case: TestCase, formdata: dict):
 
 
 def test_generate_nested_params(client: TestClient, case: TestCase, formdata: dict):
-    response = client.post("/params", json=case.params)
+    response = client.post("/params-to-formdata", json=case.params)
     assert response.status_code == 200
 
     assert response.json() == formdata
 
 
 def test_round_trip(client: TestClient, case: TestCase, formdata: dict):
-    generate_params_response = client.post("/params", json=case.model_dump())
+    generate_params_response = client.post(
+        "/params-to-formdata", json=case.model_dump()
+    )
     assert generate_params_response.status_code == 200
 
-    validate_response = client.post("/validate", json=formdata)
+    validate_response = client.post("/formdata-to-params", json=formdata)
     assert validate_response.status_code == 200
 
     assert set(validate_response.json()) == set(case.params)
