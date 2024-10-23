@@ -66,13 +66,13 @@ def test_validate_formdata(client: TestClient, case: TestCase, formdata: dict):
 
 
 def test_generate_nested_params(client: TestClient, case: TestCase, formdata: dict):
-    response = client.post("/params", json=case.model_dump())
+    response = client.post("/params", json=case.params)
     assert response.status_code == 200
 
     assert response.json() == formdata
 
 
-def test_round_trip(client: TestClient, case: TestCase):
+def test_round_trip(client: TestClient, case: TestCase, formdata: dict):
     generate_params_response = client.post("/params", json=case.model_dump())
     assert generate_params_response.status_code == 200
 
