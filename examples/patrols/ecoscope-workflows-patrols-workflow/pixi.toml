@@ -16,6 +16,7 @@ platforms = [
 ]
 
 [system-requirements]
+linux = "4.4.0"
 
 [dependencies.fastapi]
 version = "*"
