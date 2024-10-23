@@ -724,9 +724,6 @@ class DagCompiler(BaseModel):
         return PixiToml(
             file_header=self.file_header,
             project=tomllib.loads(project)["project"],
-            system_requirements=tomllib.loads(system_requirements)[
-                "system-requirements"
-            ],
             dependencies=tomllib.loads(dependencies)["dependencies"],
             feature=tomllib.loads(feature)["feature"],
             tasks=tomllib.loads(tasks)["tasks"],
@@ -734,7 +731,10 @@ class DagCompiler(BaseModel):
             **{
                 "pypi-dependencies": {
                     self.release_name: {"path": ".", "editable": True}
-                }
+                },
+                "system-requirements": tomllib.loads(system_requirements)[
+                    "system-requirements"
+                ],
             },
         )
 
