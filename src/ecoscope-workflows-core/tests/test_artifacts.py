@@ -1,4 +1,10 @@
+import sys
 from textwrap import dedent
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 import pytest
 
@@ -77,3 +83,29 @@ def test_pixitoml_add_dependencies(sample_pixitoml: PixiToml):
             "channel": "file:///tmp/ecoscope-workflows/release/artifacts/",
         },
     }
+
+
+def test_pixitoml_system_requirements():
+    content = dedent(
+        """\
+        [project]
+        name = "example"
+        channels = [
+            "https://repo.prefix.dev/ecoscope-workflows/",
+            "conda-forge",
+        ]
+        platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
+
+        [system-requirements]
+        linux ="4.4.0"
+
+        [dependencies]
+        """
+    )
+    content_dict = tomllib.loads(content)
+    pixitoml = PixiToml(
+        project=content_dict["project"],
+        dependencies=content_dict["dependencies"],
+        **{"system-requirements": content_dict["system-requirements"]},
+    )
+    assert pixitoml.system_requirements == {"linux": "4.4.0"}
