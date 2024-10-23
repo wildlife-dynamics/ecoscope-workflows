@@ -128,7 +128,7 @@ def validate_formdata(formdata: FormData):
     return Params(**params_kws)
 
 
-@app.post("/params", response_model=Params, status_code=200)
+@app.post("/params", response_model=dict[str, dict], status_code=200)
 def generate_nested_params(params: dict):
     formdata: dict[str, dict] = {}
     aliased_annotations = {
