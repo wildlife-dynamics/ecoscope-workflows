@@ -114,7 +114,7 @@ def params_jsonschema():
         return json.load(f)
 
 
-@app.post("/validate", response_model=Params, status_code=200)
+@app.post("/formdata-to-params", response_model=Params, status_code=200)
 def validate_formdata(formdata: FormData):
     formdata_asdict: dict[str, dict | Any] = formdata.model_dump()
     params_fieldnames = Params.model_fields.keys()
@@ -128,7 +128,7 @@ def validate_formdata(formdata: FormData):
     return Params(**params_kws)
 
 
-@app.post("/params", response_model=dict[str, dict], status_code=200)
+@app.post("/params-to-formdata", response_model=FormData, status_code=200)
 def generate_nested_params(params: dict):
     formdata: dict[str, dict] = {}
     aliased_annotations = {
