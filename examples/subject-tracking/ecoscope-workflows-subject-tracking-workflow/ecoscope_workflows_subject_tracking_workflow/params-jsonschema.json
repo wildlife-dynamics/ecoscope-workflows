@@ -1226,6 +1226,78 @@
       "type": "object",
       "title": "Merge Time Density Map Widget Views"
     },
+    "nsd_chart": {
+      "additionalProperties": false,
+      "properties": {
+        "group_by": {
+          "title": "Group By",
+          "type": "string",
+          "description": "The dataframe column to group by."
+        },
+        "x_axis": {
+          "title": "X Axis",
+          "type": "string",
+          "description": "The dataframe column to plot in the x axis."
+        },
+        "y_axis": {
+          "title": "Y Axis",
+          "type": "string",
+          "description": "The dataframe column to plot in the y axis."
+        },
+        "plot_style": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/PlotStyle"
+            }
+          ],
+          "default": null,
+          "title": "Plot Style",
+          "description": "Style arguments passed to plotly.graph_objects.Scatter."
+        },
+        "color_column": {
+          "default": null,
+          "title": "Color Column",
+          "type": "string",
+          "description": "The name of the dataframe column to color each plot group with."
+        }
+      },
+      "required": [
+        "group_by",
+        "x_axis",
+        "y_axis"
+      ],
+      "type": "object",
+      "title": "Draw NSD Scatter Chart"
+    },
+    "nsd_chart_html_url": {
+      "additionalProperties": false,
+      "properties": {
+        "filename": {
+          "default": null,
+          "title": "Filename",
+          "type": "string",
+          "description": "            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            "
+        }
+      },
+      "required": [],
+      "type": "object",
+      "title": "Persist NSD Scatter Chart as Text"
+    },
+    "nsd_chart_widget": {
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title",
+          "type": "string",
+          "description": "The title of the widget"
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "type": "object",
+      "title": "Create NSD Plot Widget"
+    },
     "subject_tracking_dashboard": {
       "additionalProperties": false,
       "properties": {
@@ -2080,6 +2152,50 @@
       "title": "Quantity",
       "type": "object"
     },
+    "LineStyle": {
+      "properties": {
+        "color": {
+          "default": null,
+          "title": "Color",
+          "type": "string"
+        }
+      },
+      "title": "LineStyle",
+      "type": "object"
+    },
+    "PlotStyle": {
+      "properties": {
+        "xperiodalignment": {
+          "default": null,
+          "title": "Xperiodalignment",
+          "type": "string"
+        },
+        "marker_colors": {
+          "default": null,
+          "items": {
+            "type": "string"
+          },
+          "title": "Marker Colors",
+          "type": "array"
+        },
+        "textinfo": {
+          "default": null,
+          "title": "Textinfo",
+          "type": "string"
+        },
+        "line": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/LineStyle"
+            }
+          ],
+          "default": null,
+          "title": "Line"
+        }
+      },
+      "title": "PlotStyle",
+      "type": "object"
+    },
     "GroupedWidget": {
       "properties": {
         "widget_type": {
@@ -2185,6 +2301,9 @@
       "td_ecomap_html_url",
       "td_map_widget",
       "td_grouped_map_widget",
+      "nsd_chart",
+      "nsd_chart_html_url",
+      "nsd_chart_widget",
       "subject_tracking_dashboard"
     ]
   }

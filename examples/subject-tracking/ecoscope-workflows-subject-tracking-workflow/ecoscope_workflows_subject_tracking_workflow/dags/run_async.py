@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "0d1105f115cdc90bd410b5ba170adfc21fb0b9d91af21f80eb7fac7ae90281bb"
+# from-spec-sha256 = "7875a291d3f7b77206919e350fd5dedb11be8260f09bdf5203901ac61ca53c16"
 import json
 import os
 
@@ -32,6 +32,8 @@ from ecoscope_workflows_core.tasks.analysis import dataframe_count
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import get_day_night_ratio
 from ecoscope_workflows_core.tasks.analysis import dataframe_column_sum
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import calculate_time_density
+from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecoplot
+from ecoscope_workflows_core.tasks.results import create_plot_widget_single_view
 from ecoscope_workflows_core.tasks.results import gather_dashboard
 
 from ..params import Params
@@ -92,6 +94,9 @@ def main(params: Params):
         "td_ecomap_html_url": ["td_ecomap"],
         "td_map_widget": ["td_ecomap_html_url"],
         "td_grouped_map_widget": ["td_map_widget"],
+        "nsd_chart": ["traj_add_temporal_index"],
+        "nsd_chart_html_url": ["nsd_chart"],
+        "nsd_chart_widget": ["nsd_chart_html_url"],
         "subject_tracking_dashboard": [
             "traj_grouped_map_widget",
             "mean_speed_grouped_sv_widget",
@@ -102,6 +107,7 @@ def main(params: Params):
             "total_time_grouped_sv_widget",
             "td_grouped_map_widget",
             "traj_daynight_grouped_map_widget",
+            "nsd_chart_widget",
             "groupers",
             "time_range",
         ],
@@ -566,6 +572,33 @@ def main(params: Params):
             | params_dict["td_grouped_map_widget"],
             method="call",
         ),
+        "nsd_chart": Node(
+            async_task=draw_ecoplot.validate().set_executor("lithops"),
+            partial={
+                "dataframe": DependsOn("traj_add_temporal_index"),
+            }
+            | params_dict["nsd_chart"],
+            method="call",
+        ),
+        "nsd_chart_html_url": Node(
+            async_task=persist_text.validate().set_executor("lithops"),
+            partial={
+                "text": DependsOn("nsd_chart"),
+                "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            }
+            | params_dict["nsd_chart_html_url"],
+            method="call",
+        ),
+        "nsd_chart_widget": Node(
+            async_task=create_plot_widget_single_view.validate().set_executor(
+                "lithops"
+            ),
+            partial={
+                "data": DependsOn("nsd_chart_html_url"),
+            }
+            | params_dict["nsd_chart_widget"],
+            method="call",
+        ),
         "subject_tracking_dashboard": Node(
             async_task=gather_dashboard.validate().set_executor("lithops"),
             partial={
@@ -580,6 +613,7 @@ def main(params: Params):
                         DependsOn("total_time_grouped_sv_widget"),
                         DependsOn("td_grouped_map_widget"),
                         DependsOn("traj_daynight_grouped_map_widget"),
+                        DependsOn("nsd_chart_widget"),
                     ],
                 ),
                 "groupers": DependsOn("groupers"),

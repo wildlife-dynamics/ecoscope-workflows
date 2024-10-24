@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "0d1105f115cdc90bd410b5ba170adfc21fb0b9d91af21f80eb7fac7ae90281bb"
+# from-spec-sha256 = "7875a291d3f7b77206919e350fd5dedb11be8260f09bdf5203901ac61ca53c16"
 
 # ruff: noqa: E402
 
@@ -45,6 +45,8 @@ from ecoscope_workflows_core.tasks.analysis import dataframe_count
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import get_day_night_ratio
 from ecoscope_workflows_core.tasks.analysis import dataframe_column_sum
 from ecoscope_workflows_ext_ecoscope.tasks.analysis import calculate_time_density
+from ecoscope_workflows_ext_ecoscope.tasks.results import draw_ecoplot
+from ecoscope_workflows_core.tasks.results import create_plot_widget_single_view
 from ecoscope_workflows_core.tasks.results import gather_dashboard
 
 from ..params import Params
@@ -387,6 +389,28 @@ def main(params: Params):
         .call()
     )
 
+    nsd_chart = (
+        draw_ecoplot.validate()
+        .partial(dataframe=traj_add_temporal_index, **params_dict["nsd_chart"])
+        .call()
+    )
+
+    nsd_chart_html_url = (
+        persist_text.validate()
+        .partial(
+            text=nsd_chart,
+            root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            **params_dict["nsd_chart_html_url"],
+        )
+        .call()
+    )
+
+    nsd_chart_widget = (
+        create_plot_widget_single_view.validate()
+        .partial(data=nsd_chart_html_url, **params_dict["nsd_chart_widget"])
+        .call()
+    )
+
     subject_tracking_dashboard = (
         gather_dashboard.validate()
         .partial(
@@ -400,6 +424,7 @@ def main(params: Params):
                 total_time_grouped_sv_widget,
                 td_grouped_map_widget,
                 traj_daynight_grouped_map_widget,
+                nsd_chart_widget,
             ],
             groupers=groupers,
             time_range=time_range,

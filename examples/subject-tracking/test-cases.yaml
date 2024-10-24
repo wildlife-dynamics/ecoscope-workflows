@@ -251,6 +251,14 @@ test1:
     # Parameters for 'Merge Time Density Map Widget Views' using task `merge_widget_views`.
     td_grouped_map_widget: {}
 
+    nsd_chart:
+      group_by: "groupby_col"
+      x_axis: "segment_start" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the x axis.'))
+      y_axis: "nsd" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The dataframe column to plot in the y axis.'))
+    nsd_chart_html_url: {}
+    nsd_chart_widget:
+      title: "NSD Chart" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the widget'))
+
     # Parameters for 'Create Dashboard with Subject Tracking Widgets' using task `gather_dashboard`.
     subject_tracking_dashboard:
       title: "Subject Tracking Dashboard" # (<class 'str'>, FieldInfo(annotation=NoneType, required=True, description='The title of the dashboard'))

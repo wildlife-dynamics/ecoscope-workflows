@@ -1,6 +1,6 @@
 # [generated]
 # by = { compiler = "ecoscope-workflows-core", version = "9999" }
-# from-spec-sha256 = "0d1105f115cdc90bd410b5ba170adfc21fb0b9d91af21f80eb7fac7ae90281bb"
+# from-spec-sha256 = "7875a291d3f7b77206919e350fd5dedb11be8260f09bdf5203901ac61ca53c16"
 
 
 from __future__ import annotations
@@ -347,6 +347,24 @@ class TdMapWidget(BaseModel):
     title: str = Field(..., description="The title of the widget", title="Title")
 
 
+class NsdChartHtmlUrl(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    filename: Optional[str] = Field(
+        None,
+        description="            Optional filename to persist text to within the `root_path`.\n            If not provided, a filename will be generated based on a hash of the text content.\n            ",
+        title="Filename",
+    )
+
+
+class NsdChartWidget(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    title: str = Field(..., description="The title of the widget", title="Title")
+
+
 class SubjectTrackingDashboard(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -564,6 +582,17 @@ class WidgetSingleView(BaseModel):
 class Quantity(BaseModel):
     value: Union[int, float] = Field(..., title="Value")
     unit: Optional[Unit] = None
+
+
+class LineStyle(BaseModel):
+    color: Optional[str] = Field(None, title="Color")
+
+
+class PlotStyle(BaseModel):
+    xperiodalignment: Optional[str] = Field(None, title="Xperiodalignment")
+    marker_colors: Optional[List[str]] = Field(None, title="Marker Colors")
+    textinfo: Optional[str] = Field(None, title="Textinfo")
+    line: Optional[LineStyle] = Field(None, title="Line")
 
 
 class GroupedWidget(BaseModel):
@@ -821,6 +850,31 @@ class TdEcomap(BaseModel):
     )
 
 
+class NsdChart(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    group_by: str = Field(
+        ..., description="The dataframe column to group by.", title="Group By"
+    )
+    x_axis: str = Field(
+        ..., description="The dataframe column to plot in the x axis.", title="X Axis"
+    )
+    y_axis: str = Field(
+        ..., description="The dataframe column to plot in the y axis.", title="Y Axis"
+    )
+    plot_style: Optional[PlotStyle] = Field(
+        None,
+        description="Style arguments passed to plotly.graph_objects.Scatter.",
+        title="Plot Style",
+    )
+    color_column: Optional[str] = Field(
+        None,
+        description="The name of the dataframe column to color each plot group with.",
+        title="Color Column",
+    )
+
+
 class Params(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -965,6 +1019,13 @@ class Params(BaseModel):
     )
     td_grouped_map_widget: Optional[Dict[str, Any]] = Field(
         None, title="Merge Time Density Map Widget Views"
+    )
+    nsd_chart: Optional[NsdChart] = Field(None, title="Draw NSD Scatter Chart")
+    nsd_chart_html_url: Optional[NsdChartHtmlUrl] = Field(
+        None, title="Persist NSD Scatter Chart as Text"
+    )
+    nsd_chart_widget: Optional[NsdChartWidget] = Field(
+        None, title="Create NSD Plot Widget"
     )
     subject_tracking_dashboard: Optional[SubjectTrackingDashboard] = Field(
         None, title="Create Dashboard with Subject Tracking Widgets"
