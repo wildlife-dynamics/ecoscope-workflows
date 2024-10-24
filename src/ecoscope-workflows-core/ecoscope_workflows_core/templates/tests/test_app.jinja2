@@ -77,6 +77,7 @@ def test_round_trip(client: TestClient, case: TestCase, formdata: dict):
         "/params-to-formdata", json=case.model_dump().get("params")
     )
     assert generate_params_response.status_code == 200
+    assert generate_params_response.json == formdata
 
     validate_response = client.post("/formdata-to-params", json=generate_params_response.json())
     assert validate_response.status_code == 200
