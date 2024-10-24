@@ -23,7 +23,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/arpack-3.9.1-nompi_h77f6705_101.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/astroplan-0.10.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/astropy-6.1.4-py312hc0a28a1_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/astropy-iers-data-0.2024.10.14.0.32.55-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/astropy-iers-data-0.2024.10.21.0.33.21-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-2.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/atk-1.0-2.38.0-h04ea711_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/attrs-24.2.0-pyh71513ae_0.conda
@@ -83,7 +83,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/dav1d-1.2.1-hd590300_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/decorator-5.1.1-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/dnspython-2.7.0-pyhff2d567_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/earthengine-api-1.1.4-pyhd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/earthengine-api-1.1.5-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/ecoscope-workflows/noarch/earthranger-client-1.0.49-pyh4616a5c_0.conda
       - conda: https://repo.prefix.dev/ecoscope-workflows/noarch/ecoscope-v1.8.6-pyh4616a5c_5.conda
       - conda: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-core-v0.0.10-pyh4616a5c_0.conda
@@ -319,7 +319,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pycparser-2.22-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pydantic-core-2.20.1-py312hf008fa9_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-settings-2.5.2-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-settings-2.6.0-pyh3cfb1c2_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pydot-3.0.1-py312h7900ff3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyerfa-2.0.1.4-py312hc0a28a1_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pygments-2.18.0-pyhd8ed1ab_0.conda
@@ -440,7 +440,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/arpack-3.9.1-nompi_hd363cd0_101.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/astroplan-0.10.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/astropy-6.1.4-py312h681ec18_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/astropy-iers-data-0.2024.10.14.0.32.55-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/astropy-iers-data-0.2024.10.21.0.33.21-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-2.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/atk-1.0-2.38.0-hedc4a1f_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/attrs-24.2.0-pyh71513ae_0.conda
@@ -500,7 +500,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/dav1d-1.2.1-h31becfc_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/decorator-5.1.1-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/dnspython-2.7.0-pyhff2d567_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/earthengine-api-1.1.4-pyhd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/earthengine-api-1.1.5-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/ecoscope-workflows/noarch/earthranger-client-1.0.49-pyh4616a5c_0.conda
       - conda: https://repo.prefix.dev/ecoscope-workflows/noarch/ecoscope-v1.8.6-pyh4616a5c_5.conda
       - conda: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-core-v0.0.10-pyh4616a5c_0.conda
@@ -736,7 +736,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pycparser-2.22-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pydantic-core-2.20.1-py312h3dd116e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-settings-2.5.2-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-settings-2.6.0-pyh3cfb1c2_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pydot-3.0.1-py312h996f985_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyerfa-2.0.1.4-py312h681ec18_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pygments-2.18.0-pyhd8ed1ab_0.conda
@@ -856,7 +856,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/arpack-3.9.1-nompi_h593882a_101.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/astroplan-0.10.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/astropy-6.1.4-py312h755e627_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/astropy-iers-data-0.2024.10.14.0.32.55-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/astropy-iers-data-0.2024.10.21.0.33.21-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-2.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/atk-1.0-2.38.0-hd03087b_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/attrs-24.2.0-pyh71513ae_0.conda
@@ -916,7 +916,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/dav1d-1.2.1-hb547adb_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/decorator-5.1.1-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/dnspython-2.7.0-pyhff2d567_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/earthengine-api-1.1.4-pyhd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/earthengine-api-1.1.5-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/ecoscope-workflows/noarch/earthranger-client-1.0.49-pyh4616a5c_0.conda
       - conda: https://repo.prefix.dev/ecoscope-workflows/noarch/ecoscope-v1.8.6-pyh4616a5c_5.conda
       - conda: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-core-v0.0.10-pyh4616a5c_0.conda
@@ -1144,7 +1144,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pycparser-2.22-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pydantic-core-2.20.1-py312h552d48e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-settings-2.5.2-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-settings-2.6.0-pyh3cfb1c2_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pydot-3.0.1-py312h81bd7bf_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyerfa-2.0.1.4-py312h755e627_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pygments-2.18.0-pyhd8ed1ab_0.conda
@@ -1267,7 +1267,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/arpack-3.9.1-nompi_h77f6705_101.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/astroplan-0.10.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/astropy-6.1.4-py312hc0a28a1_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/astropy-iers-data-0.2024.10.14.0.32.55-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/astropy-iers-data-0.2024.10.21.0.33.21-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-2.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/atk-1.0-2.38.0-h04ea711_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/attrs-24.2.0-pyh71513ae_0.conda
@@ -1327,7 +1327,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/dav1d-1.2.1-hd590300_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/decorator-5.1.1-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/dnspython-2.7.0-pyhff2d567_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/earthengine-api-1.1.4-pyhd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/earthengine-api-1.1.5-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/ecoscope-workflows/noarch/earthranger-client-1.0.49-pyh4616a5c_0.conda
       - conda: https://repo.prefix.dev/ecoscope-workflows/noarch/ecoscope-v1.8.6-pyh4616a5c_5.conda
       - conda: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-core-v0.0.10-pyh4616a5c_0.conda
@@ -1565,7 +1565,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pycparser-2.22-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pydantic-core-2.20.1-py312hf008fa9_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-settings-2.5.2-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-settings-2.6.0-pyh3cfb1c2_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pydot-3.0.1-py312h7900ff3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyerfa-2.0.1.4-py312hc0a28a1_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pygments-2.18.0-pyhd8ed1ab_0.conda
@@ -1688,7 +1688,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/arpack-3.9.1-nompi_hd363cd0_101.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/astroplan-0.10.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/astropy-6.1.4-py312h681ec18_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/astropy-iers-data-0.2024.10.14.0.32.55-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/astropy-iers-data-0.2024.10.21.0.33.21-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-2.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/atk-1.0-2.38.0-hedc4a1f_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/attrs-24.2.0-pyh71513ae_0.conda
@@ -1748,7 +1748,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/dav1d-1.2.1-h31becfc_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/decorator-5.1.1-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/dnspython-2.7.0-pyhff2d567_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/earthengine-api-1.1.4-pyhd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/earthengine-api-1.1.5-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/ecoscope-workflows/noarch/earthranger-client-1.0.49-pyh4616a5c_0.conda
       - conda: https://repo.prefix.dev/ecoscope-workflows/noarch/ecoscope-v1.8.6-pyh4616a5c_5.conda
       - conda: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-core-v0.0.10-pyh4616a5c_0.conda
@@ -1986,7 +1986,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pycparser-2.22-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pydantic-core-2.20.1-py312h3dd116e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-settings-2.5.2-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-settings-2.6.0-pyh3cfb1c2_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pydot-3.0.1-py312h996f985_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyerfa-2.0.1.4-py312h681ec18_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pygments-2.18.0-pyhd8ed1ab_0.conda
@@ -2108,7 +2108,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/arpack-3.9.1-nompi_h593882a_101.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/astroplan-0.10.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/astropy-6.1.4-py312h755e627_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/astropy-iers-data-0.2024.10.14.0.32.55-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/astropy-iers-data-0.2024.10.21.0.33.21-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-2.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/atk-1.0-2.38.0-hd03087b_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/attrs-24.2.0-pyh71513ae_0.conda
@@ -2168,7 +2168,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/dav1d-1.2.1-hb547adb_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/decorator-5.1.1-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/dnspython-2.7.0-pyhff2d567_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/earthengine-api-1.1.4-pyhd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/earthengine-api-1.1.5-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/ecoscope-workflows/noarch/earthranger-client-1.0.49-pyh4616a5c_0.conda
       - conda: https://repo.prefix.dev/ecoscope-workflows/noarch/ecoscope-v1.8.6-pyh4616a5c_5.conda
       - conda: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-core-v0.0.10-pyh4616a5c_0.conda
@@ -2398,7 +2398,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pycparser-2.22-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pydantic-core-2.20.1-py312h552d48e_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-settings-2.5.2-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-settings-2.6.0-pyh3cfb1c2_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pydot-3.0.1-py312h81bd7bf_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyerfa-2.0.1.4-py312h755e627_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pygments-2.18.0-pyhd8ed1ab_0.conda
@@ -2971,21 +2971,20 @@ packages:
   timestamp: 1727442079503
 - kind: conda
   name: astropy-iers-data
-  version: 0.2024.10.14.0.32.55
+  version: 0.2024.10.21.0.33.21
   build: pyhd8ed1ab_0
   subdir: noarch
   noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/astropy-iers-data-0.2024.10.14.0.32.55-pyhd8ed1ab_0.conda
-  sha256: 91ee9c92edd74bd5505cc14325d9ac6dabad4ccf12d2e7ce03f95fb111ede53e
-  md5: 474284398217b101dca5471d6c090c50
+  url: https://conda.anaconda.org/conda-forge/noarch/astropy-iers-data-0.2024.10.21.0.33.21-pyhd8ed1ab_0.conda
+  sha256: 372c5e4d17d472d0b4976280e5a7b2ef3147f145eacef865948629212beff50d
+  md5: 912c8ef2de7760ccb13cfa4b9e204231
   depends:
   - python >=3.8
   license: BSD-3-Clause
-  license_family: BSD
   purls:
   - pkg:pypi/astropy-iers-data?source=hash-mapping
-  size: 1195261
-  timestamp: 1728886473520
+  size: 1195673
+  timestamp: 1729717315636
 - kind: conda
   name: asttokens
   version: 2.4.1
@@ -5605,14 +5604,13 @@ packages:
   timestamp: 1728178868478
 - kind: conda
   name: earthengine-api
-  version: 1.1.4
-  build: pyhd8ed1ab_1
-  build_number: 1
+  version: 1.1.5
+  build: pyhd8ed1ab_0
   subdir: noarch
   noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/earthengine-api-1.1.4-pyhd8ed1ab_1.conda
-  sha256: 847242173f4bba39d2999a194a3809bb8fde9824e9e21a152b677ce1d61ba2ec
-  md5: 6f460e520cfb17889662eaac984a0912
+  url: https://conda.anaconda.org/conda-forge/noarch/earthengine-api-1.1.5-pyhd8ed1ab_0.conda
+  sha256: 763b4ccfbe44cf15c07c313d32714fd91adae9a1b35add080226280f292a9276
+  md5: a02f9cd8ddc95d8b7e782dd4c2650de5
   depends:
   - google-api-python-client >=1.12.1
   - google-auth >=1.4.1
@@ -5625,8 +5623,8 @@ packages:
   license_family: APACHE
   purls:
   - pkg:pypi/earthengine-api?source=hash-mapping
-  size: 310569
-  timestamp: 1729037790515
+  size: 311067
+  timestamp: 1729715767460
 - kind: conda
   name: earthranger-client
   version: 1.0.49
@@ -5688,8 +5686,8 @@ packages:
   subdir: noarch
   noarch: python
   url: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-core-v0.0.10-pyh4616a5c_0.conda
-  sha256: 7bf1a939f4440356986ef49b6be1f4ad4d34b5a9aa73f840d1ec10a703c51cf0
-  md5: fb93d93c3cdec1eacc08625f862410ff
+  sha256: c41c72e5e99d17e131a5b60621b8293dc42797e4c6cdfd2fdefa44e1edeca315
+  md5: 292e30fff96c37aa068bd5600eaf10d4
   depends:
   - python
   - jinja2
@@ -5706,8 +5704,8 @@ packages:
   - pydot
   - python
   license: BSD-3-Clause
-  size: 50645
-  timestamp: 1729714641994
+  size: 50646
+  timestamp: 1729752512955
 - kind: pypi
   name: ecoscope-workflows-events-workflow
   version: 0.0.0
@@ -5722,16 +5720,16 @@ packages:
   subdir: noarch
   noarch: python
   url: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-ext-ecoscope-v0.0.10-pyh4616a5c_0.conda
-  sha256: dc586e3d3da5906e9c440260c697723d6f19364945880c78b8ca6866856f1a70
-  md5: d31308c88fc844f13ff42c17dbe2d254
+  sha256: 8524a6ef5c42c3041736718567d78365fb08f70a5c94de356d4694fd8fe13a6f
+  md5: 31bee15943aa0a5ad524ebb926dd59a6
   depends:
   - python
   - ecoscope-workflows-core ==v0.0.10
   - ecoscope ==v1.8.6
   - python
   license: BSD-3-Clause
-  size: 6415766
-  timestamp: 1729714662352
+  size: 6415758
+  timestamp: 1729752536186
 - kind: conda
   name: email-validator
   version: 2.2.0
@@ -15936,23 +15934,22 @@ packages:
   timestamp: 1720041586700
 - kind: conda
   name: pydantic-settings
-  version: 2.5.2
-  build: pyhd8ed1ab_0
+  version: 2.6.0
+  build: pyh3cfb1c2_0
   subdir: noarch
   noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/pydantic-settings-2.5.2-pyhd8ed1ab_0.conda
-  sha256: 4017175a64868dbd515a402bf9626ce47f3621054ccf1b6a7fb3c363a79e37e1
-  md5: 7ad1384e9e7c9338840533b9a2c413f8
+  url: https://conda.anaconda.org/conda-forge/noarch/pydantic-settings-2.6.0-pyh3cfb1c2_0.conda
+  sha256: 179323abb925a0365f97c8aa3852831a4d97d372188c38cfae6b01a920101698
+  md5: e85fa45f47606185c8582d698c2aafe7
   depends:
   - pydantic >=2.7.0
   - python >=3.8
   - python-dotenv >=0.21.0
   license: MIT
-  license_family: MIT
   purls:
   - pkg:pypi/pydantic-settings?source=hash-mapping
-  size: 29217
-  timestamp: 1726062669585
+  size: 30737
+  timestamp: 1729718029389
 - kind: conda
   name: pydot
   version: 3.0.1

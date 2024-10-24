@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 from ecoscope_workflows_core.testing import TestCase
 
 from ecoscope_workflows_events_workflow.params import Params
+from ecoscope_workflows_events_workflow.formdata import FormData
 
 
 def test_run(
@@ -72,7 +73,7 @@ def test_generate_nested_params(client: TestClient, case: TestCase, formdata: di
     response = client.post("/params-to-formdata", json=case.params)
     assert response.status_code == 200
 
-    assert response.json() == formdata
+    assert FormData(**response.json()) == FormData(**formdata)
 
 
 def test_round_trip(client: TestClient, case: TestCase, formdata: dict):
