@@ -8,7 +8,7 @@ import os
 import tempfile
 import traceback
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, get_args
 
 import ruamel.yaml
 from fastapi import FastAPI, Response, status
@@ -111,13 +111,13 @@ def run(
     return {"result": result.model_dump()}
 
 
-@app.get("/params", status_code=200)
+@app.get("/rjsf", status_code=200)
 def params_jsonschema():
     with Path(__file__).parent.joinpath("params-jsonschema.json").open() as f:
         return json.load(f)
 
 
-@app.post("/params", response_model=Params, status_code=200)
+@app.post("/formdata-to-params", response_model=Params, status_code=200)
 def validate_formdata(formdata: FormData):
     formdata_asdict: dict[str, dict | Any] = formdata.model_dump()
     params_fieldnames = Params.model_fields.keys()
@@ -129,3 +129,24 @@ def validate_formdata(formdata: FormData):
             for inner_k, inner_v in v.items():
                 params_kws[inner_k] = inner_v
     return Params(**params_kws)
+
+
+@app.post("/params-to-formdata", response_model=FormData, status_code=200)
+def generate_nested_params(params: dict):
+    formdata: dict[str, dict] = {}
+    aliased_annotations = {
+        v.alias: v.annotation for v in FormData.model_fields.values() if v.alias
+    }
+    task_groups = {
+        k: list(get_args(v)[0].model_fields) for k, v in aliased_annotations.items()
+    }
+    for k, v in params.items():
+        if k in FormData.model_fields:
+            formdata[k] = v
+        else:
+            group = next(g for g in task_groups if k in task_groups[g])
+            if group in formdata:
+                formdata[group].update({k: v})
+            else:
+                formdata[group] = {k: v}
+    return formdata
