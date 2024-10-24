@@ -53,8 +53,10 @@ class EarthRangerConnection(DataConnection[EarthRangerClientProtocol]):
     password: Annotated[SecretStr, Field(description="EarthRanger password")] = (
         SecretStr("")
     )
-    tcp_limit: Annotated[int, Field(description="TCP limit for API requests")]
-    sub_page_size: Annotated[int, Field(description="Sub page size for API requests")]
+    tcp_limit: Annotated[int, Field(description="TCP limit for API requests")] = 5
+    sub_page_size: Annotated[
+        int, Field(description="Sub page size for API requests")
+    ] = 4000
     token: Annotated[SecretStr, Field(description="EarthRanger access token")] = (
         SecretStr("")
     )
