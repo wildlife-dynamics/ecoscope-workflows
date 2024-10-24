@@ -2981,6 +2981,7 @@ packages:
   depends:
   - python >=3.8
   license: BSD-3-Clause
+  license_family: BSD
   purls:
   - pkg:pypi/astropy-iers-data?source=hash-mapping
   size: 1195673
@@ -5686,8 +5687,8 @@ packages:
   subdir: noarch
   noarch: python
   url: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-core-v0.0.10-pyh4616a5c_0.conda
-  sha256: c41c72e5e99d17e131a5b60621b8293dc42797e4c6cdfd2fdefa44e1edeca315
-  md5: 292e30fff96c37aa068bd5600eaf10d4
+  sha256: 701eb7f637ceae66fc1147bcf1e6cc1ef8c1e87bfe3f4797bcb53114357a8af4
+  md5: b74941589dda95042957162bdb461c98
   depends:
   - python
   - jinja2
@@ -5704,8 +5705,8 @@ packages:
   - pydot
   - python
   license: BSD-3-Clause
-  size: 50646
-  timestamp: 1729752512955
+  size: 50680
+  timestamp: 1729797073812
 - kind: conda
   name: ecoscope-workflows-ext-ecoscope
   version: v0.0.10
@@ -5713,16 +5714,16 @@ packages:
   subdir: noarch
   noarch: python
   url: file:///tmp/ecoscope-workflows/release/artifacts/noarch/ecoscope-workflows-ext-ecoscope-v0.0.10-pyh4616a5c_0.conda
-  sha256: 8524a6ef5c42c3041736718567d78365fb08f70a5c94de356d4694fd8fe13a6f
-  md5: 31bee15943aa0a5ad524ebb926dd59a6
+  sha256: f05de45722cbcdc6812d37c4eaf396cdf0872484561c78a76c4449f303841eb1
+  md5: 3df6ad27fe2a1d123ea3d5ea0f482868
   depends:
   - python
   - ecoscope-workflows-core ==v0.0.10
   - ecoscope ==v1.8.6
   - python
   license: BSD-3-Clause
-  size: 6415758
-  timestamp: 1729752536186
+  size: 6415781
+  timestamp: 1729797110345
 - kind: pypi
   name: ecoscope-workflows-patrols-workflow
   version: 0.0.0
@@ -6450,6 +6451,7 @@ packages:
   - python >=3.12,<3.13.0a0 *_cpython
   - python_abi 3.12.* *_cp312
   license: Apache-2.0
+  license_family: APACHE
   purls:
   - pkg:pypi/frozenlist?source=hash-mapping
   size: 53366
@@ -6468,6 +6470,7 @@ packages:
   - python >=3.12,<3.13.0a0
   - python_abi 3.12.* *_cp312
   license: Apache-2.0
+  license_family: APACHE
   purls:
   - pkg:pypi/frozenlist?source=hash-mapping
   size: 60968
@@ -6486,6 +6489,7 @@ packages:
   - python >=3.12,<3.13.0a0 *_cpython
   - python_abi 3.12.* *_cp312
   license: Apache-2.0
+  license_family: APACHE
   purls:
   - pkg:pypi/frozenlist?source=hash-mapping
   size: 59967
@@ -15946,6 +15950,7 @@ packages:
   - python >=3.8
   - python-dotenv >=0.21.0
   license: MIT
+  license_family: MIT
   purls:
   - pkg:pypi/pydantic-settings?source=hash-mapping
   size: 30737
